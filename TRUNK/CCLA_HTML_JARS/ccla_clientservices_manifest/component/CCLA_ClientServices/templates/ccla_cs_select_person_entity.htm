@@ -1,0 +1,451 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<title>
+		Select Person Relationship
+	</title>
+
+	<$includeHeader =  "ccla_cs_entity_search_results_header"$>
+	<$includeFooter =  "ccla_cs_entity_search_results_footer"$>
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+	<$if not searchScope$>
+		<$searchScope = "all"$>
+	<$endif$>
+	
+	<$isEdit=""$>
+	<$allowSelectRelation=1$>
+	<$hasRelations=""$>
+	<$ELEMENT_ID = #local.PERSON_ID$>
+	
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_element_relations_js$>
+	
+	<script type="text/javascript">
+		
+
+		var searchScope = "client";
+		var suppressQAS = "true";
+
+		var includeHeader = "<$includeHeader$>";
+		var includeFooter = "<$includeFooter$>";
+		var personID = "<$PERSON_ID$>";
+
+		
+		// Name of the JavaScript callback function which will be executed
+		// on the window parent/opener after a search result is selected.
+		var callbackFunction = <$if #local.callbackFunction$><$callbackFunction$><$else$>false<$endif$>;
+		
+		
+		displayAJAXMessage = function(message, isError) {
+			var ajaxMsgDiv = document.createElement("div");
+			text = document.createTextNode(message);
+			ajaxMsgDiv.appendChild(text);
+			ajaxMsgDiv.id = "ajaxMsg";
+			
+			if (isError)
+				ajaxMsgDiv.className = "message_panel error_icon";
+			else
+				ajaxMsgDiv.className = "message_panel info_icon";
+			
+			// find the div for the error message
+			var ajaxMessageContainer = $("#ajaxMessage");
+		
+			$(ajaxMessageContainer).append(ajaxMsgDiv);
+		}
+		
+		clearAJAXMessage = function() {
+			// delete rows used for displaying validation errors
+			$("#ajaxMsg").remove();
+		}	
+		
+		refreshRelationsPanel = function(jsonData) {
+				if (jsonData == "") {
+					displayAJAXMessage("No data found from Ajax refresh, please retry again!", true);
+				} else {
+					var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+					
+					if (jsonErrorMsg) {
+						displayAJAXMessage(jsonErrorMsg, true);
+					} else {
+						displayAJAXMessage("Relationships updated.", false);
+						var elemID1 = jsonData.LocalData.ELEMENT_TYPE_ID_1;
+						var elemID2 = jsonData.LocalData.ELEMENT_TYPE_ID_2;
+						var elemID = jsonData.LocalData.ELEMENT_ID;
+						refreshEntityRelations(elemID, "", elemID1, elemID2);
+					}
+				}
+			}
+		
+		
+		// Page load functions.
+		$(document).ready( function() {
+			
+			clearAJAXMessage();
+			/*
+			// Bind search form elements 'keypress' event to
+			// execute a search.
+			$("#contactLookupForm input").bind('keyup', function() {
+				initSearchContacts();
+			});
+			
+			// Bind search form elements 'change' event to
+			// execute a search.
+			$("#contactLookupForm input").bind('change', function() {
+				initSearchContacts();
+			});
+			
+			// Run a search immediately if the search fields contain
+			// cached data (i.e. the user has clicked Back)
+			
+			var searchForm		= document.forms['contactLookupForm'];
+			var addrFlatHouse 	= searchForm.elements['ADDR_FLATHOUSE'].value;
+			var addrPostCode	= searchForm.elements['ADDR_POSTCODE'].value;
+			var searchID 		= searchForm.elements['ID'].value;
+			var searchName 		= searchForm.elements['SEARCH_NAME'].value;
+				
+			if (addrFlatHouse || addrPostCode || searchID || searchName)
+				searchContacts();
+			*/
+			
+			$("#UpdateAllPersonOrgRel").click(function(){
+				
+				clearAJAXMessage();
+				
+				if ($('div.no-info').length>0) {
+					displayAJAXMessage("No relationships to update.", true)
+					return false;
+				} 
+				
+				document.updateRelations.IdcService.value="CCLA_CS_UPDATE_ALL_RELATIONS";
+				document.updateRelations.RedirectUrl.value="?isRelationsUpdated=true&interactionTarget=interaction&IdcService=CCLA_CS_SELECT_PERSON_ENTITY<$include add_idc_token_to_url$>&RedirectUrl=&ORGANISATION_ID=&PERSON_ID=<$#local.PERSON_ID$>&CAMPAIGN_ID=&useExisting=&CONFIRM_TYPES=&CONFIRM_OTHER=&linkedInteraction=&INTERACTION_TYPE=&OUTCOME_ID=";
+				document.updateRelations.ELEMENT_ID.value="<$#local.PERSON_ID$>";
+				document.updateRelations.ELEMENT_TYPE_ID_1.value="<$#env.CCLA_ElementType_Org$>";
+				document.updateRelations.ELEMENT_TYPE_ID_2.value="<$#env.CCLA_ElementType_Person$>";
+						
+				var params = ($('form#updateRelations').serialize());
+				//window.location="<$HttpCgiPath$>?"+params;
+				//do AJAX call approach
+				$.ajax({
+					url		: "?"+params,
+					dataType: "json",
+					type	: "POST",
+					data	: {"IsJson": 1},
+					success	: function(jsonData) { refreshRelationsPanel(jsonData);}		
+				});
+				return false;
+			});
+				
+		});
+		
+		function checkAuthenticate() {
+			var theForm=document.getElementById("contactLookupForm");
+			theForm.IdcService.value = "CCLA_CS_EXPERIAN_AUTHENTICATE";
+
+			return true;
+		}
+		
+		var searchTimerId;
+		
+		// Kicks off a timer for running the search method. The timer
+		// is reset if the method is called before the timer is triggered.
+		/*
+		function initSearchContacts() {
+			if (searchTimerId)
+				window.clearTimeout(searchTimerId);
+			
+			searchTimerId = window.setTimeout('searchContacts()', 400);
+		}
+		
+		// Fetch list of contact search results using AJAX request.		
+		function searchContacts() {
+	
+			var searchForm		= document.forms['contactLookupForm'];
+			
+			var addrFlatHouse 	= '';
+			var addrPostCode	= '';
+			var searchID = '';
+			var searchName = '';
+			
+			if (searchForm.elements['ADDR_FLATHOUSE'])
+				addrFlatHouse 	= searchForm.elements['ADDR_FLATHOUSE'].value;
+			if (searchForm.elements['ADDR_POSTCODE'])
+				addrPostCode	= searchForm.elements['ADDR_POSTCODE'].value;
+			if (searchForm.elements['ID'])
+				searchID = searchForm.elements['ID'].value;
+			if (searchForm.elements['SEARCH_NAME'])
+				searchName = searchForm.elements['SEARCH_NAME'].value;
+
+			var doSearch = false;
+			if (addrFlatHouse.length>0 || addrPostCode.length>0 || searchID.length>0 || searchName.length>0)
+				doSearch = true;
+	
+			if (!doSearch || ((addrPostCode.length < 3 && addrPostCode.length > 0) || 
+					(searchID.length < 7 && searchID.length > 0)) || (searchName.length < 2 && searchName.length > 0) ) 
+			{
+				// Clear the search results if the specified postcode is less than
+				// 3 characters
+				$("#contactSearchResults").html("");
+				return;
+			}
+
+			$.post("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_contact_lookup",
+				  {
+					"searchScope":		searchScope,
+					"suppressQAS":		suppressQAS,
+					"ADDR_FLATHOUSE": 	addrFlatHouse,
+					"ADDR_POSTCODE": 	addrPostCode,
+					"ID":		searchID,
+					"SEARCH_NAME": searchName,
+					"searchResultsButtonValue":"Add",
+					"searched":			1,
+					"ccla_cs_search_results_header_include": includeHeader,
+					"ccla_cs_search_results_footer_include": includeFooter,
+					"hideLinks": "yes",
+					"PERSON_ID": personID,
+					"ts": 				new Date().getTime()
+				  },
+				  function(data) { displayContactResults(data); }
+			);
+		}
+		
+		// Displays the returned search results HTML.
+		function displayContactResults(data) {
+			$("#contactSearchResults").html(data);
+		}
+		*/
+		// Function hook tied to the action button next to Organisation search results.
+		function selectEntityResult(entityId) {
+			addEntityPersonRelation(entityId,'');
+			
+			/*
+			if (callbackFunction) {
+				if (window.parent)
+					window.parent.callbackFunction(clientId);
+				else
+					window.opener.callbackFunction(clientId);
+					
+			} else {
+				// Default Organisation record behaviour: open the Edit Organisation screen
+				window.location.href = "?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=" + clientId;
+			}
+			*/
+		}
+			
+		// Callback function, creates a new Organisation-Person relationship for the
+		// entity added/selected by the user.
+		function addRelation(entityId) 
+		{
+			addEntityPersonRelation(entityId,'');
+		};
+		
+		function startPSDFCampaign(clientId)
+		{
+			document.contactLookupForm.ORGANISATION_ID.value=clientId;
+			var personId = document.contactLookupForm.PERSON_ID.value;
+			document.contactLookupForm.RedirectUrl.value = "<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_INFO<$include add_idc_token_to_url$>&PERSON_ID=" + personId + "&ORGANISATION_ID=" + clientId+ "&PROCESS_ID=";
+			document.contactLookupForm.IdcService.value="CCLA_CS_ADD_CLIENT_TO_CAMPAIGN";
+			if (validateConfirm(document.commForm)) {
+				document.contactLookupForm.submit();
+			}
+		}
+		
+		// Function hook tied the the Select button on each associated organisation.
+		// Updates the tracking form with the selected Organisation ID.
+		function selectEntity(selEntityId)
+		{
+			if (validatePersonConfirmation(document.commForm)) {
+				interactionTracker.entityId = selEntityId;
+				applyInteractionTarget();
+			}
+			return false;
+		}
+		
+		function setPersonOnlyInteractionTarget() {
+			var isValidStart = validatePersonConfirmation(document.commForm);
+			if (isValidStart)
+			{
+			var target = getInteractionTarget(interactionTracker.interactionTarget);
+			
+			if (!target)
+				return;
+			
+			trackingForm.elements["interactionTarget"].value = target.name;
+			trackingForm.elements["RedirectUrl"].value = "";
+			trackingForm.elements["PERSON_ID"].value = interactionTracker.personId;
+			
+			if (interactionTracker.personId ) {
+					trackingForm.elements["IdcService"].value = target.targetService;
+					if (target.redirectUrlFunction)
+						trackingForm.elements["RedirectUrl"].value = target.redirectUrlFunction();
+						
+				} 			
+			trackingForm.submit();
+			} 
+			return false;
+		}
+		
+<$include ccla_cs_select_person_interaction_js$>		
+	</script>
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<$include ccla_cs_add_entity_person_relation_form$>
+	
+<div id="cs_page_container" class="cs-page-container">
+			
+	<$if NOT hideActionButtons$>
+		<$buttonContext = "person"$>
+		<$include ccla_cs_action_buttons$>
+	<$endif$>
+	
+	<div id="ccla_cs_right_content" class="cs-right-content-container">
+	
+	<div id='ccla_cs_content' class="cs-content-container" >
+
+		<div class="message_panel info_icon">
+			<strong><$#local.interactionPageTitle$></strong>
+			<ol>
+				<li>Confirm identity of the person</li>							
+				<li>Select or add their relationship</li>					
+			</ol>
+		</div>
+	
+	<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_header'>
+			Person Details 
+		</div>
+			
+		<div class='ccla_cs_panel_content'>
+			<$include ccla_cs_display_person_info$>
+			<br/>
+			<$include ccla_cs_display_readonly_contact_details$>
+		</div>
+		
+	<$include orangeContainer_bottom$>	
+	
+	<$include orangeContainer_top$>
+		
+		<div class="ccla_cs_panel_content">
+			<form name="commForm" method="POST">	
+				<$include ccla_cs_person_confirm_panel$>
+			</form>
+		</div>
+		
+	<$include orangeContainer_bottom$>	
+	
+	<$includeExisting=1$>
+	<$if includeExisting$>
+	
+		<$includeSelectRelationship = "true"$>
+		<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Associated Organisations
+		</div>
+		
+		<$if isRelationsUpdated$>
+			<div class="message_panel info_icon">
+				Relationships updated
+			</div>	
+		<$endif$>
+		<div id="ajaxMessage"></div> 
+		
+		<div class='ccla_cs_panel_content'>
+			<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Org$>
+			<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Person$>
+			<!-- Dynamic content panel, refreshed via AJAX when 
+				 relationships are updated. -->
+			
+			<form name="updateRelations" id="updateRelations" method="POST">
+			<input type="hidden" name="IdcService"><$include add_idc_token_to_form$>
+			<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">
+			<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>">
+				
+			<input type="hidden" name="ELEMENT_ID">	
+			<input type="hidden" name="ELEMENT_TYPE_ID_1">	
+			<input type="hidden" name="ELEMENT_TYPE_ID_2">	
+			
+			<input type="hidden" name="RedirectUrl">
+			
+			
+			<div id="entityRelationsDisplay">
+				<$include ccla_cs_related_entities$>
+			</div>
+			
+
+			
+			<br/>
+			<div align="right">
+			
+				<input type="button" value="Update" id="UpdateAllPersonOrgRel" name="UpdateAllPersonOrgRel" />	 
+
+				<input 	type="button" value="Organisation not specified/applicable" 
+						onclick="setPersonOnlyInteractionTarget('<$#active.PERSON_ID$>')" />
+
+				<input 	type="button" value="Add organisation..." 
+						onclick="openPopup('?IdcService=CCLA_CS_ADD_ORG_RELATION<$include add_idc_token_to_url$>&PERSON_ID=<$#local.PERSON_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&searchScope=organisation&includeAssociation=true',800);" />
+			</div>
+			
+			</form>
+		</div>
+
+		<$include orangeContainer_bottom$>
+	
+	<$endif$>	
+	
+	<$if false$>
+		<$include orangeContainer_top$>
+						
+			<form name="contactLookupForm" id="contactLookupForm" method="POST">
+
+				<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>">
+				<input type="hidden" name="searched" value="1" />
+				<input type="hidden" name="searchScope" value="<$searchScope$>">
+				<input type="hidden" name="CAMPAIGN_ID" value="10" />
+				<input type="hidden" name="IdcService" value="CCLA_CS_ADD_CLIENT_PERSON_RELATION"><$include add_idc_token_to_form$>
+				<input type="hidden" name="ORGANISATION_ID" value="">
+				<input type="hidden" name="RedirectUrl" value="">
+					
+				<$serviceName= "CCLA_CS_CONTACT_LOOKUP"$>			
+						
+				<div class='ccla_cs_panel_header'>
+						Organisation Lookup
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					<$searchScope="client"$>				
+					<$include ccla_cs_contact_lookup_fields$>
+				
+				</div>
+			</form>
+			
+		<$include orangeContainer_bottom$>	
+						
+		<!-- Search results container for lookup query. -->
+		<div id="contactSearchResults">
+			
+		</div>
+	<$endif$>
+	
+	</div>
+	</div>
+		
+</body>
+</html>

@@ -1,0 +1,603 @@
+body{
+	background-color:#5F6062;
+	margin:0;
+	padding:0;
+}
+
+.iframe_body{
+	background-color:#EEE;
+}
+
+div.menuBar{
+	background-color:#C20072;
+}
+
+/* S&F styles */
+
+.searchHeader {
+	color: #FFF;
+}
+
+table {
+	background-color: transparent;
+}
+
+th.sfHeader_mid {
+	background-image:none;
+}
+
+th.sfHeader_start {
+	background-image:none;
+	width:105px;
+}
+
+th.sfHeader_end {
+	background-image:none;
+	width:150px;
+}
+
+.IssueBlock{
+	border:1px solid #BBB6C5;
+}
+
+th.sfHeader_end  .searchHeader,
+th.sfHeader_start .searchHeader ,
+th.sfHeader_mid  .searchHeader{
+	color:#000;
+	font-size:0.9em;
+}
+
+ul.menuItems li.glowMenuItem a.menuLink {
+	color:#000;
+}
+
+ul.menuItems {
+	margin:0 0 0 55px;
+}
+
+.tabOff {
+	background:url("../../images/ccla/shinytab-off.gif") no-repeat scroll left top transparent;
+}
+
+.tabOn{
+	background:transparent url(../../images/ccla/shinytab-on.gif) no-repeat scroll left top;
+}
+
+.tabOff span,
+.tabOn span{
+	color:#222;
+	font-weight:bold;
+}
+
+.resultrow_hilite,
+.resultrow_hilite td{
+	background-color: #F8F8F8;				
+}
+
+.iris_thumb_container iris_thumb_select{
+	/* background-color: #ECDDE7; */
+	background-color: #E6CCE4;
+}
+
+tr.resultrow_sel,
+tr.resultrow_sel td{
+	background-color: #F8F8F8;
+}
+
+.toggle_img_collapse{
+	background-image: url(../../images/ccla/grey-arrow-left.gif);
+}
+
+.toggle_img_expand{
+	background-image: url(../../images/ccla/grey-arrow-down.gif);
+}
+
+div.header{
+	background-image:none;
+	background-color:#FFFFFF;
+}
+
+div.header-small{
+	background-image:none;
+	background-color:#FFFFFF;
+	height: 35px;
+}
+
+div.subheader{
+	color:#FFF;
+	border-bottom:0;
+}
+
+
+table.ccla-table td {
+	padding: 2px;
+	background-color: #EEE;
+}
+
+#recentnotes {
+	margin:0;
+	margin-bottom:7px;
+}
+
+span.docname{
+	color:#C20072;
+}
+
+.contextFrame{
+	border:none;
+}
+
+div.ccla_ajax_loader {
+	background-image: url(../../images/ccla/ccla-ajax-loader.gif);
+	width: 16px;
+	height: 16px;
+	float: left;
+	margin-left: 5px;
+	margin-top: 3px;
+}
+
+div.logo{
+	background-image: url(../../images/ccla/logo.gif);
+	background-position: top left;
+	background-repeat: no-repeat;
+	background-color: #FFFFFF;
+	
+	height: 70px;
+
+}
+
+div.logo-small {
+	background-image: url(../../images/ccla/logo-small.gif);
+	background-position: top left;
+	background-repeat: no-repeat;
+	background-color: #FFFFFF;
+	
+	height: 35px;
+}	
+
+.searchbtn_small{
+	display:none;
+}
+
+/*
+.SF_CHECKBOX_results,
+#CHECKBOX_header{
+	width:0px;
+	padding:0;
+	margin:0;
+}
+
+.SF_CHECKBOX_results input{
+	display:none;
+}
+*/
+
+	.lock_display_box{
+		margin: 2px;
+		padding: 5px 3px;
+		border: 1px solid #AAAAAA;
+		background-color: #CCCCCC;
+	}
+	
+	.recentnotes_row,
+	.recentnotes_cell1{
+		background-color: #F3E9F0;
+	}
+	.iris_user_note{
+		background-color: #FFFFFF;
+	}
+	
+	#recentnotes_links a{
+		color:blue;
+	}
+	
+	#recentnotes_cell{
+		width:115px;
+	}
+	
+	.recentnotes_cell2{
+		width:150px;
+	}
+
+	.field_caption_req{
+	/*white-space: nowrap;*/
+	
+	}
+	
+	.sub-text {
+		font-size: 0.8em; 
+		color: #AAA;
+	}
+	
+	.form-id {
+		background-image: url(../../images/ccla/form.png);
+		background-position: left center;
+		background-repeat: no-repeat;
+		padding-left: 18px;
+		line-height: 16px;
+		height: 16px;
+		float: left;
+		margin-top: 2px;
+	}
+	
+	/* AJAX loading/completion display text */
+	p.load_section {
+		padding-left: 20px;
+		background-position: left center;
+		background-repeat: no-repeat;
+		line-height: 2em;
+	}
+	
+	p.loading {
+		background-image: url(../../images/ccla/ccla-ajax-spinner.gif);
+		background-position: left center;
+		background-repeat: no-repeat;
+	}
+	
+	p.completed {
+		background-image: url(../../images/ccla/tick.gif);
+		color: #AAA;
+	}
+	
+	p.failed {
+		background-image: url(../../images/ccla/cross.png);
+		color: red;
+		font-weight: bold;
+	}
+	
+	/* Custom buttons */
+	.ccla_search_button {
+		background-position: 50% 50%;
+		background-repeat: no-repeat;
+		
+		float: left;
+		width: 20px;
+		height: 20px;
+	}
+	
+	.ccla_search {
+		background-image: url(../../images/iris/search.png);
+	}
+	
+	.ccla_client_data {
+		background-image: url(../../images/ccla/case-file.png);
+	}
+	
+	.ccla_searching {
+		background-image: url(../../images/ccla/ccla-ajax-loader.gif);
+	}
+	
+	a.ccla_child_docs_button {
+		background-image: url(../../images/iris/table.png);
+		background-position: 2px 50%;
+		background-repeat: no-repeat;
+		
+		width: 45px;
+		height: 20px;
+		float: left;
+		
+		text-align: right;
+		line-height: 18px;
+		padding-right: 4px;
+		
+		color: #555;
+	}
+	
+	a.ccla_instr_docs_adv_button {
+		width: 20px;
+		height: 20px;
+		float: left;
+		clear: right;
+		
+		text-align: center;
+		line-height: 18px;
+		
+		color: #555;
+	}
+	
+	a.ccla_child_docs_button:hover, a.ccla_instr_docs_adv_button :hover {
+		text-decoration: none;
+	}
+	
+	button, 
+	input[type="reset"], 
+	input[type="button"], 
+	input[type="submit"],
+	input.doc_panel_submit_button,
+	.sidepanel_button_holder input,
+	.submitLink,
+	.generic_button{			
+		color:#EE2C74;
+		font-family:Arial;
+		font-size:9pt;
+		background-color:#D0CDCE;
+		border:none;
+		padding:2px 5px 2px 5px;
+	}
+	
+	/** Custom batch thumbnail styles */
+	.iris_thumb_select{
+		background-color: #E6CCE4;
+	}
+	
+	/** Popup menus */
+	.menuLink span {
+		color: #FFF;
+	}
+	
+	.menuLink_over span {
+		color: #000;
+	}
+
+	.box_border_bottom{
+		height: 7px;
+		border-bottom:4px solid #FFF;
+	}
+	
+	.box_border_top{
+		height: 7px;
+		border-top:4px solid #FFF;
+	}
+	
+	th.sfHeader_mid ,
+	th.sfHeader_end ,
+	th.sfHeader_start {
+		border:none;
+		border-left:1px solid #FFF;
+		border-top:1px solid #FFF;
+		border-right:1px solid #BBB;
+		border-bottom:1px solid #BBB;
+		padding:3px;
+		background-color:#D0CDCE;
+		color:#000000;
+		font-family:Arial;
+		font-size:9pt;
+	}
+	
+	.sfResultCell,
+	.sfFilterCell{
+		border-bottom:1px solid #999999;
+		border-right:1px solid #999999;
+	}
+	
+	tr.resultrow{
+		background-color:transparent !important;
+	}
+	
+	.grey_bg{
+		background-color:#EEE;
+	}
+	
+	#SEARCHFILTER .IssueBlock{
+		background-color:#EEE;
+		empty-cells:show;
+	}
+	
+	#SEARCHFILTER .IssueBlock {
+		empty-cells:show;
+	}
+	
+	.doc_listing_sf{
+		width:1030px;
+		margin:15px auto !important;
+		text-align:left;
+		background-color:#EEE;
+		border:4px solid #FFF;
+		padding:10px;
+	}
+	
+	
+	.doc_listing_sf_container{
+		text-align:center;
+	}
+	
+	.doc_listing_sf .resultrow{
+		border-bottom:1px solid #999;
+	}
+	
+	.white_border,
+	.new_item,
+	.profile_panel{
+		border:4px solid #FFF;
+	}
+	
+	#doc_tabs_container a,
+	.cs-tab-container a{
+		text-decoration:none !important;
+	}
+	
+	#tab_text_caption{
+	
+		color:#000;
+		top:1px;
+		position:relative;
+		font-weight:bold;
+	}
+	
+	#container_table a{
+		color:#000;
+		text-decoration:underline;
+	}
+	
+	#preview_div table,
+	.new_item,
+	.profile_panel,
+	#resultsTable,
+	#fieldsContainer,
+	.rightPanelContainer .toolbar,
+	.rightPanelContainer  .toolbar_top,
+	.rightPanelContainer  .toolbar_bottom{	
+		background-color:#EEE;
+	}
+	
+	#doc_tabs_container table{
+		background-color:transparent;
+	}
+	
+	#doc_tabs_container{
+		margin:0;
+	}
+	
+	#recentnotes_span{
+		color:#000;
+	}
+	
+	.white{
+		color:#FFF;
+	}
+	
+	.iris_thumbset_scroller_vertical ,
+	.iris_thumbset_container {
+		border-color:#EEE;
+		background-color:#EEE;
+	}
+	
+	.sfHeaderRow th table{
+		background-color:transparent;
+	}
+	
+	.sfSelect{
+		width:98%;
+	}
+	
+	.sfInput{
+		width:94%;
+	}
+	
+	#batchItemIndexLabel{
+		color:#FFF;
+	}
+	
+	.message_panel{
+		border:4px solid #FFF;
+		margin:0;
+	}
+	
+	.disabled_field{
+		background-color:#CCC;
+	}
+	
+	.ui-datepicker-trigger{
+		position:relative;
+		top:3px;
+		left: 2px;
+	}
+	
+	
+	/* Overrides for the bundle page styling */
+	.inter_panel_spacer{
+		height:3px;
+		min-height:3px;
+		padding:0px;
+		margin:0px;
+		line-height:0px;
+		border:0px;
+	}
+	
+	div.panelheader {
+		margin-bottom:0px;
+		padding:1px;
+		}
+		
+	.validation_warning_field{
+		background-color:#FFD177 !important;
+	}	
+	
+	.validation_error_field{
+		background-color:#FF0000 !important;
+	}	
+	
+	.validated_field{
+		background-color:#018000 !important;
+		color:white !important;
+	}
+	
+	/* List of bank account displayed in Iris interface */
+	.bank_account_list {
+		margin: 2px 0px;
+		padding: 1px;
+		border: 1px inset;
+	}
+	
+	/* Bank Account list item, appears inside the above list. */
+	.bank_account_list_item {
+		display: block;
+		text-decoration: none !important;
+		
+		margin: 1px 1px 2px 1px;
+		border: 2px solid transparent;
+		padding: 2px;	
+	}
+	
+	.bank_account_selectable {
+		cursor: pointer;
+		
+		
+		
+		padding: 2px 2px 2px 13px;
+	}
+	
+	.bank_account_list_item:focus {
+		border: 2px solid #333;
+	}
+	
+	.selected_bank_account_list_item {
+		background-image: url(../../images/ccla/right.gif);
+		background-repeat: no-repeat;
+		background-position: center left;
+	}
+	
+	span.bank_account_number {
+		font-size: 10pt;
+		font-family: courier, sans-serif;
+	}
+	
+	span.bank_account_name {
+		font-size: 7pt;
+	}
+	
+	.selected_bank_account {
+		font-weight: bold;
+	}
+	
+	.bank_account_no_data {
+		color: #AAA !important;
+	}
+	
+	.hasWorkflowDate{
+		background-color:#B3B3B3 !important;
+	}
+
+table.transbatch-table {
+
+}
+
+table.transbatch-table  th {
+	padding: 2px;
+	text-align: left;
+	font-weight: bold;
+	background-color: #DAE5E6;
+	border: 1px solid #999;
+
+	}
+
+table.transbatch-table  tr.account-details-row td,
+	table.transbatch-table td{
+		border: 1px solid #999;
+		padding:3px;
+	}
+	
+div.matching_panel {
+	border: solid 1px #ff0000;
+	padding: 2px;
+	height: 300px;
+	width: 480px;
+	overflow: auto;
+}	
+
+div.matching_panel_small {
+	border: solid 1px #ff0000;
+	padding: 2px;
+	width: 480px;
+	overflow: auto;
+}	

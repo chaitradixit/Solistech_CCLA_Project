@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if updateFlags$>
+			Update Form Details
+		<$else$>
+			Form Info
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		// Gets confirmation from the user before removing the 
+		// Returned Doc ID/Return Date from the current form.
+		function confirmUnlinkDocument() {
+			if (confirm("Are you sure you want to unlink the returned " +
+				"document? This will allow you to index the Form ID " +
+				"against another document."))
+				document.forms["unlinkDocumentForm"].submit();
+		}
+		
+		// Gets confirmation from the user before updating the Form Status to
+		// Cancelled.
+		function confirmCancelForm() {
+			if (confirm("Are you sure you want to mark this form as Cancelled?"))
+				document.forms["cancelFormForm"].submit();
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			<!-- Display standard form info view -->
+			
+			<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+				<b>Form Info: <$#local.FORM_ID$></b>
+			</div>
+		
+			<div style="margin: 5px">
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Status:</th><td width="30%"><$#active.FORM_STATUS_NAME$></td>
+						<th width="20%">Created:</th><td width="30%"><$#active.DATE_ADDED$></td>
+					</tr>
+				</table>
+				
+				<br/>
+
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Status Description</th><td width="30%"><$#active.FORM_STATUS_DESCRIPTION$></td>
+						<th width="20%">Type</th><td width="30%"><$#active.FORM_TYPE_NAME$></td>
+					</tr>
+				</table>
+								
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Calculation Date</th><td width="30%"><$#active.CALCULATION_DATE$></td>
+						<th width="20%">Deadline Date</th><td width="30%"><$#active.RETURN_DEADLINE_DATE$></td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Valid:</th><td width="30%">
+							<$if #active.IS_VALID$>
+								<$if #active.IS_VALID == 1$>Yes<$else$>No<$endif$>
+							<$endif$>
+						</td>
+						<th width="20%"></th><td width="30%"></td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Printed:</th><td width="30%"><$if #active.DATE_PRINTED$>Yes<$else$>No<$endif$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.DATE_PRINTED$></td>
+					</tr>
+				</table>
+				
+				<br/>
+
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Generated:</th><td width="30%"><$if #active.DATE_GENERATED$>Yes<$else$>No<$endif$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.DATE_GENERATED$></td>
+					</tr>
+					
+					<$if #active.GEN_DOC_ID$>
+						<tr>
+							<td colspan=2>
+								<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.GEN_DOC_ID$>"><$#active.GEN_DOC_ID$></a>
+							</td>
+						</tr>
+					<$endif$>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Returned:</th><td width="30%"><$if #active.DATE_RETURNED$>Yes<$else$>No<$endif$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.DATE_RETURNED$></td>
+					</tr>
+					
+					<$if #active.RET_DOC_GUID$>
+						<$docName = strSubstring(#active.RET_DOC_GUID,0,strIndexOf(#active.RET_DOC_GUID, ":"))$>
+					
+						<tr>
+							<td colspan=2>
+								<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$docName$>"><$docName$></a>
+							</td>
+						</tr>
+					<$endif$>
+				</table>
+				
+				<br/>
+				
+				<form name="cancelFormForm" method="POST">
+					<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_FORM_STATUS" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENROL_FORM_INFO_POPUP&FORM_ID=<$#active.FORM_ID$><$include add_idc_token_to_url$>" />
+					
+					<input type="hidden" name="FORM_ID" value="<$#active.FORM_ID$>" />
+					<input type="hidden" name="FORM_STATUS_ID" value="7" />
+				</form>
+				
+				<form name="unlinkDocumentForm" method="POST">
+					<input type="hidden" name="IdcService" value="CCLA_CS_UNLINK_FORM_DOCUMENT" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENROL_FORM_INFO_POPUP&FORM_ID=<$#active.FORM_ID$><$include add_idc_token_to_url$>" />
+					
+					<input type="hidden" name="FORM_ID" value="<$#active.FORM_ID$>" />
+				</form>
+				
+				<div>
+					<$if #active.FORM_STATUS_ID ne 7$>
+						<input type="button" value="Cancel form..." onclick="confirmCancelForm()" />
+					<$endif$>
+					
+					<$if #active.RET_DOC_GUID$>
+						<input type="button" value="Unlink returned document..." onclick="confirmUnlinkDocument()" />
+					<$endif$>
+				</div>
+				
+				<$if rsFormAccounts$>
+					
+					<br/>
+					
+					<$include ccla_cs_form_accounts_list$>
+					
+				<$endif$>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

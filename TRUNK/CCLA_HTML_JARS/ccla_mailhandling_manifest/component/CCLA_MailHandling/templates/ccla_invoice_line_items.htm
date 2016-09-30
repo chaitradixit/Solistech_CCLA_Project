@@ -1,0 +1,726 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	<$include ccla_common_js$>
+	
+	<$include iris_doc_validation_utils_js$>
+	
+	<$pageTitle = "Add Invoice Line Items"$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<style>
+		
+		.line-items-container {
+			height: 290px;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			padding: 5px;
+			border: 1px inset;
+		}
+		
+		.line-items-totals-container {
+			height: 50px;
+			overflow: hidden;
+			padding: 5px;
+			border: 1px inset;
+		}
+		
+		.line-items-table {
+			width: 950px;
+		}
+		
+		.description-field {
+			width: 95%;
+			height: 2.5em;
+			border: 1px inset;
+			overflow-y: scroll;
+			font-family: Verdana,Arial,Helvetica,sans-serif;
+		}
+		
+		.amount-cell {
+			width: 95px;
+			vertical-align: top;
+		}
+		
+		.payment-date-cell {
+			width: 95px;
+			vertical-align: top;
+		}
+		
+		.payment-code-cell {
+			width: 95px;
+			vertical-align: top;
+		}
+		
+		.amount-field {
+			width: 87px;
+			text-align: right;
+			
+			font-size: 10pt;
+			font-family: Courier, Sans-serif;
+		}
+		
+		.amount-field-invalid {
+			background-color: red;
+			color: white;
+		}
+		
+		.total-cell {
+			font-size: 10pt;
+			font-family: Courier, Sans-serif;
+			text-align: right;
+		}
+		
+		.payment-date-field {
+			width: 87px;
+		}
+		
+		.payment-code-field {
+			width: 87px;
+		}
+		
+	</style>
+	
+	[[% No. of line items to display. %]]
+	<$maxLineItems = 20$>
+	
+	<script type="text/javascript">
+		
+		var maxLineItems = "<$#local.maxLineItems$>";
+		var targetGrossAmount = Number("<$#local.targetGrossAmount$>");
+		
+		// Wrapper object for a single Line Item.
+		function LineItem(id) {
+			this.id = id;
+			this.disabled = true;
+		}
+		
+		var lineItems = new Array();
+		
+		for (var i=1; i<=maxLineItems; i++) {
+			lineItems[i] = new LineItem(i);
+		}
+		
+		// List of all Amount field name prefixes.
+		var amountFieldNames = new Array
+		 ("net-amount-field","vat-field","gross-amount-field");
+			
+		$(document).ready( function() {
+			
+			// Disable all amount fields.
+			$(".amount-field").attr("disabled","disabled");
+			// Disable all payment date fields.
+			$(".payment-date-field").attr("disabled","disabled");
+			// Disable all payment code fields.
+			$(".payment-code-field").attr("disabled","disabled");
+			
+			// Set the target gross amount value.
+			if (isNaN(targetGrossAmount)) {
+				$("#gross-amount-field-target").addClass("amount-field-invalid");
+				$("#gross-amount-field-target").html("Error");
+			} else {
+				$("#gross-amount-field-target").removeClass("amount-field-invalid");
+				$("#gross-amount-field-target").html(addCommas(targetGrossAmount.toFixed(2)));
+			}
+			
+			// Bind keypress events to Description fields.
+			// These will enable/disable the relevant amount fields for the
+			// invoice line, and possibly recalculate all the totals.
+			$(".description-field").bind("keyup", function() {
+				var thisLineItemId = $(this).attr("id").substring("DESCRIPTION_".length);
+
+				if ($(this).val()) {
+					// Description value set.
+					
+					if (lineItems[thisLineItemId].disabled) {
+						// Change of line item state (currently disabled)
+						setLineItemFieldState(thisLineItemId, true);
+						
+						updateAllTotalAmounts();
+					}
+					
+				} else {
+					// No description value set.
+					
+					if (!lineItems[thisLineItemId].disabled) {
+						// Change of line item state (currently enabled)
+						setLineItemFieldState(thisLineItemId, false);
+						
+						updateAllTotalAmounts();
+					}
+				}
+			});
+			
+			// Bindings for changes to amount fields.
+			$(".net-amount-field").bind("change", function() {
+				formatAndValidateAmount($(this));
+				
+				var thisLineItemId = $(this).attr("id").substring("NET_AMOUNT_".length);
+				updateLineItemGrossAmount(thisLineItemId);
+				
+				updateTotalAmount("net-amount-field");
+			});
+			$(".vat-field").bind("change", function() {
+				formatAndValidateAmount($(this));
+				
+				var thisLineItemId = $(this).attr("id").substring("VAT_".length);
+				updateLineItemGrossAmount(thisLineItemId);
+				
+				updateTotalAmount("vat-field");
+			});
+			$(".gross-amount-field").bind("change", function() {
+				formatAndValidateAmount($(this));
+				updateTotalAmount("gross-amount-field");
+			});
+			
+			// Binding for keypress in payment date fields.
+			$(".payment-date-field").bind("keypress", function() {
+				var thisLineItemId = $(this).attr("id").substring("PAYMENT_DATE_".length);
+			
+				if ($(this).val()) {
+					$(".payment-code-field-" + thisLineItemId).removeAttr("disabled"); 
+				} else {
+					$(".payment-code-field-" + thisLineItemId).attr("disabled","disabled"); 
+				}
+			});
+			
+			// Binding for change in payment date fields.
+			$(".payment-date-field").bind("change", function() {
+				if ($(this).val()) {
+					// Validate date.
+					if (validateDateValue($(this).val()))
+						$(this).removeClass("amount-field-invalid");
+					else
+						$(this).addClass("amount-field-invalid");
+				} else {
+					$(this).removeClass("amount-field-invalid");
+				}
+			});
+		});
+		
+		// Updates the Gross Amount field to match the sum of the Net/VAT field
+		// values for this line item, if both those values are present.
+		function updateLineItemGrossAmount(lineItemId) {
+			
+			var thisNetAmount = $("#NET_AMOUNT_" + lineItemId).val();
+			var thisVAT = $("#VAT_" + lineItemId).val();
+			
+			if (thisNetAmount !== "" && thisVAT !== "") {
+				var grossAmount = Number(thisNetAmount) + Number(thisVAT);
+				
+				if (!isNaN(grossAmount)) {
+					// Update gross if total is a valid number.
+					$("#GROSS_AMOUNT_" + lineItemId).val(grossAmount.toFixed(2));
+				} else {
+					// Clear gross
+					$("#GROSS_AMOUNT_" + lineItemId).val("");
+				}
+				
+				updateTotalAmount("gross-amount-field");
+			}
+		}
+		
+		// Sets/unsets the 'disabled' attribute against the corresponding fields for
+		// this line item.
+		function setLineItemFieldState(lineItemId, enabled) {
+			
+			if (enabled) {
+				// Enable fields for this line item.
+				lineItems[lineItemId].disabled = false;
+						
+				$(".amount-field-" + lineItemId).removeAttr("disabled"); 
+				$(".payment-date-field-" + lineItemId).removeAttr("disabled");
+				
+				if ($(".payment-date-field-" + lineItemId).val()) {
+					$(".payment-code-field-" + thisLineItemId).removeAttr("disabled"); 
+				}
+			
+			} else {
+				// Disable fields for this line item.
+				lineItems[lineItemId].disabled = true;
+					
+				$(".amount-field-" + lineItemId).attr("disabled","disabled"); 
+				$(".payment-date-field-" + lineItemId).attr("disabled", "disabled");
+				$(".payment-code-field-" + lineItemId).removeAttr("disabled","disabled"); 
+			}
+		}
+		
+		// Calculates and updates all total amount field displays.
+		function updateAllTotalAmounts() {
+			for (var i in amountFieldNames) {
+				updateTotalAmount(amountFieldNames[i]);
+			}
+		}
+		
+		// Validates the passed amount cell value is either null, or
+		// a valid number.
+		// If valid, its replaced by a fixed 2-decimal formatted number.
+		function formatAndValidateAmount(amountField) {
+			var thisAmount = $(amountField).val();
+			var isValidNumber = true;
+			
+			if (thisAmount !== "") {
+				thisAmount = Number(thisAmount);
+					
+				if (isNaN(thisAmount)) {
+					isValidNumber = false;
+				} else {
+					// Replace the field value with a formatted representation.
+					$(amountField).val(thisAmount.toFixed(2));
+				}
+			}
+			
+			// Apply field styling based on validity.
+			if (isValidNumber) {
+				$(amountField).removeClass("amount-field-invalid");
+			} else {
+				$(amountField).addClass("amount-field-invalid");
+			}
+			
+			return isValidNumber;
+		}
+		
+		// Updates a given total amount cell.
+		function updateTotalAmount(fieldName) {
+			var totalAmount = getTotalAmount(fieldName);
+			var totalAmountCell = $("#" + fieldName + "-total");
+			
+			if (isNaN(totalAmount)) {
+				totalAmount = "Error";
+				$(totalAmountCell).addClass("amount-field-invalid");
+			} else {
+				$(totalAmountCell).removeClass("amount-field-invalid");
+			}
+
+			$(totalAmountCell).html(addCommas(totalAmount));
+		}
+		
+		// Returns the total for all values in the given amount field.
+		function getTotalAmount(fieldName) {
+			var totalAmount = 0;
+		
+			$("." + fieldName).each( function() {
+				// Filter out disabled fields.
+				if (!$(this).attr("disabled")) {
+					if ($(this).val()) {
+						var thisAmount = Number($(this).val());
+						
+						totalAmount += thisAmount;
+					}
+				}
+			});
+			
+			return totalAmount.toFixed(2);
+		}
+		
+		// Performs some validation before submitting the form.
+		function generateLineItemDocs() {
+			
+			var numToGenerate = 0;
+			var invalid = false;
+			
+			// Validate minimum data on each line.
+			for (var i in lineItems) {
+				if (!lineItems[i].disabled) {
+					var thisLineItemId = lineItems[i].id;
+					var thisDescription = $("#DESCRIPTION_" + thisLineItemId).val();
+					
+					if (!thisDescription) {
+						// Description text removed from this line, ignore it.
+						setLineItemFieldState(thisLineItemId, false);
+					} else {
+						// Description text set, ensure amount fields completed.
+						$(".amount-field-" + thisLineItemId).each( function() {
+							if (!invalid && !$(this).val()) {
+								alert("At least one of the amount fields is missing on line item row " +
+								 thisLineItemId + ". Add the missing amounts before continuing.");
+								
+								invalid = true;
+								return;
+							}
+						});
+						
+						numToGenerate++;
+					}
+				}
+			}
+			
+			if (invalid)
+				return;
+			
+			if (numToGenerate == 0) {
+				alert("No line item data entered! Ensure there is at least 1 before continuing.");
+				return;
+			}
+			
+			// Ensure total amounts are up-to-date.
+			updateAllTotalAmounts();
+			
+			// Validate amounts.
+			for (var i in amountFieldNames) {
+				var thisTotalAmount = getTotalAmount(amountFieldNames[i]);
+				
+				if (isNaN(thisTotalAmount)) {
+					alert("One or more of the amount fields contains an invalid number. " +
+					 "Please fix this before continuing.");
+					return;
+				}
+			}
+			
+			// Validate total gross amount against passed target amount.
+			var totalGrossAmount = getTotalAmount("gross-amount-field");
+			
+			if (totalGrossAmount != targetGrossAmount) {
+				alert("The total gross amount (" + 
+				 addCommas(totalGrossAmount) + 
+				 ") does not match the target amount (" +
+				 addCommas(targetGrossAmount) + "). " +
+				 "Ensure they match before continuing.");
+				 
+				return;
+			}
+			
+			// Validate payment dates.
+			$(".payment-date-field").each( function() {
+				if (!$(this).attr("disabled") && $(this).val()) {
+					// Payment field is enabled and has a value. Check
+					// its a valid date.
+					if (!invalid && !validateDateValue($(this).val())) {
+						alert("One or more of the payment date fields contains an invalid date. " +
+						 "Please fix or remove this before continuing.");
+						invalid = true;
+						return;
+					}
+				}
+			});
+			
+			if (invalid)
+				return;
+			
+			if (confirm("Are you sure you wish to generate " 
+				+ numToGenerate + " INV items?")) {
+				// Disable buttons.
+				$(".form-button").attr("disabled","disabled");
+				$("#lineItemSubmitButton").attr("value","Please wait...");
+				
+				// Submit the form.
+				$("#addInvoiceLineItemsForm").submit();
+			}
+		}
+		
+		// Checks if any data has been entered and confirms with the user
+		// before closing.
+		function closeWindow() {
+			
+			var conf = true;
+			var changes = false;
+			
+			for (var i in lineItems) {
+				if (!lineItems[i].disabled) {
+					changes = true;
+					break;
+				}
+			}
+			
+			if (changes) {
+				conf = confirm("Are you sure you want to close the window? " +
+				 "You will lose any unsaved line item data.");
+			}
+			
+			if (conf)
+				window.close();
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+		<div class='ccla_cs_panel_header'>
+			<$pageTitle$>
+		</div>
+		
+		<div class="ccla_cs_panel_content">
+			
+			<$if updated$>
+			
+				<div class="message_panel info_icon">
+					<$numDocsGenerated$> Invoice Line Item instructions generated. 
+					These may take a few minutes to appear in the bundle.
+				</div>
+				
+			<$else$>
+
+				<p>
+					Add descriptions and amounts for all invoice line items below (Payment Date/Codes are optional).
+					Gross Amount values are calculated for you.
+				</p>
+				<p>
+					Ensure that the Total Gross Amount matches the target amount below. If the target amount is
+					wrong, go back to the parent item and update the Total Gross Amount.
+				</p>
+				<p>
+					Once you are done, click the Generate button, and a separate 
+					INV instruction will be added to the bundle for each completed line.
+				</p>	
+				
+			<$endif$>
+				
+			<br/>	
+			
+			<$if not updated$>
+			
+				<form name="addInvoiceLineItemsForm" id="addInvoiceLineItemsForm" method="POST">
+					
+					<input type="hidden" name="IdcService" 		value="CCLA_ADD_INVOICE_LINE_ITEMS" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_INVOICE_LINE_ITEMS<$include add_idc_token_to_url$>&parentDocName=<$#local.parentDocName$>&targetGrossAmount=<$#local.targetGrossAmount$>&updated=1" />
+					
+					<input type="hidden" name="parentDocName" 	value="<$#local.parentDocName$>" />
+					<input type="hidden" name="maxLineItems" 	value="<$#local.maxLineItems$>" />
+					
+					<div class="line-items-container">
+					
+						<table cellspacing="0" cellpadding="0" class="accounts-table line-items-table">			
+							<tbody>
+								<tr>
+									<th class="first-col" width="15">
+										&nbsp;
+									</th>
+									<th align=left>
+										Item Description
+									</th>
+									<th align=left class="amount-cell">Net Amount</th>
+									<th align=left class="amount-cell">VAT</th>
+									<th align=left class="amount-cell">Gross Amount</th>
+									
+									<th align=left class="payment-date-cell">Payment Date</th>
+									
+									<th align=left class="payment-code-cell">Nominal/GL Code</th>
+									<th align=left class="payment-code-cell">Dept/Pro Code</th>
+									<th align=left class="payment-code-cell">Cost Centre</th>
+									
+								</tr>
+								
+							<$lineItemNumber = 1$>
+							<$maxLineItems = 20$>
+							
+							<$loopwhile lineItemNumber <= maxLineItems$>
+							
+								<tr class="account-details-row">
+									<td class="first-col">
+										<$lineItemNumber$>
+									</td>
+								
+									<td>
+										<textarea class="description-field"
+												name="DESCRIPTION_<$lineItemNumber$>"
+												id="DESCRIPTION_<$lineItemNumber$>"></textarea>
+										
+										<!--
+										<input 	type="text" 
+												class="description-field"
+												name="DESCRIPTION_<$lineItemNumber$>"
+												id="DESCRIPTION_<$lineItemNumber$>" />
+										-->
+									</td>
+									
+									<td align="right" class="amount-cell">
+										<input 	type="text" 
+												class="amount-field amount-field-<$lineItemNumber$> net-amount-field"
+												name="NET_AMOUNT_<$lineItemNumber$>"
+												id="NET_AMOUNT_<$lineItemNumber$>" />
+									</td>
+									
+									<td align="right" class="amount-cell">
+										<input 	type="text" 
+												class="amount-field amount-field-<$lineItemNumber$> vat-field"
+												name="VAT_<$lineItemNumber$>" 
+												id="VAT_<$lineItemNumber$>"/>
+									</td>
+									
+									<td align="right" class="amount-cell">
+										<input 	type="text" 
+												readonly="readonly"
+												class="amount-field amount-field-<$lineItemNumber$> gross-amount-field"
+												name="GROSS_AMOUNT_<$lineItemNumber$>"
+												id="GROSS_AMOUNT_<$lineItemNumber$>" />
+									</td>
+									
+									<td align="left" class="payment-date-cell">
+									
+										<input 	type="text" 
+												class="payment-date-field payment-date-field-<$lineItemNumber$>"
+												name="PAYMENT_DATE_<$lineItemNumber$>"
+												id="PAYMENT_DATE_<$lineItemNumber$>" />
+										
+									</td>
+									
+									<td align="left" class="payment-code-cell">
+									
+										<select name="NOMINAL_CODE_<$lineItemNumber$>" 
+												id="NOMINAL_CODE_<$lineItemNumber$>"
+												class="payment-code-field payment-code-field-<$lineItemNumber$>"
+												tabindex="<$include iris_get_next_tabindex$>" >
+
+											<option value=""></option>
+											
+											<$loop rsGeneralLedgers$>
+												<option value="<$#active.GL_CODE$>" 
+														<$if #local.selValue like #active.GL_CODE$>selected<$endif$>
+														><$#active.GL_CODE$></option>
+											<$endloop$>
+										
+										</select>
+										
+									</td>
+									
+									<td align="left" class="payment-code-cell">
+										
+										<select name="DEP_PROJECT_CODE_<$lineItemNumber$>" 
+												id="DEP_PROJECT_CODE_<$lineItemNumber$>"
+												class="payment-code-field payment-code-field-<$lineItemNumber$>"
+												tabindex="<$include iris_get_next_tabindex$>" >
+
+											<option value=""></option>
+											
+											<$loop rsDeptProjectCodes$>
+												<option value="<$#active.DEP_PROJECT_CODE$>" 
+														<$if #local.selValue like #active.DEP_PROJECT_CODE$>selected<$endif$>
+														><$#active.DEP_PROJECT_CODE$></option>
+											<$endloop$>
+										
+										</select>
+										
+									</td>
+									
+									<td align="left" class="payment-code-cell">
+										
+										<select name="COST_CENTRE_<$lineItemNumber$>" 
+												id="COST_CENTRE_<$lineItemNumber$>"
+												class="payment-code-field payment-code-field-<$lineItemNumber$>"
+												tabindex="<$include iris_get_next_tabindex$>" >
+
+											<option value=""></option>
+											
+											<$loop rsCostCentres$>
+												<option value="<$#active.COST_CENTRE_CODE$>" 
+														<$if #local.selValue like #active.COST_CENTRE_CODE$>selected<$endif$>
+														><$#active.COST_CENTRE_CODE$></option>
+											<$endloop$>
+										
+										</select>
+										
+									</td>
+								
+								</tr>
+								
+								<$lineItemNumber = lineItemNumber+1$>
+							<$endloop$>
+								
+							</tbody>
+						</table>
+					
+					</div>
+					
+					<div class="line-items-totals-container">
+						<table cellspacing="0" cellpadding="0" class="accounts-table line-items-table">
+							<tbody>
+								<tr class="account-details-row">
+									<td class="first-col" width="15">
+										&nbsp;
+									</td>
+									<td align=right>
+										Totals
+									</td>
+									<td align=right
+										class="total-cell amount-cell"
+										id="net-amount-field-total">&nbsp;</td>
+									<td align=right width="120" 
+										class="total-cell amount-cell"
+										id="vat-field-total">&nbsp;</td>
+									<td align=right width="120" 
+										class="total-cell amount-cell"
+										id="gross-amount-field-total">&nbsp;</td>
+									
+									<td class="payment-date-cell">
+									
+									</td>
+									<td class="payment-code-cell">
+									
+									</td>
+									<td class="payment-code-cell">
+									
+									</td>
+									<td class="payment-code-cell">
+									
+									</td>
+									
+									
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col">&nbsp;</td>
+									<td align=right>
+										Target
+									</td>
+									
+									<td></td>
+									<td></td>
+									<td 
+										class="total-cell amount-cell"
+										id="gross-amount-field-target">
+										
+									</td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+						
+					</div>
+
+				</form>
+				
+				<br/>
+			
+			<$endif$>
+			
+			<div align="right">
+				<$if not updated$>
+					<input 	type="button" 
+							id="lineItemSubmitButton"
+							value="Generate" 
+							onclick="generateLineItemDocs()" 
+							class="form-button" />
+				<$endif$>
+				
+				<input type="button" value="Close" onclick="closeWindow();" class="form-button" />			
+			</div>
+			
+		</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

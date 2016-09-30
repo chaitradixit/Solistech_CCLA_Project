@@ -1,0 +1,577 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Transactions htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@table TransactionIdocScriptFunctions@>
+<table border=1><caption><strong>NewIdocScript Extensions
+	</strong></caption>
+<tr>
+	<td>name</td><td>class</td><td>loadOrder</td>
+</tr>
+<tr>
+	<td>TransactionIdocScriptFunctions</td>
+	<td>com.ecs.ucm.ccla.transactions.utils.TransactionIdocScriptFunctions</td>
+	<td>10</td>
+</tr>
+</table>
+<@end@>
+
+
+<@dynamichtml ccla_trans_share_class_details@>
+<$if IsDebug$>ccla_trans_share_class_details<$endif$>
+						<table width="100%">
+								<!-- set col widths -->
+								<tr>
+									<td width="30%"></td>
+									<td width="25%"></td>
+									<td width="15%"></td>
+									<td width="15%"></td>
+									<td width="15%"></td>
+								</tr>	
+								<tr>
+									<td><strong>Share Class Name:</strong></td>
+									<td><input size="30" name="SHARE_CLASS_NAME" id="SHARE_CLASS_NAME" value="<$#active.SHARE_CLASS_NAME$>"></td>
+								</tr>
+								<tr>
+									<td><strong>Fund:</strong></td>
+									<$if isNew$>
+									<$thisFundCode = #active.FUND_CODE$>
+									<td><select name="FUND_CODE" id="FUND_CODE" style="width:330px">
+														<option value=""></option>
+															<$loop rsFunds$>
+																<option value="<$FUND_CODE$>" <$if thisFundCode and (strEquals(rsFunds.FUND_CODE,thisFundCode))$>selected<$endif$>><$#active.FUND_CODE$> - <$#active.DISPLAYNAME$></option>
+															<$endloop$>
+													</select>
+									</td>
+									<$else$>
+									<td><$#active.FUND_CODE$></td>
+									<input type="hidden" name="FUND_CODE" value="<$#active.FUND_CODE$>">
+									<$endif$>									
+								</tr>
+								<tr>
+									<td><strong>Description:</strong></td>
+									<td><input size="30" name="DESCRIPTION" id="DESCRIPTION" value="<$#active.DESCRIPTION$>"><td>
+								</tr>
+								<tr>
+									<td><strong>Minimum Threshold (£):</strong></td>
+									<td><input size="30" name="MIN_THRESHOLD" id="MIN_THRESHOLD" value="<$#active.MIN_THRESHOLD$>"><td>
+								</tr>
+								<tr>
+									<td><strong>Enable:</strong></td>
+									<td><input type="checkbox"  <$if #active.IS_ENABLED like "1"$>checked<$endif$> name="IS_ENABLED" /><td>
+								</tr>
+								<tr>
+									<td><strong>Excluded From Movement:</strong></td>
+									<td><input type="checkbox"  <$if #active.IS_EXCLUDED_FROM_MOVEMENT like "1"$>checked<$endif$> name="IS_EXCLUDED_FROM_MOVEMENT" /><td>
+								</tr>								 
+								<$if false$>
+								<!-- removed for now - will be used in future -->
+								<tr>
+									<td><strong>Initial Charge:</strong></td>
+									<td><input size="30" name="INITIAL_CHARGE" id="INITIAL_CHARGE" value="<$#active.INITIAL_CHARGE$>"><td>
+								</tr>
+								<tr>
+									<td><strong>Exit Charge:</strong></td>
+									<td><input size="30" name="EXIT_CHARGE" id="EXIT_CHARGE" value="<$#active.EXIT_CHARGE$>"><td>
+								</tr>	
+								<tr> 
+									<td><strong>Management Rate (%):</strong></td>
+									<td><input size="30" name="MANAGEMENT_RATE" id="MANAGEMENT_RATE" value="<$#active.MANAGEMENT_RATE$>"><td>
+								</tr>
+								<$else$>
+								<input type="hidden" name="MANAGEMENT_RATE" value="0"/>
+								<input type="hidden" name="INITIAL_CHARGE" value="0"/>
+								<input type="hidden" name="EXIT_CHARGE" value="0"/>
+								<$endif$>
+							</table>
+
+
+<@end@>
+
+
+<@dynamichtml ccla_trans_expense_details@>
+<$if IsDebug$>ccla_trans_expense_details<$endif$>
+						<table width="100%">
+								<!-- set col widths -->
+								<tr>
+									<td width="25%"></td>
+									<td width="25%"></td>
+									<td width="15%"></td>
+									<td width="30%"></td>
+								</tr>	
+								<tr>
+									<td><strong>Expense Name:</strong></td>
+									<td><input size="30" name="INCOME_EXPENSE_NAME" id="INCOME_EXPENSE_NAME" value="<$#active.INCOME_EXPENSE_NAME$>"></td>
+								</tr>
+								<tr>
+									<td><strong>Description:</strong></td>
+									<td><input size="30" name="DESCRIPTION" id="DESCRIPTION" value="<$rsExpense.DESCRIPTION$>"><td>
+								</tr>
+								<tr>
+									<td><strong>Fund:</strong></td>
+									<$if isNew$>
+									<$if #local.FUND_CODE$>
+									<td><$#local.FUND_CODE$></td>
+									<input type="hidden" name="FUND_CODE" value="<$#local.FUND_CODE$>">									
+									<$else$>
+									<$thisFundCode = rsExpense.FUND_CODE$>
+									<td><select name="FUND_CODE" id="FUND_CODE" style="width:330px">
+														<option value=""></option>
+															<$loop rsFunds$>
+																<option value="<$FUND_CODE$>" <$if thisFundCode and (strEquals(rsFunds.FUND_CODE,thisFundCode))$>selected<$endif$>><$#active.FUND_CODE$> - <$#active.DISPLAYNAME$></option>
+															<$endloop$>
+													</select>
+									</td>
+									<$endif$>
+									<$else$>
+									<td><$#active.FUND_CODE$></td>
+									<input type="hidden" name="FUND_CODE" value="<$#active.FUND_CODE$>">
+									<$endif$>
+								</tr>
+								<$if isGeneral$>
+								<input type="hidden" name="SHARE_CLASS_ID" value="<$rsExpense.SHARE_CLASS_ID$>">
+								<$else$>
+								<tr>
+									<td><strong>Share Class:</strong></td>
+									<$if isNew$>
+									<$if #local.SHARE_CLASS_ID$>
+									<td>
+									<$loop rsShareClasses$>
+										<$if #local.SHARE_CLASS_ID == rsShareClasses.SHARE_CLASS_ID$>
+											<$rsShareClasses.SHARE_CLASS_NAME$>
+										<$endif$>
+									<$endloop$>
+									</td>
+									<input type="hidden" name="SHARE_CLASS_ID" value="<$#local.SHARE_CLASS_ID$>">
+									<$else$>
+									<$thisShareClass = rsExpense.SHARE_CLASS_ID$>
+									<td><select name="SHARE_CLASS_ID" id="SHARE_CLASS_ID" style="width:330px">
+														<option value=""></option>
+															<$loop rsShareClasses$>
+																<option value="<$SHARE_CLASS_ID$>" <$if thisShareClass and (strEquals(rsShareClasses.SHARE_CLASS_ID,thisShareClass))$>selected<$endif$>><$#active.SHARE_CLASS_NAME$></option>
+															<$endloop$>
+													</select>
+									</td>
+									<$endif$>
+									<$else$>
+									<td><$rsExpense.SHARE_CLASS_NAME$></td>
+									<input type="hidden" name="SHARE_CLASS_ID" value="<$rsExpense.SHARE_CLASS_ID$>">
+									<$endif$>
+								</tr>
+								<$endif$>	
+								<$if rsExpense.IS_PERCENTAGE == 1$>
+									<$valueType = " (%)"$>
+									<$elseif rsExpense.IS_PERCENTAGE == 0$>
+									<$valueType = " (£)"$>
+								<$endif$>
+								<$if isNew$>
+									<$if isInternal$>
+										<$valueType=" (£)"$>
+									<$else$>
+										<$valueType=""$>
+									<$endif$>
+								<$endif$>
+								<tr>
+									<td><strong>Value<$valueType$>:</strong></td>
+									<td><input size="30" name="DEFAULT_VALUE" id="DEFAULT_VALUE" value="<$rsExpense.DEFAULT_VALUE$>"><td>
+								</tr>
+								<$if NOT isGeneral$>
+								<$if isNew$>
+									<$if isInternal$>
+									<input type="hidden" name="IS_EXTERNAL" value="0">
+									<input type="hidden" name="IS_PERCENTAGE" value="0">
+									<$else$>
+									<input type="hidden" name="IS_EXTERNAL" value="1">
+									<tr>
+										<td><strong>Value Type:</strong></td>
+										<td>
+											<select name="IS_PERCENTAGE">
+												<option value="0">Cash</option>
+												<option value="1">Percentage</option>
+											</select>
+										<td>
+									</tr>										
+									<$endif$>
+								<$else$>
+								<tr>
+									<td><strong>Expense Type:</strong></td>
+									<td><$if rsExpense.IS_EXTERNAL == 1$>External<$else$>Internal<$endif$></td>
+								</tr>								
+								<input type="hidden" name="IS_EXTERNAL" value="<$rsExpense.IS_EXTERNAL$>">
+								<input type="hidden" name="IS_PERCENTAGE" value="<$rsExpense.IS_PERCENTAGE$>">
+								<$endif$>
+								<$endif$>
+							</table>
+
+
+<@end@>
+
+<@dynamichtml ccla_trans_eod_total_summary@>
+<$if IsDebug$>ccla_trans_eod_total_summary<$endif$>
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="80%">
+								<!-- set col widths -->
+								<tr>
+									<th width="20%">Share Class</th>
+									<th width="40%">Opening Shares</th>
+									<th width="40%">Closing Shares</th>
+								</tr>	
+								<$loop rsFundAudit$>
+								<tr class="account-details-row">
+									<td  class="first-col" align="center"><strong><$#active.SHARE_CLASS_NAME$></strong>&nbsp;</td>
+									<td><$if #active.OPENING_UNITS$><$#active.OPENING_UNITS$><$else$>0<$endif$>&nbsp;</td>
+									<td><$if #active.CLOSING_UNITS$><$#active.CLOSING_UNITS$><$else$>0<$endif$>&nbsp;</td>
+								</tr>
+								<$endloop$>
+						</table>
+
+
+<@end@>
+
+<@dynamichtml ccla_trans_show_daily_income@>
+<$if IsDebug$>ccla_trans_show_daily_income<$endif$>
+<input value="<$#active.dailyIncome$>" type="hidden" name="DAILY_INCOME">
+<input value="<$#active.dailyNav$>" type="hidden" name="NAV">
+<input value="<$#active.grossIncome$>" type="hidden" name = "GROSS_INCOME">
+<$if #active.dailyIncome OR #active.dailyNav OR #active.grossIncome$><$incomeButtonText = "Edit"$><$else$><$incomeButtonText = "Add"$><$endif$>
+Gross Income: <$if #active.grossIncome$>£<$formatCurrency(#active.grossIncome)$><$else$>NOT ENTERED<$endif$>&nbsp;&nbsp;&nbsp;
+Fund Income: <$if #active.dailyIncome$>£<$formatCurrency(#active.dailyIncome)$><$else$>NOT ENTERED<$endif$>&nbsp;&nbsp;&nbsp;
+Fund Net Asset Value: <$if #active.dailyNav$>£<$formatCurrency(#active.dailyNav)$><$else$>NOT ENTERED<$endif$>&nbsp;&nbsp;&nbsp; &nbsp;
+<input type="button" value="<$incomeButtonText$>" onclick="editIncome('<$fundCode$>')">
+<@end@>
+
+<@dynamichtml ccla_trans_show_daily_income_div@>
+	<$executeService("CCLA_TRANS_GET_INCOME")$>
+	<$include ccla_trans_show_daily_income$>
+<@end@>
+
+<@dynamichtml ccla_trans_share_class_expense_div@>
+	<$executeService("CCLA_TRANS_CONFIRM_EXPENSES")$>
+	<$include ccla_trans_share_class_expenses_new$>
+<@end@>
+
+<@dynamichtml ccla_trans_share_class_expenses@>
+<$if IsDebug$>ccla_trans_share_class_expenses<$endif$>
+								<table class="accounts-table" cellspacing="0" cellpadding="0" width="50%">
+									<tr>
+										<th width="20%">Share Class</th>
+										<th width="40%" colspan="2">One-off Expense (£)</th>									
+										<th width="40%" colspan="2">Share Specific Fee (%)</th>
+									</tr>
+										<$loop rsShareClasses$>	
+											<tr class="account-details-row">
+												<td class="first-col"><strong><$#active.SHARE_CLASS_NAME$></strong></td>
+												<td>
+												<$incomeExpenseId = ""$>
+												<$loop rsShareClassExpenses$>
+													<$if strEqualsIgnoreCase(rsShareClasses.SHARE_CLASS_ID,rsShareClassExpenses.SHARE_CLASS_ID)$>
+														<$formatCurrency(#active.DEFAULT_VALUE)$>
+														<$incomeExpenseId = #active.INCOME_EXPENSE_ID$>
+													<$endif$>
+												<$endloop$>
+												&nbsp;
+												</td>
+												<td>
+												<$if incomeExpenseId$>
+												<input type="button" value="Edit" onclick="editShareClassExpense('<$incomeExpenseId$>', '<$#active.SHARE_CLASS_ID$>')">
+												<$else$>
+												<input type="button" value="Add" onclick="addShareClassExpense('<$#active.SHARE_CLASS_ID$>', '<$#active.FUND_CODE$>')">
+												<$endif$>
+												</td>										
+												<td><$#active.MANAGEMENT_RATE$>&nbsp;</td>
+												<td>
+												<input type="button" value="Edit" onclick="editShareClass('<$#active.SHARE_CLASS_ID$>')">
+												</td>														
+											</tr>
+										<$endloop$>
+								</table>
+<@end@>
+
+<@dynamichtml ccla_trans_share_class_expenses_new@>
+<$if IsDebug$>ccla_trans_share_class_expenses_new<$endif$>
+
+										<$loop rsShareClasses$>	
+										<div class="ccla_data_panel_header">
+											<strong><$#active.SHARE_CLASS_NAME$></strong> &nbsp;&nbsp;<input type="button" value="Add new expense" onclick="addShareClassExpense('<$#active.SHARE_CLASS_ID$>', '<$#active.FUND_CODE$>')">
+											
+										</div>
+										<table class="accounts-table" cellspacing="0" cellpadding="0" width="70%" >
+										<tr height="1px">
+											<th style="padding:0px" width="50%"></th>
+											<th style="padding:0px" width="30%"></th>
+											<th style="padding:0px" width="20%"></th>
+										</tr>
+												<$incomeExpenseId = ""$>
+												<$loop rsShareClassExpenses$>
+													<$if strEqualsIgnoreCase(rsShareClasses.SHARE_CLASS_ID,rsShareClassExpenses.SHARE_CLASS_ID)
+														AND rsShareClassExpenses.IS_EXTERNAL == 1$>
+														<$if rsShareClassExpenses.IS_PERCENTAGE == 1$>
+															<$valueType = " (%)"$>
+															<$elseif rsShareClassExpenses.IS_PERCENTAGE == 0$>
+															<$valueType = " (£)"$>
+														<$endif$>
+														<tr class="account-details-row">
+															<td align="right">
+															<strong><$rsShareClassExpenses.INCOME_EXPENSE_NAME$> <$valueType$></strong>:
+															</td>
+															<td>	
+																<$if rsShareClassExpenses.IS_PERCENTAGE == 1$>
+																	<$#active.DEFAULT_VALUE$>
+																<$else$>
+																	<$formatCurrency(#active.DEFAULT_VALUE)$>
+																<$endif$>
+																	<$incomeExpenseId = #active.INCOME_EXPENSE_ID$>
+															&nbsp;
+															</td>
+															<td>
+															<input type="button" value="Edit" onclick="editShareClassExpense('<$incomeExpenseId$>', '<$#active.SHARE_CLASS_ID$>')">
+															</td>													
+														</tr>
+													<$endif$>
+												<$endloop$>																					
+											</table>
+										
+											<br>
+										<$endloop$>
+<@end@>
+
+<@dynamichtml ccla_trans_general_expenses_div@>
+	<$executeService("CCLA_TRANS_CONFIRM_EXPENSES")$>
+	<$include ccla_trans_general_expenses$>
+<@end@>
+
+<@dynamichtml ccla_trans_general_expenses@>
+<$if IsDebug$>ccla_trans_general_expenses<$endif$>
+							<table class="accounts-table" cellspacing="0" cellpadding="0" width="100%">
+								<tr>
+									<th width="60%">Expense Name</th>
+									<th width="35%">Value (£)</th>	
+									<th width="5%"></th>
+								</tr>
+									<$loop rsGeneralExpenses$>	
+										<tr class="account-details-row">
+											<td class="first-col"><strong><$#active.INCOME_EXPENSE_NAME$></strong></td>										
+											<td><$formatCurrency(#active.DEFAULT_VALUE)$></td>	
+											<td>
+												<input type="button" value="Edit" onclick="editGeneralExpense('<$#active.INCOME_EXPENSE_ID$>')">
+											</td>
+										</tr>
+									<$endloop$>
+							</table>
+<@end@>		
+
+<@dynamichtml ccla_trans_edit_transactions@>
+<$if IsDebug$>ccla_trans_edit_transactions<$endif$>
+				
+					<$if isNew$>
+						<!-- Set the comm source as user upload -->
+						<input type="hidden" id="COMM_SOURCE_ID" name="COMM_SOURCE_ID" value="5">
+						<!-- Set the type as user -->
+						<input type="hidden" id="COMM_TYPE_ID" name="COMM_TYPE_ID" value="3">
+						<!-- Set the status as ready -->
+						<input type="hidden" id="COMM_STATUS_ID" name="COMM_STATUS_ID" value="1">
+					<$else$>
+					
+					<$endif$>
+
+					<table width="60%" cellpadding="0" cellspacing="0"  class="accounts-table" >
+
+						<tr class="account-details-row" align="right">
+							<td class="first-col" ><strong>Organisation</strong></td>
+							<td><input type="text" id="ORGANISATION_ID" name="ORGANISATION_ID" value=""> </td>
+						</tr>
+						<tr class="account-details-row" align="right">
+							<td class="first-col" ><strong>Account</strong></td>
+							<td>
+							<select name="SOURCE_ACCOUNT_ID">
+								<$loop rsAccounts$>
+									<option value="<$#active.ACCOUNT_ID$>"  <$if strEquals(#active.SOURCE_ACCOUNT_ID,#active.ACCOUNT_ID)$>selected="selected"<$endif$>><$#active.ACCOUNT_ID$> - <$#active.ACCOUNTNUMBER$> - <$#active.FUND_CODE$></option>
+								<$endloop$>
+							</select>
+							</td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Process Date</strong></td>
+							<td><input type="text" value="<$if #active.PROCESS_DATE$><$#active.PROCESS_DATE$><$else$><$dateCurrent(-1)$><$endif$>" name="PROCESS_DATE"></td>
+						</tr>
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Type</strong></td><td>
+							<select name="INSTRUCTION_TYPE_ID" >
+								<$loop rsTransactionTypes$>
+									<option value="<$rsTransactionTypes.INSTRUCTION_TYPE_ID$>" 
+									<$if strEquals(#active.INSTRUCTION_TYPE_ID,rsTransactionTypes.INSTRUCTION_TYPE_ID)$>selected="selected"<$endif$>>
+									<$rsTransactionTypes.INSTRUCTION_TYPE_NAME$></option>
+								<$endloop$>
+							</select></td>
+						</tr>
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Cash Value (if buy or sell)</strong></td><td><input type="text" value="<$#active.CASH$>" name="CASH"></td>
+						</tr>	
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Unit Value (if transfer)</strong></td><td><input type="text" value="<$#active.UNITS$>" name="UNITS"></td>
+						</tr>	
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Destination Account (if transfer)</strong></td>
+							<td>
+							<select name="DEST_ACCOUNT_ID">
+								<option></option>
+								<$loop rsAccounts$>
+									<option value="<$#active.ACCOUNT_ID$>" <$if strEquals(#active.DEST_ACCOUNT_ID,#active.ACCOUNT_ID)$>selected="selected"<$endif$>><$#active.ACCOUNT_ID$> - <$#active.ACCOUNTNUMBER$> - <$#active.FUND_CODE$></option>
+								<$endloop$>
+							</select>
+							</td>
+						</tr>	
+						</table>
+<@end@>			
+
+<@dynamichtml ccla_trans_transaction_list@>
+<$if IsDebug$>ccla_trans_transaction_list<$endif$>
+					<table cellpadding="0" cellspacing="0"  class="accounts-table" >
+						<tr class="account-details-row" >
+							<th class="first-col" width="2%">No</th>
+							<th width="10%">Instruction Id</th>
+							<th width="8%">Client No</th>
+							<th width="18%">Status</th>
+							<th width="14%">Process Date</th>
+							<th width="10%">Instruction Type</th>
+							<th width="10%">Source Account</th>
+							<th width="10%">Destination Account</th>
+							<th width="10%">Cash</th>
+							<th width="8%">Units</th>
+							<!--<th width="8%">Edit</th>-->
+						</tr>
+						<$foundInstructions="nope"$>
+						<$exec rsFirst("rsInstructions")$>						
+						<$counter = 1$>
+						<$loop rsInstructions$>
+							<$foundInstructions="yep"$>
+							<$status = #local.INSTRUCTION_STATUS_ID$>
+
+								<$if NOT status OR #active.INSTRUCTION_STATUS_ID == status$>
+								<tr class="account-details-row">
+									<td><$counter$></td>
+									<td><$#active.INSTRUCTION_ID$></td>
+									<td><a href="?IdcService=CCLA_CS_ENTITY_INFO&ORGANISATION_ID=<$#active.ORGANISATION_ID$><$include add_idc_token_to_url$>"><$#active.CLIENT_NUMBER$></a></td>
+									<td><$#active.INSTRUCTION_STATUS_NAME$></td>
+									<td><$#active.PROCESS_DATE$></td>
+									<td><$#active.INSTRUCTION_TYPE_NAME$></td>
+									<td><$#active.SOURCE_ACCOUNT_ID$></td>
+									<td><$#active.DEST_ACCOUNT_ID$>&nbsp;</td>
+									<td><$formatCurrency(#active.CASH_AMOUNT)$>&nbsp;</td>
+									<td><$#active.UNITS$>&nbsp;</td>
+									<!--<td><input type="button" class="generic_button" Value="Edit" onclick="editInstruction('<$#active.INSTRUCTION_ID$>')"></td>-->
+								</tr>
+								<$counter = counter + 1$>
+								<$endif$>
+							<$endloop$>
+						</table>
+						<$if strEquals(foundInstructions,"nope")$>
+							<div class="message_panel error_icon">No transactions found</div>
+						<$endif$>						
+<@end@>	
+
+<@dynamichtml ccla_trans_share_class_group_detail@>
+<$if IsDebug$>ccla_trans_share_class_group_detail<$endif$>
+							<table cellpadding="0" cellspacing="0"  class="accounts-table">
+							<tr  class="account-details-row" >
+								<td><strong>Group Name: </strong></td><td><input size="40" type="text" value="<$#active.GROUP_NAME$>" name="GROUP_NAME"></td>
+							</tr>
+							<tr class="account-details-row" >
+								<td><strong>Fund: </strong></td><td>
+								<$if isEdit$>
+								<$rsShareClassGroup.FUND_CODE$>
+								<$else$>
+								<select name="FUND_CODE" id="FUND_CODE" style="width:330px">
+														<option value=""></option>
+															<$loop rsFunds$>
+																<option value="<$FUND_CODE$>" <$if thisFundCode and (strEquals(rsFunds.FUND_CODE,thisFundCode))$>selected<$endif$>><$#active.FUND_CODE$> - <$#active.DISPLAYNAME$></option>
+															<$endloop$>
+													</select>
+								<$endif$>
+													</td>
+							</tr>
+							<tr class="account-details-row" >
+								<td><strong>Share Class Overridden? </strong></td><td><input type="checkbox" name="IS_OVERRIDDEN" <$if #active.IS_OVERRIDDEN like "1"$>checked<$endif$> ></td>
+							</tr>
+							<tr class="account-details-row" >
+								<td><strong>Override Share Class: </strong></td><td><select name="SHARE_CLASS_ID" id="SHARE_CLASS_ID" >
+														<option value=""></option>
+															<$loop rsShareClasses$>
+																<option value="<$SHARE_CLASS_ID$>" <$if thisShareClass and (strEquals(rsShareClasses.SHARE_CLASS_ID,thisShareClass))$>selected<$endif$>><$#active.SHARE_CLASS_NAME$></option>
+															<$endloop$>
+													</select></td>
+							</tr>
+							</table>
+
+<@end@>							
+<@dynamichtml ccla_trans_share_class_group_accounts@>
+<$if IsDebug$>ccla_trans_share_class_group_accounts<$endif$>
+							<table cellpadding="0" cellspacing="0"  width="100%" class="accounts-table">
+							<tr class="account-details-row">
+								<th width="20%">Account No</th>
+								<th width="40%">Organisation</th>
+								<th width="30%">Latest Balance (£)</th>
+								<th width="10%"></th>
+							</tr>
+							<$loop rsShareClassGroupAccounts$>
+								<tr  class="account-details-row" >
+									<td><a href="?IdcService=CCLA_CS_ACCOUNT_INFO&ACCOUNT_ID=<$#active.ACCOUNT_ID$><$include add_idc_token_to_url$>"><$strLeftFill(#active.ACCOUNTNUMBER,"0",8)$></a></td>
+									<td><a href="?IdcService=CCLA_CS_ORGANISATION_INFO&ORGANISATION_ID=<$#active.ORGANISATION_ID$><$include add_idc_token_to_url$>"><$#active.ORGANISATION_NAME$></a></td>
+									<td><$formatCurrency(#active.ACC_CASH)$></td>
+									<td><input type="button" value="Remove" onclick="removeAccount('<$#active.ACCOUNT_ID$>','<$#local.GROUP_ID$>')"></td>
+								</tr>	
+							<$endloop$>
+							</table>
+
+<@end@>							
+
+<@dynamichtml ccla_trans_share_class_group_accounts_div@>
+	<$executeService("CCLA_TRANS_SHARE_CLASS_GROUP_EDIT")$>
+		<$include ccla_trans_share_class_group_accounts$>
+<@end@>	
+<@dynamichtml ccla_trans_eod_id_display@>
+	
+	<$reportService = "CCLA_TRANS_EOD_GET_DETAIL_NEW"$>
+	
+	<$if strEquals(#active.IS_NEW_REPORT,"0")$>
+		<$reportService = "CCLA_TRANS_EOD_GET_DETAIL"$>
+	<$endif$>
+	
+	<a href="?IdcService=<$reportService$>&EOD_ID=<$#active.EOD_ID$><$include add_idc_token_to_url$>"><$#active.EOD_ID$></a>
+<@end@>
+
+
+<@dynamichtml ccla_trans_eod_view_details_display@>
+	
+							<$reportService = "CCLA_TRANS_EOD_GET_DETAIL_NEW"$>
+							<$viewFn = "viewEOD"$>
+
+							<$if parseDate(RUN_DATE) < parseDate(#env.PSDF_EOD_NEW_REPORT_DATE)$>
+								<$viewFn = "viewEODOld"$>						
+							<$endif$>	
+							
+							<input type="button" value="View Details" onclick="<$viewFn$>('<$#active.EOD_ID$>')">
+							
+							<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>
+								<$if strEquals(#active.EOD_ID, getValue("rsLatestCompleted","EOD_ID"))$>
+									<input type="button" value="Re-Run EOD" onclick="rerunEOD('<$#active.EOD_ID$>')">
+								<$endif$>
+							<$endif$>
+<@end@>
+
+
+<@dynamichtml ccla_trans_run_by_filter@>	
+	<select name="runBy" id="runBy" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>		
+		<$loop rsRunBy$>
+			<option value="<$#active.RUN_BY$>" <$if #local.runBy like #active.RUN_BY$>selected<$endif$> >
+				<$#active.RUN_BY$>
+			</option>
+		<$endloop$>
+	</select>
+<@end@>
+</body></html>

@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+	Add person to account
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_javascript_autocomplete_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<$if #local.ORGANISATION_ID$>
+		<!-- Organisation/person relationship -->
+		<$ELEMENT_ID = ORGANISATION_ID$>
+		<$RELATION_TYPE_ID = 1$>
+	<$else$>
+		<!-- Person/account relationship -->
+		<$ELEMENT_ID = ACCOUNT_ID$>
+		<$RELATION_TYPE_ID = 3$>
+	<$endif$>
+	
+	<!-- Prep organisation auto-complete -->
+	<$autoCompleteFieldId 	= "person_autoComplete"$>
+		<$hiddenFieldId		= "PARENT_ELEMENT_ID"$>
+	
+	<$include ccla_cs_person_autocomplete_js$>
+	
+	<script type="text/javascript">
+	
+		// Determines whether a new association was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;	
+		var switched = <$if switched$>true<$else$>false<$endif$>;	
+		
+		// ID of the newly-created relation
+		var newRelationId 	= "<$#local.newRelationId$>";
+		
+		// Type of relation being created:
+		// 1=Organisation-Person
+		// 3=Person-Account
+		var relationTypeId	= "3";
+		
+		// One of the below will be non-null, this implies which relation is
+		// being created (either Org-Person or Person-Account)
+		var orgId			= "<$#local.ORGANISATION_ID$>";
+		var accountId		= "<$#local.ACCOUNT_ID$>";
+		
+		var elementTypeId1	= "<$#local.ELEMENT_TYPE_ID_1$>";
+		var elementTypeId2	= "<$#local.ELEMENT_TYPE_ID_2$>";		
+		
+		$().ready(function() {	
+			if ((added || switched) && window.parent) {	
+				//window.parent.refreshAssociationDetails(newRelationId);
+				window.parent.refreshPersonRelations('<$#local.ELEMENT_ID$>',newRelationId);
+			}
+		});
+		
+		/* Open the Add New Person page, with parameters for creating the selected
+		   relation when the new Person is created. */
+		function createNewPerson(elementId) {
+			var relationParams;
+		
+			if (orgId)
+				relationParams = "&ORGANISATION_ID=<$#local.ORGANISATION_ID$>";
+			else if (accountId)
+				relationParams = "&ACCOUNT_ID=<$#local.ACCOUNT_ID$>";
+				
+			relationParams += "&RELATION_TYPE_ID=" + relationTypeId;
+			
+			var relationship = $("#RELATIONSHIP").val();	
+			relationParams += "&RELATIONSHIP=" + relationship;
+			
+			 
+			var w = window.open("?IdcService=CCLA_CS_PERSON_NEW<$include add_idc_token_to_url$>&includeAssociation=yes&hideQuickAssociationAdd=yes" +
+			 relationParams + extraParams, "createNewPerson",
+			 "toolbar=1,location=1,menubar=1,scrollbars=1,height=700,width=840");			 
+		}
+		
+		function refreshRelations(elementId, newRelationId, element1Type, element2Type) {
+			if (window.parent) {
+				window.parent.refreshRelations(elementId, newRelationId, element1Type, element2Type);
+				window.parent.closePopup();
+			}
+		}
+	
+		function alertValues()
+		{
+		if (document.forms['addAssociation'].PARENT_ELEMENT_ID)
+			alert ('yes');
+			alert('parent:' + document.forms['addAssociation'].PARENT_ELEMENT_ID.value);
+			alert('related:' + document.forms['addAssociation'].RELATED_ELEMENT_ID.value);
+			alert('relation type:' + document.forms['addAssociation'].RELATION_TYPE_ID.value);
+			alert('relationship:' + document.forms['addAssociation'].RELATIONSHIP.value);
+		}
+		
+	function checkAll()
+	{
+		for(i=0; i<document.addAssociation.elements.length; i++)
+		{
+			if(document.addAssociation.elements[i].type=="checkbox" && document.addAssociation.elements[i].name.indexOf('chk_') ==0)
+			{
+			if (document.addAssociation.check_All.checked)
+				document.addAssociation.elements[i].checked=true;
+			else
+				document.addAssociation.elements[i].checked=false;
+			}
+		}
+	}	
+	function updateRelationship(){
+	var hasChecked = false;
+		for(i=0; i<document.addAssociation.elements.length; i++)
+		{
+			if(document.addAssociation.elements[i].type=="checkbox" && document.addAssociation.elements[i].name.indexOf('chk_') ==0)
+			{
+			if (document.addAssociation.elements[i].checked && !hasChecked)
+				hasChecked = true;
+			}
+		}	
+		
+		if (hasChecked  && document.addAssociation.person_autoComplete.value!= null && document.addAssociation.person_autoComplete.value.length>0)
+		{
+		alert($('#PARENT_ELEMENT_ID').val());
+			document.addAssociation.submit();
+		} 
+		else 
+		{
+		alert('Please make sure you select a person and check at least one account and one relationship in order to proceed');
+		}
+	}
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<form name="addAssociation" id="addAssociation" method="POST">
+			<$include add_idc_token_to_form$>
+			<input type="hidden" name="selectedAccountIds" value="<$#local.selectedAccountIds$>" />
+			
+			<$if isSwitch$>
+				<input  type="hidden" name="IdcService" value="CCLA_CS_ACCOUNT_PERSON_SWITCH">
+				<input 	type="hidden" name="RedirectUrl" 
+						value="?IdcService=CCLA_CS_ACCOUNT_PERSON_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&switched=1" />		
+				<input type="hidden" name="switch" id="switch" value="true">					
+			<$else$>
+				<input  type="hidden" name="IdcService" value="CCLA_CS_ACCOUNT_PERSON_ADD">
+				<input 	type="hidden" name="RedirectUrl" 
+						value="?IdcService=CCLA_CS_ACCOUNT_PERSON_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&added=1" />
+				<input type="hidden" name="singleAdd" id="singleAdd" value="true">
+			<$endif$>
+			
+			<input type="hidden" name="RELATION_TYPE_ID" id="RELATION_TYPE_ID" value="3">
+			<input type="hidden" name="PARENT_ELEMENT_ID" id="PARENT_ELEMENT_ID">
+			<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>">
+			
+			<$include orangeContainer_top$>
+		
+			<div class='ccla_cs_panel_header'>
+				Add person to account
+			</div>
+							
+			<div class='ccla_cs_panel_content'>
+				<$if added$>
+					<div class="message_panel info_icon">
+						Person added.	
+					</div>
+				<$endif$>
+				<$if switched$>
+					<div class="message_panel info_icon">
+						People switched.	
+					</div>
+				<$endif$>				
+				<div class="message_panel info_icon">Search for people in the following formats:
+					<ul>
+						<li>Surname only (e.g. 'Smith')</li>
+						<li>Surname, postcode (e.g. 'Smith, SE16 4LA')</li>
+					</ul>
+				<$if isSwitch$><strong>Hint:</strong> When switching people it will add the new person into the same roles that the old person had<$endif$>
+				</div>
+				
+				<br/>
+				<$if isSwitch$>Remove person <$include ccla_cs_related_persons_dropdown$><br><br> and replace with person <$else$>Link to person:
+				<$endif$><input type="text" name="person_autoComplete" id="person_autoComplete" size="40 value=""/>
+				<img src="<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif" id="person_autoComplete_loading" style="visibility:hidden" />
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Person$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Account$>				
+				
+				<$if isSwitch$><$else$> with role: <$include association_select_dropdown$><$endif$>
+				
+				<div style="height:240px;overflow-y: scroll;" >
+				
+				<$if rsAccounts$>
+					<br>
+					<strong>In accounts:</strong>
+					<br>
+					<$include ccla_cs_display_accounts_bulk_update$>
+				<$else$>
+					<p class="no-info">
+						No registered accounts for this client
+					</p>
+				<$endif$>				
+				
+				</div>
+				
+				<div align="right" class="cs-margin-all-5">
+				<!--	<input 	type="button" 
+							name="createEntity" 
+							id="createEntity" 
+							value="Create new person..." 
+							onclick="createNewPerson('<$#active.ELEMENT_ID$>');" />-->
+					<$if isSwitch$>
+					<input type="button" onclick="updateRelationship()" value="Switch person" id="addAssociationButton"  />
+					<$else$>
+					<input type="button" onclick="updateRelationship()" value="Add person" id="addAssociationButton"  />
+					<$endif$>
+				</div>
+				
+				
+
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+		</form>
+
+	</div>
+</body>
+</html>

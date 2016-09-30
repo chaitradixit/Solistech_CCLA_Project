@@ -1,0 +1,16 @@
+﻿<!-- template page fetched via AJAX call. Displays the doc info/update panel. -->
+
+<$calendarSelectFields=#env.Iris_calendarSelectFields$>
+		
+<$batchEditMode = #env.Iris_batchEditMode$>
+	
+<$if not tabIndex$>
+	<$tabIndex=1$>
+<$endif$>
+
+<$if (not #local.diOverrideLock) and (#local.diDocumentPassed like "1")$>
+	<!-- Dual indexing for this document has passed. Ensure such documents are displayed as read-only -->
+	<$isInfo=1$>
+<$endif$>
+
+<$include doc_approval_fields$>

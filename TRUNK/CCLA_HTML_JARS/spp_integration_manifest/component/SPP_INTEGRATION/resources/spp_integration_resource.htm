@@ -1,0 +1,419 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SPP_INTEGRATION htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Override the search results 'Checkout' menu item so it doesnt appear for Child Documents
+	(the only change in this include is 'and not strEquals(dDocType,'ChildDocument')' -->
+<@dynamichtml setup_search_results_action_popups@>
+
+	<$doingPopupActions = 1$>
+	<$exec rsCreateResultSet("PopupProps", "label,onClick,function,class,id,ifClause,linkTarget")$>
+
+	<$if ClientControlled$>
+		<$if not (ClientControlled like "*outlook*") and (not (ClientControlled like "*docselect"))$>
+			<$exec rsAppendNewRow("PopupProps")$>
+			<$exec setValue("PopupProps", "label", lc("wwEdit"))$>
+			<$exec setValue("PopupProps", "function", "javascript:executeOdmaAction2(document.OdmaActions<$dID$>, 'EDIT')")$>
+			<$exec setValue("PopupProps", "ifClause", "isFullyEditableDoc")$>
+			<$exec setValue("PopupProps", "class", "clientControlled")$>
+			<$exec setValue("PopupProps", "id", "clientControlledEdit")$>
+
+			<$exec rsAppendNewRow("PopupProps")$>
+			<$exec setValue("PopupProps", "label", lc("wwCopy"))$>
+			<$exec setValue("PopupProps", "function", "javascript:executeOdmaAction2(document.OdmaActions<$dID$>, 'COPY')")$>
+			<$exec setValue("PopupProps", "ifClause", "isFullyEditableDoc")$>
+			<$exec setValue("PopupProps", "class", "clientControlled")$>
+			<$exec setValue("PopupProps", "id", "clientControlledCopy")$>
+
+			<$exec rsAppendNewRow("PopupProps")$>
+			<$exec setValue("PopupProps", "label", lc("wwNew"))$>
+			<$exec setValue("PopupProps", "function", "javascript:executeOdmaAction2(document.OdmaActions<$dID$>, 'NEW')")$>
+			<$exec setValue("PopupProps", "ifClause", "isFullyEditableDoc")$>
+			<$exec setValue("PopupProps", "class", "clientControlled")$>
+			<$exec setValue("PopupProps", "id", "clientControlledNew")$>
+		<$endif$>
+	<$else$>
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwDocInfoTitle"))$>
+		<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=GET_EXTERNAL_DOC_INFO<$include add_idc_token_to_url$>&dDocName=<$url(VdkVgwKey)$>&sCollectionID=<$url(sCollectionID)$>")$>
+		<$exec setValue("PopupProps", "ifClause", "isExternallyManagedDoc")$>
+		<$exec setValue("PopupProps", "linkTarget", "<$docLinkTarget$>")$>
+		<$exec setValue("PopupProps", "class", "document")$>
+		<$exec setValue("PopupProps", "id", "externalDocInfo")$>
+
+		<$if not useDocInfoByNameLink and isTrue(#env.UseDocInfoByNameForSearchResultsLinks)$>
+			<$useDocInfoByNameLink = "1"$>
+		<$endif$>
+
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwDocInfoTitle"))$>
+		<$if useDocInfoByNameLink$>
+			<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=DOC_INFO_BY_NAME<$include add_idc_token_to_url$>&dDocName=<$url(dDocName)$>")$>
+		<$else$>
+			<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$url(dDocName)$>")$>
+		<$endif$>
+		<$exec setValue("PopupProps", "ifClause", "not isExternallyManagedDoc")$>
+		<$exec setValue("PopupProps", "linkTarget", "<$docLinkTarget$>")$>
+		<$exec setValue("PopupProps", "class", "document")$>
+		<$exec setValue("PopupProps", "id", "docInfo")$>
+		
+			<$exec rsAppendNewRow("PopupProps")$>
+			<$exec setValue("PopupProps", "label", lc("wwCheckOut"))$>
+			<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=CHECKOUT<$include add_idc_token_to_url$>&dID=<$url(dID)$>&dDocName=<$url(dDocName)$>&dDocTitle=<$url(dDocTitle)$>")$>
+			<$exec setValue("PopupProps", "ifClause", "not isExternallyManagedDoc and not noSearchCheckout and not strEquals(dDocType,'ChildDocument')")$>
+			<$exec setValue("PopupProps", "linkTarget", "<$docLinkTarget$>")$>
+			<$exec setValue("PopupProps", "class", "document")$>
+			<$exec setValue("PopupProps", "id", "checkout")$>
+
+			
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwGetNativeFile"))$>
+		<$exec setValue("PopupProps", "ifClause", "not isExternallyManagedDoc")$>
+		<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=GET_FILE<$include add_idc_token_to_url$>&dID=<$url(dID)$>&dDocName=<$url(dDocName)$>&allowInterrupt=1")$>
+		<$exec setValue("PopupProps", "class", "document")$>
+		<$exec setValue("PopupProps", "id", "getNativeFile")$>
+
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwContentCheckinSimilarButton"))$>
+		<$exec setValue("PopupProps", "ifClause", "not isExternallyManagedDoc")$>
+		<$exec setValue("PopupProps", "function", "<$SearchHttpCgiPath$>?IdcService=CHECKIN_SIMILAR_FORM<$include add_idc_token_to_url$>&dID=<$url(dID)$>&dDocName=<$url(dDocName)$>")$>
+		<$exec setValue("PopupProps", "linkTarget", "<$docLinkTarget$>")$>
+		<$exec setValue("PopupProps", "class", "document")$>
+		<$exec setValue("PopupProps", "id", "checkinSimilar")$>
+
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwEmailSend"))$>
+		[[%<$exec setValue("PopupProps", "onClick", "<$exec inc(\"email_docinfo_subject_and_body_by_name\")$>var loc='mailto:?<$include doc_email_mailto_link$>'; window.location=loc;")$>
+		<$exec setValue("PopupProps", "function", "#")$>%]]
+		<$exec setValue("PopupProps", "function", "<$exec inc(\"email_docinfo_subject_and_body_by_name\")$>mailto:?<$include doc_email_mailto_link$>")$>
+		<$exec setValue("PopupProps", "class", "email")$>
+		<$exec setValue("PopupProps", "id", "emailDocumentLinks")$>
+
+		<$exec rsAppendNewRow("PopupProps")$>
+		<$exec setValue("PopupProps", "label", lc("wwDCHtmlRendition"))$>
+		<$exec setValue("PopupProps", "function", "<$if isLocalSearchCollection$><$SearchHttpCgiPath$>?IdcService=GET_DYNAMIC_CONVERSION<$include add_idc_token_to_url$>&dDocName=<$url(dDocName)$>&RevisionSelectionMethod=LatestReleased<$ProxyNativeFormat$><$else$><$SearchHttpCgiPath$>?IdcService=GET_EXTERNAL_DYNAMIC_CONVERSION<$include add_idc_token_to_url$>&VdkVgwKey=<$VdkVgwKey$>&sCollectionID=<$sCollectionID$><$ProxyNativeFormat$><$endif$>")$>
+		<$exec setValue("PopupProps", "ifClause", "dcShowExportLink()")$>
+		<$exec setValue("PopupProps", "linkTarget", "<$#active.DcExportLinkTarget$>")$>
+		<$exec setValue("PopupProps", "class", "document")$>
+		<$exec setValue("PopupProps", "id", "htmlRendition")$>
+	<$endif$>
+	<$include extra_setup_search_results_action_popups$>
+
+<@end@>
+
+<!-- Adds various actions to the drop-down menu on the standard UCM Update Doc Info page -->
+<@dynamichtml docinfo_menus_checkin_update_setup@>
+	
+	<$exec rsAppendNewRow("PageMenusData")$>
+	<$PageMenusData.nodeId = "VIEW_IN_IRIS"$>
+	<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+	<$PageMenusData.type = "item"$>
+	<$PageMenusData.loadOrder = 10$>
+	<$PageMenusData.label = "View in Iris"$>
+	<$if dDocType like "Bundle"$>
+		<$PageMenusData.href="idcplg?IdcService=DOC_APPROVAL" & inc('add_idc_token_to_url') & "&dDocName=" & docName & "&bundleRef=" & xBundleRef$>
+	<$else$>
+		<$PageMenusData.href="idcplg?IdcService=DOC_APPROVAL" & inc('add_idc_token_to_url') & "&dDocName=" & dDocName$>
+	<$endif$>
+	
+	<$if userHasRole("admin") or userHasRole("sysman") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+		<$exec rsAppendNewRow("PageMenusData")$>
+		<$PageMenusData.nodeId = "ADD_WITHINSTRUCTION_DOCS"$>
+		<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+		<$PageMenusData.type = "item"$>
+		<$PageMenusData.loadOrder = 10$>
+		<$PageMenusData.label = "Add Instruction Docs"$>
+		<$PageMenusData.href="idcplg?IdcService=GET_DOC_PAGE" & inc('add_idc_token_to_url') & "&Action=GetTemplatePage&Page=CCLA_WITHINSTRUCTION_POPUP&docName=" & dDocName$>
+		<$PageMenusData.target="_blank"$>
+		<$PageMenusData.onClick = "javascript:window.open('idcplg?IdcService=GET_DOC_PAGE" & inc('add_idc_token_to_url') & "&Action=GetTemplatePage&Page=CCLA_WITHINSTRUCTION_POPUP&docName=" & dDocName 
+														& "','withInstructionPopup','location=0,toolbar=0,status=0,scrollbars=0,resizable=1,width=900,height=570');"$>
+	
+	<$endif$>
+
+	<$if userHasRole("admin") or userHasRole("sysman") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+		<$exec rsAppendNewRow("PageMenusData")$>
+		<$PageMenusData.nodeId = "MANUAL_WORKFLOW_KICKOFF"$>
+		<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+		<$PageMenusData.type = "item"$>
+		<$PageMenusData.loadOrder = 10$>
+		<$PageMenusData.label = "Start Workflow"$>
+		
+		<$if strIndexOf(#env.SPP_INT_UCM_DOCTYPES, DOC_INFO.dDocType) == -1$>
+			<$PageMenusData.href = "javascript:alert('You cannot send this item to Workflow (invalid type: " & DOC_INFO.dDocType & ")');"$>
+		<$else$>
+			<$PageMenusData.href = "idcplg?IdcService=ECS_MANUAL_TRIGGER_SPP_WORKFLOW" & inc('add_idc_token_to_url') & "&dDocName="&dDocName$>
+		<$endif$>
+	<$endif$>
+
+	<$c="Dont allow users to checkout or update Child documents (which have a dDocType of ChildDocument) unless they are admin"$>
+	<$if isTrue(dIsCheckedOut)$>
+		<$exec rsAppendNewRow("PageMenusData")$>
+		<$PageMenusData.nodeId = "UNDO_CHECKOUT"$>
+		<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+		<$PageMenusData.label = "wwUndoCheckOut"$>
+		<$PageMenusData.type = "item"$>
+		<$PageMenusData.href = "javascript:document.UndoCheckout.submit()"$>
+		<$PageMenusData.loadOrder = 10$>
+
+		<$if strEquals(dCheckoutUser, UserName)$>
+			<$exec rsAppendNewRow("PageMenusData")$>
+			<$PageMenusData.nodeId = "CHECKIN"$>
+			<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+			<$PageMenusData.label = "wwCheckin"$>
+			<$PageMenusData.type = "item"$>
+			<$PageMenusData.href = HttpCgiPath & "?IdcService=CHECKIN_SEL_FORM" & inc('add_idc_token_to_url') & "&dID=" & dID & "&dDocName="
+				& urlEscape7Bit(dDocName)$>
+			<$PageMenusData.loadOrder = 20$>
+		<$endif$>
+	<$elseif not IsStagingDoc and (not strEquals(dDocType,"ChildDocument") or userHasRole("admin"))$>
+		<$exec rsAppendNewRow("PageMenusData")$>
+		<$PageMenusData.nodeId = "CHECKOUT"$>
+		<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+		<$PageMenusData.label = "wwCheckOut"$>
+		<$PageMenusData.type = "item"$>
+		<$PageMenusData.href = "javascript:document.Checkout.submit()"$>
+		<$PageMenusData.loadOrder = 10$>
+
+		<$include docinfo_menus_update_setup$>
+	<$endif$>
+
+	<$exec rsAppendNewRow("PageMenusData")$>
+	<$PageMenusData.nodeId = "CHECKIN_SIMILAR"$>
+	<$PageMenusData.parentId = "CONTENT_ACTIONS"$>
+	<$PageMenusData.label = "wwContentCheckinSimilarButton"$>
+	<$PageMenusData.type = "item"$>
+	<$PageMenusData.href = HttpCgiPath & "?IdcService=CHECKIN_SIMILAR_FORM" & inc('add_idc_token_to_url') & "&dID=" & dID
+		& "&dDocName=" & urlEscape7Bit(dDocName)$>
+	<$PageMenusData.loadOrder = 30$>
+
+	<!--include super.docinfo_menus_checkin_update_setup-->
+	
+<@end@>
+
+<@dynamichtml page_menus_js_object_setup@>
+	<$if strEquals(#active.wfStarted,"true")$>
+	 <span style="font-size:1.2em;">A new workflow has been started.</span>
+	<$elseif strEquals(#active.wfStarted,"false")$> 
+	 <span style="font-size:1.2em;">A new workflow was NOT started<$if multiDoc$>: multi-doc items cannot be submitted to Workflow.<$endif$></span>
+	<$endif$>
+	<$include super.page_menus_js_object_setup$>
+<@end@>
+
+<!-- 	Overrides content link for Child Documents to ensure it points to the parent document's
+		content instead. -->
+<@dynamichtml docinfo_url_doc_link@>
+
+ 	<$if strEquals(DOC_INFO.dDocType,"ChildDocument")$>
+		<tr>
+			<td nowrap align="right">
+				<span class="infoLabel">
+					<$lcCaption("wwWebLocation")$>
+				</span>
+			</td>
+			
+			<$docAccount = ""$>
+
+			<$if dDocAccount$>
+			 <$docAccount = "/@" & dDocAccount$>
+			<$endif$>
+			
+			<$pdfRef = xParentDocName$>
+			
+			<$if strLength(#active.xPdfDocName) > 0$>
+				<$pdfRef = #active.xPdfDocName$>
+			<$endif$>
+			
+			<$if false$>
+				<$parentUrl = "http://" & HttpServerAddress & HttpWebRoot & "groups/" & dSecurityGroup & docAccount & "/documents/document/" & pdfRef & ".pdf"$>
+			<$endif$>
+			
+			<$parentUrl = HttpCgiPath & "?IdcService=CCLA_CP_GET_FILE&GUID=" & pdfRef$>
+			
+			<td>
+				<span class="tableEntry">
+					<$if not strEquals(xParentDocName,"")$>
+						<a href="<$parentUrl$>"><$parentUrl$></a>
+					<$else$>
+						<a href="#">Unable to evaluate parent document</a>
+					<$endif$>
+				</span>
+			</td>
+		</tr>
+		
+		<$c="Also include the native file URL, as child documents wont have this"$>
+		<tr>
+			<td nowrap align="right">
+				<span class="infoLabel">
+					<$lcCaption("wwNativeFile")$>
+				</span>
+			</td>
+			<td>
+				<span class="tableEntry">
+					<$if not strEquals(xParentDocName,"")$>
+						<a href="idcplg?IdcService=GET_FILE<$include add_idc_token_to_url$>&dDocName=<$pdfRef$>&RevisionSelectionMethod=Latest">Document</a>
+					<$else$>
+						<a href="#">Unable to evaluate parent document</a>
+					<$endif$>
+					
+				</span>
+			</td>
+		</tr>
+	<$else$>
+		<$include super.docinfo_url_doc_link$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_get_root_docs_rs_for_envelope@>
+
+	<$if not rsBatchItems$>
+		<$executeService("IRIS_BATCH_GET_ITEMS")$>
+	<$endif$>
+	
+	<$c="Will hold all non MAND/APP document types within the bundle"$>
+	<$rsCreateResultSet("rsNonRootDocsInEnvelope", "dDocName,xDocumentClass")$>
+	
+	<$loop rsBatchItems$>
+		<$if strEquals(rsBatchItems.xDocumentClass, "MAND") 
+			or strEquals(rsBatchItems.xDocumentClass, "APP")
+			or strEquals(rsBatchItems.xDocumentClass, "XXX")
+			or strEquals(rsBatchItems.xDocumentClass, "MULTIDOC")$>
+		<$else$>
+			<$c="The bundle document is not MAND/APP"$>
+			<$rsAppendRowValues("rsNonRootDocsInEnvelope", rsBatchItems.dDocName & "," & rsBatchItems.xDocumentClass)$>
+		<$endif$>
+	<$endloop$>
+<@end@>
+
+<@dynamichtml ccla_get_root_docs_rs_for_envelope_select@>
+	<$if not rsNonRootDocsInEnvelope$>
+		<$include ccla_get_root_docs_rs_for_envelope$>
+	<$endif$>
+
+	<$if rsNonRootDocsInEnvelope.#numRows > 0$>
+	
+		<$loop rsNonRootDocsInEnvelope$>
+			<option value="<$rsNonRootDocsInEnvelope.dDocName$>">
+				<$rsNonRootDocsInEnvelope.dDocName$> (<$rsNonRootDocsInEnvelope.xDocumentClass$>)
+			</option>
+		<$endloop$>
+	<$else$>
+		<option value="">No documents found</option>
+	<$endif$>
+<@end@>
+
+<!-- Adds a link to Iris on the UCM home page. -->
+<@dynamichtml std_main_page_begin@>
+
+	<$include super.std_main_page_begin$>
+	
+	<$if strEquals(#active.Page,"HOME_PAGE")$>
+		<h2><a href="?IdcService=CCLA_CS_HOME<$include add_idc_token_to_url$>">Go to CCLA Home</a></h2>
+	<$endif$>
+	
+<@end@>
+
+<@dynamichtml iris_styles@>
+	<$include super.iris_styles$>
+		<style type="text/css">
+		.iris_thumb_select{
+			background-color: #F3E9F0;
+		}
+		</style>
+<@end@>
+
+<@dynamichtml ccla_iris_get_dependant_docs_for_root_doc@>
+	<$isSupporting="1"$>
+	<$executeService("CCLA_DEP_DOCS_GET_DEPENDANT_DOCS_FOR_ROOT_DOC_WITH_DOC_INFO")$>
+	
+	<$if rsDependantDocs and rsDependantDocs.#numRows > 0$>
+
+			<$loop rsDependantDocs$>
+				<$dependantDocName = rsDependantDocs.dDocName$>
+				
+				<tr class="depDoc">
+					<td><$rsDependantDocs.dDocName$>&nbsp;</td>
+					<td><$rsDependantDocs.xBundleRef$>&nbsp;</td>
+					<td><$rsDependantDocs.xDocumentClass$>&nbsp;</td>
+					<td><$rsDependantDocs.xCompany$>&nbsp;</td>
+					<td><$rsDependantDocs.xClientNumber$>&nbsp;</td>
+					<td><$rsDependantDocs.xAccountNumber$>&nbsp;</td>
+					<td><$rsDependantDocs.xDocumentDate$>&nbsp;</td>
+					<td>
+						<form id="<$rootDocName$>_<$dependantDocName$>_del_form"
+								action="<$HttpCgiPath$>" 
+								method="POST">
+							<$include add_idc_token_to_form$>	
+							<input type="hidden" name="IdcService" 			value="CCLA_DEP_DOCS_UPDATE_DEPENDENT_DOC_FOR_ROOT_DOC"/>
+							<input type="hidden" name="rootDocName" 		value="<$rootDocName$>"/>
+							<input type="hidden" name="dependantDocNames"	value="<$dependantDocName$>"/>
+							<input type="hidden" name="isSupporting" 		value="0"/>
+							<input type="hidden" name="RedirectUrl" 		value="?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_DEP_DOCS_MANAGER&bundleRef=<$bundleRef$>"/>
+							
+							<input type="button" onclick="removeDependantDoc('<$rootDocName$>', '<$dependantDocName$>');" value="Remove"/>
+						
+						</form>
+					</td>
+				</tr>
+			<$endloop$>
+		
+		
+	<$else$>
+		<!--The APP/MAND has no Supporting docs in the table, potentially it was create before this 
+			system was in place. Need to allow for creation here-->
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_spp_int_get_lookup_data_options@>
+	<$if #active.categoryId$>
+		<$executeService("SPP_GET_LOOKUP_DATA")$>
+		
+		<$if rsLookupData$>
+			<$loop rsLookupData$>
+				<option value="<$rsLookupData.LOOKUP_ID$>">
+					<$rsLookupData.LOOKUP_VALUE$>
+				</option>
+			<$endloop$>
+		<$endif$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_spp_int_get_complaint_category_options@>
+
+	<$executeService("SPP_GET_COMPLAINT_CATEGORIES")$>
+	
+	<$if rsComplaintCategories$>
+		<$loop rsComplaintCategories$>
+		
+			<option value="<$#active.COMPLAINT_CATEGORY_ID$>">
+				<$#active.COMPLAINT_CATEGORY_NAME$>
+			</option>
+		<$endloop$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml ccla_spp_int_get_complaint_subcategory_options@>
+
+	<option value=""></option>
+	
+	<$if categoryId$>
+		<$executeService("SPP_GET_COMPLAINT_SUBCATEGORIES")$>
+	
+		<$if rsComplaintSubCategories$>
+			<$loop rsComplaintSubCategories$>
+				<option value="<$#active.COMPLAINT_SUBCATEGORY_ID$>">
+					<$#active.COMPLAINT_SUBCATEGORY_NAME$>
+				</option>
+			<$endloop$>
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+
+</body></html>

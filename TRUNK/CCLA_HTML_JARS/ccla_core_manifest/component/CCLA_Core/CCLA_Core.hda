@@ -1,0 +1,68 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2014_11_07 v1.6.8 (Build 22156)
+classpath=$COMPONENT_DIR/classes/CCLA_Core.jar;
+blFieldTypes=
+ComponentName=CCLA_Core
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+environment
+ccla_core_environment.cfg
+null
+10
+query
+resources/ccla_core_query.htm
+CCLA_Core_Queries
+10
+query
+resources/ccla_core_campaign_query.htm
+CCLA_Core_Queries2
+10
+resource
+resources/ccla_core_resource.htm
+null
+10
+resource
+resources/ccla_core_tables_resource.htm
+null
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+extraAfterServicesLoadInit
+com.ecs.ucm.ccla.filter.StartupFilter
+null
+15
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+CustomIdocFunction
+IdocScriptExtensions
+name
+1
+CCLA_Core_ServiceHandlers
+ServiceHandlers
+null
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end

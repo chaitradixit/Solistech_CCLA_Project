@@ -1,0 +1,496 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Job Priority Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$('#refreshAllPriorities').click(function() {
+			
+				$('#prioritySpan').show();
+				
+				$.getJSON("?IdcService=CCLA_REFRESH_BUNDLE_PRIORITIES<$include add_idc_token_to_url$>", 
+				{ 	
+					"IsJson": 1
+				}, function(jsonData) {handleRefreshPriorityCompleted(jsonData);});
+
+			});
+			
+			if (!$('#IS_ENABLED').attr('checked')) {
+				$("[name^=apply_]").attr('disabled', true);
+			}
+			
+			
+		});
+		
+		
+		handleRefreshPriorityCompleted = function(jsonData) {
+			
+			if (jsonData=="") {
+				alert("Error whilst updating priorities: no data"); 
+			} else {
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+		
+				if (jsonErrorMsg) {
+					alert("Error whilst updating priorities: "+jsonErrorMsg);
+				} else {
+					
+					var isRefreshCompleted = jsonData.LocalData.IsRefreshComplete;
+					var totNumPriorityRefresh = jsonData.LocalData.TotalNumPrioritiesToRefresh;
+					var numPriorityRefresh = jsonData.LocalData.PrioritiesRefreshed;
+					$('#prioritySpan').html("completed, refreshed "+numPriorityRefresh+" bundles");
+					return;
+				}
+			}			
+		}
+		
+		
+		function checkRuleFormSubmit() 
+		{
+			document.getElementById('APPLIES_TO').value = "";
+			var isEnabled = document.getElementById('IS_ENABLED').checked;
+			var objInputs = document.getElementsByTagName('input');
+			var proceed = false;
+			for (var i=0; i<objInputs.length; i++)
+			{
+				if (objInputs[i].getAttribute('type') == 'checkbox' && objInputs[i].getAttribute('name').indexOf('apply_')!=-1){
+				
+					if(objInputs[i].checked)
+					{		
+						proceed = true;
+						if (document.getElementById('APPLIES_TO').value.length=="")
+							document.getElementById('APPLIES_TO').value = objInputs[i].getAttribute('id');
+						else
+							document.getElementById('APPLIES_TO').value = document.getElementById('APPLIES_TO').value + ',' + objInputs[i].getAttribute('id');
+					}
+				}
+			}
+			
+			if (!proceed && isEnabled) {
+				alert('You must at least select 1 apply to bundle status');
+			} else {
+				proceed = true;
+			}
+			
+			return proceed;
+		}
+				
+		function toggleApplyAllStatus(checkAll) 
+		{
+			var objInputs = document.getElementsByTagName('input');
+			for (var i=0; i<objInputs.length; i++)
+			{
+				if (objInputs[i].getAttribute('type') == 'checkbox' && objInputs[i].getAttribute('name').indexOf('apply_')!=-1)
+				{
+					objInputs[i].checked = checkAll;
+					objInputs[i].disabled = !checkAll;
+				}
+			}
+		}
+		
+	</script>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Job Priority Administration
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<h3 class="ccla_data_panel_header">Available Priority Rules</h3>
+			
+				<p>
+					Select an existing rule by clicking its View/Update button.
+				</p>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Rule name</th>
+						<th>Type</th>
+						<th width="30%">Field name</th>
+						<th>Load order</th>
+						<th>Enabled</th>
+						<th>Append Priority</th>
+						<th>Actions</th>
+					</tr>
+					
+					<$loop rsJobPriorityRules$>
+						<tr>
+							<td>
+								<$#active.RULE_NAME$>
+							</td>
+							<td>
+								<$#active.RULE_TYPE$>
+							</td>
+							<td>
+								<$#active.RULE_FIELD$>
+							</td>
+							<td>
+								<$#active.RULE_ORDER$>
+							</td>
+							<td>
+								<input type="checkbox" name="ENABLED" <$if #active.IS_ENABLED like "1"$>checked<$endif$> disabled />
+							</td>
+							<td>
+								<select id="IS_APPEND_PRIORITY" name="IS_APPEND_PRIORITY" disabled>
+									<option value="0" <$if #active.IS_APPEND_PRIORITY like "0"$>selected<$endif$>>No</option>
+									<option value="1" <$if #active.IS_APPEND_PRIORITY like "1"$>selected<$endif$>>Yes</option>
+								</select>
+							</td>
+							<td>
+								<form>
+									<input type="hidden" name="IdcService" 	value="CCLA_JOB_PRIORITY_ADMIN" /><$include add_idc_token_to_form$>
+									<input type="hidden" name="RULE_ID" 	value="<$#active.RULE_ID$>" />
+									
+									<input type="submit" value="View/Update" />
+								</form>
+							</td>
+						</tr>
+					<$endloop$>
+				
+				</table>
+				
+				<br/>
+				
+				<h3 class="ccla_data_panel_header">Add New Priority Rule</h3>
+						
+				<p>Use this form to add a new Job Priority Rule.</p>
+				
+				<form name="newRuleForm">
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="IdcService" 	value="CCLA_ADD_JOB_PRIORITY_RULE" />
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_JOB_PRIORITY_ADMIN<$include add_idc_token_to_url$>&newRuleAdded=1" />
+					
+					<table border=1 cellpadding=3 cellspacing=0>
+						<tr>
+							<th>Rule Name</th>
+							<th width="200">Field name</th>
+							<th>Rule Type</th>
+							<th>Append Priority</th>
+							<th>Rule Order</th>
+						</tr>
+						<tr>
+							<td>
+								<input type="text" name="RULE_NAME" value="" style="width:95%" />
+							</td>
+							
+							<td>
+								<input type="text" name="RULE_FIELD" value="" style="width:95%" />
+							</td>
+							
+							<td>
+								<select name="RULE_TYPE">
+									<option value="BundleData">Bundle item data</option>
+									<option value="ItemData">Document data</option>
+								</select>
+							</td>
+							<td>
+								<select id="IS_APPEND_PRIORITY" name="IS_APPEND_PRIORITY">
+									<option value="0">No</option>
+									<option value="1">Yes</option>
+								</select>
+							</td>
+							<td>
+								<input type="text" name="RULE_ORDER" value="1" />
+							</td>
+						</tr>
+					</table>
+					
+					<br/>
+					
+					<input type="submit" value="Submit" />
+					<input type="button" id="refreshAllPriorities" name="refreshAllPriorities" value="Refresh All Priorities"/>
+					&nbsp;<span id="prioritySpan" name="prioritySpan" style="display:none; width:10px; height:5px; border:1px"><img src="images/ccla/ccla-ajax-loader.gif" /></span>
+						
+					</div>
+				</form>
+					
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+			
+			<$if #local.RULE_ID$>
+				
+				<$loop rsJobPriorityRules$>
+					<$if rsJobPriorityRules.RULE_ID like #local.RULE_ID$>
+						<$thisRuleName = #active.RULE_NAME$>
+					<$endif$>
+				<$endloop$>
+				
+				<$include orangeContainer_top$>
+		
+				<div class='ccla_cs_panel_header'>
+					<a name="ruleValues"></a>
+					
+					View/Update Rule: '<$thisRuleName$>'
+				</div>
+
+				<div class='ccla_cs_panel_content'>
+					
+					<br/>
+					
+					<form name="updateRuleForm" onsubmit="return checkRuleFormSubmit()">
+						<input type="hidden" name="IdcService" 	value="CCLA_UPDATE_JOB_PRIORITY_RULE" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_JOB_PRIORITY_ADMIN<$include add_idc_token_to_url$>&RULE_ID=<$#local.RULE_ID$>&ruleUpdated=1" />
+
+						<input type="hidden" name="RULE_ID"		value="<$#local.RULE_ID$>" />
+						<input type="hidden" name="APPLIES_TO" id="APPLIES_TO" value=""/>
+						
+						<$exec rsFirst("rsJobPriorityRules")$>
+						
+						<$loop rsJobPriorityRules$>
+							
+							<$if #active.RULE_ID like #local.RULE_ID$>
+						
+								<table border=1 cellpadding=3 cellspacing=0>
+									<tr>
+										<th>Rule Name</th>
+										<th width="200">Field name</th>
+										<th>Rule Type</th>
+										<th>Append Priority</th>
+										<th>Rule Order</th>
+										<th>Enabled</th>
+									</tr>
+									<tr>
+										<td>
+											<input type="text" name="RULE_NAME" value="<$#active.RULE_NAME$>" style="width:95%" />
+										</td>
+										
+										<td>
+											<input type="text" name="RULE_FIELD" value="<$#active.RULE_FIELD$>" style="width:95%" />
+										</td>
+										
+										<td>
+											<select name="RULE_TYPE">
+												<option value="BundleData" <$if #active.RULE_TYPE like "BundleData"$>selected<$endif$>>Bundle item data</option>
+												<option value="ItemData" <$if #active.RULE_TYPE like "ItemData"$>selected<$endif$>>Document data</option>
+											</select>
+										</td>
+										<td>
+											<select id="IS_APPEND_PRIORITY" name="IS_APPEND_PRIORITY">
+												<option value="0" <$if #active.IS_APPEND_PRIORITY like "0"$>selected<$endif$>>No</option>
+												<option value="1" <$if #active.IS_APPEND_PRIORITY like "1"$>selected<$endif$>>Yes</option>
+											</select>
+										</td>
+										<td>
+											<input type="text" name="RULE_ORDER" value="<$#active.RULE_ORDER$>" />
+										</td>
+										
+										<td>
+											<input type="checkbox" id="IS_ENABLED" name="IS_ENABLED" <$if #active.IS_ENABLED like "1"$>checked<$endif$> onclick="toggleApplyAllStatus(this.checked)"/>
+										</td>
+									</tr>
+											
+									<$rsMakeFromString("rsAppliesTo",#active.APPLIES_TO)$> 
+									<$rsMakeFromString("rsAppliesToCfg",#env.SPP_RULES_APPLIES_TO_BUNDLE_STATUS_VALUES,"APPLY")$>
+										<tr>
+											<td colspan="2"><b>Rule Applies To Bundle Status: </b></td>
+											<td colspan="3">
+										
+												<$exec rsFirst("rsAppliesToCfg")$>
+												<$loop "rsAppliesToCfg"$>	
+													<$appliesToExist=""$>
+														<$exec rsFirst("rsAppliesTo")$>
+														<$if rsFindRowPrimary("rsAppliesTo",#active.APPLY)$>
+															<$appliesToExist="1"$>	
+														<$endif$>
+													<input type="checkbox" id="<$#active.APPLY$>" name="apply_<$#active.APPLY$>" <$if appliesToExist$>checked<$endif$> />&nbsp;<$#active.APPLY$>&nbsp;
+												<$endloop$>
+											</td>	
+										</tr>
+																			
+									
+								</table>
+							
+							<$endif$>
+							
+						<$endloop$>
+						
+						<br/>
+						
+						<input type="submit" value="Update Rule" />
+						
+					</form>
+					
+					<br/>
+					<hr/>
+					
+					<h3 class="ccla_data_panel_header">Rule Values</h3>
+					
+					<$if ruleValuesUpdated$>
+						<p>Rule Values updated!</p>
+					<$endif$>
+					
+					<$if ruleValueRemoved$>
+						<p>Rule Value removed!</p>
+					<$endif$>
+					
+					<script type="text/javascript">
+						
+						function deleteRuleValue(ruleValueId) {
+							
+							if (confirm("Are you sure you want to remove this rule value?")) {
+								var frm = document.forms['delRuleValueForm'];
+								
+								frm.elements["RULE_VALUE_ID"].value = ruleValueId;
+								frm.submit();
+							}
+						}
+						
+					</script>
+					
+					<form name="delRuleValueForm" id="delRuleValueForm">
+						<input type="hidden" name="IdcService" value="CCLA_REMOVE_JOB_PRIORITY_RULE_VALUE" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_JOB_PRIORITY_ADMIN<$include add_idc_token_to_url$>&RULE_ID=<$#local.RULE_ID$>&ruleValueRemoved=1#ruleValues" />						
+						<input type="hidden" name="RULE_VALUE_ID"		value="" />
+					</form>
+					
+					<form name="newRuleValueForm" method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_UPDATE_JOB_PRIORITY_RULE_VALUES" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_JOB_PRIORITY_ADMIN<$include add_idc_token_to_url$>&RULE_ID=<$#local.RULE_ID$>&ruleValuesUpdated=1#ruleValues" />
+						<input type="hidden" name="RULE_ID"		value="<$#local.RULE_ID$>" />
+						
+						<table border=1 cellpadding=3 cellspacing=0>
+							<tr>
+								<th width="200">Field value</th>
+								<th>Priority</th>
+								<th>Number of Valid Days</th>
+								<th>Date Added</th>
+								<th>Actions</th>
+							</tr>
+							
+							<$loop rsJobPriorityRuleValues$>
+							
+								<$if #active.RULE_ID like #local.RULE_ID$>
+									<tr>
+										<td>
+											<$#active.FIELD_VALUE$>
+										
+											<input type="hidden" name="FIELD_VALUE_<$#active.RULE_VALUE_ID$>" value="<$#active.FIELD_VALUE$>" />
+										</td>
+										
+										<td>
+											<input type="text" name="PRIORITY_<$#active.RULE_VALUE_ID$>" value="<$#active.PRIORITY$>" style="text-align: right; width: 6em;" />
+										</td>
+										<td>
+											<input type="text" name="NUMVALIDDAYS_<$#active.RULE_VALUE_ID$>" value="<$#active.NUM_VALID_DAYS$>" style="text-align: right; width: 10em;" />
+										</td>
+										<td>
+											<$formatDateOnly(#active.DATE_ADDED)$>
+										</td>
+										<td>
+											<input type="button" onclick="deleteRuleValue(<$#active.RULE_VALUE_ID$>)" value="Del." />
+										</td>
+									</tr>
+								<$endif$>
+								
+							<$endloop$>
+					
+						</table>
+						
+						<br/>
+						
+						<input type="submit" value="Save changes" />
+						
+					</form>
+	
+					<br/>
+					
+					<h3 class="ccla_data_panel_header">Add new Rule Value</h3>
+	
+					<p>Use this form to add new Rule Values. This will only work if the value isn't already assigned to this rule.<br/>
+					If number of valid days is left blank, the rule value will be active indefinitely.</p>
+					
+					<form name="newRuleValueForm">
+						<input type="hidden" name="IdcService" 	value="CCLA_ADD_JOB_PRIORITY_RULE_VALUE" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_JOB_PRIORITY_ADMIN<$include add_idc_token_to_url$>&RULE_ID=<$#local.RULE_ID$>#ruleValues" />
+						
+						<input type="hidden" name="RULE_ID"		value="<$#local.RULE_ID$>" />
+						
+						<table border=1 cellpadding=3 cellspacing=0>
+							<tr>
+								<th width="200">Field value</th>
+								<th>Priority</th>
+								<th>Number of Valid Days</th>
+								
+							</tr>
+							<tr>
+								<td>
+									<input type="text" name="FIELD_VALUE" value="" style="width:95%" />
+								</td>
+								
+								<td>
+									<input type="text" name="PRIORITY" value="" style="text-align: right; width: 6em;" />
+								</td>
+								
+								<td>
+									<input type="text" name="NUM_VALID_DAYS" value="" style="text-align: right; width: 10em;" />
+								</td>
+							</tr>
+						</table>
+						
+						<br/>
+						
+						<input type="submit" value="Submit" />
+
+					</form>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			<$endif$>
+			
+			
+			
+		</div>
+
+	</div>
+	
+	
+	
+</body></html>

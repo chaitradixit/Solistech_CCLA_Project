@@ -1,0 +1,59 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Envelope ID Page
+</title>
+	<$include std_html_head_declarations$>
+</head>
+
+	<$include body_def$>
+
+	<$include std_page_begin$>
+<$executeService("ECS_Q_GET_NEW_ENVELOPE_ID")$>
+
+<$c="Increment the envelope id if requested"$>
+<$if not strEquals(incrementTo, "") and rsEnvelopeId.NEXTVAL < incrementTo$>
+	<$loopwhile (rsEnvelopeId.NEXTVAL < incrementTo)$>
+		<$executeService("ECS_Q_GET_NEW_ENVELOPE_ID")$>
+	<$endloop$>
+<$endif$>
+
+<$if rsEnvelopeId$>
+	<h2>The current Envelope ID is: <$rsEnvelopeId.NEXTVAL$></h2>
+	(This value will be incremented every time you refresh this page.)
+	<br/><br/><br/><br/>
+	<form>
+		<h2>Set the Envelope ID</h2>
+		<table>
+			<input type="hidden" name="IdcService" value="GET_DOC_PAGE"/>
+			<$include add_idc_token_to_form$>
+			<input type="hidden" name="Action" value="GetTemplatePage"/>	
+			<input type="hidden" name="Page" value="CCLA_ENVELOPE_ID_SEQ"/>	
+			<tr>
+				<th>Increment to:</th>
+				<td><input type="text" name="incrementTo" value="<$#active.incrementTo$>"/></td>
+			</tr>
+			<tr>
+				<th></th><td><input type="submit" value="Submit" /></td>
+			</tr>
+		</table>
+	</form>
+<$else$>
+	<form>
+		<h2>Create a new Envelope ID Sequence</h2>
+		<table>
+		    <$include add_idc_token_to_form$>
+			<input type="hidden" name="IdcService" value="ECS_Q_CREATE_ENVELOPE_SEQUENCE"/>	
+			<tr>
+				<th>Start Envelope ID:</th>
+				<td><input type="text" name="startEnvelopeId" value=""/></td>
+			</tr>
+			<tr>
+				<th></th><td><input type="submit" value="Submit" /></td>
+			</tr>
+		</table>
+	</form>
+<$endif$>
+
+</body></html>

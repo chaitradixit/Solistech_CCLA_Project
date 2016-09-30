@@ -1,0 +1,230 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Public Holiday Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+	
+	function populateYearAndSubmit()
+	{
+		var yearStr = document.holidayYear.YEAR.value;
+		if (yearStr) {
+			document.autoGenerate.YEAR.value=yearStr;
+			document.addHoliday.YEAR.value=yearStr;
+		}
+		document.holidayYear.submit();
+	}
+	
+	function MonthObj(monthName, monthNumber, numDays) {
+		this.monthName = monthName;
+		this.monthNumber = monthNumber;
+		this.numDays = numDays;
+	}
+	
+	var monthArray = new Array;
+	monthArray[0] = new MonthObj("January", 1, 31);
+	monthArray[1] = new MonthObj("February", 2, 28);
+	monthArray[2] = new MonthObj("March", 3, 31);
+	monthArray[3] = new MonthObj("April", 4, 30);
+	monthArray[4] = new MonthObj("May", 5, 31);
+	monthArray[5] = new MonthObj("June", 6, 30);
+	monthArray[6] = new MonthObj("July", 7, 31);
+	monthArray[7] = new MonthObj("August", 8, 31);
+	monthArray[8] = new MonthObj("September", 9, 30);
+	monthArray[9] = new MonthObj("October", 10, 31);
+	monthArray[10] = new MonthObj("November", 11, 30);
+	monthArray[11] = new MonthObj("December", 12, 31);
+	
+	function writeMonths() 
+	{
+        document.writeln('<SELECT id="MONTH" name="MONTH" onchange="writeDays()">');
+		for (var i=0; i<monthArray.length;i++) {
+			document.writeln('<OPTION value="'+monthArray[i].monthNumber+'">'+monthArray[i].monthName+'</OPTION>');
+		}
+		document.writeln('</SELECT>');
+	}
+	
+	function checkAddHolidayData() {
+		var success = false;
+		
+		if (!document.addHoliday.DESCRIPTION.value) {
+			alert("Please enter a description for the holiday");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	function writeDays() {
+        var year = document.addHoliday.YEAR.value;
+		var monthVal = document.addHoliday.MONTH.value; 
+		
+		var ret_val = 0;
+		
+		if (monthVal==2) {
+			//Calculate Leap Year.
+			if (year%4 != 0 || year % 100 == 0 ) { 
+				ret_val=0;
+			} else if (year % 400 == 0) {
+				ret_val=1;
+			}  else {
+				ret_val=1;
+			}
+		}
+		
+		var numberOfDays = monthArray[monthVal-1].numDays + ret_val;
+		
+	    var daysHtml = '<SELECT id="DAY" name="DAY">';
+			for (var i=1; i<=numberOfDays;i++) {
+				daysHtml+='<OPTION value="'+i+'">'+i+'</OPTION>';
+			}
+		daysHtml+='</SELECT>';
+		$("#DAYLIST").html(daysHtml);
+	}
+	</script>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Public Holiday Administration
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<p>Select a year from the drop down box.</p>
+				
+				<form name="holidayYear" id="holidayYear" method="POST">
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="IdcService" value="CCLA_PUBLIC_HOLIDAY_ADMIN" />
+				Year: <select name="YEAR" id="YEAR" onchange="populateYearAndSubmit();">
+					<option value="2009" <$if strEquals(#local.YEAR, "2009")$>selected<$endif$>>2009</option>
+					<option value="2010" <$if strEquals(#local.YEAR, "2010")$>selected<$endif$>>2010</option>
+					<option value="2011" <$if strEquals(#local.YEAR, "2011")$>selected<$endif$>>2011</option>
+					<option value="2012" <$if strEquals(#local.YEAR, "2012")$>selected<$endif$>>2012</option>
+					<option value="2013" <$if strEquals(#local.YEAR, "2013")$>selected<$endif$>>2013</option>
+					<option value="2014" <$if strEquals(#local.YEAR, "2014")$>selected<$endif$>>2014</option>
+					<option value="2015" <$if strEquals(#local.YEAR, "2015")$>selected<$endif$>>2015</option>
+					<option value="2016" <$if strEquals(#local.YEAR, "2016")$>selected<$endif$>>2016</option>
+					<option value="2017" <$if strEquals(#local.YEAR, "2017")$>selected<$endif$>>2017</option>
+					<option value="2018" <$if strEquals(#local.YEAR, "2018")$>selected<$endif$>>2018</option>
+					<option value="2019" <$if strEquals(#local.YEAR, "2019")$>selected<$endif$>>2019</option>
+					<option value="2020" <$if strEquals(#local.YEAR, "2020")$>selected<$endif$>>2020</option>
+					</select>
+				</form>
+				<br/>
+				
+				<h3 class="ccla_data_panel_header">Current Holidays for this year</h3>
+			
+				<table border="1" cellpadding="3" cellspacing="0">
+					<tr>
+						<th width="30%">Date</th>
+						<th width="50%">Description</th>
+						<th width="20%">Action</th>
+					</tr>
+					<$if rsHolidays$>
+						<$loop rsHolidays$>
+							<tr>
+								<td><$formatDateOnly(#active.HOLIDAY_DATE)$></td>
+								<td><$#active.DESCRIPTION$></td>
+								<td>
+									<form name="holidayDelete<$#active.HOLIDAY_ID$>" id="holidayDelete<$#active.HOLIDAY_ID$>" method="POST">
+										<$include add_idc_token_to_form$>
+										<input type="hidden" name="IdcService" value="CCLA_DELETE_PUBLIC_HOLIDAY"/>	
+										<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PUBLIC_HOLIDAY_ADMIN<$include add_idc_token_to_url$>&YEAR=<$#local.YEAR$>" />
+										<input type="hidden" name="YEAR" id="YEAR" value="<$#local.YEAR$>"/>
+										<input type="hidden" name="idToDel" id="idToDel" value="<$#active.HOLIDAY_ID$>"/>
+										<input type="submit" name="submit" id="submit" value="Delete"/>
+									</form>
+								</td>
+							</tr>
+						<$endloop$>
+					<$endif$>
+				</table>					
+			</div>
+			<$include orangeContainer_bottom$>
+			<br />
+			
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_header'>
+				ADD Public Holiday
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			<form name="autoGenerate" id="autoGenerate" method="POST">
+				<input type="hidden" name="IdcService" value="CCLA_AUTOGENERATE_PUBLIC_HOLIDAY"/>	
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="YEAR" id="YEAR" value="<$#local.YEAR$>"/>
+				<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PUBLIC_HOLIDAY_ADMIN<$include add_idc_token_to_url$>&YEAR=<$#local.YEAR$>" />
+				Auto Generate Common Public Holidays: <input type="submit" name="submit" id="submit" value="Auto Generate"/>
+			</form>
+			<br/>
+			<form name="addHoliday" id="addHoliday" method="POST" onsubmit="return checkAddHolidayData();">
+				<input type="hidden" name="IdcService" value="CCLA_ADD_PUBLIC_HOLIDAY"/>	
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="YEAR" id="YEAR" value="<$#local.YEAR$>"/>
+				<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PUBLIC_HOLIDAY_ADMIN<$include add_idc_token_to_url$>&YEAR=<$#local.YEAR$>" />
+				
+				<table> 
+					<tr>
+						<th>Month:</th> 
+						<th>Date:</th> 
+						<th>Description: </th>
+						<th>&nbsp;</th>
+					</tr>
+					<tr>
+						<td><SCRIPT type="text/javascript">writeMonths();</SCRIPT>
+						<td><div id="DAYLIST"></div><SCRIPT type="text/javascript">writeDays();</SCRIPT></td>
+						<td><input type="text" name="DESCRIPTION" id="DESCRIPTION" maxlength="40" length="40"/></td>
+						<td><input type="submit" name="submit" id="submit" value="ADD"/></td>
+					</tr>
+				</table>
+			</form>
+			
+			</div>
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+
+		</div>
+
+	</div>
+	
+	
+	
+</body></html>

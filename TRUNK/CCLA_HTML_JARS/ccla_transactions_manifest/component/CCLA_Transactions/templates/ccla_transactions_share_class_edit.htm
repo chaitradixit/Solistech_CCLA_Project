@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+			<$include iris_jquery_js$>
+		
+		<$if strIndexOf(IdcService,"CCLA_TRANS_SHARE_CLASS_NEW") > -1$>
+			<$isNew=1$>
+		<$else$>		
+			<$isEdit=1$>
+		<$endif$>
+		
+		<title>
+			<$if isNew$>
+				 Add New Share Class 
+			<$else$>
+				Edit Share Class - <$#active.SHARE_CLASS_NAME$>
+			<$endif$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+
+		<script type="text/javascript">
+		var updated = <$if isUpdated$>true<$else$>false<$endif$>;
+		var added = <$if isAdded$>true<$else$>false<$endif$>;
+		var deleted = <$if isDeleted$>true<$else$>false<$endif$>;
+				
+		$(document).ready( function() {
+			
+			if (updated || added || deleted){
+				window.parent.updateShareClassFields();
+				window.parent.closePopup();
+			}
+		});
+		
+			
+	function shareClassListing()
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_SHARE_CLASS_LISTING<$include add_idc_token_to_url$>";
+	}
+		</script>
+		
+	</head>
+<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								<$if isNew$>
+									 Add New Share Class 
+								<$else$>
+									Edit Share Class - <$#active.SHARE_CLASS_NAME$>
+								<$endif$>
+							</div>
+							
+							<$if isUpdated$>
+							<div class="message_panel info_icon">
+							Share Class Updated
+							</div>
+							<$endif$>
+							
+							<form name="frmShareClassUpdate">
+							<$include add_idc_token_to_form$>
+							<$if isNew$>
+								<input type="hidden" name="IdcService" value="CCLA_TRANS_SHARE_CLASS_ADD">
+							<$else$>
+								<input type="hidden" name="SHARE_CLASS_ID" value="<$#local.SHARE_CLASS_ID$>">
+								<input type="hidden" name="IdcService" value="CCLA_TRANS_SHARE_CLASS_UPDATE">
+							<$endif$>
+								<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_SHARE_CLASS_EDIT<$include add_idc_token_to_url$>&isUpdated=1&SHARE_CLASS_ID=<$#local.SHARE_CLASS_ID$>">
+								
+								<$if isNew$>
+								<$include ccla_trans_share_class_details$>
+								<$else$>
+									<$loop rsShareClass$>			
+										<$include ccla_trans_share_class_details$>
+									<$endloop$>
+								<$endif$>
+									<$if isNew$>
+										<input type="submit" value="Add">
+									<$else$>
+										<input type="submit" value="Update">
+									<$endif$>
+									<br/>
+								
+							</form>
+				<br><br>			
+				<div style="float:right">
+				<input type="button" value="Back to Share Class Listing" onClick="shareClassListing()">
+				</div>
+				<br><br>
+				<$include orangeContainer_bottom$>
+			</div>	
+		</div>	
+	</div>		
+	</body>
+</html></body></html>

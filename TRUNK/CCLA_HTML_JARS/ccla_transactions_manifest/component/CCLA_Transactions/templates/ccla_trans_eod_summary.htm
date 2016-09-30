@@ -1,0 +1,190 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+End of Day Report for PSDF STEP 5.2
+</title>
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+			function confirmExpenses()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_CONFIRM_EXPENSES<$include add_idc_token_to_url$>" ;
+		}	
+		
+			function restartEOD()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_RESTART_EOD<$include add_idc_token_to_url$>" ;
+		}	
+
+		function restartEODWithDate()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_RESTART_EOD_WITH_DATE<$include add_idc_token_to_url$>" ;
+		}	
+		
+		function finishEOD()
+		{
+			var answer = confirm("Are you sure you want to finish the EOD? This cannot be undone.")
+	if (answer){
+		var frm = document.forms['frmEODDetails'];
+		frm.submit();
+	}
+	
+
+		}
+		</script>
+		</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container" style="width:1100px">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container" style="width:1100px">
+		
+			<div id='ccla_cs_content' class="cs-content-container" style="width:1100px" >
+			
+	<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>	
+		<$if #active.ERROR_MESSAGE$>
+			<$include orangeContainer_top$>
+			<strong><$#active.ERROR_MESSAGE$></strong>
+			<$include orangeContainer_bottom$>
+		<$else$>
+				<form name="frmEODDetails" id="frmEODDetails" method="POST">
+				<input type="hidden" name="EOD_ID" value="<$#active.EOD_ID$>">
+				<input type="hidden" name="IdcService" value="CCLA_TRANS_FINISH_EOD_PSDF">
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_EOD_COMPLETED_LISTING<$include add_idc_token_to_url$>">
+
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Summary for PSDF fund end of day: <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>
+							</div>
+							<$if #active.isSameDay == 0$>
+											<div class="message_panel error_icon">
+											Information: You are running the end of day for the period <$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>.
+										</div>					
+							<$endif$>		
+							
+						<table cellpadding="0" cellspacing="0"  class="accounts-table" >
+						<tr  class="account-details-row" align="right">
+							<td class="first-col" ><strong>Total Gross Income (£)</strong></td><td><$roundNumber(#active.GROSS_INCOME_TOTAL,2,4)$></td>
+						</tr>						
+						<tr  class="account-details-row" align="right">
+							<td class="first-col" ><strong>Total Fund Income after fund expenses (£)</strong></td><td><$roundNumber(#active.FUND_INCOME_TOTAL,2,4)$></td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total Share Class Expense (£)</strong></td><td><$roundNumber(#active.TOTAL_SHARE_CLASS_EXPENSE,8,4)$></td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total of Rate Expenses (£)</strong></td><td><$roundNumber(#active.TOTAL_RATE_EXPENSE,8,4)$></td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total of Cash Expenses (£)</strong></td><td><$roundNumber(#active.TOTAL_CASH_EXPENSE,8,4)$></td>
+						</tr>
+						
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total Net Income Distribution (£)</strong></td><td><$roundNumber(#active.TOTAL_NET_INCOME_DISTRIBUTION,8,4)$></td>
+						</tr>
+
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Net Asset Value of Fund (NAV) (£)</strong></td><td><$formatCurrency(#active.FUND_NAV)$></td>
+						</tr>	
+						<$loop rsFundPriceApplied$>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Bid Price (p)</strong></td><td><$formatCurrency(#active.BID)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Basic Price (p)</strong></td><td><$formatCurrency(#active.BASIC)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Offer Price (p)</strong></td><td><$formatCurrency(#active.OFFER)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Model</strong></td><td><$#active.DEAL_TYPE_NAME$></td>
+							</tr>							
+						<$endloop$>
+						</table>
+						
+						<br><br>
+						
+						<table cellpadding="0" cellspacing="0"  class="accounts-table">
+							<tr  class="account-details-row" >
+								<th width="11%">Share Class</th>
+								<th width="11%">Closing Units</th>
+								<th width="9%">Allocation of total shares in issue (%)</th>
+								<th width="10%">Cash Value (£)</th>
+								<th width="9%">Total of rate expenses (£)</th>
+								<th width="10%">Total of cash expenses (£)</th>
+								<th width="15%">Net Income Distribution (£)</th>
+								<th width="16%">Net Income Per Unit (Dividend) (p)</th>
+								<th width="10%">Net Yield (p)</th>
+								<th width="10%">Fund Yield (p)</th>
+								<th width="10%">Gross Yield (p)</th>
+							</tr>
+							<$loop rsShareClassDetails$>
+							<tr  class="account-details-row">
+								<td><$#active.SHARE_CLASS_NAME$></td>
+								<td><$formatCurrency(#active.CLOSING_UNITS)$></td>
+								<td><$formatCurrency(#active.PERCENTAGE)$></td>
+								<td><$formatCurrency(#active.CASH_VALUE)$></td>
+								<td><$roundNumber(#active.MANAGEMENT_FEE,8,4)$></td>
+								<td><$roundNumber(#active.SHARE_CLASS_EXPENSE,8,4)$></td>
+								<td><$roundNumber(#active.INCOME_DISTRIBUTION,8,4)$></td>
+								<td><$roundNumber(#active.NET_INCOME_PER_UNIT,6,4)$></td>	
+								<td><$roundNumber(#active.YIELD,6,4)$></td>		
+								<td><$roundNumber(#active.FUND_YIELD,6,4)$></td>		
+								<td><$roundNumber(#active.GROSS_YIELD,6,4)$></td>									
+							</tr>
+							<$endloop$>
+						</table>
+						<br><br>
+							<div style="float:right">
+								<input type="button" onclick="finishEOD()" class="generic_button" value="Finish End of Day" >
+								&nbsp;&nbsp;							
+								<input type="button" class="generic_button" value="Go back and change income/expenses" onclick="confirmExpenses();">
+								&nbsp;&nbsp;
+								
+								<br><br>
+								<input type="button" class="generic_button" value="Restart End of Day" onclick="restartEOD();">* 
+								&nbsp;&nbsp;
+								<input type="button" class="generic_button" value="Restart End of Day With Date Range" onclick="restartEODWithDate();">* 
+						<p>* This will allow you to re-enter unit price and generate share class movements again.  It will also pick up any
+						transactions that are available to be processed since the last run.</p>
+													</div>
+						<br><br>
+						
+						<$include orangeContainer_bottom$>
+						
+			<$endif$>
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>		
+				</form>
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

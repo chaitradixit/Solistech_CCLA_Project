@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Comparison Report: <$#local.ReportLabel$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ccla_cs_expandable_region_js$>
+
+	<script type="text/javascript">
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			<!-- Display standard form info view -->
+			
+			<div class='ccla_cs_panel_header'>
+				<b>Comparison Report: <$#local.ReportLabel$></b>
+			</div>
+		
+			<div class="ccla_cs_panel_content">
+				
+				<$if not #local.COMPANY_ID$>
+					<p>
+						<$if rsCompanies$>
+							Displaying comparison results for <$getValue("rsCompanies","#numRows")$> Aurora Company links
+						<$else$>
+							<span class="no-info">No Aurora Company links associated with this entity</span>
+						<$endif$>
+					</p>
+				<$endif$>
+				
+				<$loop rsCompanies$>
+					
+					<$if not #local.COMPANY_ID or (#local.COMPANY_ID == #active.COMPANY_ID)$>
+					
+						<$panelIncName="ccla_cs_aurora_company_comparison_report"$>
+						<$openByDefault=1$>
+						<$notAjaxData=1$>
+						<$panelId="companyComparison_" & #active.COMPANY_ID$>
+						<$panelToggleLabel=#active.COMPANY_CODE & " Record"$>
+						<$include ccla_cs_ajax_panel_display$>
+					
+					<$endif$>
+						
+				<$endloop$>
+				
+				<br/>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

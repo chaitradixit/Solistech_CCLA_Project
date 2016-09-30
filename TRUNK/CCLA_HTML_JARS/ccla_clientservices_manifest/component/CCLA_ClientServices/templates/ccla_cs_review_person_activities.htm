@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$if personId$>
+			<$methodName="GetCorrespondentByCorrespondentCode"$>
+			<$correspondentId = personId$>
+			<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+		<$endif$>
+		
+		<title>
+			<$if rsCorrespondent$>
+				Review Activities: <$rsCorrespondent.name$>
+			<$else$>
+				Error
+			<$endif$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 700px'>
+		
+				<$include orangeContainer_top$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					<$if rsCorrespondent$>
+						Review Activities: <$rsCorrespondent.name$>
+					<$else$>
+						Error
+					<$endif$>
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					<$if not rsCorrespondent$>
+					
+						<div id="err_xAmount" class="validation_error error_icon">
+							<div class="validation_error_title">Error</div>
+							
+							<p>No matching person found for ID: <$#local.personId$></p>
+					
+						</div>
+	
+					<$else$>
+				
+						<$executeService("CCLA_CS_GET_ACTIVITIES_BY_PERSON")$>
+						
+						<$if rsPersonActivities$>
+							<div style="overflow-y: scroll; height: 300px; padding: 5px; border: 1px inset">
+								<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+									<tr>
+										<th class="first-col">User</th>
+										<th>Campaign</th>
+										<th>Activity type</th>
+										<th>Date</th>
+										<th>Action</th>
+										<th>Outcome</th>
+									</tr>
+								
+									<$loop rsPersonActivities$>
+									
+										<tr class="account-details-row">
+											<td class="first-col"><$#active.USER_ID$></td>
+											<td><$#active.CAMPAIGN_NAME$></td>
+											<td><$#active.ACTIVITY_TYPE$></td>
+											<td><$#active.ACTIVITY_DATE$></td>
+											<td><$if #active.ACTIVITY_ACTION$><$#active.ACTIVITY_ACTION$><$else$>&nbsp;<$endif$></td>
+											<td><$include ccla_cs_display_activity_outcome$></td>
+										</tr>
+									<$endloop$>
+								</table>
+							</div>
+						
+						<$else$>
+						
+							<p>There are no recorded activities for this correspondent.</p>
+						
+						<$endif$>
+					
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

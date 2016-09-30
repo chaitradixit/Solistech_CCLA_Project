@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<title>
+		Select Event
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+<div  id="cs_page_container" class="cs-page-container">
+			
+			<$if NOT hideActionButtons$>
+				<$buttonContext = "person"$>
+				<$include ccla_cs_action_buttons$>
+			<$endif$>
+			<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<div id='ccla_cs_content' class="cs-content-container" >
+
+		
+	<$executeService("CCLA_CS_GET_PERSON")$>
+				<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+						<$if PERSON_ID$>
+							Select Event
+						<$endif$>
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+					Current Events:
+					<select id="event-list" name="event-list">
+						<option value="PSDF Launch Party">PSDF Launch Party</option>
+						<option value="breakie">Breakfast Meeting</option>
+						<option value="Christmas Celebration">New Year Celebration</option>
+					</select>
+
+					</div>
+				<$include orangeContainer_bottom$>
+				
+				<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+						Event Details
+					</div>
+					
+					<div class='ccla_cs_panel_content' >
+					<table cellpadding="2" width="100%">
+					<tr>
+						<td>
+							Places Available: 
+						</td>
+						<td>
+							<strong>17 of 64</strong>
+						</td>
+						<td rowspan="4" align="right">
+						<select size=4">
+							<option value="<$#active.PERSON_ID$>"><$#active.FULL_NAME$></option>
+						</select>
+						<input type="button" value="Add person"/>&nbsp;
+						<input type="button" value="Enroll">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							Cost: 
+						</td>
+						<td>
+							<strong>Free of charge</strong>
+						</td>
+					</tr>
+					<tr>
+						<td>
+						Venue: 
+						</td>
+						<td>
+						<strong><a href="http://maps.google.com">CCLA Offices, London</a></strong>
+						</td>
+					</tr>
+					<tr>
+
+					</tr>
+					</table>
+					</div>
+				<$include orangeContainer_bottom$>					
+			</div>
+
+		</div>
+	</div>
+		
+</body>
+</html>

@@ -1,0 +1,160 @@
+﻿<html>
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IrisCore query
+</title>
+</head>
+<body>
+
+<@table IrisCore_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qIrisCore_LinkedItemCount</td>
+	<td>SELECT COUNT(*) AS NUMLINKEDITEMS
+FROM Revisions, DocMeta
+WHERE Revisions.dID = DocMeta.dID
+AND Revisions.dRevRank=0
+AND Revisions.dDocType=?
+AND DocMeta.xParentId=?
+AND NOT Revisions.dStatus='DELETED'</td>
+	<td>docType varchar
+	    parentId varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_WfDocInfo</td>
+	<td>SELECT     WorkflowDocuments.dDocName, WorkflowSteps.dWfStepName, Workflows.dWfName, WorkflowSteps.dWfStepDescription, 
+                      WorkflowSteps.dWfStepType
+FROM         WorkflowDocuments INNER JOIN
+                      WorkflowSteps ON WorkflowDocuments.dWfCurrentStepID = WorkflowSteps.dWfStepID INNER JOIN
+                      Workflows ON WorkflowDocuments.dWfID = Workflows.dWfID
+WHERE     (WorkflowDocuments.dDocName=?)</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_LinkedItemsDel</td>
+	<td>SELECT dDocName, dDocAuthor, dInDate, xComments, xParentId, DocMeta.dID, dDocTitle 
+FROM Revisions, DocMeta
+WHERE Revisions.dID = DocMeta.dID
+AND Revisions.dRevRank=0
+AND Revisions.dDocType=?
+AND DocMeta.xParentId=?
+AND Revisions.dStatus='DELETED'
+ORDER BY dInDate DESC</td>
+	<td>docType varchar
+	    parentId varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_User</td>
+	<td>SELECT * FROM Users WHERE dName=?</td>
+	<td>dUser varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_AllAccounts</td>
+	<td>SELECT dDocAccount AS ACCOUNT FROM DocumentAccounts</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIrisCore_AliasMembers</td>
+	<td>SELECT dUserName FROM AliasUser WHERE dAlias=?</td>
+	<td>aliasName varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_UserWriteAccounts</td>
+	<td>SELECT dAttributeName
+FROM UserSecurityAttributes
+WHERE (dUserName=?)
+AND (dAttributeType='account') AND (dAttributePrivilege>=3)</td>
+	<td>dUser varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_GetOptionListValues</td>
+	<td>SELECT dOption FROM OptionsList WHERE dKey = ?</td>
+	<td>dOptionListKey varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_WfInfo</td>
+	<td>SELECT     WorkflowSteps.dWfStepName, Workflows.dWfName, WorkflowSteps.dWfStepDescription, WorkflowSteps.dWfStepType
+FROM         Workflows INNER JOIN
+                      WorkflowSteps ON WorkflowSteps.dWfID = Workflows.dWfID
+WHERE     (Workflows.dWfName = ?) AND (WorkflowSteps.dWfStepName = ?)</td>
+	<td>docWfName varchar
+	    docWfStepName varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_IrisUsers</td>
+	<td>SELECT dName,dFullName FROM Users</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIrisCore_IrisAliases</td>	
+	<td>SELECT * FROM Alias</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIrisCore_AuditEntryCount</td>	
+	<td>SELECT COUNT(LREF) AS AUDITENTRYCOUNT 
+FROM TAUDITLOGS 
+WHERE (LAPP LIKE 'IRIS') AND LREF=?</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_UserAliasMemberships</td>
+	<td>SELECT DALIAS AS ALIASNAME FROM ALIASUSER
+WHERE DUSERNAME=?
+ORDER BY DALIAS ASC</td>
+	<td>dUser varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_GetItemsWIP</td>
+	<td>SELECT     Revisions.dDocName, Revisions.dDocAuthor, Revisions.dInDate, DocMeta.xComments, DocMeta.xBundleRef, DocMeta.dID, 
+                      Revisions.dDocTitle
+FROM         Revisions INNER JOIN
+                      DocMeta ON Revisions.dID = DocMeta.dID
+WHERE     (DocMeta.xParentId=?) AND (Revisions.dDocType=?) AND (Revisions.dStatus='GENWWW' OR Revisions.dStatus='Done') AND (Revisions.dRevRank=0)
+ORDER BY Revisions.dInDate DESC</td>
+	<td>docName varchar
+	    docType varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_AddItemLock</td>
+	<td>INSERT INTO IRIS_LOCKEDITEMS
+VALUES (?,?,?,?)</td>
+	<td>DOCNAME varchar
+	    LOCKUSER varchar
+	    LOCKDATE date
+	    LOCKTIMESTAMP varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_UpdateItemLock</td>
+	<td>UPDATE IRIS_LOCKEDITEMS
+SET LOCKDATE=?,LOCKTIMESTAMP=?
+WHERE DOCNAME=?</td>
+	<td>LOCKDATE date
+	    LOCKTIMESTAMP varchar
+	    DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_RemoveItemLock</td>
+	<td>DELETE FROM IRIS_LOCKEDITEMS
+WHERE DOCNAME=?</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_GetItemLock</td>
+	<td>SELECT LOCKUSER, LOCKDATE, LOCKTIMESTAMP
+FROM IRIS_LOCKEDITEMS
+WHERE DOCNAME=?</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qIrisCore_GetItemLocks</td>
+	<td>SELECT * FROM IRIS_LOCKEDITEMS</td>
+	<td></td>
+</tr>
+</table>
+<@end@>
+</body></html>

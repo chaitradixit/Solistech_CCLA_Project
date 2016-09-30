@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Import Aurora Signatories
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ccla_cs_expandable_region_js$>
+
+	<script type="text/javascript">
+		
+		// Wrapper for candidate signatory
+		function CandidateSignatory(rowId, duplicatePersonId, relationExists) {
+			this.rowId = rowId;		// Signatory Row ID
+			this.duplicatePersonId = duplicatePersonId;	// Duplicate Person ID
+			this.relationExists = relationExists; // Whether or not the duplicate person 
+												  // already has the signatory relationship.
+		}
+		
+		var candidateSigs = new Object();
+		
+		// Build CandidateSignatory instances from rsCandidateSigs ResultSet
+		<$sigIndex = 1$>
+		<$loop rsCandidateSigs$>
+			candidateSigs['<$sigIndex$>'] = new CandidateSignatory(
+				<$sigIndex$>, 
+				'<$#active.DUPLICATE_PERSON_ID$>', 
+				<$if #active.RELATION_EXISTS == 1$>true<$else$>false<$endif$>
+			);	<$sigIndex = sigIndex+1$>
+		<$endloop$>
+		
+		// Determines whether a call-back to the opener window will execute when
+		// this page is loaded, to reflect any updates
+		var refreshParentOnLoad = <$if #local.sigsImported$>true<$else$>false<$endif$>;
+		var elementId = "<$#local.ELEMENT_ID$>";
+		var elementType = "<$#local.elementType$>";
+		
+		// On-load functions. Attach UI event handlers and style
+		// pre-selected rows.
+		$().ready( function() {
+			
+			// Bind click event to row selector checkboxes
+			$(".sig-selector-check").bind("click", function() {
+				updateRowState(this);
+			});
+			
+			// Refresh state of each row to reflect its default state
+			$(".sig-selector-check").each( function() {
+				updateRowState(this);
+			});
+			
+			// Callback to parent window to refresh the Person relations grid
+			if (refreshParentOnLoad) {
+				// Method signature: refreshPersonRelations(elementId, newRelationId, elementTypeId1, elementTypeId2)
+				if (window.opener) {
+					if (elementType == "Organisation") {
+						window.opener.refreshPersonRelations(elementId, "", 1, 2);
+					} else if (elementType == "Account") {
+						window.opener.refreshPersonRelations(elementId, "", 2, 3);
+					}
+				}
+			}
+			
+			// Enable submit button.
+			$("#submitBtn").removeAttr("disabled");
+		});
+		
+		// Called on load of the page, or after the 'import' checkbox is ticked.
+		function updateRowState(rowCheckbox) {
+			// Obtain row ID from checkbox ID
+			var rowId = $(rowCheckbox).attr("id").substring("IMPORT_SIGNATORY_".length);
+			
+			// Build selector string for all input/select elements on this row
+			var rowSelector = "#CANDIDATE_SIGNATORY_ROW_" + rowId;
+			var rowControlsSelector = rowSelector + " .sig-data-element";
+		
+			//console.log("Updating row state for checkbox ID: " + rowId);
+			//console.log("Checkbox state: " + $(rowCheckbox).is(":checked") + 
+			// ", dupeId: " + candidateSigs[rowId].duplicatePersonId);
+			
+			if ($(rowCheckbox).is(":checked")) {
+				if (!candidateSigs[rowId].duplicatePersonId) {
+					// Enable the input controls if the person record doesn't already exist.
+					// Otherwise they should always be left disabled.
+					$(rowControlsSelector)
+						.removeAttr("disabled");
+				}
+	
+				$(rowSelector).addClass("account-row-open");
+			} else {
+				resetRowControlStyling(rowId);
+			
+				$(rowControlsSelector)
+					.attr("disabled", "disabled");
+				
+				$(rowSelector).removeClass("account-row-open");
+			}
+		}
+		
+		function getNumSelectedRows() {
+			var numSelected = 0;
+		
+			$(".sig-selector-check").each( function() {
+				if ($(this).is(":checked"))
+					numSelected++;
+			});
+			
+			return numSelected;
+		}
+		
+		// Validates selected sig rows then submits the main form.
+		function importSelected() {
+			// Reset ALL row error styling.
+			resetRowControlStyling();
+			
+			var numSelected = getNumSelectedRows();
+			
+			// Check for at least 1 selected row.
+			if (numSelected == 0) {
+				alert("You haven't selected any signatories to import.");
+				return;
+			}
+			
+			var rowDataValid = true;
+			
+			// Validate selected row inputs.
+			$(".sig-selector-check").each( function() {
+				if ($(this).is(":checked")) {
+					var rowId = $(this).attr("id").substring("IMPORT_SIGNATORY_".length);
+					if (!checkRowValidity(rowId))
+						rowDataValid = false;
+				}
+			});
+			
+			if (!rowDataValid) {
+				alert("One or more required fields are missing. " +
+				 "Please complete these (or de-select the rows) and try again.");
+				 return;
+			}
+			
+			if (confirm("Are you sure you want to import " + numSelected + " signatories?")) {
+				// Disable submit button.
+				$("#submitBtn").attr("disabled","disabled");
+				
+				$("#importSigsForm").submit();
+			}
+		}
+		
+		// Determines if the given Sig row index ID is valid.
+		// Missing/invalid fields will be re-styled to reflect their error state.
+		//
+		// Assumes the passed Row ID is enabled for editing.
+		function checkRowValidity(rowId) {
+			var valid = true;
+			
+			if (candidateSigs[rowId].duplicatePersonId)
+				return true; // No need to validate row data
+							 // if we are referencing existing Person record
+			
+			var titleIdElem = $("#SIGNATORY_TITLE_ID_" + rowId);
+			var firstNameElem = $("#SIGNATORY_FIRST_NAME_" + rowId);
+			var lastNameElem = $("#SIGNATORY_LAST_NAME_" + rowId);
+			
+			if ($(titleIdElem).val() == "") {
+				$(titleIdElem).addClass("validation_error_field");
+				valid = false;
+			}
+			
+			if ($.trim($(firstNameElem).val()) == "") {
+				$(firstNameElem).addClass("validation_error_field");
+				valid = false;
+			}
+			
+			if ($.trim($(lastNameElem).val()) == "") {
+				$(lastNameElem).addClass("validation_error_field");
+				valid = false;
+			}
+			
+			return valid;
+		}
+		
+		// Removes any 'error' formatting on input elements that may have been 
+		// applied by the checkRowValidity() function.
+		//
+		// If no arg is passed, ALL rows have their error formatting reset. Otherwise
+		// the reset is restricted to the passed row ID elements.
+		function resetRowControlStyling(rowId) {
+			if (rowId) {
+				$("#CANDIDATE_SIGNATORY_ROW_" + rowId + " .sig-data-element")
+					.removeClass("validation_error_field");
+			} else {
+				$(".sig-data-element")
+					.removeClass("validation_error_field");
+			}
+		}
+		
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			<!-- Display standard form info view -->
+			
+			<div class='ccla_cs_panel_header'>
+				<b>Import Aurora Signatories</b>
+			</div>
+		
+			<div class="ccla_cs_panel_content">
+				
+				<$selCompanyId = #local.COMPANY_ID$>
+				
+				<$if rsCompanies$>
+					<form>
+						<input type="hidden" name="IdcService" value="CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA" />
+						<input type="hidden" name="ELEMENT_ID" value="<$#local.ELEMENT_ID$>" />
+					
+						Company to import from: 
+						<select name="COMPANY_ID" id="COMPANY_ID">
+							<$loop rsCompanies$>
+								<option value="<$#active.COMPANY_ID$>" 
+										<$if selCompanyId like #active.COMPANY_ID$>selected<$endif$>><$#active.COMPANY_CODE$></option>
+							<$endloop$>
+						</select>
+						
+						<input type="submit" value="Go" />
+					</form>
+					
+					<br/>
+					
+				<$endif$>
+				
+				<$if sigsImported$>
+					<div class="message_panel info_icon">
+						Signatories imported successfully.
+					</div>
+
+				<$endif$>
+				
+				<$if AuroraSignatoryLookupErrorMessage$>
+					<div class="message_panel error_icon">
+						<$AuroraSignatoryLookupErrorMessage$>
+					</div>
+					
+					<br/>
+				<$else$>
+					<div style="overflow:auto;margin:10px 0px;">
+						<div style="float: left; clear: both; width: 800px;">
+							<p>
+								Select the signatories you want to import against the <$elementType$> below. 
+								Ensure that any names you select don't exist against the <$elementType$> already -
+								the duplicate check only works on an exact name match.
+							</p>
+							<p>
+								If the person already exists against the owning Organisation and associated Accounts,
+								but not linked as a signatory, selecting the row will create the missing relationship.
+								The existing person record will not be updated in any way.
+							</p>
+						</div>
+					</div>
+					
+				<$endif$>
+				
+				<$if rsCandidateSigs$>
+				
+					<form method="POST" id="importSigsForm">
+						<input type="hidden" name="IdcService" value="CCLA_CS_ADD_PERSONS_FROM_SIGNATORY_DATA" />
+						<input type="hidden" name="ELEMENT_ID" value="<$#local.ELEMENT_ID$>" />
+						
+						<input type="hidden" name="numSigRows" value="<$rsCandidateSigs.#numRows$>" />
+						
+						<input 	type="hidden" name="RedirectUrl" 
+								value="?IdcService=CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA&ELEMENT_ID=<$#local.ELEMENT_ID$>&COMPANY_ID=<$#local.COMPANY_ID$>&sigsImported=1" />
+				
+						<table class="accounts-table" cellpadding=0 cellspacing=0 width="100%">			
+							<tr>
+								<th class="first-col" width=40>
+									Import
+								</th>
+								
+								<th>
+									Aurora Sig Name
+								</th>
+								
+								<th width="12%">
+									Title
+								</th>
+								
+								<th width="12%">
+									First Name
+								</th>
+								
+								<th width="12%">
+									Middle Name(s)
+								</th>
+								
+								<th width="15%">
+									Surname
+								</th>
+								
+								<th width="10%">
+									Telephone
+								</th>
+								
+								<th width="10%">
+									Postcode
+								</th>
+							</tr>
+							
+							<$sigIndex = 1$>
+							
+							<$loop rsCandidateSigs$>
+								
+								<tr class="account-details-row<$if #active.RELATION_EXISTS == 1$> account-row-closed<$endif$>" 
+									id="CANDIDATE_SIGNATORY_ROW_<$sigIndex$>">
+									
+									<td class="first-col" align="center">
+										<input 	type="checkbox" 
+												id="IMPORT_SIGNATORY_<$sigIndex$>"
+												name="IMPORT_SIGNATORY_<$sigIndex$>"
+												class="sig-selector-check"
+												style="width: 90%"
+												<$if #active.RELATION_EXISTS == 1$>disabled="disabled"<$endif$>
+												<$if #active.IMPORT_SIGNATORY == 1$>checked<$endif$>
+												/>
+										
+										<input type="hidden" name="DUPLICATE_PERSON_ID_<$sigIndex$>" value="<$#active.DUPLICATE_PERSON_ID$>" />
+										
+									</td>
+									
+									<td>
+										<$#active.SIGNATORY_NAME$>
+									</td>
+									
+									<td>
+										<!-- Person title -->
+										<select 	name="SIGNATORY_TITLE_ID_<$sigIndex$>" 
+													id="SIGNATORY_TITLE_ID_<$sigIndex$>"
+													class="sig-data-element"
+													<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+													style="width: 90%" />
+											<option value=""></option>		
+											<$mycategory = ""$>
+											<$loop rsAllTitles$>
+												
+												<$if strEqualsIgnoreCase(mycategory,#active.CATEGORY_NAME)$>
+												<$else$>
+													<$if mycategory$>
+														</optgroup>
+													<$endif$>
+												
+													<optgroup label="<$#active.CATEGORY_NAME$>">
+												<$endif$>
+											
+												<$mycategory=#active.CATEGORY_NAME$>
+												
+												<option value="<$#active.TITLE_ID$>" 
+														<$if strEquals(#active.TITLE,#active.SIGNATORY_TITLE)$>selected="selected"<$endif$>><$#active.TITLE$></option> 
+											<$endloop$>
+
+											</optgroup>
+										</select> 	
+										
+									</td>
+									
+									<td>
+										<input 	type="text"
+												id="SIGNATORY_FIRST_NAME_<$sigIndex$>"
+												name="SIGNATORY_FIRST_NAME_<$sigIndex$>"
+												value="<$#active.SIGNATORY_FIRST_NAME$>"
+												class="sig-data-element"
+												<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+												style="width: 90%"/>
+									</td>
+									
+									<td>
+										<input 	type="text"
+												id="SIGNATORY_MIDDLE_NAMES_<$sigIndex$>"
+												name="SIGNATORY_MIDDLE_NAMES_<$sigIndex$>"
+												value="<$#active.SIGNATORY_MIDDLE_NAMES$>"
+												class="sig-data-element"
+												<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+												style="width: 90%"/>
+									</td>
+									
+									<td>
+										<input 	type="text"
+												id="SIGNATORY_LAST_NAME_<$sigIndex$>"
+												name="SIGNATORY_LAST_NAME_<$sigIndex$>"
+												value="<$#active.SIGNATORY_LAST_NAME$>"
+												class="sig-data-element"
+												<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+												style="width: 90%"/>
+									</td>
+									
+									<td>
+										<input 	type="text"
+												id="SIGNATORY_TELEPHONE_<$sigIndex$>"
+												name="SIGNATORY_TELEPHONE_<$sigIndex$>"
+												value="<$#active.SIGNATORY_TELEPHONE$>"
+												class="sig-data-element"
+												<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+												style="width: 90%"/>
+									</td>	
+									
+									<td>
+										<input 	type="text"
+												id="SIGNATORY_POSTCODE_<$sigIndex$>"
+												name="SIGNATORY_POSTCODE_<$sigIndex$>"
+												value="<$#active.SIGNATORY_POSTCODE$>"
+												class="sig-data-element"
+												<$if #active.DUPLICATE_PERSON_ID$>disabled="disabled"<$endif$>
+												style="width: 90%"/>
+									</td>
+										
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col">&nbsp;</td>
+									<td>&nbsp;</td>
+									
+									<td colspan=6>
+										[[% Notes section - chuck in any info here that would be helpful to the user %]]
+										<$if #active.DUPLICATE_PERSON_ID$>
+											Person record already exists:
+											<a 	href="?IdcService=CCLA_CS_PERSON_INFO&PERSON_ID=<$#active.DUPLICATE_PERSON_ID$>" 
+												target="_BLANK"><$#active.DUPLICATE_PERSON_NAME$></a>
+											
+											<br/>
+											
+											<$if #active.RELATION_EXISTS == 1$>
+												They are already linked as a signatory.
+											<$else$>
+												Leave the Import box ticked to link the existing person as a signatory.
+											<$endif$>
+											
+										<$elseif #active.LOOKS_LIKE_PERSON_NAME == 0$>
+											Doesn't look like a person's name.
+										<$else$>
+											Recommended import. A new person and relationship will be created. 
+											Make sure you've done a manual check for an existing duplicate on the
+											owning Organisation and associated Accounts.
+										<$endif$>
+										
+										<br/></br>
+									</td>
+								</tr>
+								
+								<$sigIndex = sigIndex+1$>
+								
+							<$endloop$>
+
+						</table>
+					
+					</form>
+					
+				<$endif$>
+				
+				<br/>
+				
+				<div align="right">
+					<input type="button" id="submitBtn" value="Import selected" onclick="importSelected()" />
+				</div>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

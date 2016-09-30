@@ -1,0 +1,215 @@
+﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_AuditLog service
+</title>
+</head>
+<body>
+
+<@table ECS_AuditLog_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>LOG_ADDENTRY</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>2:qLogAddEntry:::null</td>
+</tr>
+<tr>
+	<td>LOG_ADDENTRY_EXT</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>2:qLogAddEntryExt:::null</td>
+</tr>
+<tr>
+	<td>LOG_GETENTRIES</td>
+	<td>Service
+		48
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qLogGetEntries:rsAuditLog::null</td>
+</tr>
+<tr>
+	<td>LOG_ADDENTRY_SUB</td>
+	<td>Service
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>2:qLogAddEntry:::null</td>
+</tr>
+<tr>
+	<td>LOG_ADDENTRY_EXT_SUB</td>
+	<td>Service
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>2:qLogAddEntryExt:::null</td>
+</tr>
+<tr>
+	<td>ECS_ADD_AUDIT_ENTRY</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAuditEntry:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>ECS_ADD_AUDIT_ENTRY_SUB</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:addAuditEntry:::null</td>
+</tr>
+<tr>
+	<td>ECS_AUDIT_TEST</td>
+	<td>Service
+		0
+		ECS_AUDIT_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ECS_GET_AUDIT_ENTRIES_BY_REF</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qAuditEntriesByRef:rsAuditEntries::null</td>
+</tr>
+<tr>
+	<td>ECS_AUDIT_DISPLAY</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		0
+		ECS_AUDIT_DISPLAY
+		null
+		null<br>
+		null</td>
+	<td>3:getAuditEntries:::null</td>
+</tr>
+<tr>
+	<td>ECS_ADD_AUDIT</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAudit:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>ECS_RELOAD_AUDIT</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:reloadAuditConfig:::null</td>
+</tr>
+<tr>
+	<td>ECS_ADD_AUDIT_SUB</td>
+	<td>com.ecs.stellent.auditlog.AuditUtils
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:addAudit:::null</td>
+</tr>
+<tr>
+	<td>ECS_INSERT_AUDIT</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>2:qAddAudit:::null</td>
+</tr>
+<tr>
+	<td>ECS_INSERT_AUDIT_SUB</td>
+	<td>Service
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>2:qAddAudit:::null</td>
+</tr><tr>
+	<td>ECS_AUDIT_ENTRIES_BY_PARENT</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:ECS_AUDIT_ENTRIES_BY_PARENT_SUB::null</td>
+</tr>
+<tr>
+	<td>ECS_AUDIT_ENTRIES_BY_PARENT_SUB</td>
+	<td>Service
+		1
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>5:qAuditLogEntriesByParent:ECS_AuditLogEntries::null</td>
+</tr><tr>
+	<td>ECS_AUDIT_SUMMARY_BY_PARENT_SUB</td>
+	<td>Service
+		1
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>5:qAuditLogSummaryByParent:ECS_AuditLogEntries::null</td>
+</tr>
+<tr>
+	<td>ECS_AUDIT_SUMMARY_BY_PARENT</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:ECS_AUDIT_SUMMARY_BY_PARENT_SUB::null</td>
+</tr>
+<tr>
+	<td>ECS_LOGIN</td>
+	<td>Service
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:prepareRedirect:<$if redirecturl$><$redirecturl$><$else$>IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CM_HOME_PAGE<$if Auth$>&Auth=<$Auth$><$endif$><$endif$>::null</td>
+</tr>
+</table><@end@></body></html>

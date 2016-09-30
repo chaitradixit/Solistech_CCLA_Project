@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>
+ECS_PopupMenus htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Holds the blanket and pop-up div elements, and a reference
+		 to the pop-up div javascript include -->
+<@dynamichtml ecs_popup_div_header@>
+	
+	<$include ecs_popup_jquery_js$>
+	
+	<!-- div element used to grey out screen -->
+	<div id="blanket" style="display:none;"></div>
+	
+	<!-- pop-up div element (content inserted dynamically) -->
+	<div id="popUpDiv" style="display:none;">
+		<a href="#" id="closeLink" onclick="closePopup();return false;">Close this window</a>
+		
+		<iframe id="popUpDivInner" frameborder=0 scrolling="no" ></iframe>
+	</div>
+
+	<$include ecs_popup_div_js$>
+
+<@end@>
+
+<@dynamichtml ecs_popup_jquery_js@>
+
+	<$if (not jQueryIncluded) and (#env.ECS_PopupMenus_include_jquery_js)$>
+		<script type="text/javascript" src="<$HttpWebRoot$>resources/jquery/jquery-1.3.2.min.js"></script>
+		<$jQueryIncluded=1$>
+	<$endif$>
+
+<@end@>
+
+<!-- Example style set. -->
+<@dynamichtml ecs_popup_div_styles@>
+
+	<style type="text/css">
+			
+		#blanket {
+			background-color:#111;
+			opacity: 0.65;
+			filter:alpha(opacity=65);
+			position:absolute;
+			z-index: 9001;
+			top:0px;
+			left:0px;
+			width:100%;
+		}
+		 
+		#popUpDiv {
+			position:absolute;
+			background-color:#eeeeee;
+			width:0px;
+			height:0px;
+			overflow:auto;
+			z-index: 9002;
+			padding: 5px;
+		}
+		
+		#closeLink {
+			margin: 5px;
+			display: block;
+			clear: both;
+		}
+		
+		#popUpDivInner {
+			background-color: #fff;
+			border: none;
+		}
+	
+	</style>
+
+<@end@>
+
+<!-- Loads in config vars so they are available to the static JS 
+	 file. -->
+<@dynamichtml ecs_popup_div_static_js@>
+
+	<script type="text/javascript">
+
+		// default pop-up width used, if one isn't specified in
+		// the openPopup() call
+		var defaultPopupWidth = <$#env.ECS_PopupMenus_default_popup_width$>;
+		
+		// determines whether the background is faded in/out when a popup menu
+		// is opened/closed
+		var useFadeAnimations = <$if #env.ECS_PopupMenus_use_fade_animations$>true<$else$>false<$endif$>;
+		
+		var httpCgiPath = "<$HttpCgiPath$>";
+		
+		var isIE = <$if MSIE$>true<$else$>false<$endif$>;
+
+	</script>
+
+<@end@>
+
+<!-- Contains all javascript functions required to support
+		 pop-up div functionality -->
+<@dynamichtml ecs_popup_div_js@>
+	
+	<$include ecs_popup_div_static_js$>
+	
+	<script type="text/javascript" src="<$HttpWebRoot$>resources/ECS_PopupMenus/ecs_popupdivs.js"></script>
+	
+	<$include ecs_popup_hide_elements_extra$>
+	
+<@end@>
+</body></html>

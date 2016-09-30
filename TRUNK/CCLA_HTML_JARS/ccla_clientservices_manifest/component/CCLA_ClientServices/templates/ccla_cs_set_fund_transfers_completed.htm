@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Step 5: Client Activity Completed
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<!-- Fetch any existing transfers for this process -->
+		<$executeService("CCLA_CS_GET_FUND_TRANSFERS_BY_PROCESS_ID")$>
+		
+		<!-- Determine if at least 1 account is marked for transfer -->
+		<$loop rsFundTransfers$>
+			<$if not (#active.TRANSFER_TYPE like 'none')$>
+				<$requiresTransfers=1$>
+				<$break$>
+			<$endif$>
+		<$endloop$>
+		
+		<script type="text/javascript">
+			
+			function activityOutcomeUpdated() {
+				var activityOutcome = document.forms['resolveActivityForm'].elements['activityOutcome'].value;
+				
+				if (activityOutcome == "Completed") {
+					$("#printForm").removeAttr("disabled");
+					$("#printForm").attr("checked","checked");
+				} else {
+					$("#printForm").removeAttr("checked");
+					$("#printForm").attr("disabled","disabled");
+				}
+			}
+			
+			function resolveActivityOutcome() {
+				var activityOutcome = document.forms['resolveActivityForm'].elements['activityOutcome'].value;
+				
+				if (activityOutcome == "") {
+					alert("Please choose an activity outcome before continuing.");
+					return;
+				}
+				
+				document.forms['resolveActivityForm'].submit();
+			}
+			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin-top: 20px;">	
+			<div id='ccla_cs_content' style='width: 600px'>
+				
+				<$include ccla_cs_activity_details$>
+				
+				<$include orangeContainer_top$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					Step 5: Client Activity Completed
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<form method="post" action="<$HttpCgiPath$>?IdcService=CCLA_CS_CLIENT_LOOKUP"
+						  name="resolveActivityForm" id="resolveActivityForm">
+						<input type="hidden" name="IdcService" 		value="CCLA_CS_RESOLVE_ACTIVITY_SUBMIT" /><$include add_idc_token_to_form$>
+						
+						<input type="hidden" name="RedirectUrl" 	value="<$HttpCgiPath$>?IdcService=CCLA_CS_CLIENT_LOOKUP<$include add_idc_token_to_url$>&completed=1" />
+						
+						<$loop rsProcess$>
+							<input type="hidden" name="processId"	value="<$#active.PROCESS_ID$>" />
+							<input type="hidden" name="processName" value="<$#active.PROCESS_NAME$>" />
+						<$endloop$>
+						
+						<input type="hidden" name="activityId" 		value="<$#local.activityId$>" />
+						<input type="hidden" name="personId" value="<$#local.personId$>" />
+						<input type="hidden" name="company" value="<$#local.company$>" />
+						
+						<p>
+							<$if (totalTransfers == 0) and (updatedTransfers == 0)$>
+								<$noTransfers=1$>
+								The correspondent had no accounts eligible for transfer.
+							<$else$>
+						
+								<$if updatedTransfers == 0$>
+									No transfer details were updated.
+								<$else$>
+									Transfer details for <$updatedTransfers$> accounts have been added/updated.
+								<$endif$>
+							
+							<$endif$>
+						</p>
+						
+						<$if noTransfers$>
+							<input type="hidden" name="noTransfers" value="1" />
+						<$endif$>
+						
+						<p>
+							To complete this activity, please choose an outcome below.
+							<$if requiresTransfers$>
+								Selecting 'Completed' will automatically generate the confirmation form.
+							<$endif$>
+						</p>
+						
+						<p>
+							<select name="activityOutcome" id="activityOutcome" onchange="activityOutcomeUpdated()">
+								<option value=""></option>
+								
+								<$exec rsMakeFromString("rsOutcomes",#env.CCLA_CS_CompletedActivityOutcomes,"outcome")$>
+								
+								<$loop rsOutcomes$>
+									<option value="<$#active.outcome$>"><$#active.outcome$></option>
+								<$endloop$>
+							</select>
+						</p>
+						
+						<$if requiresTransfers$>
+							
+							<$if #env.AURORA_EnableFormPrinting$>
+								<p>
+									<input type="checkbox" name="printForm" id="printForm" disabled="disabled" /> Print the confirmation form
+								</p>
+							<$else$>
+								<p>Form printing is currently disabled.</p>
+							<$endif$>
+							
+						<$else$>
+							<p>
+								No confirmation form will be generated for this correspondent, as they have not requested any transfers.
+							</p>
+						<$endif$>
+						
+						<br/>
+						
+						<div style="text-align: right">
+							<input type="button" name="submitType" value="Submit" onclick="resolveActivityOutcome()" />
+						</div>
+					</form>
+					
+				</div>
+				
+				<br/>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include ccla_cs_previous_activity_details$>
+				
+			</div>
+		</div>
+		
+	</body>
+</html>

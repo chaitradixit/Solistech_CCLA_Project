@@ -1,0 +1,171 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	<$include ccla_cs_ajax_js$>	
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "startDate,endDate"$>
+	
+	<$SF_startDate_type="input"$>
+	<$SF_startDate_shortname="startDate"$>
+	
+	<$SF_endDate_type="input"$>
+	<$SF_endDate_shortname="endDate"$>
+	<$include epoch_calendar_header$>
+	<$include ccla_date_masking_js$>
+	
+	<title>
+		Check Static Data Equality
+	</title>
+	
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$('#process').click(function() {
+			
+				$('#corrResults').html("processing");
+			
+				var idocService = "";
+				var type = $('#TYPE').val();
+				
+				if (type=='CORRESPONDENT') {
+					idocService = "CCLA_CP_CHECK_AURORA_CORRESPONDENT";
+				} else if (type=='CLIENT') {
+					idocService = "CCLA_CP_CHECK_AURORA_CLIENT";
+				} else {
+					idocService = "CCLA_CP_CHECK_AURORA_ACCOUNT";
+				}
+				
+				var orgId = $('#ORGANISATION_ID').val();
+				var perId = $('#PERSON_ID').val();
+				var accId = $('#ACCOUNT_ID').val();
+				var companyId = $('#COMPANY_ID').val();
+				var debug = $('#debug').val();		
+						
+				$.getJSON("?IdcService="+idocService+"<$include add_idc_token_to_url$>", 
+				{ 	
+					"ORGANISATION_ID": orgId,
+					"PERSON_ID": perId,
+					"ACCOUNT_ID": accId,
+					"COMPANY_ID": companyId,
+					"debug": debug,
+					"IsJson": 1,
+					"ts": new Date()
+				}, function(jsonData) {handleProcessDateCompleted(jsonData);});
+			});
+		});
+		
+		handleProcessDateCompleted = function(jsonData) 
+		{
+			if (jsonData=="") {
+				$('#corrResults').html('');
+				alert("Error whilst checking: no data"); 
+			} else {
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+		
+				if (jsonErrorMsg) {
+					$('#corrResults').html('');
+					alert("Error whilst checking: "+jsonErrorMsg);
+				} else {
+					var isEqual = jsonData.LocalData.IsEqual;
+					var message = "Equals";
+					if (isEqual=='0')
+						message = "Not Equals";
+					
+					$('#corrResults').html(message);
+				}
+			}
+			return;
+		}		
+	</script>
+</head>
+<body onload="prepareCalendars()">
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 700px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Static Data Equality Check
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Check Static Data of Central Database To Aurora</h3>
+						<form id="checkForm" name="checkFrom" method="post"><$include add_idc_token_to_form$>
+						<input type="hidden" name="IdcService" 	value="CCLA_CP_CHECK_AURORA_CORRESPONDENT" />															
+						
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="75%">
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">TYPE</th>
+								<td>
+									<select name="TYPE" id="TYPE">
+										<option value="CORRESPONDENT">Correspondent</option>
+										<option value="CLIENT">Client</option>
+										<option value="Account">Account</option>
+									</select>
+								</td>
+							</tr>
+
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">COMPANY</th>
+								<td>
+									<select name="COMPANY_ID" id="COMPANY_ID">
+										<option value="">-</option>
+										<$loop rsCompany$>
+											<option value="<$#active.COMPANY_ID$>"><$#active.COMPANY_CODE$></option>
+										<$endloop$>
+									</select>
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">PERSON_ID</th>
+								<td>
+									<input name="PERSON_ID" id="PERSON_ID" value="" />
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">ORGANISATION_ID</th>
+								<td>
+									<input name="ORGANISATION_ID" id="ORGANISATION_ID" value="" />
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">ACCOUNT_ID</th>
+								<td>
+									<input name="ACCOUNT_ID" id="ACCOUNT_ID" value="" />
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">Debug</th>
+								<td>
+									<input type="checkbox" name="debug" id="debug" checked />
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">&nbsp;</th>
+								<td>
+									<input type="button" id="process" name="process" value="Check"/>
+								</td>
+							</tr>
+						</table>
+						<form>
+					<br />
+					<div style="padding-top:5px"></div>
+					<br />
+					<div id="corrResults" name="corrResults">
+					</div>
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

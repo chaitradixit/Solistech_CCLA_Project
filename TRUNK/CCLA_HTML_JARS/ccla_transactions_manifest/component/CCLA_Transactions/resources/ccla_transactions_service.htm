@@ -1,0 +1,553 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Transactions service
+</title>
+</head>
+<body>
+
+<@table CCLA_Transactions_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_EDIT</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANSACTIONS_SHARE_CLASS_EDIT
+		null
+		null
+		null</td>
+	<td>3:getShareClassBasic:::null
+	3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANSACTIONS_SHARE_CLASS_EDIT
+		null
+		null
+		null</td>
+	<td>3:updateShareClass:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_ADD</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANSACTIONS_SHARE_CLASS_EDIT
+		null
+		null
+		null</td>
+	<td>3:addShareClass:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_NEW</td>
+	<td>DocService
+		35
+		CCLA_TRANSACTIONS_SHARE_CLASS_EDIT
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_SIMPLE</td>
+	<td>Service
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetShareClassbyId,rsShareClass::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EXPENSE_NEW</td>
+	<td>Service
+		35
+		CCLA_TRANS_INCOME_EXPENSE_EDIT
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllShareClasses,rsShareClasses::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EXPENSE_EDIT</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_INCOME_EXPENSE_EDIT
+		null
+		null
+		null</td>
+	<td>3:getIncomeExpenseBasic:::null
+	3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllShareClasses,rsShareClasses::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EXPENSE_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_INCOME_EXPENSE_EDIT
+		null
+		null
+		null</td>
+	<td>3:updateExpense:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EXPENSE_DELETE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_INCOME_EXPENSE_EDIT
+		null
+		null
+		null</td>
+	<td>3:removeExpense:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EXPENSE_ADD</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_INCOME_EXPENSE_EDIT
+		null
+		null
+		null</td>
+	<td>3:addExpense:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_DAILY_EXPENSES</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_DAILY_EXPENSES
+		null
+		null
+		null</td>
+	<td>3:getDailyExpenses:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_START_EOD_PRECHECKS</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_ENTER_PRICES
+		null
+		null
+		null</td>
+	<td>3:runPreEODChecks:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_RESTART_EOD</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_ENTER_PRICES
+		null
+		null
+		null</td>
+	<td>3:restartEOD:::null
+	3:runPreEODChecks:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_PREVIEW_EOD</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EODService
+		35
+		CCLA_TRANS_PREVIEW_EOD
+		null
+		null
+		null</td>
+	<td>3:previewEOD:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_CONFIRM_EXPENSES</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_CONFIRM_EXPENSES
+		null
+		null
+		null</td>
+	<td>3:confirmIncomeExpense:::null
+	3:doSubService:CCLA_TRANS_GET_INCOME_SUB::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_INCOME_EDIT</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.IncomeService
+		35
+		CCLA_TRANS_INCOME_EDIT
+		null
+		null
+		null</td>
+	<td>3:getIncome:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_INCOME_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.IncomeExpenseService
+		35
+		CCLA_TRANS_INCOME_EDIT
+		null
+		null
+		null</td>
+	<td>3:updateIncome:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_GET_INCOME_SUB</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.IncomeService
+		35
+		null
+		SubService
+		null
+		null</td>
+	<td>3:getIncome:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_GET_INCOME</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.IncomeService
+		35
+		null
+		Service
+		null
+		null</td>
+	<td>3:getIncome:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_VIEW_TEST</td>
+	<td>Service
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetTransactionsAll,rsTransactions::null</td>
+</tr>
+</tr>
+<tr>
+	<td>CCLA_TRANS_START_EOD_PSDF</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANSACTIONS_EOD_TOTAL
+		null
+		null
+		null</td>
+	<td>3:startEOD:::null
+	3:getFundAudit:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_START_CALCULATE_EOD_PSDF</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_EOD_SUMMARY
+		null
+		null
+		null</td>
+	<td>3:prepareEndOfDay:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_ENTER_PRICES</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.FundService
+		35
+		CCLA_TRANS_ENTER_PRICES
+		null
+		null
+		null</td>
+	<td>3:getLatestPrice:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_PRICE_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.FundService
+		35
+		CCLA_TRANS_PRICE_UPDATE
+		null
+		null
+		null</td>
+	<td>3:updatePrice:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_TRANSACTION_EDIT</td>
+	<td>com.ecs.ucm.ccla.transactions.services.TransactionService
+		35
+		CCLA_TRANS_TRANSACTION_EDIT
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetPSDFAccounts,rsAccounts::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllTransactionTypes,rsTransactionTypes::null
+	3:getTransaction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_TRANSACTION_NEW</td>
+	<td>DocService
+		35
+		CCLA_TRANS_TRANSACTION_EDIT
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetPSDFAccounts,rsAccounts::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllTransactionTypes,rsTransactionTypes::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_TRANSACTION_ADD</td>
+	<td>com.ecs.ucm.ccla.transactions.services.TransactionService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:addTransaction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_TRANSACTION_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.TransactionService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:updateTransaction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_TRANSACTION_LIST</td>
+	<td>com.ecs.ucm.ccla.transactions.services.TransactionService
+		35
+		CCLA_TRANS_TRANSACTION_LIST
+		null
+		null
+		null</td>
+	<td>3:getAllCurrentTransactionsForEOD:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EOD_TRANSACTION_LIST</td>
+	<td>com.ecs.ucm.ccla.transactions.services.TransactionService
+		35
+		CCLA_TRANS_TRANSACTION_LIST
+		null
+		null
+		null</td>
+	<td>3:getAllCompletedTransactionsForEOD:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_FINISH_EOD_PSDF</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_FINISH_EOD_PSDF
+		null
+		null
+		null</td>
+	<td>3:finishEndOfDay:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_NEW</td>
+	<td>DocService
+		35
+		CCLA_TRANS_SHARE_CLASS_GROUP_EDIT
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllShareClasses,rsShareClasses::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_CREATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:createShareClassGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_EDIT</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		CCLA_TRANS_SHARE_CLASS_GROUP_EDIT
+		null
+		null
+		null</td>
+	<td>3:getShareClassGroup:::null
+	3:createResultSetFromPooledConnection:qTransactions_GetFunds,rsFunds::null
+	3:createResultSetFromPooledConnection:qTransactions_GetAllShareClasses,rsShareClasses::null</td>
+</tr>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_UPDATE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:updateShareClassGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_APPLIED_ADD</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:addAccountToGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_ADD_ACCOUNT_SHARE_CLASS_GROUP</td>
+	<td>DocService
+		35
+		CCLA_TRANS_ADD_ACCOUNT_SHARE_CLASS_GROUP
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_APPLIED_REMOVE</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:removeAccountFromGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_LISTING</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		CCLA_TRANS_SHARE_CLASS_GROUP_LISTING
+		null
+		null
+		null</td>
+	<td>3:getAllShareClassGroups:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EOD_COMPLETED_LISTING</td>
+	<td>DocService
+		35
+		CCLA_TRANS_EOD_COMPLETED_LISTING
+		null
+		null
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qTransactions_GetUserName,rsRunBy::null
+		3:createResultSetFromPooledConnection:qTransactions_GetMaxCompletedFundEOD,rsLatestCompleted::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_GROUP_LISTING</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassGroupService
+		35
+		CCLA_TRANS_SHARE_CLASS_GROUP_LISTING
+		null
+		null
+		null</td>
+	<td>3:getAllShareClassGroups:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EOD_GET_DETAIL</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndofDayReportService
+		35
+		CCLA_TRANS_EOD_GET_DETAIL
+		null
+		null
+		null</td>
+	<td>3:getEndofDayDetailsOld:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EOD_GET_DETAIL_NEW</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndofDayReportService
+		35
+		CCLA_TRANS_EOD_GET_DETAIL_NEW
+		null
+		null
+		null</td>
+	<td>3:getEndofDayDetails:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SHARE_CLASS_LISTING</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANS_SHARE_CLASS_LISTING
+		null
+		null
+		null</td>
+	<td>3:getShareClassListing:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_GET_ACCOUNT_SHARE_CLASS_EXTRA</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		null
+		null
+		null
+		null</td>
+	<td>3:getAccountShareClassDetail:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_EOD_SHARE_CLASS_MOVEMENT_REPORT</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndofDayReportService
+		35
+		CCLA_TRANS_EOD_SHARE_CLASS_MOVEMENT_REPORT
+		null
+		null
+		null</td>
+	<td>3:getShareClassMovementReport:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_PSDF_END_OF_MONTH_TRANSFERS</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndofDayTransactionService
+		35
+		CCLA_TRANS_EOD_GENERATE_END_OF_MONTH_TRANSACTIONS
+		null
+		null
+		null</td>
+	<td>3:createEndOfDayTransactions:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_RERUN_EOD</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_START_EOD_WITH_DATE
+		null
+		null
+		null</td>
+	<td>3:rerunEOD:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_START_EOD_WITH_DATE</td>
+	<td>Service
+		35
+		CCLA_TRANS_START_EOD_WITH_DATE
+		null
+		null
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_RESTART_EOD_WITH_DATE</td>
+	<td>com.ecs.ucm.ccla.transactions.psdf.EndOfDayService
+		35
+		CCLA_TRANS_START_EOD_WITH_DATE
+		null
+		null
+		null</td>
+	<td>3:restartEOD:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_SC_DISCREPANCY</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANS_SC_DISCREPANCY
+		null
+		null
+		null</td>
+	<td>3:showShareClassDiscrepencies:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TRANS_CREATE_SC_MOVEMENT</td>
+	<td>com.ecs.ucm.ccla.transactions.services.ShareClassService
+		35
+		CCLA_TRANS_CREATE_SC_MOVEMENT
+		null
+		null
+		null</td>
+	<td>3:createPendingShareClassMovementToAurora:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

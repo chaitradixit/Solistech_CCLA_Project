@@ -1,0 +1,2087 @@
+------------------------------------------------------------------------
+r22147 | tm | Wed Jul 09 16:05:17 BST 2014
+
+c
+------------------------------------------------------------------------
+r22137 | tm | Tue Jul 08 15:11:52 BST 2014
+
+Default priority setting
+------------------------------------------------------------------------
+r22136 | tm | Tue Jul 08 15:11:13 BST 2014
+
+CR for calypso issue #1786.
+
+Added extra up-front duplicate checks to StaticDataUpdateModuleHandler
+
+Added custom pass action to SPPJobModuleHandler - this will forward on SDU instructions to the SDU Router module.
+------------------------------------------------------------------------
+r22133 | tm | Tue Jul 08 15:07:03 BST 2014
+
+Added Priority value to info screen
+------------------------------------------------------------------------
+r22132 | tm | Tue Jul 08 15:03:20 BST 2014
+
+Modified instruction fetch queries to return items in descending priority order
+------------------------------------------------------------------------
+r21886 | tm | Thu Feb 27 10:34:35 GMT 2014
+
+Updated instr status to Ready for SDU Exec.
+------------------------------------------------------------------------
+r21883 | tm | Thu Feb 27 10:03:18 GMT 2014
+
+Whoops
+------------------------------------------------------------------------
+r21881 | tm | Thu Feb 27 09:33:30 GMT 2014
+
+Added new service and query to support Statement Prefs update
+------------------------------------------------------------------------
+r21880 | tm | Thu Feb 27 09:32:30 GMT 2014
+
+Looking good now.
+------------------------------------------------------------------------
+r21879 | tm | Wed Feb 26 16:36:23 GMT 2014
+
+First cut of DataFixService
+------------------------------------------------------------------------
+r21735 | tm | Thu Dec 12 15:48:32 GMT 2013
+
+Added new optimization to pending instruction fetch query used for Routing Module processing. Transaction instructions are now always fetched before non-transaction instructions, giving them higher priority when backlogs occur.
+------------------------------------------------------------------------
+r21609 | tm | Fri Nov 22 08:41:14 GMT 2013
+
+New queries and changes to some templates
+------------------------------------------------------------------------
+r21608 | tm | Thu Nov 21 16:44:17 GMT 2013
+
+Stable changes
+------------------------------------------------------------------------
+r21592 | tm | Wed Nov 20 12:44:29 GMT 2013
+
+First cut of IR changes
+------------------------------------------------------------------------
+r21590 | tm | Tue Nov 19 12:37:16 GMT 2013
+
+Improved comment and null check
+------------------------------------------------------------------------
+r21442 | tm | Thu Oct 24 19:25:24 BST 2013
+
+Bug fix in dupe check method
+------------------------------------------------------------------------
+r21424 | tm | Wed Oct 23 16:56:34 BST 2013
+
+Refactoring SDU Duplicate Instruction checking to use StringBuffer when building the query.
+
+Added a utility method for checking for existing SDU Instructions by their values.
+------------------------------------------------------------------------
+r21234 | tm | Thu Aug 22 08:57:20 BST 2013
+
+Re-added Instr_Type columns, just in case they are referenced anywhere.
+------------------------------------------------------------------------
+r21229 | tm | Wed Aug 21 16:19:38 BST 2013
+
+Fixed duplicate timestamp columns in query qCommProc_GetPendingInstructionsByStatusId
+------------------------------------------------------------------------
+r21228 | tm | Wed Aug 21 11:47:19 BST 2013
+
+Fixed boolean check bug. Caused the field checking logic to ignore the date of the parent instruction and use the current date as a basis for calculation instead
+------------------------------------------------------------------------
+r20868 | tm | Wed May 15 16:33:15 BST 2013
+
+Amendments to SDU process for circular mandated account refs
+------------------------------------------------------------------------
+r20863 | tm | Wed May 15 14:15:04 BST 2013
+
+Added missing contact lookup
+------------------------------------------------------------------------
+r20859 | tm | Wed May 15 13:52:17 BST 2013
+
+Null inserts fixed?
+------------------------------------------------------------------------
+r20820 | tm | Tue May 14 15:16:33 BST 2013
+
+Account STP updates
+------------------------------------------------------------------------
+r20804 | tm | Fri May 10 18:05:49 BST 2013
+
+Changes for Account stuff. Haven't worked on Exec side yet.
+------------------------------------------------------------------------
+r20783 | tm | Fri May 03 17:47:58 BST 2013
+
+Started on Account updates
+------------------------------------------------------------------------
+r20779 | tm | Thu May 02 17:40:32 BST 2013
+
+Todays work
+------------------------------------------------------------------------
+r20774 | tm | Thu May 02 09:04:05 BST 2013
+
+Removed test-equality methods
+------------------------------------------------------------------------
+r20773 | tm | Wed May 01 17:49:26 BST 2013
+
+Updates for new client stuff
+------------------------------------------------------------------------
+r20758 | tm | Tue Apr 30 18:23:34 BST 2013
+
+Correspondent stuff done now - other types currently disabled!
+------------------------------------------------------------------------
+r20531 | tm | Fri Mar 15 09:04:51 GMT 2013
+
+Added TODO note
+------------------------------------------------------------------------
+r20530 | tm | Fri Mar 15 09:03:13 GMT 2013
+
+Adapted to work with new cache. Fixes issue with Destination AccNumExt values not being mapped from Instruction data values.
+------------------------------------------------------------------------
+r20511 | tm | Wed Mar 13 13:55:51 GMT 2013
+
+Removed error throw in case it causes trouble
+------------------------------------------------------------------------
+r20509 | tm | Wed Mar 13 13:40:48 GMT 2013
+
+Added BatchNumber mapping when generating workflow mappings from Instructions
+------------------------------------------------------------------------
+r20485 | tm | Mon Mar 11 12:53:16 GMT 2013
+
+Added support for triggering SPP jobs on Comm First Trans Feed instructions
+------------------------------------------------------------------------
+r20471 | tm | Fri Mar 08 16:14:36 GMT 2013
+
+New field handler for Calculation Date. Extracted from the indexed Form ID on the document
+------------------------------------------------------------------------
+r20467 | tm | Fri Mar 08 15:58:22 GMT 2013
+
+Added extra hook for applied instr. data fields:
+
+Beneficiary Org ID
+Form ID/barcode
+------------------------------------------------------------------------
+r19778 | tm | Mon Nov 26 17:46:35 GMT 2012
+
+Changes to Instruction Listing display
+
+New service CCLA_CP_TAP_DOCS
+------------------------------------------------------------------------
+r19777 | tm | Mon Nov 26 17:28:21 GMT 2012
+
+Added new admin-only tap docs service for triggering update filters
+------------------------------------------------------------------------
+r19662 | tm | Tue Nov 06 17:53:52 GMT 2012
+
+Hook added for triggering post-index actions on form items
+------------------------------------------------------------------------
+r19661 | tm | Tue Nov 06 17:53:22 GMT 2012
+
+CRs
+------------------------------------------------------------------------
+r19640 | tm | Mon Nov 05 17:39:58 GMT 2012
+
+Added deploy to dev
+------------------------------------------------------------------------
+r19129 | camli | Tue Aug 21 17:17:16 BST 2012
+
+added debug for defect 788.
+------------------------------------------------------------------------
+r18988 | tm | Fri Aug 10 09:59:40 BST 2012
+
+New verifyNominatedContactPoints service
+------------------------------------------------------------------------
+r18981 | tm | Fri Aug 10 09:09:41 BST 2012
+
+Added verifyNominatedContactPoints service/static method
+------------------------------------------------------------------------
+r18973 | tm | Wed Aug 08 11:26:35 BST 2012
+
+Added verifyNominatedContactPoints service/static method
+------------------------------------------------------------------------
+r18917 | camli | Tue Jul 31 15:21:11 BST 2012
+
+fixed issue with webcenter spaces deleting files.
+------------------------------------------------------------------------
+r18913 | tm | Fri Jul 27 17:38:09 BST 2012
+
+Added date test method
+------------------------------------------------------------------------
+r18894 | camli | Tue Jul 24 15:54:43 BST 2012
+
+rejigged correspondent logic for client.
+------------------------------------------------------------------------
+r18793 | camli | Fri Jun 29 12:24:05 BST 2012
+
+fixed query to made integration more seamless
+------------------------------------------------------------------------
+r18783 | camli | Thu Jun 28 16:38:38 BST 2012
+
+updated SQL to return results including non null storage rules for archiving 
+------------------------------------------------------------------------
+r18764 | tm | Wed Jun 27 09:33:55 BST 2012
+
+Switch off startPaused flag for future live deployments
+------------------------------------------------------------------------
+r18714 | tm | Wed Jun 20 16:54:57 BST 2012
+
+Amended clone doc method to accept GUID value instead of dID
+
+See Calypso issue http://support.extended-content.com/calypso/issues/654
+------------------------------------------------------------------------
+r18661 | camli | Fri Jun 15 12:46:25 BST 2012
+
+hide CCLA\ users from the current list.
+------------------------------------------------------------------------
+r18660 | camli | Fri Jun 15 12:35:54 BST 2012
+
+added services for adding/removing cdb users
+------------------------------------------------------------------------
+r18658 | camli | Fri Jun 15 12:23:22 BST 2012
+
+added services for adding/removing cdb users
+------------------------------------------------------------------------
+r18657 | camli | Fri Jun 15 12:22:16 BST 2012
+
+added services for adding/removing cdb users
+------------------------------------------------------------------------
+r18656 | camli | Fri Jun 15 12:03:03 BST 2012
+
+added services for adding/removing cdb users
+------------------------------------------------------------------------
+r18655 | camli | Fri Jun 15 11:03:30 BST 2012
+
+initial version
+------------------------------------------------------------------------
+r18654 | tm | Fri Jun 15 10:49:08 BST 2012
+
+Refactoring fixUserNameCase method to normalizeUserName. Now removes NT Domain from passed user name, if an env. flag is set. 
+------------------------------------------------------------------------
+r18651 | camli | Thu Jun 14 17:59:47 BST 2012
+
+removed references to CCLA\ in usernames
+------------------------------------------------------------------------
+r18570 | tm | Thu Jun 07 15:50:34 BST 2012
+
+Added service signature for thread DB testing.
+------------------------------------------------------------------------
+r18569 | tm | Thu Jun 07 15:49:42 BST 2012
+
+Added explicit creation and releaseConnection() call to a SystemDatabase FWFacade at the end of the monitor loop. This should help clear up any connections to SystemDatabase opened during the loop.
+------------------------------------------------------------------------
+r18568 | tm | Thu Jun 07 15:48:48 BST 2012
+
+Added workspace thread testing method.
+
+
+------------------------------------------------------------------------
+r18565 | PAULT | Thu Jun 07 15:38:42 BST 2012
+
+added fix for ipad styling
+------------------------------------------------------------------------
+r18555 | tm | Wed Jun 06 18:08:54 BST 2012
+
+Added new service CCLA_CP_APPLY_BULK_INSTRUCTION_PROCESS_ACTION. Allows bulk action execution on suspended instructions.
+
+Changed Routing Module Admin service to be scriptable.
+------------------------------------------------------------------------
+r18552 | tm | Wed Jun 06 18:01:03 BST 2012
+
+New query for bulk instruction process action execution
+------------------------------------------------------------------------
+r18548 | tm | Wed Jun 06 17:10:19 BST 2012
+
+Added new service method applyBulkProcessAction
+------------------------------------------------------------------------
+r18547 | tm | Wed Jun 06 17:06:52 BST 2012
+
+Added graceful release of FWFacade used in startup method
+------------------------------------------------------------------------
+r18520 | tm | Thu May 31 15:05:24 BST 2012
+
+Fixed classpath
+------------------------------------------------------------------------
+r18477 | PAULT | Mon May 28 11:19:52 BST 2012
+
+added switch for routing module manager to start paused
+------------------------------------------------------------------------
+r18476 | PAULT | Mon May 28 11:19:29 BST 2012
+
+added switch for routing module manager
+------------------------------------------------------------------------
+r18434 | PAULT | Fri May 25 14:28:42 BST 2012
+
+updated manifest.hda
+------------------------------------------------------------------------
+r18381 | PAULT | Thu May 24 16:27:22 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18377 | PAULT | Thu May 24 16:09:25 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18355 | PAULT | Thu May 24 14:22:36 BST 2012
+
+added final readme entry notes
+------------------------------------------------------------------------
+r18340 | PAULT | Thu May 24 11:38:52 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18330 | PAULT | Thu May 24 11:06:52 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18306 | PAULT | Wed May 23 17:51:21 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18303 | PAULT | Wed May 23 17:46:50 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18302 | PAULT | Wed May 23 17:43:46 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18301 | PAULT | Wed May 23 17:40:24 BST 2012
+
+added build.properties
+------------------------------------------------------------------------
+r18297 | PAULT | Wed May 23 17:09:28 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18281 | PAULT | Wed May 23 13:27:54 BST 2012
+
+classpath change
+------------------------------------------------------------------------
+r18109 | PAULT | Mon May 21 17:07:43 BST 2012
+
+adding comm processing
+------------------------------------------------------------------------
+r18108 | PAULT | Mon May 21 17:06:51 BST 2012
+
+creating folder
+------------------------------------------------------------------------
+r18106 | PAULT | Mon May 21 17:05:32 BST 2012
+
+creating folder
+------------------------------------------------------------------------
+r17951 | tm | Thu May 10 11:36:42 BST 2012
+
+Added updateInstruction service mehtod
+------------------------------------------------------------------------
+r17915 | tm | Tue May 08 14:42:24 BST 2012
+
+Added extra validation to OrganisationIdFieldHandler Instruction Data field translator. Document data translation will now fail if the indexed Org Account Code doesn't correspond to the indexed Client Number/Company.  
+------------------------------------------------------------------------
+r17872 | tm | Mon Apr 30 15:18:16 BST 2012
+
+Fixed facade in SDU instruction fetch.
+
+Added audit entry to checkoutCheckinDocs
+------------------------------------------------------------------------
+r17871 | tm | Mon Apr 30 14:16:40 BST 2012
+
+Added testDocUpdates service method
+------------------------------------------------------------------------
+r17855 | tm | Fri Apr 27 17:52:09 BST 2012
+
+Removed use of lwDoc.setUseTransaction(false). No longer neccessary, and its causing chaos for standard UCM updates etc.
+------------------------------------------------------------------------
+r17840 | tm | Fri Apr 27 12:36:30 BST 2012
+
+Added DOC_ID to getInstructionInfo
+------------------------------------------------------------------------
+r17838 | tm | Fri Apr 27 12:09:53 BST 2012
+
+Fixed string equality check
+------------------------------------------------------------------------
+r17835 | tm | Fri Apr 27 11:24:28 BST 2012
+
+Fixed string equality check
+------------------------------------------------------------------------
+r17834 | tm | Fri Apr 27 11:24:13 BST 2012
+
+Added FIXME note to admin method
+------------------------------------------------------------------------
+r17825 | camli | Thu Apr 26 15:41:44 BST 2012
+
+corrected facades
+------------------------------------------------------------------------
+r17723 | tm | Thu Apr 19 16:05:52 BST 2012
+
+[FIXED] New getDocGUID method - fetches latest Doc GUID for a given dDocName.
+------------------------------------------------------------------------
+r17721 | tm | Thu Apr 19 15:50:25 BST 2012
+
+New field translator
+------------------------------------------------------------------------
+r17715 | tm | Thu Apr 19 13:00:19 BST 2012
+
+Comments and string extern
+------------------------------------------------------------------------
+r17714 | tm | Thu Apr 19 11:43:04 BST 2012
+
+Refactored isMandate/isApp calls
+------------------------------------------------------------------------
+r17702 | tm | Wed Apr 18 15:46:22 BST 2012
+
+Fixed/renamed facades
+------------------------------------------------------------------------
+r17686 | tm | Wed Apr 18 10:26:28 BST 2012
+
+Changed to Central DB facade when fetching workflow sequence
+------------------------------------------------------------------------
+r17678 | tm | Tue Apr 17 17:41:20 BST 2012
+
+Fixed facades
+------------------------------------------------------------------------
+r17542 | PAULT | Wed Apr 11 16:42:56 BST 2012
+
+added try catch 
+------------------------------------------------------------------------
+r17540 | camli | Wed Apr 11 16:36:53 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17539 | camli | Wed Apr 11 16:36:42 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17435 | camli | Thu Apr 05 16:38:31 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17432 | camli | Thu Apr 05 15:57:42 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17430 | camli | Thu Apr 05 15:53:07 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17424 | camli | Thu Apr 05 15:18:38 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17422 | camli | Thu Apr 05 15:02:53 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17416 | camli | Thu Apr 05 12:59:13 BST 2012
+
+changed to cdb facade.
+------------------------------------------------------------------------
+r17414 | pradcliffe | Thu Apr 05 12:44:12 BST 2012
+
+added new CCLAUtils pooling
+------------------------------------------------------------------------
+r17412 | camli | Thu Apr 05 12:40:56 BST 2012
+
+changed to use correct ccla facade.
+------------------------------------------------------------------------
+r17405 | pradcliffe | Thu Apr 05 11:12:05 BST 2012
+
+new Facade fix.
+------------------------------------------------------------------------
+r17386 | camli | Wed Apr 04 15:40:47 BST 2012
+
+removed comment
+------------------------------------------------------------------------
+r17381 | camli | Wed Apr 04 15:14:52 BST 2012
+
+deleted scheduledEventFilter as it is not needed any more.
+------------------------------------------------------------------------
+r17380 | camli | Wed Apr 04 15:14:11 BST 2012
+
+re-instated initial loading of caches and routing manager
+------------------------------------------------------------------------
+r17361 | camli | Wed Apr 04 11:13:03 BST 2012
+
+removed caching.
+------------------------------------------------------------------------
+r17360 | camli | Wed Apr 04 11:12:30 BST 2012
+
+moved routing module to scheduledeventfilter.
+------------------------------------------------------------------------
+r17350 | camli | Tue Apr 03 17:19:37 BST 2012
+
+temporary switched to default connector for usage. 
+------------------------------------------------------------------------
+r17328 | camli | Tue Apr 03 12:21:32 BST 2012
+
+use cachable objects to determine the connector to use.
+------------------------------------------------------------------------
+r17312 | camli | Mon Apr 02 15:03:06 BST 2012
+
+removed documentClassUtils references
+------------------------------------------------------------------------
+r17241 | camli | Thu Mar 29 18:05:26 BST 2012
+
+fixed ucm facade
+------------------------------------------------------------------------
+r17213 | PAULT | Wed Mar 28 15:55:24 BST 2012
+
+fixed update filter issue
+------------------------------------------------------------------------
+r17207 | PAULT | Wed Mar 28 12:35:56 BST 2012
+
+Refactored Instruction and Comm to use docGuids instead of docIds
+------------------------------------------------------------------------
+r17069 | tm | Thu Mar 22 12:14:15 GMT 2012
+
+Added new utility service to populate missing Org Account Codes
+------------------------------------------------------------------------
+r17042 | camli | Tue Mar 20 18:13:37 GMT 2012
+
+removed view dependancy on ucm table space.
+------------------------------------------------------------------------
+r17041 | camli | Tue Mar 20 18:13:08 GMT 2012
+
+added debug.
+------------------------------------------------------------------------
+r16952 | tm | Thu Mar 15 17:23:59 GMT 2012
+
+Wrapped resubmitForAuth method in try-catch to ensure a sensible ServiceException is thrown.
+------------------------------------------------------------------------
+r16933 | camli | Thu Mar 15 11:44:54 GMT 2012
+
+added instructionId to queryJob data
+------------------------------------------------------------------------
+r16886 | tm | Tue Mar 13 16:34:33 GMT 2012
+
+Added bundle-level auditing
+------------------------------------------------------------------------
+r16882 | tm | Tue Mar 13 16:06:56 GMT 2012
+
+Added OrgAccountCode, fixed TransactionBatchTranslator
+------------------------------------------------------------------------
+r16879 | tm | Tue Mar 13 15:35:35 GMT 2012
+
+Bug fixing
+------------------------------------------------------------------------
+r16871 | camli | Tue Mar 13 14:52:11 GMT 2012
+
+updated GUID as base param was changed.
+------------------------------------------------------------------------
+r16869 | camli | Tue Mar 13 14:40:57 GMT 2012
+
+updated duplicate check. Each sdu instruction should be checked against a specific data only.
+------------------------------------------------------------------------
+r16859 | tm | Tue Mar 13 11:05:33 GMT 2012
+
+Added genLineItemDocs service method
+------------------------------------------------------------------------
+r16832 | tm | Fri Mar 09 15:39:31 GMT 2012
+
+New InvoiceService class, should be used for all Invoice-related service methods
+------------------------------------------------------------------------
+r16776 | camli | Thu Mar 08 12:33:54 GMT 2012
+
+oops
+------------------------------------------------------------------------
+r16775 | camli | Thu Mar 08 12:21:53 GMT 2012
+
+added support for guid.
+------------------------------------------------------------------------
+r16731 | tm | Tue Mar 06 16:42:06 GMT 2012
+
+Added new field handler for Liability field
+------------------------------------------------------------------------
+r16571 | PAULT | Thu Feb 23 15:58:06 GMT 2012
+
+added resubmitInstructionDocs 
+------------------------------------------------------------------------
+r16554 | tm | Tue Feb 21 15:43:02 GMT 2012
+
+Added accept clause to SDU module to prevent non-Aurora accounts spawning SDU instructions.
+
+Added some code to automate removal of AML Tracker KYC attributes on receipt of mandate documents
+------------------------------------------------------------------------
+r16329 | tm | Mon Jan 30 18:18:49 GMT 2012
+
+Refactored getFacade call
+------------------------------------------------------------------------
+r16328 | tm | Mon Jan 30 18:18:40 GMT 2012
+
+Added DOC_ID to Instruction -> SPP var mapping
+------------------------------------------------------------------------
+r16269 | tm | Wed Jan 25 10:28:20 GMT 2012
+
+Amended module list refreshing mechanism
+------------------------------------------------------------------------
+r16263 | tm | Tue Jan 24 17:57:53 GMT 2012
+
+Removed files
+------------------------------------------------------------------------
+r16262 | tm | Tue Jan 24 17:56:45 GMT 2012
+
+Removed files
+------------------------------------------------------------------------
+r16261 | tm | Tue Jan 24 17:56:34 GMT 2012
+
+Fixed conflict
+------------------------------------------------------------------------
+r16260 | tm | Tue Jan 24 17:55:09 GMT 2012
+
+Refactored data classes into Core
+------------------------------------------------------------------------
+r16258 | tm | Tue Jan 24 17:37:00 GMT 2012
+
+Refactored data classes into Core
+------------------------------------------------------------------------
+r16257 | tm | Tue Jan 24 16:56:22 GMT 2012
+
+Fixed imports
+------------------------------------------------------------------------
+r16254 | tm | Tue Jan 24 16:49:02 GMT 2012
+
+Added missing debug line
+------------------------------------------------------------------------
+r16248 | tm | Tue Jan 24 13:06:40 GMT 2012
+
+Added call to updateBundlePriority following a call to cloneDocAndResubmitBundle
+------------------------------------------------------------------------
+r16247 | tm | Tue Jan 24 13:04:14 GMT 2012
+
+Added/fixed utility methods
+------------------------------------------------------------------------
+r16243 | tm | Tue Jan 24 10:46:51 GMT 2012
+
+Added updateBundlePriority call after a bundle document is cloned and resubmitted
+------------------------------------------------------------------------
+r16242 | tm | Tue Jan 24 10:45:32 GMT 2012
+
+Fixed issues with Static Data Update instruction generation.
+
+Now uses pure instruction data instead of falling back to document data.
+------------------------------------------------------------------------
+r16221 | tm | Fri Jan 20 01:05:34 GMT 2012
+
+Bug fixing, extra utility methods for instruction data
+------------------------------------------------------------------------
+r16219 | tm | Thu Jan 19 17:58:06 GMT 2012
+
+Fixed bugs with multi correspondent update creation
+
+Added execution date value assignment
+------------------------------------------------------------------------
+r16212 | tm | Tue Jan 17 18:24:22 GMT 2012
+
+Various updates to try-catches and thrown exceptions
+------------------------------------------------------------------------
+r16209 | tm | Tue Jan 17 15:58:22 GMT 2012
+
+Removed redundant error message text coming from Execution module handler.
+
+Added support for generating 2 distinct correspondent instructions (one for client, one for account)
+------------------------------------------------------------------------
+r16204 | camli | Mon Jan 16 14:49:55 GMT 2012
+
+updated logic for persist mode.
+------------------------------------------------------------------------
+r16187 | camli | Thu Jan 12 17:15:33 GMT 2012
+
+updated logic
+------------------------------------------------------------------------
+r16186 | camli | Thu Jan 12 16:36:25 GMT 2012
+
+updated error message.
+------------------------------------------------------------------------
+r16185 | camli | Thu Jan 12 16:08:40 GMT 2012
+
+updated logic.
+------------------------------------------------------------------------
+r16184 | camli | Thu Jan 12 15:44:28 GMT 2012
+
+added getByNull values.
+------------------------------------------------------------------------
+r16181 | camli | Thu Jan 12 15:10:58 GMT 2012
+
+fixed substring lengths
+------------------------------------------------------------------------
+r16177 | camli | Thu Jan 12 13:18:04 GMT 2012
+
+refactored TransactionBatch to use BankAccountId as opposed to sortcode and bankAccountNo.
+------------------------------------------------------------------------
+r16173 | camli | Thu Jan 12 11:22:28 GMT 2012
+
+added flag to control inter-day checks of closing / opening balances.
+------------------------------------------------------------------------
+r16172 | camli | Thu Jan 12 11:21:34 GMT 2012
+
+changed sdu instr creation to return null rather than throwing exception if there is not enough info in the base instruction.
+------------------------------------------------------------------------
+r16150 | camli | Tue Jan 10 15:29:32 GMT 2012
+
+added checks for opening balance = last closing balance on previous day.
+------------------------------------------------------------------------
+r16146 | tm | Mon Jan 09 18:27:00 GMT 2012
+
+Refactored parameter names
+------------------------------------------------------------------------
+r16144 | tm | Mon Jan 09 17:26:03 GMT 2012
+
+Mods to resolveGetFileParams
+------------------------------------------------------------------------
+r16143 | camli | Mon Jan 09 17:10:06 GMT 2012
+
+Added cheques and ChequesTP to comparison list.
+------------------------------------------------------------------------
+r16141 | tm | Mon Jan 09 16:38:15 GMT 2012
+
+Added switch to SD Exec Module to prevent jobs being triggered on exec failure.
+
+Added comment line to SDUUpdateService
+
+Added new service method resolveGetFileDocParams
+------------------------------------------------------------------------
+r16110 | tm | Thu Dec 22 18:17:36 GMT 2011
+
+Caught job trigger error to ensure proper instruction suspension
+------------------------------------------------------------------------
+r16108 | camli | Thu Dec 22 15:46:43 GMT 2011
+
+fixed typo in logic.
+------------------------------------------------------------------------
+r16101 | camli | Thu Dec 22 14:15:38 GMT 2011
+
+added debug and used DigDecimal and format for currency values.
+------------------------------------------------------------------------
+r16070 | tm | Wed Dec 21 15:33:26 GMT 2011
+
+Added new Re-Auth status
+------------------------------------------------------------------------
+r16046 | tm | Tue Dec 20 17:58:19 GMT 2011
+
+Added new ref ID
+------------------------------------------------------------------------
+r16045 | tm | Tue Dec 20 17:57:38 GMT 2011
+
+Made required updates for STP escalation process
+------------------------------------------------------------------------
+r16044 | camli | Tue Dec 20 16:39:42 GMT 2011
+
+added BigDecimal support
+------------------------------------------------------------------------
+r16034 | camli | Tue Dec 20 10:42:57 GMT 2011
+
+updated to use bigdecimal instead of float as this is inaccurate.
+------------------------------------------------------------------------
+r16032 | camli | Mon Dec 19 17:17:03 GMT 2011
+
+added bigdecimal variables for testing!
+------------------------------------------------------------------------
+r16030 | tm | Mon Dec 19 17:09:49 GMT 2011
+
+Working on SPP notification job trigger
+------------------------------------------------------------------------
+r16029 | camli | Mon Dec 19 14:49:31 GMT 2011
+
+updated logic for using bank accounts and sortcode instead of fund code.
+------------------------------------------------------------------------
+r16023 | tm | Mon Dec 19 13:01:36 GMT 2011
+
+Added timing logs to UpdateFilter
+------------------------------------------------------------------------
+r16021 | camli | Mon Dec 19 12:21:59 GMT 2011
+
+added reject trigger SPP job.
+------------------------------------------------------------------------
+r15980 | tm | Mon Dec 12 13:51:54 GMT 2011
+
+Added config var output to admin service method
+------------------------------------------------------------------------
+r15978 | camli | Mon Dec 12 13:51:26 GMT 2011
+
+force all mandatory data fields in the instruction to be populated. 
+------------------------------------------------------------------------
+r15976 | camli | Mon Dec 12 13:36:12 GMT 2011
+
+removed redundant import.
+------------------------------------------------------------------------
+r15975 | camli | Mon Dec 12 13:24:31 GMT 2011
+
+initial logic for calculating account id from accnumext
+------------------------------------------------------------------------
+r15974 | tm | Mon Dec 12 12:02:49 GMT 2011
+
+Externalised config vars to SystemConfigVar entries
+------------------------------------------------------------------------
+r15970 | tm | Fri Dec 09 10:43:11 GMT 2011
+
+Updated try-catch blocks that use DB transactions to catch ALL exceptions
+
+Adding timing logs to UpdateFilter
+------------------------------------------------------------------------
+r15968 | tm | Thu Dec 08 19:08:16 GMT 2011
+
+Changed getNextPendingBundle to use pooled DB connection
+------------------------------------------------------------------------
+r15967 | tm | Thu Dec 08 19:07:48 GMT 2011
+
+Added timing log entries to all Filters
+------------------------------------------------------------------------
+r15957 | tm | Thu Dec 08 12:32:23 GMT 2011
+
+Externalized dID string
+------------------------------------------------------------------------
+r15907 | tm | Thu Dec 01 19:53:08 GMT 2011
+
+Various updates to support changes to STP
+------------------------------------------------------------------------
+r15898 | tm | Mon Nov 28 18:47:14 GMT 2011
+
+Amended test-tran method
+------------------------------------------------------------------------
+r15890 | tm | Fri Nov 25 18:22:30 GMT 2011
+
+Changed suspend msg, added test method
+------------------------------------------------------------------------
+r15879 | tm | Fri Nov 25 12:55:46 GMT 2011
+
+Updates to equality service methods
+------------------------------------------------------------------------
+r15877 | tm | Thu Nov 24 18:36:04 GMT 2011
+
+Refined SDU update methods
+------------------------------------------------------------------------
+r15871 | tm | Wed Nov 23 17:59:15 GMT 2011
+
+Added test method
+------------------------------------------------------------------------
+r15867 | camli | Wed Nov 23 12:44:02 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15860 | camli | Wed Nov 23 11:42:35 GMT 2011
+
+updated comparing logic
+------------------------------------------------------------------------
+r15849 | camli | Tue Nov 22 17:20:53 GMT 2011
+
+added debug for testing.
+------------------------------------------------------------------------
+r15841 | camli | Tue Nov 22 16:18:37 GMT 2011
+
+change equals methods
+------------------------------------------------------------------------
+r15840 | camli | Tue Nov 22 14:04:52 GMT 2011
+
+load contact details.
+------------------------------------------------------------------------
+r15837 | camli | Tue Nov 22 13:23:51 GMT 2011
+
+added same return params
+------------------------------------------------------------------------
+r15834 | camli | Fri Nov 18 17:57:15 GMT 2011
+
+added test methods and services
+------------------------------------------------------------------------
+r15831 | tm | Fri Nov 18 14:17:45 GMT 2011
+
+Changed ResultSet name
+------------------------------------------------------------------------
+r15830 | camli | Fri Nov 18 14:03:07 GMT 2011
+
+added Parent Instruction Ref to instruction
+------------------------------------------------------------------------
+r15828 | camli | Fri Nov 18 13:16:39 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15827 | camli | Fri Nov 18 13:10:54 GMT 2011
+
+re-factored to include suspend message and process
+------------------------------------------------------------------------
+r15826 | camli | Fri Nov 18 12:51:22 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15825 | camli | Fri Nov 18 12:43:36 GMT 2011
+
+fixed spelling mistake
+------------------------------------------------------------------------
+r15824 | camli | Fri Nov 18 12:43:03 GMT 2011
+
+fixed spelling mistake
+------------------------------------------------------------------------
+r15818 | camli | Thu Nov 17 17:47:12 GMT 2011
+
+added log to stop not aurora account 
+------------------------------------------------------------------------
+r15813 | tm | Thu Nov 17 16:32:59 GMT 2011
+
+Added test method
+------------------------------------------------------------------------
+r15808 | tm | Thu Nov 17 14:11:14 GMT 2011
+
+Added testCreateSDU test service method
+------------------------------------------------------------------------
+r15804 | camli | Thu Nov 17 11:28:53 GMT 2011
+
+added audit logging
+------------------------------------------------------------------------
+r15797 | camli | Wed Nov 16 17:59:29 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15792 | camli | Wed Nov 16 15:25:36 GMT 2011
+
+fixed errors
+------------------------------------------------------------------------
+r15791 | camli | Wed Nov 16 15:24:20 GMT 2011
+
+fixed errors
+------------------------------------------------------------------------
+r15785 | camli | Wed Nov 16 13:04:44 GMT 2011
+
+added audit and exceptions
+------------------------------------------------------------------------
+r15783 | camli | Wed Nov 16 01:35:33 GMT 2011
+
+updated default status of SDU instrs and webservice authorisation
+------------------------------------------------------------------------
+r15779 | tm | Tue Nov 15 18:39:49 GMT 2011
+
+Added fetch service method
+------------------------------------------------------------------------
+r15759 | camli | Mon Nov 14 12:35:35 GMT 2011
+
+removed outdated entry
+------------------------------------------------------------------------
+r15740 | camli | Fri Nov 11 14:41:20 GMT 2011
+
+added updates to instructions
+------------------------------------------------------------------------
+r15737 | tm | Fri Nov 11 13:11:27 GMT 2011
+
+Modified bank account lookup call
+------------------------------------------------------------------------
+r15720 | tm | Thu Nov 10 17:10:13 GMT 2011
+
+Refactored bank account fetching
+------------------------------------------------------------------------
+r15692 | camli | Wed Nov 02 13:10:05 GMT 2011
+
+added logic for removing NO_MANDATE_RECEIVED_SINCE_OCT_2010 flag.
+------------------------------------------------------------------------
+r15689 | tm | Wed Nov 02 12:57:26 GMT 2011
+
+Started work on No Mandate Recv'd attribute removal post-validation
+------------------------------------------------------------------------
+r15675 | camli | Tue Nov 01 14:35:18 GMT 2011
+
+added populating contacts for person
+------------------------------------------------------------------------
+r15674 | camli | Tue Nov 01 12:46:07 GMT 2011
+
+force getcontacts for the organisation entity.
+------------------------------------------------------------------------
+r15670 | camli | Mon Oct 31 15:22:49 GMT 2011
+
+FIXED AUTHORISE USER NAME.
+------------------------------------------------------------------------
+r15669 | camli | Mon Oct 31 15:02:53 GMT 2011
+
+added return m_binder variable
+------------------------------------------------------------------------
+r15668 | camli | Mon Oct 31 14:17:01 GMT 2011
+
+added getDataApplied method.
+------------------------------------------------------------------------
+r15667 | camli | Mon Oct 31 14:16:35 GMT 2011
+
+initial version
+------------------------------------------------------------------------
+r15665 | camli | Mon Oct 31 11:06:36 GMT 2011
+
+fixed spelling typo
+------------------------------------------------------------------------
+r15655 | camli | Fri Oct 28 13:58:01 BST 2011
+
+added create new instruction logic
+------------------------------------------------------------------------
+r15652 | camli | Thu Oct 27 17:35:37 BST 2011
+
+fixed view name.
+------------------------------------------------------------------------
+r15651 | camli | Thu Oct 27 17:34:53 BST 2011
+
+updated logic.
+------------------------------------------------------------------------
+r15650 | camli | Thu Oct 27 17:34:41 BST 2011
+
+added instruction adding service.
+------------------------------------------------------------------------
+r15648 | camli | Thu Oct 27 15:26:04 BST 2011
+
+added duplicate checks
+------------------------------------------------------------------------
+r15642 | camli | Thu Oct 27 10:04:20 BST 2011
+
+allow staticDataUpdate instructions to be processed
+------------------------------------------------------------------------
+r15641 | camli | Thu Oct 27 10:03:52 BST 2011
+
+updated logic
+------------------------------------------------------------------------
+r15637 | camli | Wed Oct 26 17:09:10 BST 2011
+
+fixed CorrespondantIdField values.
+------------------------------------------------------------------------
+r15634 | camli | Wed Oct 26 16:46:13 BST 2011
+
+added suspend actions
+------------------------------------------------------------------------
+r15633 | camli | Wed Oct 26 16:43:49 BST 2011
+
+added suspend action
+------------------------------------------------------------------------
+r15628 | camli | Wed Oct 26 14:46:36 BST 2011
+
+tidied up
+------------------------------------------------------------------------
+r15627 | camli | Wed Oct 26 13:42:48 BST 2011
+
+new field translators
+------------------------------------------------------------------------
+r15624 | camli | Wed Oct 26 12:34:27 BST 2011
+
+added generate instruction data from source instruction data.
+------------------------------------------------------------------------
+r15623 | camli | Wed Oct 26 12:31:38 BST 2011
+
+add logic for generating instructions.
+------------------------------------------------------------------------
+r15603 | camli | Tue Oct 25 14:29:35 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r15499 | camli | Fri Oct 14 12:31:22 BST 2011
+
+some changes
+------------------------------------------------------------------------
+r15455 | camli | Fri Oct 07 16:32:04 BST 2011
+
+added docId to transaction_batch creation.
+------------------------------------------------------------------------
+r15454 | camli | Fri Oct 07 16:14:29 BST 2011
+
+added suggested matches to resultset.
+------------------------------------------------------------------------
+r15444 | tm | Wed Oct 05 12:39:55 BST 2011
+
+Modified error message (untested!)
+------------------------------------------------------------------------
+r15443 | tm | Wed Oct 05 12:33:45 BST 2011
+
+Fixed error message header
+------------------------------------------------------------------------
+r15439 | camli | Tue Oct 04 12:40:23 BST 2011
+
+added generate retfunds from list.
+------------------------------------------------------------------------
+r15438 | camli | Mon Oct 03 11:46:58 BST 2011
+
+added possible iat sweep
+------------------------------------------------------------------------
+r15436 | camli | Fri Sep 30 12:08:16 BST 2011
+
+generate retfunds
+------------------------------------------------------------------------
+r15425 | camli | Thu Sep 29 13:20:01 BST 2011
+
+added duplicate checking
+------------------------------------------------------------------------
+r15423 | camli | Thu Sep 29 11:49:36 BST 2011
+
+fixed transbatch
+------------------------------------------------------------------------
+r15422 | camli | Thu Sep 29 11:46:54 BST 2011
+
+added fixes
+------------------------------------------------------------------------
+r15421 | camli | Thu Sep 29 11:31:20 BST 2011
+
+added fixes
+------------------------------------------------------------------------
+r15419 | camli | Wed Sep 28 16:18:40 BST 2011
+
+added source/dest bank account number and sort code. 
+------------------------------------------------------------------------
+r15412 | camli | Wed Sep 28 11:22:55 BST 2011
+
+added updates
+------------------------------------------------------------------------
+r15408 | tm | Tue Sep 27 16:32:21 BST 2011
+
+Amended to use 4-digit years
+------------------------------------------------------------------------
+r15402 | camli | Tue Sep 27 16:24:50 BST 2011
+
+fixed commproc
+------------------------------------------------------------------------
+r15380 | camli | Mon Sep 26 12:05:22 BST 2011
+
+fixed archive log message
+------------------------------------------------------------------------
+r15379 | camli | Mon Sep 26 12:01:44 BST 2011
+
+initial checkin
+------------------------------------------------------------------------
+r15377 | camli | Fri Sep 23 17:30:14 BST 2011
+
+initial version of archiving docs
+------------------------------------------------------------------------
+r15375 | tm | Fri Sep 23 16:40:35 BST 2011
+
+Rearranged method body for submitInstructionToSpp
+------------------------------------------------------------------------
+r15373 | camli | Fri Sep 23 16:20:00 BST 2011
+
+added more code!!
+------------------------------------------------------------------------
+r15367 | camli | Fri Sep 23 10:38:26 BST 2011
+
+removed check for transbatch
+------------------------------------------------------------------------
+r15297 | tm | Mon Sep 19 18:55:49 BST 2011
+
+Fixed some bugs, added new cache to StartupFilter
+------------------------------------------------------------------------
+r15294 | tm | Mon Sep 19 17:58:38 BST 2011
+
+Added new method for triggering SPP workflow job directly from instruction data.
+------------------------------------------------------------------------
+r15286 | camli | Mon Sep 19 17:22:00 BST 2011
+
+added fixes
+------------------------------------------------------------------------
+r15227 | camli | Wed Sep 14 17:37:24 BST 2011
+
+fixed iat inserts
+------------------------------------------------------------------------
+r15222 | camli | Wed Sep 14 16:12:13 BST 2011
+
+added iat landing
+------------------------------------------------------------------------
+r15216 | camli | Wed Sep 14 14:51:00 BST 2011
+
+added fixes
+------------------------------------------------------------------------
+r15212 | camli | Wed Sep 14 12:39:47 BST 2011
+
+added iat sweep generation
+------------------------------------------------------------------------
+r15190 | camli | Tue Sep 13 16:04:28 BST 2011
+
+added IATModule
+------------------------------------------------------------------------
+r15179 | camli | Fri Sep 09 16:56:54 BST 2011
+
+ignore updates to doctypes of transaction batch.
+------------------------------------------------------------------------
+r15178 | camli | Fri Sep 09 16:45:13 BST 2011
+
+added logic to convert dicondins to bnkcondins
+------------------------------------------------------------------------
+r15177 | camli | Fri Sep 09 16:17:17 BST 2011
+
+added small fixes
+------------------------------------------------------------------------
+r15176 | camli | Fri Sep 09 16:16:54 BST 2011
+
+ignore updates to doctypes of transaction batch.
+------------------------------------------------------------------------
+r15175 | camli | Fri Sep 09 14:41:59 BST 2011
+
+fixed comm date
+------------------------------------------------------------------------
+r15174 | camli | Fri Sep 09 14:39:15 BST 2011
+
+fixes to parsing.
+------------------------------------------------------------------------
+r15173 | camli | Fri Sep 09 12:29:47 BST 2011
+
+added csv paring jar
+------------------------------------------------------------------------
+r15171 | camli | Fri Sep 09 11:07:28 BST 2011
+
+added csv parsing capabilities
+------------------------------------------------------------------------
+r15170 | camli | Fri Sep 09 10:56:17 BST 2011
+
+removed transactionbatch instruction data generation.
+------------------------------------------------------------------------
+r15169 | camli | Fri Sep 09 10:55:32 BST 2011
+
+change private to public methods
+------------------------------------------------------------------------
+r15138 | camli | Tue Sep 06 11:22:41 BST 2011
+
+added pending dicondins
+------------------------------------------------------------------------
+r15132 | camli | Mon Sep 05 11:21:36 BST 2011
+
+added matching instrs
+------------------------------------------------------------------------
+r15126 | camli | Fri Sep 02 11:50:48 BST 2011
+
+fixes
+------------------------------------------------------------------------
+r15106 | camli | Wed Aug 31 17:25:46 BST 2011
+
+fixes
+------------------------------------------------------------------------
+r15105 | camli | Wed Aug 31 17:15:31 BST 2011
+
+fixes
+------------------------------------------------------------------------
+r15100 | camli | Tue Aug 30 17:28:21 BST 2011
+
+fixes
+------------------------------------------------------------------------
+r15098 | tm | Tue Aug 30 16:26:43 BST 2011
+
+Added forms postValidate hook
+------------------------------------------------------------------------
+r15096 | camli | Tue Aug 30 16:25:21 BST 2011
+
+added fwfacade
+------------------------------------------------------------------------
+r15095 | camli | Tue Aug 30 16:10:24 BST 2011
+
+fixed typo
+------------------------------------------------------------------------
+r15094 | camli | Tue Aug 30 16:02:07 BST 2011
+
+small fixes
+------------------------------------------------------------------------
+r15090 | camli | Tue Aug 30 14:43:46 BST 2011
+
+small fixed
+------------------------------------------------------------------------
+r15086 | camli | Tue Aug 30 13:19:10 BST 2011
+
+added dummy transactions
+------------------------------------------------------------------------
+r15082 | camli | Tue Aug 30 11:23:58 BST 2011
+
+updated
+------------------------------------------------------------------------
+r15072 | camli | Fri Aug 26 15:00:05 BST 2011
+
+added new methods
+------------------------------------------------------------------------
+r15071 | camli | Fri Aug 26 14:59:39 BST 2011
+
+added new methods
+------------------------------------------------------------------------
+r15067 | camli | Thu Aug 25 17:25:03 BST 2011
+
+added new methods
+------------------------------------------------------------------------
+r15062 | tm | Thu Aug 25 15:58:44 BST 2011
+
+Fixed transaction use
+------------------------------------------------------------------------
+r15059 | camli | Thu Aug 25 12:42:39 BST 2011
+
+added checkTransactionBatchInstruction method
+------------------------------------------------------------------------
+r15057 | camli | Thu Aug 25 09:53:20 BST 2011
+
+added temp method
+------------------------------------------------------------------------
+r15055 | camli | Thu Aug 25 09:52:32 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r15018 | tm | Wed Aug 17 14:34:42 BST 2011
+
+Disabled Priority Calculation in InteractionTranslator
+------------------------------------------------------------------------
+r14918 | tm | Fri Aug 05 18:06:57 BST 2011
+
+Added OracleJDBCFacade transactions
+------------------------------------------------------------------------
+r14869 | tm | Mon Jul 25 14:19:32 BST 2011
+
+Cache refactoring
+------------------------------------------------------------------------
+r14868 | tm | Mon Jul 25 14:19:25 BST 2011
+
+Cache refactoring
+------------------------------------------------------------------------
+r14824 | camli | Thu Jul 21 10:45:17 BST 2011
+
+changed system reference to user the global variable.
+------------------------------------------------------------------------
+r14805 | camli | Wed Jul 20 17:32:39 BST 2011
+
+fixed static name variables
+------------------------------------------------------------------------
+r14792 | camli | Wed Jul 20 10:15:41 BST 2011
+
+added suspend message details.
+------------------------------------------------------------------------
+r14788 | camli | Tue Jul 19 17:41:29 BST 2011
+
+added service to update transactionRef
+------------------------------------------------------------------------
+r14787 | camli | Tue Jul 19 17:40:58 BST 2011
+
+removed logging
+------------------------------------------------------------------------
+r14785 | camli | Tue Jul 19 17:40:36 BST 2011
+
+removed logging
+------------------------------------------------------------------------
+r14784 | camli | Tue Jul 19 17:40:09 BST 2011
+
+added code to unlock event
+------------------------------------------------------------------------
+r14728 | tm | Mon Jul 18 13:42:17 BST 2011
+
+Removed debug lines
+------------------------------------------------------------------------
+r14724 | camli | Mon Jul 18 10:23:17 BST 2011
+
+fixed eval method
+------------------------------------------------------------------------
+r14713 | camli | Fri Jul 15 16:12:57 BST 2011
+
+initial check in
+------------------------------------------------------------------------
+r14712 | camli | Fri Jul 15 16:12:36 BST 2011
+
+added event listener to modules
+------------------------------------------------------------------------
+r14711 | camli | Fri Jul 15 16:11:54 BST 2011
+
+initial check in
+------------------------------------------------------------------------
+r14710 | camli | Fri Jul 15 16:11:39 BST 2011
+
+initial check in
+------------------------------------------------------------------------
+r14694 | tm | Fri Jul 15 11:53:50 BST 2011
+
+Added forcePass method after bundle is completed
+------------------------------------------------------------------------
+r14653 | tm | Thu Jul 14 10:53:57 BST 2011
+
+Changed classpath
+------------------------------------------------------------------------
+r14607 | tm | Tue Jul 12 17:50:01 BST 2011
+
+Changes to applyPostWFAction
+------------------------------------------------------------------------
+r14449 | tm | Thu Jul 07 11:17:58 BST 2011
+
+Added WorkGroupService for service methods around the new Work Groups functionality.
+
+Moved getNextPendingBundle service methods and backend from SPP_INT.
+------------------------------------------------------------------------
+r14356 | camli | Mon Jul 04 16:18:39 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r14351 | tm | Mon Jul 04 15:26:59 BST 2011
+
+Fixed try/catch
+------------------------------------------------------------------------
+r14236 | tm | Tue Jun 28 14:31:28 BST 2011
+
+Augmented activity message
+------------------------------------------------------------------------
+r14235 | tm | Tue Jun 28 14:25:52 BST 2011
+
+Commented out getDealingDate line as it was causing issues with transaction block
+------------------------------------------------------------------------
+r14231 | tm | Tue Jun 28 12:40:00 BST 2011
+
+Attempting to bug fix process date thing
+------------------------------------------------------------------------
+r14221 | tm | Mon Jun 27 16:34:22 BST 2011
+
+Added missing space char
+------------------------------------------------------------------------
+r14179 | tm | Fri Jun 24 11:08:52 BST 2011
+
+Minor refactoring
+------------------------------------------------------------------------
+r14164 | camli | Thu Jun 23 13:14:31 BST 2011
+
+added interaction to instruction register
+------------------------------------------------------------------------
+r14155 | camli | Thu Jun 23 10:04:41 BST 2011
+
+removed debug statements
+------------------------------------------------------------------------
+r14140 | tm | Wed Jun 22 12:33:29 BST 2011
+
+Removed references to old getPaddedAcc/SortCode methods
+------------------------------------------------------------------------
+r14137 | camli | Wed Jun 22 11:19:02 BST 2011
+
+fixed updating parent document
+------------------------------------------------------------------------
+r14136 | camli | Wed Jun 22 11:18:37 BST 2011
+
+fixed auditing
+------------------------------------------------------------------------
+r14130 | camli | Tue Jun 21 18:10:41 BST 2011
+
+checked in 
+------------------------------------------------------------------------
+r14126 | camli | Tue Jun 21 17:42:34 BST 2011
+
+added debug
+------------------------------------------------------------------------
+r14122 | camli | Tue Jun 21 11:40:23 BST 2011
+
+added debug.
+------------------------------------------------------------------------
+r14116 | camli | Tue Jun 21 10:41:48 BST 2011
+
+removed rollbackTransaction as this is handled by parent call.
+------------------------------------------------------------------------
+r14115 | camli | Tue Jun 21 10:40:57 BST 2011
+
+removed redundant imports
+------------------------------------------------------------------------
+r14112 | camli | Tue Jun 21 10:26:17 BST 2011
+
+updated translator methods
+------------------------------------------------------------------------
+r14111 | camli | Tue Jun 21 10:25:48 BST 2011
+
+added methods to convert instruction to query and vice-versa.
+------------------------------------------------------------------------
+r14083 | camli | Mon Jun 20 10:53:00 BST 2011
+
+added debug
+------------------------------------------------------------------------
+r14082 | camli | Mon Jun 20 10:14:49 BST 2011
+
+removed begin transaction for method as this is handled by the parent method.
+------------------------------------------------------------------------
+r14080 | camli | Fri Jun 17 17:34:58 BST 2011
+
+removed redundant imports
+------------------------------------------------------------------------
+r14077 | camli | Fri Jun 17 17:15:04 BST 2011
+
+initial version of creating an instruction from an interaction. 
+------------------------------------------------------------------------
+r14064 | tm | Fri Jun 17 12:42:03 BST 2011
+
+Changed eval check to look for existing Workflow Date instead of UCM Job ID.
+------------------------------------------------------------------------
+r14051 | tm | Wed Jun 15 17:58:33 BST 2011
+
+Removed debug line
+------------------------------------------------------------------------
+r14050 | tm | Wed Jun 15 17:58:14 BST 2011
+
+Fixed bug in auto batch number assignment
+------------------------------------------------------------------------
+r14031 | camli | Wed Jun 15 12:54:17 BST 2011
+
+force original process date recalc.
+------------------------------------------------------------------------
+r14030 | tm | Wed Jun 15 12:54:10 BST 2011
+
+Added extra audit param when submitting bundle to instr. reg.
+------------------------------------------------------------------------
+r14023 | tm | Wed Jun 15 12:14:34 BST 2011
+
+Added check for existing xBatchNumber field on parent batch item before generating the CommGroup instance
+------------------------------------------------------------------------
+r13816 | tm | Thu Jun 02 12:00:43 BST 2011
+
+Added extra clause during generateComms: if document doesn't have Client Details set, Instruction Type is inferred to see if it requires Client Details or not. 
+
+If Instruction Type comes back null (e.g. in the case of MULTIDOCs) there's nothing to check against so we now carry on regardless.
+------------------------------------------------------------------------
+r13815 | tm | Thu Jun 02 11:15:35 BST 2011
+
+Allowed multiple clone and submits for items in the same bundle.
+------------------------------------------------------------------------
+r13809 | tm | Wed Jun 01 14:59:47 BST 2011
+
+Added hard fail if an attempt is made to update an existing instruction's document to an unbound document class, e.g. MULTIDOC.
+------------------------------------------------------------------------
+r13808 | tm | Wed Jun 01 14:52:18 BST 2011
+
+Added hard fail if an attempt is made to update an existing instruction's document to an unbound document class, e.g. MULTIDOC.
+------------------------------------------------------------------------
+r13766 | tm | Tue May 31 17:16:41 BST 2011
+
+Updated auditing
+------------------------------------------------------------------------
+r13765 | tm | Tue May 31 17:16:27 BST 2011
+
+Updated auditing of instrs.
+------------------------------------------------------------------------
+r13763 | tm | Tue May 31 16:39:39 BST 2011
+
+Bank Account field handlers
+------------------------------------------------------------------------
+r13753 | tm | Tue May 31 15:28:49 BST 2011
+
+Fixed updateInstructionStatus method
+------------------------------------------------------------------------
+r13752 | camli | Tue May 31 14:21:04 BST 2011
+
+initial version to check bank account number.
+------------------------------------------------------------------------
+r13750 | tm | Tue May 31 13:59:36 BST 2011
+
+Added hard-coded IDs
+------------------------------------------------------------------------
+r13749 | tm | Tue May 31 13:59:24 BST 2011
+
+Amended suspend process used in SPPJobModuleHandler
+
+Amended translator to refer to Org ID instr data
+------------------------------------------------------------------------
+r13748 | tm | Tue May 31 13:29:02 BST 2011
+
+Added xJobId to list of strip fields
+------------------------------------------------------------------------
+r13743 | tm | Tue May 31 12:45:39 BST 2011
+
+Added extra wf check to clone service
+------------------------------------------------------------------------
+r13741 | tm | Tue May 31 12:18:43 BST 2011
+
+Tidied code
+------------------------------------------------------------------------
+r13739 | tm | Tue May 31 11:31:59 BST 2011
+
+Added auto append
+------------------------------------------------------------------------
+r13738 | tm | Tue May 31 11:21:57 BST 2011
+
+Added cloneDocAndResetBundle service
+------------------------------------------------------------------------
+r13737 | tm | Tue May 31 11:20:52 BST 2011
+
+Added cloneDocAndResetBundle service
+------------------------------------------------------------------------
+r13732 | tm | Fri May 27 18:09:05 BST 2011
+
+Updated suspend message
+------------------------------------------------------------------------
+r13731 | tm | Fri May 27 18:05:24 BST 2011
+
+Modified SPP handler to suspend if a job has been triggered previously (checks for a non-null UCM Job ID)
+------------------------------------------------------------------------
+r13730 | tm | Fri May 27 17:38:14 BST 2011
+
+Implemented append flag
+------------------------------------------------------------------------
+r13728 | tm | Fri May 27 17:07:18 BST 2011
+
+Amended translators so they always return a InstructionDataFieldValue instance, even if its empty.
+------------------------------------------------------------------------
+r13726 | camli | Fri May 27 16:53:47 BST 2011
+
+added instruction audit service
+------------------------------------------------------------------------
+r13723 | tm | Fri May 27 16:52:13 BST 2011
+
+Fixed bug in OrgIdFieldHandler
+------------------------------------------------------------------------
+r13720 | camli | Fri May 27 15:22:55 BST 2011
+
+added update instruction status method
+------------------------------------------------------------------------
+r13718 | tm | Fri May 27 14:11:49 BST 2011
+
+Changed default system user assignment
+------------------------------------------------------------------------
+r13714 | tm | Fri May 27 13:42:43 BST 2011
+
+Added changes to support 'append' mode
+------------------------------------------------------------------------
+r13713 | camli | Fri May 27 10:01:22 BST 2011
+
+added instruction_audit resultset to getInstructionInfo
+------------------------------------------------------------------------
+r13709 | camli | Thu May 26 17:22:32 BST 2011
+
+moved audit after the method is executed.
+------------------------------------------------------------------------
+r13707 | camli | Thu May 26 16:36:27 BST 2011
+
+tidied up class
+------------------------------------------------------------------------
+r13706 | camli | Thu May 26 16:34:47 BST 2011
+
+added instruction audit to modules
+------------------------------------------------------------------------
+r13702 | camli | Thu May 26 15:12:27 BST 2011
+
+re-factored to create a base class for adding the audit entries without affect the the modules.
+------------------------------------------------------------------------
+r13697 | tm | Wed May 25 20:06:35 BST 2011
+
+Im an idiot.
+------------------------------------------------------------------------
+r13695 | tm | Wed May 25 19:16:07 BST 2011
+
+Started work on 'append' mode of BundleTranslator
+------------------------------------------------------------------------
+r13693 | pault | Wed May 25 17:58:01 BST 2011
+
+removed testing code 
+------------------------------------------------------------------------
+r13692 | pault | Wed May 25 17:57:31 BST 2011
+
+removed testing code 
+------------------------------------------------------------------------
+r13691 | pault | Wed May 25 16:57:31 BST 2011
+
+fixed problems with persist mode on generating an instruction
+------------------------------------------------------------------------
+r13690 | pault | Wed May 25 16:09:44 BST 2011
+
+added extra logging
+------------------------------------------------------------------------
+r13688 | tm | Wed May 25 16:06:19 BST 2011
+
+Added setUCMDocStatus method for setting the xStatus value of a UCM document.
+
+DocBundleTranslator should now Archive multi-doc types instead of skipping over them.
+------------------------------------------------------------------------
+r13686 | tm | Wed May 25 15:11:10 BST 2011
+
+Added new stub to Spooler class
+------------------------------------------------------------------------
+r13685 | pault | Wed May 25 14:57:11 BST 2011
+
+added retry service
+------------------------------------------------------------------------
+r13684 | pault | Wed May 25 14:47:46 BST 2011
+
+changed looping through result set and added logging
+------------------------------------------------------------------------
+r13682 | tm | Tue May 24 19:38:34 BST 2011
+
+Added special flag that is picked up in UpdateFilter to prevent cascaded update to Instruction items
+------------------------------------------------------------------------
+r13674 | tm | Tue May 24 17:51:52 BST 2011
+
+Added 'Archived' doc status update when applying Pass action
+------------------------------------------------------------------------
+r13668 | pault | Tue May 24 16:53:27 BST 2011
+
+changed time of routing manager firstRunSleep
+------------------------------------------------------------------------
+r13666 | pault | Tue May 24 16:48:15 BST 2011
+
+changed the routing module manager to start on UCM restart. If firstRun sleep for a while
+------------------------------------------------------------------------
+r13662 | pault | Tue May 24 16:11:36 BST 2011
+
+aliased archive outcomes
+------------------------------------------------------------------------
+r13655 | tm | Tue May 24 13:35:09 BST 2011
+
+Things
+------------------------------------------------------------------------
+r13649 | tm | Tue May 24 12:16:40 BST 2011
+
+Added bind for createdBy field to ensure 'DripFeed' is set as the createdBy field for Fax items as well. 
+------------------------------------------------------------------------
+r13648 | tm | Tue May 24 12:16:26 BST 2011
+
+Added bind for createdBy field to ensure 'DripFeed' is set as the createdBy field for Fax items as well. 
+------------------------------------------------------------------------
+r13645 | pault | Tue May 24 11:41:00 BST 2011
+
+added auditing for Comm,CommGroup and Instruction
+------------------------------------------------------------------------
+r13643 | tm | Tue May 24 11:36:43 BST 2011
+
+Fixed bug in createdBy Comm assignment
+------------------------------------------------------------------------
+r13639 | tm | Tue May 24 10:41:42 BST 2011
+
+Added support for duplicate status
+------------------------------------------------------------------------
+r13633 | tm | Mon May 23 22:36:03 BST 2011
+
+Added bind for DripFeed value in xScanUser field. Also copes with the 'DripFeed (no data)' value.
+------------------------------------------------------------------------
+r13629 | tm | Mon May 23 20:29:08 BST 2011
+
+Changed handling of UCMMetaDataTranslators to take the current ucm field name.
+
+Added Yes/No -> boolean field handling.
+------------------------------------------------------------------------
+r13622 | pault | Mon May 23 16:40:09 BST 2011
+
+added entry step check
+------------------------------------------------------------------------
+r13620 | pault | Mon May 23 16:28:01 BST 2011
+
+added entry step details
+------------------------------------------------------------------------
+r13617 | pault | Mon May 23 16:08:38 BST 2011
+
+removed extra quotes
+------------------------------------------------------------------------
+r13610 | pault | Mon May 23 15:23:42 BST 2011
+
+externalised date field
+------------------------------------------------------------------------
+r13607 | pault | Mon May 23 15:01:39 BST 2011
+
+swapped round the pass/fail outcomes
+
+------------------------------------------------------------------------
+r13606 | tm | Mon May 23 15:00:55 BST 2011
+
+Added new check for missing applicable instruction data fields
+------------------------------------------------------------------------
+r13603 | pault | Mon May 23 14:18:16 BST 2011
+
+added errorSpooling debugging
+------------------------------------------------------------------------
+r13602 | pault | Mon May 23 13:24:16 BST 2011
+
+updated archive module with logic
+------------------------------------------------------------------------
+r13592 | tm | Mon May 23 10:26:59 BST 2011
+
+Added stub code for Paul
+------------------------------------------------------------------------
+r13588 | tm | Mon May 23 00:35:17 BST 2011
+
+Moved UCMFieldNames to Core Globals class
+------------------------------------------------------------------------
+r13574 | pault | Fri May 20 14:46:52 BST 2011
+
+added limit to number of instructions to process at a time. 
+------------------------------------------------------------------------
+r13573 | pault | Fri May 20 14:46:26 BST 2011
+
+added if manager paused break out of cycle
+
+------------------------------------------------------------------------
+r13566 | pault | Fri May 20 12:29:51 BST 2011
+
+added error clearing 
+------------------------------------------------------------------------
+r13545 | pault | Thu May 19 16:50:13 BST 2011
+
+added stack trace in string form to errorSpooler 
+------------------------------------------------------------------------
+r13536 | pault | Thu May 19 16:14:58 BST 2011
+
+added services and code to get the error spool resultSet
+------------------------------------------------------------------------
+r13534 | pault | Thu May 19 14:55:13 BST 2011
+
+added extra logging
+------------------------------------------------------------------------
+r13524 | pault | Thu May 19 11:51:34 BST 2011
+
+removed un-needed logging
+------------------------------------------------------------------------
+r13522 | camli | Thu May 19 11:34:09 BST 2011
+
+refactored process dates and implemented the 
+CR: Process Date Amendment Time
+CR: Process Date Source Time
+------------------------------------------------------------------------
+r13501 | pault | Wed May 18 15:51:30 BST 2011
+
+added services and code for amending routing module details
+------------------------------------------------------------------------
+r13497 | tm | Wed May 18 15:10:09 BST 2011
+
+Fixed class name stuff
+------------------------------------------------------------------------
+r13496 | tm | Wed May 18 15:03:15 BST 2011
+
+Added original process date value to new instructions
+------------------------------------------------------------------------
+r13495 | pault | Wed May 18 15:03:12 BST 2011
+
+added services and code for amending routing module details
+------------------------------------------------------------------------
+r13494 | pault | Wed May 18 15:03:00 BST 2011
+
+added services and code for amending routing module details
+------------------------------------------------------------------------
+r13487 | tm | Wed May 18 12:03:17 BST 2011
+
+Added map for Original Process Date
+------------------------------------------------------------------------
+r13382 | tm | Fri May 13 15:13:07 BST 2011
+
+Changed classpath
+------------------------------------------------------------------------
+r13380 | tm | Fri May 13 13:30:48 BST 2011
+
+Added persitable interface
+------------------------------------------------------------------------
+r13336 | tm | Wed May 11 12:41:19 BST 2011
+
+Moved cache back agaiN!!
+------------------------------------------------------------------------
+r13331 | tm | Wed May 11 10:35:14 BST 2011
+
+Moved some caches back to Core
+------------------------------------------------------------------------
+r13312 | tm | Tue May 10 11:38:17 BST 2011
+
+Moved cache inits from Core
+------------------------------------------------------------------------
+r13209 | tm | Thu May 05 20:28:07 BST 2011
+
+Added some things
+------------------------------------------------------------------------
+r13153 | tm | Wed May 04 19:35:45 BST 2011
+
+Stuff here
+------------------------------------------------------------------------
+r13125 | tm | Tue May 03 18:57:38 BST 2011
+
+Improved getInstructionInfo method
+------------------------------------------------------------------------
+r13093 | tm | Sat Apr 30 19:02:09 BST 2011
+
+New InstructionService, extra auditing in DocumentBundleTranslator
+------------------------------------------------------------------------
+r13091 | tm | Thu Apr 28 18:03:27 BST 2011
+
+A tonne of stuff
+------------------------------------------------------------------------
+r13027 | tm | Tue Apr 26 16:00:27 BST 2011
+
+Bug fixin
+------------------------------------------------------------------------
+r13019 | tm | Tue Apr 26 14:12:08 BST 2011
+
+Checked in build file
+------------------------------------------------------------------------
+r13018 | tm | Tue Apr 26 14:07:28 BST 2011
+
+Moved InstructionLock
+------------------------------------------------------------------------
+r13017 | tm | Tue Apr 26 14:07:09 BST 2011
+
+Added new module handler
+------------------------------------------------------------------------
+r13004 | tm | Tue Apr 26 00:41:36 BST 2011
+
+Changed component dependency: CommProc relies on SPP_INT now
+------------------------------------------------------------------------
+r13003 | tm | Thu Apr 21 18:07:55 BST 2011
+
+CommProc changes
+------------------------------------------------------------------------
+r12994 | camli | Thu Apr 21 16:10:32 BST 2011
+
+update InstructionRule.eval method params
+------------------------------------------------------------------------
+r12944 | tm | Tue Apr 19 14:21:33 BST 2011
+
+Updates
+------------------------------------------------------------------------
+r12925 | tm | Mon Apr 18 15:21:59 BST 2011
+
+Added catch in UpdateFilter to ensure errors will always propagate.
+------------------------------------------------------------------------
+r12924 | tm | Mon Apr 18 15:06:17 BST 2011
+
+Passing in default comm status
+------------------------------------------------------------------------
+r12921 | tm | Mon Apr 18 14:58:39 BST 2011
+
+Added validate checks when running translator in non-persist mode
+------------------------------------------------------------------------
+r12920 | tm | Mon Apr 18 14:55:01 BST 2011
+
+Added Process Date check
+------------------------------------------------------------------------
+r12917 | tm | Mon Apr 18 14:24:44 BST 2011
+
+Intermediate updates to Instruction register stuff
+------------------------------------------------------------------------
+r12867 | tm | Fri Apr 15 17:26:38 BST 2011
+
+Changes
+------------------------------------------------------------------------
+r12864 | tm | Fri Apr 15 17:01:03 BST 2011
+
+chages
+------------------------------------------------------------------------
+r12863 | tm | Fri Apr 15 17:00:52 BST 2011
+
+Changes
+------------------------------------------------------------------------
+r12845 | tm | Fri Apr 15 14:19:24 BST 2011
+
+Added fail status to applySuspendAction
+------------------------------------------------------------------------
+r12844 | tm | Fri Apr 15 14:14:06 BST 2011
+
+Added test code to eval method to suspend instructions
+------------------------------------------------------------------------
+r12842 | tm | Fri Apr 15 14:11:40 BST 2011
+
+Added process action service and default suspend action
+------------------------------------------------------------------------
+r12840 | tm | Fri Apr 15 13:44:20 BST 2011
+
+Added basic impl. of ArchiveCheckModuleHandler
+------------------------------------------------------------------------
+r12839 | tm | Fri Apr 15 13:28:42 BST 2011
+
+Added extra persist and debugging
+------------------------------------------------------------------------
+r12830 | camli | Fri Apr 15 11:14:44 BST 2011
+
+removed the caching for InstructionRule and InstructionCondition. This will be handled in the core CacheManager
+------------------------------------------------------------------------
+r12829 | camli | Fri Apr 15 11:13:04 BST 2011
+
+refactor classes to core
+------------------------------------------------------------------------
+r12816 | camli | Thu Apr 14 16:49:16 BST 2011
+
+Update persist method. set the username to object.
+------------------------------------------------------------------------
+r12810 | camli | Thu Apr 14 15:42:06 BST 2011
+
+fixed query name
+------------------------------------------------------------------------
+r12808 | camli | Thu Apr 14 15:28:55 BST 2011
+
+don't set the Id unless it is filled in.
+------------------------------------------------------------------------
+r12807 | camli | Thu Apr 14 15:16:26 BST 2011
+
+added check from null resultset
+------------------------------------------------------------------------
+r12803 | camli | Thu Apr 14 14:38:11 BST 2011
+
+updated methods
+------------------------------------------------------------------------
+r12790 | camli | Thu Apr 14 11:53:27 BST 2011
+
+completed data ojbects
+------------------------------------------------------------------------
+r12784 | tm | Wed Apr 13 18:34:19 BST 2011
+
+Added some comments.
+------------------------------------------------------------------------
+r12783 | tm | Wed Apr 13 18:28:34 BST 2011
+
+Stuff
+------------------------------------------------------------------------
+r12782 | camli | Wed Apr 13 18:03:52 BST 2011
+
+fixed typo in query
+------------------------------------------------------------------------
+r12779 | camli | Wed Apr 13 17:39:56 BST 2011
+
+updated instruction rule conditions
+------------------------------------------------------------------------
+r12768 | camli | Wed Apr 13 15:29:00 BST 2011
+
+added missing properties to  instruction condition
+------------------------------------------------------------------------
+r12735 | tm | Tue Apr 12 09:40:45 BST 2011
+
+Added logging and some new services
+------------------------------------------------------------------------
+r12716 | camli | Fri Apr 08 17:10:53 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r12715 | camli | Fri Apr 08 17:10:40 BST 2011
+
+implement persistable interface
+------------------------------------------------------------------------
+r12481 | tm | Wed Mar 30 18:17:38 BST 2011
+
+Changes
+------------------------------------------------------------------------
+r12480 | tm | Wed Mar 30 18:17:27 BST 2011
+
+Changes
+------------------------------------------------------------------------
+r12382 | tm | Mon Mar 28 12:50:04 BST 2011
+
+Various updates
+------------------------------------------------------------------------
+r12337 | tm | Thu Mar 24 10:41:41 GMT 2011
+
+Things
+------------------------------------------------------------------------
+r12312 | tm | Wed Mar 23 09:52:49 GMT 2011
+
+Various bits
+------------------------------------------------------------------------
+r12289 | tm | Mon Mar 21 15:30:06 GMT 2011
+
+Updated to deal with numeric data types correctly
+------------------------------------------------------------------------
+r12238 | tm | Thu Mar 17 18:32:05 GMT 2011
+
+Stuff
+------------------------------------------------------------------------
+r12216 | tm | Wed Mar 16 14:14:03 GMT 2011
+
+Changes
+------------------------------------------------------------------------
+r12207 | tm | Tue Mar 15 17:25:35 GMT 2011
+
+Added transaction block
+------------------------------------------------------------------------
+r12203 | tm | Tue Mar 15 16:56:46 GMT 2011
+
+Something
+------------------------------------------------------------------------
+r12202 | tm | Tue Mar 15 16:56:34 GMT 2011
+
+Added service class
+------------------------------------------------------------------------
+r12196 | tm | Tue Mar 15 13:48:16 GMT 2011
+
+Stuff
+------------------------------------------------------------------------
+r12157 | tm | Thu Mar 10 17:19:54 GMT 2011
+
+Refactored data package name
+------------------------------------------------------------------------
+r12156 | tm | Thu Mar 10 17:18:25 GMT 2011
+
+Refactored data package name
+------------------------------------------------------------------------
+r12154 | tm | Thu Mar 10 17:14:00 GMT 2011
+
+CommProc stuff
+------------------------------------------------------------------------
+r11650 | tm | Thu Jan 20 10:43:20 GMT 2011
+
+First checkin of CommProcessing resources
+------------------------------------------------------------------------
+r11649 | tm | Thu Jan 20 10:39:10 GMT 2011
+
+f
+------------------------------------------------------------------------
+r11648 | tm | Thu Jan 20 10:38:58 GMT 2011
+
+f
+------------------------------------------------------------------------
+r11647 | tm | Thu Jan 20 10:38:33 GMT 2011
+
+f

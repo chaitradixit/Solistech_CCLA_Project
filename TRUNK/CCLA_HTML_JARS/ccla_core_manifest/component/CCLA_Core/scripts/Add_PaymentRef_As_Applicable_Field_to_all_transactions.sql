@@ -1,0 +1,14 @@
+-- Add 'Narrative'/Payment Ref as applicable data field for ALL transaction types.
+INSERT INTO APPLICABLE_INSTRUCTION_DATA
+(applicable_instruction_data_id, instruction_data_id, instruction_type_id, is_optional)
+SELECT SEQ_APPLICABLE_INSTR_DATA.NEXTVAL, 35, INSTRUCTION_TYPE_ID, 1
+FROM REF_INSTRUCTION_TYPE
+WHERE INSTRUCTION_TYPE_ID IN (
+  SELECT INSTRUCTION_TYPE_ID FROM REF_INSTRUCTION_TYPE WHERE 
+  (TRANSACTION_TYPE_ID IS NOT NULL OR INSTRUCTION_TYPE_NAME = 'PREADVICE')
+  AND
+  INSTRUCTION_TYPE_ID NOT IN (
+    -- Exclude types that already have Narrative as applicable field.
+    SELECT INSTRUCTION_TYPE_ID FROM APPLICABLE_INSTRUCTION_DATA aid WHERE INSTRUCTION_DATA_ID = 35
+  )
+);

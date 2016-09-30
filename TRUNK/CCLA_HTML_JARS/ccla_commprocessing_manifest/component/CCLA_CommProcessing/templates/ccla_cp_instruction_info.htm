@@ -1,0 +1,405 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Instruction Info: <$#local.INSTRUCTION_ID$>
+	</title>
+	
+	<script type="text/javascript">
+		function submitProcessAction(INSTRUCTION_ACTION_ID,label){
+			
+			var answer = confirm("Are you sure you want to apply the action: "
+			 +label + "?");
+			 
+			if (answer){
+				$("#INSTRUCTION_ACTION_ID").val(INSTRUCTION_ACTION_ID);
+				$("#processActionForm").submit();
+			}
+			else{
+				return false;
+			}			
+		}
+		
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 900px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Instruction Info: <$#local.INSTRUCTION_ID$>
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<div style="padding-top:5px"></div>
+					
+					<$loop rsInstruction$>
+						
+						
+						
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+
+							<tr class="account-details-row">
+								<td class="first-col" width="35%"><strong>Instruction ID</strong></td>
+								<td><$#active.INSTRUCTION_ID$>&nbsp;</td>
+							</tr>
+							<$currInstrStatusId = #active.INSTRUCTION_STATUS_ID$>
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Instruction Type</strong></td>
+								<td><$#active.INSTRUCTION_TYPE_NAME$>&nbsp;</td>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Status</strong></td>
+								<td>
+								<$if userHasRole("admin")$>
+								<form method="post">
+									<input type="hidden" name="IdcService" value="CCLA_CP_UPDATE_INSTRUCTION_STATUS" /><$include add_idc_token_to_form$>
+									<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_INSTRUCTION_INFO&INSTRUCTION_ID=<$#local.INSTRUCTION_ID$><$include add_idc_token_to_url$>" />
+									<input type="hidden" id="INSTRUCTION_ID" name="INSTRUCTION_ID" value="<$#active.INSTRUCTION_ID$>"/>
+									<input type="hidden" id="DO_AUDIT" name="DO_AUDIT" value="1"/>
+									
+									<select id="INSTRUCTION_STATUS_ID" name="INSTRUCTION_STATUS_ID">
+										<$loop rsInstructionStatuses$>
+											<option value="<$getValue("rsInstructionStatuses", "INSTRUCTION_STATUS_ID")$>" <$if strEquals(currInstrStatusId, getValue("rsInstructionStatuses", "INSTRUCTION_STATUS_ID"))$>selected<$endif$>>
+												<$getValue("rsInstructionStatuses", "INSTRUCTION_STATUS_NAME")$>
+											</option>
+										<$endloop$>
+									</select>
+									&nbsp;
+									<input type="submit" name="submit" value="Update"/>
+								</form>
+								<$else$>
+										<$loop rsInstructionStatuses$>
+											<$if strEquals(currInstrStatusId, getValue("rsInstructionStatuses", "INSTRUCTION_STATUS_ID"))$>
+												<$getValue("rsInstructionStatuses", "INSTRUCTION_STATUS_NAME")$>
+											<$endif$>
+										<$endloop$>									
+								<$endif$>
+								&nbsp;
+								</td>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Envelope ID</strong></td>
+								<td><$include ccla_cp_ucm_batch_ref_display$>&nbsp;</td>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><strong>WF Batch No.</strong></td>
+								<td><$include ccla_cp_spp_batch_ref_display$>&nbsp;</td>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Original Process Date</strong></td>
+								<td><$#active.ORIGINAL_PROCESS_DATE$>&nbsp;</td>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Process Date</strong></td>
+								<td><$#active.PROCESS_DATE$>&nbsp;</td>
+							</tr>
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Actual Process Date</strong></td>
+								<td><$#active.ACTUAL_PROCESS_DATE$>&nbsp;</td>
+							</tr>
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Source</strong></td>
+								<td><$#active.COMM_SOURCE_NAME$>&nbsp;</td>
+							</tr>
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Type</strong></td>
+								<td><$#active.COMM_TYPE_NAME$>&nbsp;</td>
+							</tr>
+							<tr class="account-details-row">
+								<td class="first-col"><strong>Priority</strong></td>
+								<td><$#active.PRIORITY$>&nbsp;</td>
+							</tr>
+						</table>
+						<$commTypeName = #active.COMM_TYPE_NAME$>
+					<$endloop$>
+					
+					
+
+					<div style="padding-top:5px"></div>
+
+					<$if strEquals(commTypeName,'Interaction')$>
+						<h3 class="ccla_data_panel_header">Interaction Data</h3>
+						
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th class="first-col" width="35%">
+									Field Name
+								</th>
+								<th>
+									Value
+								</th>
+							</tr>
+						
+							<$loop rsInstruction$>
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Interaction ID</strong></td>
+									<td>
+										<a class="newWindow" target="_blank" href="?IdcService=CCLA_CS_INTERACTION_EDIT<$include add_idc_token_to_url$>&INTERACTION_ID=<$#active.INTERACTION_ID$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>">
+										<$#active.INTERACTION_ID$>&nbsp;
+										</a>
+									</td>
+								</tr>
+							<$endloop$>
+						</table>
+					
+					<$elseif strEquals(commTypeName, 'Document')$>
+										
+						<h3 class="ccla_data_panel_header">Document Data</h3>
+						
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th class="first-col" width="35%">
+									Field Name
+								</th>
+								<th>
+									Value
+								</th>
+							</tr>
+						
+
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Document Name</strong></td>
+									<td>
+										<a class="newWindow" target="_blank" href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#local.DOC_NAME$>"><$#local.DOC_NAME$></a> (Iris)
+										<$if userHasRole("admin")$>
+											<br/>
+											<a class="newWindow" target="_blank" href="?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$#local.DOC_ID$>"><$#local.DOC_NAME$></a> (UCM)
+										<$endif$>
+									</td>
+									
+								</tr>
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Document Type</strong></td>
+									<td><$#active.DOC_TYPE$>&nbsp;</td>
+								</tr>
+						</table>
+						
+					<$elseif strEquals(commTypeName,'Transaction Batch')$>
+						
+						<h3 class="ccla_data_panel_header">Transaction Batch Data</h3>
+						
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th class="first-col" width="35%">
+									Field Name
+								</th>
+								<th>
+									Value
+								</th>
+							</tr>
+						
+							<$loop rsInstruction$>
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Batch ID</strong></td>
+									<td>
+										<a class="newWindow" target="_blank" href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.DOC_NAME$>"><$#active.DOC_NAME$></a> (Iris)
+										<$if userHasRole("admin")$>
+											<br/>
+											<a class="newWindow" target="_blank" href="?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$#active.INSTRUCTION_DOC_ID$>"><$#active.DOC_NAME$></a> (UCM)
+										<$endif$>
+									</td>
+									
+								</tr>
+								
+							<$endloop$>
+						</table>
+					
+						
+					<$endif$>
+					
+					
+					
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Instruction Data</h3>
+					
+					<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+						<tr>
+							<th class="first-col" width="35%">
+								Field Name
+							</th>
+							<th>
+								Value
+							</th>
+						</tr>
+					
+						<$loop rsInstructionDataApplied$>
+							<tr class="account-details-row">
+								<td class="first-col"><strong><$#active.INSTRUCTION_DATA_LABEL$></strong></td>
+								<td>
+									[[% Display certain values as links, e.g. to Account/Org page it refers to. %]]
+									
+									<$if #active.INSTRUCTION_DATA_NAME like "ORGANISATION_ID|LIABILITY|BENEFICIARY_ORG_ID"$>
+										<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.INSTRUCTION_VALUE$>"><$#active.INSTRUCTION_VALUE$></a>
+									<$elseif #active.INSTRUCTION_DATA_NAME like "SOURCE_ACCOUNT_ID"$>
+										<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.INSTRUCTION_VALUE$>"><$#active.INSTRUCTION_VALUE$></a>
+									<$elseif #active.INSTRUCTION_DATA_NAME like "SOURCE_BANK_ACCOUNT_ID|DEST_BANK_ACCOUNT_ID"$>
+										<a href="?IdcService=CCLA_CS_BANK_ACCOUNT_INFO<$include add_idc_token_to_url$>&BANK_ACCOUNT_ID=<$#active.INSTRUCTION_VALUE$>"><$#active.INSTRUCTION_VALUE$></a>
+									<$elseif #active.INSTRUCTION_DATA_NAME like "PERSON_ID"$>
+										<a href="?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=<$#active.INSTRUCTION_VALUE$>"><$#active.INSTRUCTION_VALUE$></a>
+									<$elseif #active.INSTRUCTION_DATA_NAME like "PARENT_INSTR_REF"$>
+										<a href="?IdcService=CCLA_CP_INSTRUCTION_INFO<$include add_idc_token_to_url$>&INSTRUCTION_ID=<$#active.INSTRUCTION_VALUE$>"><$#active.INSTRUCTION_VALUE$></a>																		
+									<$elseif #active.INSTRUCTION_DATA_NAME like "FORM_ID"$>
+										<a href="javascript:openPopup('?IdcService=CCLA_CS_ENROL_FORM_INFO_POPUP<$include add_idc_token_to_url$>&FORM_ID=<$#active.INSTRUCTION_VALUE$>&ts=' + new Date());"><$#active.INSTRUCTION_VALUE$></a>
+									
+									<$else$>
+										<$#active.INSTRUCTION_VALUE$>
+									
+									<$endif$>
+									
+									&nbsp;
+								</td>
+							</tr>
+						<$endloop$>
+					</table>
+					
+					<$if userHasRole("admin")$>
+						<p>
+							<a href="?IdcService=CCLA_CP_INSTRUCTION_EDIT&INSTRUCTION_ID=<$#local.INSTRUCTION_ID$>">Edit applied data</a>
+						</p>
+					<$endif$>
+					
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Instruction Lock</h3>
+					
+					<$if not rsInstructionLock$>
+						None
+					<$endif$>
+					
+					<$loop rsInstructionLock$>
+					
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+								<tr class="account-details-row">
+									<td class="first-col" width="35%"><strong>Lock Date</strong></td>
+									<td><$#active.LOCK_DATE$>&nbsp;</td>
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Routing Module</strong></td>
+									<td><$#active.MODULE_NAME$>&nbsp;</td>
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Suspended</strong></td>
+									<td><$include ccla_cp_instruction_suspended_display$>&nbsp;</td>
+								</tr>
+						</table>
+					
+					<$endloop$>
+					
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Active Process</h3>
+					
+					<$if not rsInstructionProcess$>
+						None
+					<$endif$>
+					
+					<$loop rsInstructionProcess$>
+					
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+								<tr class="account-details-row">
+									<td class="first-col" width="35%"><strong>Process ID</strong></td>
+									<td><$#active.INSTR_PROCESS_APPLIED_ID$>&nbsp;</td>
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Description</strong></td>
+									<td><$#active.DESCRIPTION$>&nbsp;</td>
+								</tr>
+								
+								<tr class="account-details-row">
+									<td class="first-col"><strong>Actions</strong></td>
+									<td>
+										<form name="processActionForm" id="processActionForm" method="POST">
+										<input  type="hidden" name="IdcService" value="CCLA_CP_APPLY_PROCESS_ACTION"><$include add_idc_token_to_form$>
+										<input 	type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>&INSTRUCTION_ID=<$#local.INSTRUCTION_ID$>"/>
+										<input type="hidden" id="INSTR_PROCESS_APPLIED_ID" name="INSTR_PROCESS_APPLIED_ID" value="<$#active.INSTR_PROCESS_APPLIED_ID$>"/>
+										<input type="hidden" id="INSTRUCTION_ACTION_ID" name="INSTRUCTION_ACTION_ID" value=""/>
+										
+										<ul>
+										<$loop rsProcessActions$>
+											<li>
+												<a 	class="pointer" 
+													onclick="submitProcessAction(<$rsProcessActions.INSTRUCTION_ACTION_ID$>,'<$rsProcessActions.INSTRUCTION_ACTION_LABEL$>')"><$rsProcessActions.INSTRUCTION_ACTION_LABEL$></a>
+												<$if #active.APPLIED_ACTION_DESCRIPTION$>
+													<p>
+														<$#active.APPLIED_ACTION_DESCRIPTION$>
+													</p>
+												<$endif$>
+											</li>
+										<$endloop$>
+										</ul>
+										
+									</td>
+								</tr>
+						</table>
+					
+					<$endloop$>
+					
+					<div style="padding-top:5px"></div>
+					<h3 class="ccla_data_panel_header">Audit</h3>
+					
+					<$if rsAudit$>
+					<table class="accounts-table" cellspacing="0" cellpadding="0" width="75%">
+						<tr class="account-details-row">
+							<th>Instruction Status</th>
+							<th>Routing Module</th>
+							<th>Audit Action</th>
+							<th>Process Action</th>
+							<th>User</th>
+							<th>Audit Date</th>
+						</tr>
+						<$loop rsAudit$>
+						<tr class="account-details-row">
+							<td><$#active.INSTRUCTION_STATUS_NAME$>&nbsp;</td>
+							<td><$#active.MODULE_NAME$>&nbsp;</td>
+							<td><$#active.INSTR_AUDIT_ACTION_NAME$>&nbsp;</td>
+							<td><$#active.INSTRUCTION_ACTION_LABEL$>&nbsp;</td>
+							<td><$#active.USER_ID$>&nbsp;</td>
+							<td><$#active.AUDIT_DATE$>&nbsp;</td>
+						</tr>	
+						<$endloop$>
+					</table>
+					<$else$>
+						None
+					<$endif$>
+					
+					<$if False$>
+
+						<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Instruction Priority</h3>
+						<$if #active.instrPriority$>
+							Rule Priority is: <$#active.instrPriority$>
+						<$else$>
+							n/a
+						<$endif$>
+					<$endif$>
+				</div>
+				
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+				
+</body></html>

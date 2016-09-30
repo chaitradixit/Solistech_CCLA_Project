@@ -1,0 +1,1962 @@
+------------------------------------------------------------------------
+r21926 | tm | Thu Mar 13 15:59:51 GMT 2014
+
+c
+------------------------------------------------------------------------
+r21922 | tm | Thu Mar 13 15:50:09 GMT 2014
+
+Various updates to duplicate disagreement check and bundle flagging/unflagging
+------------------------------------------------------------------------
+r21014 | tm | Mon Jun 10 15:48:58 BST 2013
+
+Added guard to updateItemStatus method to prevent the status of 'Completed' bundles being changed.
+------------------------------------------------------------------------
+r19972 | camli | Thu Dec 20 16:22:15 GMT 2012
+
+fixed issue with no passing source to work out process date on instructions.
+------------------------------------------------------------------------
+r19942 | tm | Wed Dec 19 15:49:42 GMT 2012
+
+Added unflagBundle service
+------------------------------------------------------------------------
+r19641 | tm | Mon Nov 05 17:40:47 GMT 2012
+
+Extended batch validation to deal with form validity/doc class agreement
+------------------------------------------------------------------------
+r19637 | tm | Mon Nov 05 17:39:19 GMT 2012
+
+Added deploy to dev
+------------------------------------------------------------------------
+r19149 | camli | Fri Aug 24 15:40:01 BST 2012
+
+added environmental var to faking spp, useful for dev.
+------------------------------------------------------------------------
+r19037 | tm | Mon Aug 13 14:08:01 BST 2012
+
+Fixed facade reference
+------------------------------------------------------------------------
+r19002 | tm | Fri Aug 10 16:09:33 BST 2012
+
+Just comments
+------------------------------------------------------------------------
+r18985 | tm | Fri Aug 10 09:52:51 BST 2012
+
+Flag reason script
+------------------------------------------------------------------------
+r18982 | tm | Fri Aug 10 09:10:18 BST 2012
+
+Added process date calculation/population when generating child docs
+------------------------------------------------------------------------
+r18970 | tm | Wed Aug 08 09:50:43 BST 2012
+
+Added req. field checks that refer to the Iris Profile instead of 'hard-coded' env vars etc.
+------------------------------------------------------------------------
+r18945 | tm | Thu Aug 02 17:23:23 BST 2012
+
+Added validation failed flag and error message
+------------------------------------------------------------------------
+r18942 | tm | Thu Aug 02 16:40:16 BST 2012
+
+Fixed facade
+------------------------------------------------------------------------
+r18941 | tm | Thu Aug 02 15:51:22 BST 2012
+
+Debug messages
+------------------------------------------------------------------------
+r18940 | tm | Thu Aug 02 15:46:42 BST 2012
+
+Added further validation check for mismatched contact point field value
+------------------------------------------------------------------------
+r18930 | tm | Wed Aug 01 18:04:08 BST 2012
+
+Amended calls to contact fetching
+------------------------------------------------------------------------
+r18920 | camli | Tue Jul 31 16:13:21 BST 2012
+
+added checks for null idcService
+------------------------------------------------------------------------
+r18916 | tm | Fri Jul 27 17:40:38 BST 2012
+
+Added script for pending child doc table updates
+------------------------------------------------------------------------
+r18915 | tm | Fri Jul 27 17:39:27 BST 2012
+
+Added changes for ChildDoc gen
+------------------------------------------------------------------------
+r18911 | tm | Fri Jul 27 17:36:28 BST 2012
+
+Applied changes to ChildDoc generation
+------------------------------------------------------------------------
+r18770 | tm | Wed Jun 27 11:53:27 BST 2012
+
+Fixed bug in SPPJobProfile - date was converted to UTC but then the original unconverted date was sent with the job data!
+------------------------------------------------------------------------
+r18695 | tm | Mon Jun 18 13:18:49 BST 2012
+
+Fixed core override used on DOC_INFO page to ensure content URLs are rendered correctly for ChildDocuments
+------------------------------------------------------------------------
+r18432 | PAULT | Fri May 25 14:26:11 BST 2012
+
+updated manifest.hda
+------------------------------------------------------------------------
+r18385 | PAULT | Thu May 24 16:32:47 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18378 | PAULT | Thu May 24 16:09:34 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18355 | PAULT | Thu May 24 14:22:36 BST 2012
+
+added final readme entry notes
+------------------------------------------------------------------------
+r18339 | PAULT | Thu May 24 11:36:31 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18328 | PAULT | Thu May 24 10:59:05 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18327 | PAULT | Thu May 24 10:55:13 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18294 | PAULT | Wed May 23 15:23:53 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18292 | PAULT | Wed May 23 15:15:47 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18290 | PAULT | Wed May 23 15:11:26 BST 2012
+
+changed jar name
+------------------------------------------------------------------------
+r18289 | PAULT | Wed May 23 15:06:35 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18285 | PAULT | Wed May 23 14:37:27 BST 2012
+
+modified return url
+------------------------------------------------------------------------
+r18282 | PAULT | Wed May 23 13:28:11 BST 2012
+
+classpath change
+------------------------------------------------------------------------
+r18275 | PAULT | Wed May 23 13:06:01 BST 2012
+
+buildComponent.xml and build.properties
+------------------------------------------------------------------------
+r18199 | PAULT | Mon May 21 18:02:22 BST 2012
+
+adding idcautopublish
+------------------------------------------------------------------------
+r18151 | PAULT | Mon May 21 17:26:54 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18150 | PAULT | Mon May 21 17:26:53 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18149 | PAULT | Mon May 21 17:26:51 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18148 | PAULT | Mon May 21 17:26:47 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18147 | PAULT | Mon May 21 17:26:44 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18146 | PAULT | Mon May 21 17:26:43 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18145 | PAULT | Mon May 21 17:26:42 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18144 | PAULT | Mon May 21 17:26:39 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18143 | PAULT | Mon May 21 17:26:37 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18142 | PAULT | Mon May 21 17:26:36 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18141 | PAULT | Mon May 21 17:26:35 BST 2012
+
+checking in SPP_INTEGRATION
+------------------------------------------------------------------------
+r18140 | PAULT | Mon May 21 17:26:19 BST 2012
+
+removing old code
+------------------------------------------------------------------------
+r18065 | tm | Fri May 18 11:31:33 BST 2012
+
+Amended createNewCaseDocument to use different env parameters to build CCLA_CP_GET_FILE URL
+------------------------------------------------------------------------
+r17950 | tm | Thu May 10 11:35:21 BST 2012
+
+Added switch to createNewCaseDocument URL generation, commented out for now to prevent issues with 10g release.
+------------------------------------------------------------------------
+r17896 | PAULT | Thu May 03 14:15:18 BST 2012
+
+changed facade to be CCLA facacde
+------------------------------------------------------------------------
+r17854 | tm | Fri Apr 27 17:48:31 BST 2012
+
+Fixed triggerSppWorkflow service method (using incorrect facade)
+------------------------------------------------------------------------
+r17852 | tm | Fri Apr 27 17:15:54 BST 2012
+
+Added carriage return
+------------------------------------------------------------------------
+r17833 | camli | Fri Apr 27 10:54:44 BST 2012
+
+corrected facades
+------------------------------------------------------------------------
+r17745 | tm | Fri Apr 20 17:27:43 BST 2012
+
+Added new config var
+------------------------------------------------------------------------
+r17713 | tm | Thu Apr 19 11:42:03 BST 2012
+
+Refactored isMandate/isApp calls
+------------------------------------------------------------------------
+r17712 | tm | Thu Apr 19 11:41:44 BST 2012
+
+REmoved unused methods, e.g. isMandate(), superseded by DocumentClass instance methods
+------------------------------------------------------------------------
+r17711 | tm | Thu Apr 19 11:36:14 BST 2012
+
+Removed unused mega-methods:
+
+irisBatchTriggerSPPWorkflow
+multipleTriggerSPPWorkflow
+------------------------------------------------------------------------
+r17708 | tm | Thu Apr 19 10:46:32 BST 2012
+
+Fixed conflict issues after I forgot to update to Cam's changes before. 
+
+Removed all uses of SPPIntegrationUtils.getFacade() and the method itself.
+
+Renamed facades to cdbFacade/ucmFacade for clarity.
+------------------------------------------------------------------------
+r17533 | camli | Wed Apr 11 16:24:56 BST 2012
+
+moved SEQ_ENVELOPE to CDB and updated facade
+------------------------------------------------------------------------
+r17455 | camli | Tue Apr 10 10:43:13 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17437 | camli | Thu Apr 05 16:56:27 BST 2012
+
+removed redundant imports
+------------------------------------------------------------------------
+r17436 | camli | Thu Apr 05 16:55:33 BST 2012
+
+fixed auto generated holiday
+------------------------------------------------------------------------
+r17427 | pradcliffe | Thu Apr 05 15:39:46 BST 2012
+
+CCLAUtils switchover
+------------------------------------------------------------------------
+r17419 | camli | Thu Apr 05 14:22:32 BST 2012
+
+fixed correct facade
+------------------------------------------------------------------------
+r17415 | pradcliffe | Thu Apr 05 12:56:57 BST 2012
+
+CCLAUtils switchover
+------------------------------------------------------------------------
+r17413 | pradcliffe | Thu Apr 05 12:43:22 BST 2012
+
+replaced SSPServiceUtils calls with new CCLAUtils pooling
+------------------------------------------------------------------------
+r17344 | pradcliffe | Tue Apr 03 15:09:04 BST 2012
+
+Changed new Facade declarations
+------------------------------------------------------------------------
+r17316 | camli | Mon Apr 02 15:24:10 BST 2012
+
+removed documentClass
+------------------------------------------------------------------------
+r17315 | camli | Mon Apr 02 15:23:29 BST 2012
+
+removed documentClassUtils
+------------------------------------------------------------------------
+r17314 | camli | Mon Apr 02 15:22:58 BST 2012
+
+re-factored documentClassUtils and documentClass
+------------------------------------------------------------------------
+r16953 | tm | Thu Mar 15 17:27:52 GMT 2012
+
+Added wrapper for checkinChildDocs so it takes a facade
+------------------------------------------------------------------------
+r16932 | camli | Thu Mar 15 11:42:27 GMT 2012
+
+added instructionId to query job param
+------------------------------------------------------------------------
+r16896 | tm | Tue Mar 13 21:00:38 GMT 2012
+
+Added hack to blank out invoice job fields
+------------------------------------------------------------------------
+r16892 | tm | Tue Mar 13 18:43:10 GMT 2012
+
+Added Doc GUID generation to SPP job trigger
+------------------------------------------------------------------------
+r16881 | tm | Tue Mar 13 15:40:01 GMT 2012
+
+Added MULTIINV to multi-doc types
+------------------------------------------------------------------------
+r16815 | camli | Fri Mar 09 11:31:10 GMT 2012
+
+added flag for testing ws.
+------------------------------------------------------------------------
+r16728 | tm | Tue Mar 06 16:16:16 GMT 2012
+
+Before triggering a standard SPP job, there was a check agains the document xMultiDoc field. If the value was 'Yes' then the job submission was suppressed. This has been updated to check if the doc class is 'MULTIDOC' instead.
+------------------------------------------------------------------------
+r16711 | tm | Fri Mar 02 17:12:38 GMT 2012
+
+panelValidationExtra now attempts to add rsForm ResultSet
+------------------------------------------------------------------------
+r16520 | tm | Thu Feb 16 17:50:20 GMT 2012
+
+Amended getNextDealingDate to return baseProcessingDate if no next dealing date can be found for a particular fund.
+------------------------------------------------------------------------
+r16385 | camli | Mon Feb 06 17:50:30 GMT 2012
+
+added generating preadvice childdoc method
+------------------------------------------------------------------------
+r16325 | tm | Mon Jan 30 18:02:44 GMT 2012
+
+Added sequence allocation to Public Holiday table
+------------------------------------------------------------------------
+r16295 | tm | Wed Jan 25 13:49:31 GMT 2012
+
+Added priority update after flagging bundle
+------------------------------------------------------------------------
+r16271 | tm | Wed Jan 25 11:12:31 GMT 2012
+
+Fixed bug in updateItemStatus, may have prevented priority update taking place.
+------------------------------------------------------------------------
+r16240 | camli | Mon Jan 23 12:32:19 GMT 2012
+
+added status to debug message.
+------------------------------------------------------------------------
+r16047 | tm | Tue Dec 20 17:59:51 GMT 2011
+
+Fixed incorrect data type ID
+------------------------------------------------------------------------
+r16027 | tm | Mon Dec 19 14:20:16 GMT 2011
+
+Added entry/timing logs to filters.
+
+The updateItemStatus method will now refresh a bundle's priority, providing that a given env var is switched on.
+
+Bundle Priority update methods will now only apply an actual document update if the priority value has changed from the current one (reduces number of doc update calls)
+------------------------------------------------------------------------
+r16011 | tm | Fri Dec 16 17:51:49 GMT 2011
+
+Various changes to filter behaviour.
+
+updateItemStatus will now refresh a bundle priority, providing its changed.
+------------------------------------------------------------------------
+r16007 | camli | Fri Dec 16 12:55:12 GMT 2011
+
+fixed null pointer exception
+------------------------------------------------------------------------
+r16006 | camli | Fri Dec 16 11:27:30 GMT 2011
+
+fixed variable and typo
+------------------------------------------------------------------------
+r16005 | camli | Fri Dec 16 11:06:57 GMT 2011
+
+re-factored priority to use bundle binder if it exist.
+------------------------------------------------------------------------
+r15966 | tm | Thu Dec 08 19:07:01 GMT 2011
+
+Added timing log entries to all Filters
+------------------------------------------------------------------------
+r15712 | tm | Thu Nov 10 12:53:28 GMT 2011
+
+Moved Axis extlib references to CCLA_Core
+------------------------------------------------------------------------
+r15711 | tm | Thu Nov 10 12:52:49 GMT 2011
+
+Removed deprecated methods, added unit value duplicate checking
+------------------------------------------------------------------------
+r15430 | tm | Thu Sep 29 16:43:31 BST 2011
+
+Added xUnits to Duplicate Checking
+------------------------------------------------------------------------
+r15398 | camli | Tue Sep 27 16:14:39 BST 2011
+
+added facade to method calls
+------------------------------------------------------------------------
+r15397 | camli | Tue Sep 27 16:14:28 BST 2011
+
+added facade to method calls
+------------------------------------------------------------------------
+r15382 | camli | Mon Sep 26 16:09:46 BST 2011
+
+update folder path
+------------------------------------------------------------------------
+r15368 | camli | Fri Sep 23 11:03:34 BST 2011
+
+added folderName to generateDocUrl
+------------------------------------------------------------------------
+r15298 | tm | Mon Sep 19 18:56:06 BST 2011
+
+Change int param to Integer
+------------------------------------------------------------------------
+r15291 | tm | Mon Sep 19 17:55:28 BST 2011
+
+Various refactoring.
+------------------------------------------------------------------------
+r15237 | tm | Thu Sep 15 16:23:19 BST 2011
+
+Refactored WorkflowProfile to SPPJobProfile.
+
+Added new JobVariable inner class to wrap each job variable definition.
+------------------------------------------------------------------------
+r14920 | tm | Fri Aug 05 18:07:20 BST 2011
+
+Added OracleJDBCFacade transactions
+------------------------------------------------------------------------
+r14905 | tm | Wed Aug 03 13:18:53 BST 2011
+
+Fixed deleteBundle so it works with empty bundles
+------------------------------------------------------------------------
+r14897 | tm | Mon Aug 01 15:36:15 BST 2011
+
+Also replaced LWDocument(dDocName) with LWDocument(dDocName, true)
+------------------------------------------------------------------------
+r14892 | tm | Mon Aug 01 15:31:06 BST 2011
+
+Removed all Gateway stuff, since been superseded by CommProcessing module functionality.
+
+Replaced references to LWDocument(dDocName) with LWDocument(dDocName, true)
+------------------------------------------------------------------------
+r14890 | tm | Mon Aug 01 14:08:52 BST 2011
+
+Removed LWDocument(dID) constructors in favour of LWDocument(dID, true) to ensure direct database lookup is used, as opposed to GET_SEARCH_RESULTS. Many times more efficient
+------------------------------------------------------------------------
+r14871 | tm | Mon Jul 25 14:20:02 BST 2011
+
+Cache refactoring
+------------------------------------------------------------------------
+r14836 | tm | Thu Jul 21 11:45:55 BST 2011
+
+Bug
+------------------------------------------------------------------------
+r14832 | tm | Thu Jul 21 11:20:33 BST 2011
+
+Amended checkActiveCounts
+------------------------------------------------------------------------
+r14819 | camli | Thu Jul 21 10:41:57 BST 2011
+
+added features to save the lastRun date 
+------------------------------------------------------------------------
+r14800 | camli | Wed Jul 20 12:07:29 BST 2011
+
+removed debug
+------------------------------------------------------------------------
+r14799 | camli | Wed Jul 20 11:42:51 BST 2011
+
+fixed docClass checking
+------------------------------------------------------------------------
+r14798 | camli | Wed Jul 20 11:18:42 BST 2011
+
+refactor code
+------------------------------------------------------------------------
+r14794 | camli | Wed Jul 20 10:33:52 BST 2011
+
+change message to reflect error.
+------------------------------------------------------------------------
+r14746 | camli | Tue Jul 19 10:53:07 BST 2011
+
+added pending predadvice, dicondins checks
+------------------------------------------------------------------------
+r14732 | camli | Mon Jul 18 15:10:03 BST 2011
+
+fixed date reference
+------------------------------------------------------------------------
+r14683 | camli | Fri Jul 15 09:48:01 BST 2011
+
+removed dual index item checks.
+------------------------------------------------------------------------
+r14672 | tm | Thu Jul 14 11:29:52 BST 2011
+
+Nullable complete flag
+------------------------------------------------------------------------
+r14671 | tm | Thu Jul 14 11:18:38 BST 2011
+
+Added switch for completed counts
+------------------------------------------------------------------------
+r14669 | camli | Thu Jul 14 11:13:21 BST 2011
+
+added extra debug
+------------------------------------------------------------------------
+r14666 | tm | Thu Jul 14 11:05:49 BST 2011
+
+Removed old sql file
+------------------------------------------------------------------------
+r14665 | tm | Thu Jul 14 11:05:15 BST 2011
+
+Fixed classpath, added bin to ignore
+------------------------------------------------------------------------
+r14664 | tm | Thu Jul 14 11:04:47 BST 2011
+
+Classpath
+------------------------------------------------------------------------
+r14663 | tm | Thu Jul 14 11:03:36 BST 2011
+
+New jar
+------------------------------------------------------------------------
+r14662 | tm | Thu Jul 14 11:03:23 BST 2011
+
+Updated this
+------------------------------------------------------------------------
+r14654 | camli | Thu Jul 14 10:54:42 BST 2011
+
+removed switch as this is already handled in the boost rule.
+------------------------------------------------------------------------
+r14652 | camli | Thu Jul 14 10:52:14 BST 2011
+
+added support for adding unflag bundle boost.
+------------------------------------------------------------------------
+r14651 | tm | Thu Jul 14 10:45:12 BST 2011
+
+Added extra flag to handle complete counts
+------------------------------------------------------------------------
+r14650 | camli | Thu Jul 14 10:37:02 BST 2011
+
+move thread process to use ScheduledEventFilter
+------------------------------------------------------------------------
+r14649 | camli | Thu Jul 14 10:35:00 BST 2011
+
+removed thread process
+------------------------------------------------------------------------
+r14648 | camli | Thu Jul 14 10:22:31 BST 2011
+
+added append priority logic
+------------------------------------------------------------------------
+r14647 | camli | Thu Jul 14 10:21:37 BST 2011
+
+added methods to support append priority and expiry values
+------------------------------------------------------------------------
+r14646 | camli | Thu Jul 14 10:19:31 BST 2011
+
+added append priority rule
+------------------------------------------------------------------------
+r14644 | camli | Thu Jul 14 10:09:07 BST 2011
+
+removed debugs
+------------------------------------------------------------------------
+r14625 | camli | Wed Jul 13 14:32:28 BST 2011
+
+fixed integer comparison
+------------------------------------------------------------------------
+r14624 | camli | Wed Jul 13 13:27:55 BST 2011
+
+added dual index checks for validation
+------------------------------------------------------------------------
+r14622 | tm | Wed Jul 13 12:11:24 BST 2011
+
+Amended comment
+------------------------------------------------------------------------
+r14577 | tm | Mon Jul 11 17:58:41 BST 2011
+
+removed cloneAndSubmit mehtod
+------------------------------------------------------------------------
+r14576 | tm | Mon Jul 11 17:56:26 BST 2011
+
+Removed old applyPostWorkflowAction method
+------------------------------------------------------------------------
+r14558 | tm | Mon Jul 11 12:17:05 BST 2011
+
+Amendments to getActiveBundleCounts
+------------------------------------------------------------------------
+r14555 | tm | Mon Jul 11 11:58:26 BST 2011
+
+Amendments to getActiveBundleCounts
+------------------------------------------------------------------------
+r14553 | tm | Mon Jul 11 11:11:56 BST 2011
+
+Amendments to getActiveBundleCounts
+------------------------------------------------------------------------
+r14543 | tm | Fri Jul 08 16:43:29 BST 2011
+
+Amendments to getActiveBundleCounts
+------------------------------------------------------------------------
+r14455 | tm | Thu Jul 07 13:17:38 BST 2011
+
+Deprecated getNextPendingBundle service methods (moved to CommProc)
+------------------------------------------------------------------------
+r14388 | camli | Tue Jul 05 12:38:10 BST 2011
+
+updated comments
+------------------------------------------------------------------------
+r14387 | camli | Tue Jul 05 12:35:13 BST 2011
+
+break out of loop once priority is found as the values are the same. This should speed up the process a bit.
+------------------------------------------------------------------------
+r14379 | camli | Tue Jul 05 11:46:35 BST 2011
+
+added expiry mechanism to rule values.
+------------------------------------------------------------------------
+r14359 | camli | Mon Jul 04 17:26:26 BST 2011
+
+added fixed priority in the system config var settings.
+------------------------------------------------------------------------
+r14326 | camli | Fri Jul 01 15:40:39 BST 2011
+
+re-factored SystemConfigVar caching
+------------------------------------------------------------------------
+r14270 | camli | Thu Jun 30 09:49:53 BST 2011
+
+removed redundant class DocumentClassUtils
+------------------------------------------------------------------------
+r14259 | camli | Wed Jun 29 10:18:58 BST 2011
+
+changed binder value to match method calls. 
+------------------------------------------------------------------------
+r14252 | camli | Tue Jun 28 18:10:39 BST 2011
+
+added debug
+------------------------------------------------------------------------
+r14234 | tm | Tue Jun 28 14:04:44 BST 2011
+
+Uncommented line
+------------------------------------------------------------------------
+r14233 | tm | Tue Jun 28 12:40:53 BST 2011
+
+Commented out config var cache refresh line
+------------------------------------------------------------------------
+r14216 | camli | Mon Jun 27 15:38:42 BST 2011
+
+fixed debug spacing
+------------------------------------------------------------------------
+r14209 | camli | Mon Jun 27 14:46:00 BST 2011
+
+added debug
+------------------------------------------------------------------------
+r14190 | tm | Fri Jun 24 17:08:10 BST 2011
+
+Started work on automatic unflagging of aged bundles
+------------------------------------------------------------------------
+r14157 | camli | Thu Jun 23 11:24:00 BST 2011
+
+added ucmJobId
+------------------------------------------------------------------------
+r14142 | tm | Wed Jun 22 12:34:25 BST 2011
+
+Started work on getActiveBundleCounts method
+------------------------------------------------------------------------
+r14114 | camli | Tue Jun 21 10:30:15 BST 2011
+
+added isEmpty method
+------------------------------------------------------------------------
+r14076 | pault | Fri Jun 17 17:14:56 BST 2011
+
+added condin process date service to binder
+------------------------------------------------------------------------
+r14062 | pault | Fri Jun 17 11:04:10 BST 2011
+
+Updated code to fix issues with process date validation
+------------------------------------------------------------------------
+r14047 | pault | Wed Jun 15 17:16:29 BST 2011
+
+consolodate panelValidationExtra
+------------------------------------------------------------------------
+r14038 | pault | Wed Jun 15 15:22:18 BST 2011
+
+refactored code so that nominated bank validation occurs in the panelValidationExtra method
+------------------------------------------------------------------------
+r14032 | camli | Wed Jun 15 12:55:08 BST 2011
+
+force original process date recalc.
+------------------------------------------------------------------------
+r14020 | tm | Wed Jun 15 11:28:50 BST 2011
+
+Restored panelValidationExtra
+------------------------------------------------------------------------
+r14019 | tm | Wed Jun 15 10:46:43 BST 2011
+
+Added isMandateBundleUser service method
+------------------------------------------------------------------------
+r14012 | tm | Tue Jun 14 16:20:06 BST 2011
+
+Removed unused imports
+------------------------------------------------------------------------
+r14011 | tm | Tue Jun 14 16:19:49 BST 2011
+
+Resolved import conflicts
+------------------------------------------------------------------------
+r13996 | pault | Tue Jun 14 11:37:06 BST 2011
+
+Externalised getNextDealingDate to a static method so that it is available from panelValidationExtra service method. 
+------------------------------------------------------------------------
+r13995 | camli | Tue Jun 14 10:58:32 BST 2011
+
+added new services to support PROCESS_DATE CR
+------------------------------------------------------------------------
+r13993 | camli | Mon Jun 13 17:51:32 BST 2011
+
+removed redundant imports
+------------------------------------------------------------------------
+r13992 | camli | Mon Jun 13 17:51:03 BST 2011
+
+update service calls to handle process date CR.
+------------------------------------------------------------------------
+r13806 | tm | Wed Jun 01 14:30:27 BST 2011
+
+Moved lots of metadata sanitization etc. to ClientServices UpdateFilter
+------------------------------------------------------------------------
+r13740 | tm | Tue May 31 12:16:25 BST 2011
+
+Removed newer cloneAndSubmit method
+------------------------------------------------------------------------
+r13621 | camli | Mon May 23 16:30:25 BST 2011
+
+fixed unitised deal for amendment
+------------------------------------------------------------------------
+r13598 | camli | Mon May 23 12:07:30 BST 2011
+
+Fixed original date calculations to handle dates in the future.
+------------------------------------------------------------------------
+r13589 | camli | Mon May 23 10:04:54 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r13584 | camli | Fri May 20 18:25:49 BST 2011
+
+fixed class and added debug
+------------------------------------------------------------------------
+r13583 | camli | Fri May 20 17:45:22 BST 2011
+
+added error checks
+------------------------------------------------------------------------
+r13582 | camli | Fri May 20 17:29:27 BST 2011
+
+added getProcessDateFromJobId method
+------------------------------------------------------------------------
+r13552 | camli | Fri May 20 10:20:26 BST 2011
+
+fixed comment
+------------------------------------------------------------------------
+r13544 | camli | Thu May 19 16:50:09 BST 2011
+
+updated logic for calculating pre_dates.
+------------------------------------------------------------------------
+r13543 | camli | Thu May 19 16:43:05 BST 2011
+
+updated webservice
+------------------------------------------------------------------------
+r13540 | camli | Thu May 19 16:26:57 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r13539 | camli | Thu May 19 16:25:41 BST 2011
+
+fixed null point when getting original process date.
+------------------------------------------------------------------------
+r13538 | camli | Thu May 19 16:16:52 BST 2011
+
+call generic method
+------------------------------------------------------------------------
+r13537 | camli | Thu May 19 16:16:32 BST 2011
+
+call generic method.
+------------------------------------------------------------------------
+r13533 | camli | Thu May 19 13:17:32 BST 2011
+
+fixed mapping
+------------------------------------------------------------------------
+r13530 | camli | Thu May 19 13:01:21 BST 2011
+
+added debug for testing purposes
+------------------------------------------------------------------------
+r13527 | camli | Thu May 19 12:26:40 BST 2011
+
+rename properties.
+------------------------------------------------------------------------
+r13525 | camli | Thu May 19 11:56:40 BST 2011
+
+fixed null pointer exception.
+------------------------------------------------------------------------
+r13523 | camli | Thu May 19 11:47:16 BST 2011
+
+validation cut-off Time is not compulsory
+------------------------------------------------------------------------
+r13522 | camli | Thu May 19 11:34:09 BST 2011
+
+refactored process dates and implemented the 
+CR: Process Date Amendment Time
+CR: Process Date Source Time
+------------------------------------------------------------------------
+r13521 | pault | Thu May 19 11:28:12 BST 2011
+
+actually setting wfDate after triggering SPP job
+------------------------------------------------------------------------
+r13510 | tm | Wed May 18 18:15:25 BST 2011
+
+Added TODO note: ensure cloneAndSubmitDoc appends to Instruction Register if its switched on
+------------------------------------------------------------------------
+r13090 | tm | Thu Apr 28 18:03:05 BST 2011
+
+Added new triggerSppWorkflow method that takes a useTransaction flag. Defaults to True. Set this to false if you are triggering an SPP job inside a transaction block.
+
+Removed deprecated Form ID->Workflow ID code.
+------------------------------------------------------------------------
+r13006 | tm | Tue Apr 26 00:42:46 BST 2011
+
+Removed dependency on CommProc component. applyPostWorkflowAction() method soon to be removed/deprecated as its been moved to CommProc.
+------------------------------------------------------------------------
+r12982 | tm | Wed Apr 20 15:42:51 BST 2011
+
+Removed refs. to CommProc resources
+------------------------------------------------------------------------
+r12981 | tm | Wed Apr 20 15:42:22 BST 2011
+
+Removed refs. to CommProc resources
+------------------------------------------------------------------------
+r12976 | tm | Wed Apr 20 12:48:46 BST 2011
+
+Amended getNextPendingBundle to guarantee a pre-emptive lock. The method will block until a bundle can be locked, or there are no pending bundles left.
+------------------------------------------------------------------------
+r12973 | camli | Wed Apr 20 12:06:02 BST 2011
+
+make process release the connection
+------------------------------------------------------------------------
+r12972 | tm | Wed Apr 20 11:55:32 BST 2011
+
+Amended getNextPendingBundle to guarantee a pre-emptive lock. The method will block until a bundle can be locked, or there are no pending bundles left.
+------------------------------------------------------------------------
+r12941 | tm | Tue Apr 19 14:01:28 BST 2011
+
+Removed redundant SQL delete statement which was throwing errors in the logs
+------------------------------------------------------------------------
+r12733 | tm | Mon Apr 11 19:08:46 BST 2011
+
+Added extra debugging to Bundle Priority batch refresh.
+
+Added check to prevent priority update taking place if the value wasnt changed
+------------------------------------------------------------------------
+r12714 | camli | Fri Apr 08 16:00:22 BST 2011
+
+get scanUser from bundle document
+------------------------------------------------------------------------
+r12713 | camli | Fri Apr 08 15:02:34 BST 2011
+
+fixed inverted logic
+------------------------------------------------------------------------
+r12704 | tm | Thu Apr 07 18:12:17 BST 2011
+
+Fixed xPdfDocName allocation in cloneAndSubmitDoc method
+------------------------------------------------------------------------
+r12696 | camli | Thu Apr 07 15:16:32 BST 2011
+
+added scanuser to auto mandate boost
+------------------------------------------------------------------------
+r12676 | camli | Thu Apr 07 10:00:56 BST 2011
+
+added temp fix for strange upper/lower data resultset.
+------------------------------------------------------------------------
+r12664 | camli | Wed Apr 06 17:55:56 BST 2011
+
+refactored to add a specific date to use
+------------------------------------------------------------------------
+r12663 | camli | Wed Apr 06 17:47:26 BST 2011
+
+refactored FundProcessDetailsManager use common method to get the next dealing date.
+------------------------------------------------------------------------
+r12641 | camli | Wed Apr 06 15:04:08 BST 2011
+
+oops typo
+------------------------------------------------------------------------
+r12640 | camli | Wed Apr 06 14:58:57 BST 2011
+
+changed xDestinationAccount to upper case as well.
+------------------------------------------------------------------------
+r12639 | camli | Wed Apr 06 14:51:16 BST 2011
+
+removed uppercase for destination fund, done in filter instead.
+------------------------------------------------------------------------
+r12638 | camli | Wed Apr 06 14:48:48 BST 2011
+
+force upper case for xDestinationFund
+------------------------------------------------------------------------
+r12637 | camli | Wed Apr 06 14:15:23 BST 2011
+
+convert fund code to upper case.
+------------------------------------------------------------------------
+r12627 | camli | Wed Apr 06 12:27:23 BST 2011
+
+fixed field name for bundleref to upper case.
+------------------------------------------------------------------------
+r12614 | camli | Wed Apr 06 11:34:55 BST 2011
+
+removed debug
+------------------------------------------------------------------------
+r12605 | camli | Wed Apr 06 10:55:00 BST 2011
+
+removed debug
+------------------------------------------------------------------------
+r12604 | camli | Wed Apr 06 10:54:11 BST 2011
+
+fixed logic
+------------------------------------------------------------------------
+r12602 | camli | Wed Apr 06 10:46:35 BST 2011
+
+oops...need to put the wait time in the while loop
+------------------------------------------------------------------------
+r12601 | camli | Wed Apr 06 10:40:55 BST 2011
+
+added xStatus condition 
+------------------------------------------------------------------------
+r12600 | camli | Wed Apr 06 10:16:07 BST 2011
+
+Add BundleUpdateProcess to startup.
+------------------------------------------------------------------------
+r12599 | camli | Wed Apr 06 10:15:43 BST 2011
+
+added automandate rule
+------------------------------------------------------------------------
+r12598 | camli | Wed Apr 06 10:15:30 BST 2011
+
+initial version of bundleUpdateProcess thread
+------------------------------------------------------------------------
+r12595 | tm | Tue Apr 05 19:59:02 BST 2011
+
+Updated filters to implement auto-refresh of bundle priority on document update
+------------------------------------------------------------------------
+r12586 | tm | Tue Apr 05 15:07:51 BST 2011
+
+Fixed bug in cloneAndSubmitDocument
+------------------------------------------------------------------------
+r12553 | camli | Fri Apr 01 16:09:34 BST 2011
+
+added type to service
+------------------------------------------------------------------------
+r12549 | camli | Fri Apr 01 12:30:28 BST 2011
+
+initial version of cash-forecasting
+------------------------------------------------------------------------
+r12432 | tm | Tue Mar 29 18:06:03 BST 2011
+
+Updated cloneAndSubmitDoc service to preserve original document date when a CONDINS is passed.
+------------------------------------------------------------------------
+r12363 | camli | Fri Mar 25 12:55:41 GMT 2011
+
+change field names
+------------------------------------------------------------------------
+r12362 | camli | Fri Mar 25 12:32:24 GMT 2011
+
+fixed case on updateSystemConfigVar method
+------------------------------------------------------------------------
+r12360 | camli | Fri Mar 25 10:54:24 GMT 2011
+
+re-enabled code
+------------------------------------------------------------------------
+r12359 | camli | Fri Mar 25 10:20:02 GMT 2011
+
+refactored code back in 
+------------------------------------------------------------------------
+r12355 | camli | Thu Mar 24 18:19:45 GMT 2011
+
+initial version
+------------------------------------------------------------------------
+r12344 | camli | Thu Mar 24 12:26:24 GMT 2011
+
+refactored to allow component to be deployed
+------------------------------------------------------------------------
+r12343 | camli | Thu Mar 24 12:23:38 GMT 2011
+
+refactored to allow component to be deployed
+------------------------------------------------------------------------
+r12342 | tm | Thu Mar 24 11:57:22 GMT 2011
+
+Fixed SPP boolean variable translation
+------------------------------------------------------------------------
+r12341 | camli | Thu Mar 24 11:56:45 GMT 2011
+
+temporary rem-out class for deployment
+------------------------------------------------------------------------
+r12340 | camli | Thu Mar 24 11:16:02 GMT 2011
+
+added methods to refresh the cache if required.
+------------------------------------------------------------------------
+r12322 | camli | Wed Mar 23 12:31:29 GMT 2011
+
+refactored  classes
+------------------------------------------------------------------------
+r12321 | camli | Wed Mar 23 12:28:21 GMT 2011
+
+created inner class
+------------------------------------------------------------------------
+r12320 | camli | Wed Mar 23 12:26:42 GMT 2011
+
+refactored due to DateUtils being moved to the CCLA_Core Package
+------------------------------------------------------------------------
+r12301 | camli | Tue Mar 22 11:01:07 GMT 2011
+
+deprecated class
+------------------------------------------------------------------------
+r12300 | camli | Tue Mar 22 10:46:08 GMT 2011
+
+fixed cloneAndSubmit ProcessDate Error
+------------------------------------------------------------------------
+r12294 | camli | Mon Mar 21 16:13:16 GMT 2011
+
+refactored a few params
+------------------------------------------------------------------------
+r12291 | camli | Mon Mar 21 15:31:06 GMT 2011
+
+fixed variable names
+------------------------------------------------------------------------
+r12288 | camli | Mon Mar 21 15:26:11 GMT 2011
+
+fixed query
+------------------------------------------------------------------------
+r12285 | camli | Mon Mar 21 14:41:26 GMT 2011
+
+added resultset to binder
+------------------------------------------------------------------------
+r12284 | camli | Mon Mar 21 14:20:15 GMT 2011
+
+fix initial page load defect.
+------------------------------------------------------------------------
+r12283 | camli | Mon Mar 21 14:04:14 GMT 2011
+
+first iteration of holiday service
+------------------------------------------------------------------------
+r12282 | camli | Mon Mar 21 14:03:50 GMT 2011
+
+first iteration for testing
+------------------------------------------------------------------------
+r12281 | camli | Mon Mar 21 14:02:35 GMT 2011
+
+added new method.
+------------------------------------------------------------------------
+r12265 | tm | Fri Mar 18 14:58:32 GMT 2011
+
+Added extra queries to getParkingLotCounts
+------------------------------------------------------------------------
+r12213 | camli | Wed Mar 16 13:11:03 GMT 2011
+
+updated fund cache method.
+------------------------------------------------------------------------
+r12194 | tm | Tue Mar 15 13:47:31 GMT 2011
+
+Added xSignaturesValid to strip field list
+------------------------------------------------------------------------
+r12181 | tm | Mon Mar 14 12:21:19 GMT 2011
+
+Added new cloneAndSubmitToSpp service
+------------------------------------------------------------------------
+r12148 | camli | Thu Mar 10 10:37:00 GMT 2011
+
+added property isMandate to DocumentClass  
+------------------------------------------------------------------------
+r12146 | camli | Wed Mar 09 17:25:55 GMT 2011
+
+fixed small logic typo
+------------------------------------------------------------------------
+r12145 | camli | Wed Mar 09 17:02:54 GMT 2011
+
+oops!! fixed logic when getting the fund details from the cache
+------------------------------------------------------------------------
+r12144 | camli | Wed Mar 09 16:41:25 GMT 2011
+
+Added extra processing to the Process Dates based on destination fund code and re-factored code to use CCLA_Core 
+------------------------------------------------------------------------
+r12129 | camli | Tue Mar 08 16:50:01 GMT 2011
+
+fixed client priority boost
+------------------------------------------------------------------------
+r12117 | tm | Mon Mar 07 14:55:11 GMT 2011
+
+Deprecated method and moved to CCLAUtils
+------------------------------------------------------------------------
+r12105 | camli | Fri Mar 04 17:53:16 GMT 2011
+
+fixed index out of bounds
+------------------------------------------------------------------------
+r12104 | camli | Fri Mar 04 17:41:27 GMT 2011
+
+fixed bundle binder
+------------------------------------------------------------------------
+r12102 | camli | Fri Mar 04 17:27:11 GMT 2011
+
+overload constructor to complete all details
+------------------------------------------------------------------------
+r12101 | camli | Fri Mar 04 17:26:29 GMT 2011
+
+added auto priority refresh
+------------------------------------------------------------------------
+r12021 | tm | Fri Feb 25 14:53:29 GMT 2011
+
+Removed redundant lwd.update() call from triggerSppWorkflow method
+------------------------------------------------------------------------
+r12016 | camli | Fri Feb 25 13:08:39 GMT 2011
+
+added logging with client number and company
+------------------------------------------------------------------------
+r11994 | camli | Thu Feb 24 13:33:25 GMT 2011
+
+should use the current time to process the funds.
+------------------------------------------------------------------------
+r11993 | camli | Thu Feb 24 13:14:48 GMT 2011
+
+tidy up
+------------------------------------------------------------------------
+r11986 | camli | Thu Feb 24 10:12:54 GMT 2011
+
+fixed caching issue
+------------------------------------------------------------------------
+r11891 | tm | Thu Feb 17 14:36:22 GMT 2011
+
+Added new attributes to DocumentClass object
+------------------------------------------------------------------------
+r11878 | tm | Wed Feb 16 16:31:10 GMT 2011
+
+Fixed issue with adding null var to Binder
+------------------------------------------------------------------------
+r11870 | camli | Wed Feb 16 11:10:43 GMT 2011
+
+UCI00123 - Moved Standing Order Checks to Indexing stage
+------------------------------------------------------------------------
+r11862 | camli | Tue Feb 15 18:26:37 GMT 2011
+
+fixed coif post processing dates
+------------------------------------------------------------------------
+r11848 | camli | Tue Feb 15 10:01:07 GMT 2011
+
+fixed pre date if no override date is defined.
+------------------------------------------------------------------------
+r11835 | camli | Mon Feb 14 15:21:26 GMT 2011
+
+fixed minor bug with override date
+------------------------------------------------------------------------
+r11812 | camli | Fri Feb 11 18:02:58 GMT 2011
+
+minor bug fixes
+------------------------------------------------------------------------
+r11798 | camli | Fri Feb 11 16:11:36 GMT 2011
+
+changed to use the new FundProcessDetailsManager instead of ProcessDateUtils
+------------------------------------------------------------------------
+r11797 | camli | Fri Feb 11 16:08:21 GMT 2011
+
+moved from client services
+------------------------------------------------------------------------
+r11753 | tm | Thu Feb 10 12:46:47 GMT 2011
+
+Updated duplicate checking into isolated method
+------------------------------------------------------------------------
+r11725 | camli | Mon Feb 07 17:36:44 GMT 2011
+
+added old schema processing dates. Will be re-written with new schema in clientservices
+------------------------------------------------------------------------
+r11721 | camli | Mon Feb 07 16:23:11 GMT 2011
+
+process date CR using old schema
+------------------------------------------------------------------------
+r11692 | camli | Tue Feb 01 11:03:43 GMT 2011
+
+UCI00102 - Added additional processing dates.
+------------------------------------------------------------------------
+r11460 | tm | Tue Dec 21 14:56:52 GMT 2010
+
+Amended auditing for resetting dupes
+------------------------------------------------------------------------
+r11457 | camli | Fri Dec 17 17:43:55 GMT 2010
+
+fixed debug message
+------------------------------------------------------------------------
+r11456 | camli | Fri Dec 17 17:38:26 GMT 2010
+
+UCI00090 added resetDuplicate method
+------------------------------------------------------------------------
+r11392 | tm | Mon Dec 13 14:11:26 GMT 2010
+
+Added auditing
+------------------------------------------------------------------------
+r11380 | tm | Fri Dec 10 18:02:03 GMT 2010
+
+Dual index stuff
+------------------------------------------------------------------------
+r11313 | tm | Wed Dec 08 13:07:38 GMT 2010
+
+Updated batch fetching to use new IrisBatchDocs method for fetching batch item data with Dual Index data applied
+------------------------------------------------------------------------
+r11309 | camli | Wed Dec 08 10:13:54 GMT 2010
+
+fixed cache to handle new fields IS_TRANSACTION and SUBMIT_TO_SPP (UCI00058)
+------------------------------------------------------------------------
+r11308 | camli | Wed Dec 08 10:11:58 GMT 2010
+
+added new transaction property and method isTransaction()
+------------------------------------------------------------------------
+r11294 | camli | Tue Dec 07 14:53:09 GMT 2010
+
+fixed tokeniser issue.
+------------------------------------------------------------------------
+r11293 | camli | Tue Dec 07 14:45:50 GMT 2010
+
+added APPLIES_TO bundle status checking to see if the rule should be applied  UCI00060
+------------------------------------------------------------------------
+r11292 | camli | Tue Dec 07 14:45:39 GMT 2010
+
+added APPLIES_TO bundle status checking to see if the rule should be applied  UCI00060
+------------------------------------------------------------------------
+r11289 | tm | Tue Dec 07 13:19:01 GMT 2010
+
+Updated dual index method call
+------------------------------------------------------------------------
+r11274 | tm | Mon Dec 06 14:36:12 GMT 2010
+
+Added hooks to new Dual Index methods in Iris_BatchDocs
+------------------------------------------------------------------------
+r11214 | camli | Tue Nov 30 17:28:16 GMT 2010
+
+UCI00050 added method to refresh all bundle priorities.
+------------------------------------------------------------------------
+r11194 | tm | Tue Nov 30 11:26:41 GMT 2010
+
+Updated WorkflowProfile class to throw error if the generated config lists have different lengths
+------------------------------------------------------------------------
+r11187 | camli | Mon Nov 29 12:28:11 GMT 2010
+
+added logging to checkForAllPendingDocsInBundle()
+------------------------------------------------------------------------
+r11139 | camli | Tue Nov 23 17:13:31 GMT 2010
+
+added method checkForAllPendingDocsInBundle()
+------------------------------------------------------------------------
+r11138 | katie | Tue Nov 23 17:11:44 GMT 2010
+
+added a method to unflag multiple items at once
+------------------------------------------------------------------------
+r11121 | tm | Mon Nov 22 13:06:42 GMT 2010
+
+Fixed hard-coded username/password in web service auth.
+------------------------------------------------------------------------
+r11103 | tm | Sat Nov 20 21:28:00 GMT 2010
+
+Appended security override method to BindingStub class.
+
+Added new objects ComplaintCategory/SubCategory and support for fetching them via new SPP web services and conversion to ResultSets.
+------------------------------------------------------------------------
+r11099 | tm | Fri Nov 19 18:35:34 GMT 2010
+
+Updated SPP web service stubs, added new methods for fetching Complaint types. Doesn't work currently.
+------------------------------------------------------------------------
+r11053 | tm | Tue Nov 16 10:58:35 GMT 2010
+
+Fixed bug in ProcessDateService when viewing admin page
+------------------------------------------------------------------------
+r11052 | tm | Tue Nov 16 10:58:12 GMT 2010
+
+Made JobPriorityRule instances persistable
+------------------------------------------------------------------------
+r11051 | tm | Tue Nov 16 10:57:20 GMT 2010
+
+Ensured xFund value is always cast to upper-case.
+------------------------------------------------------------------------
+r10933 | tm | Wed Nov 03 19:08:28 GMT 2010
+
+More work on Job Priority rules engine
+------------------------------------------------------------------------
+r10912 | tm | Sun Oct 31 17:54:12 GMT 2010
+
+Changes to ProcessDate handling and batch validation
+------------------------------------------------------------------------
+r10884 | tm | Wed Oct 27 13:28:42 BST 2010
+
+Added switch to control application of Process Dates
+------------------------------------------------------------------------
+r10859 | tm | Mon Oct 25 19:30:21 BST 2010
+
+Sorted out Process Date stuff. Updated CheckinFilter to prevent the Process Date being set too early.
+
+Started work on 'required account fields' bundle validation
+------------------------------------------------------------------------
+r10834 | tm | Thu Oct 21 20:11:38 BST 2010
+
+Fixed SImpleDateFormat
+------------------------------------------------------------------------
+r10832 | tm | Thu Oct 21 19:36:49 BST 2010
+
+Started work on JobPriority stuff, added new handler methods for base process/rollover dates
+------------------------------------------------------------------------
+r10784 | tm | Mon Oct 18 15:36:49 BST 2010
+
+Removed weekend change to force EnterDetails bundles to have highest priority
+------------------------------------------------------------------------
+r10777 | tm | Sun Oct 17 23:39:33 BST 2010
+
+Updated parking lot bundle resetting - now accepts client number filter
+------------------------------------------------------------------------
+r10776 | tm | Fri Oct 15 19:29:03 BST 2010
+
+Added temporary bundle priority of 10 for items in EnterDetails step.
+
+Bundle priority now gets updated in doPostWorkflowActions.
+------------------------------------------------------------------------
+r10771 | tm | Fri Oct 15 13:38:32 BST 2010
+
+Fixed
+------------------------------------------------------------------------
+r10769 | tm | Fri Oct 15 13:34:45 BST 2010
+
+Added 'basic' mandate bundle fetching and counting
+------------------------------------------------------------------------
+r10768 | darrenj | Fri Oct 15 13:29:59 BST 2010
+
+change to debugging
+------------------------------------------------------------------------
+r10764 | darrenj | Fri Oct 15 11:52:14 BST 2010
+
+Added workflow profile stuff, and extra logging
+------------------------------------------------------------------------
+r10763 | tm | Fri Oct 15 11:52:11 BST 2010
+
+Added skipParkingLot switch, for items that have previously been submitted to the Parking Lot
+------------------------------------------------------------------------
+r10762 | tm | Fri Oct 15 09:49:53 BST 2010
+
+Testing release date stuff
+------------------------------------------------------------------------
+r10761 | tm | Thu Oct 14 20:17:37 BST 2010
+
+Added NTLM authentication to Workflow web service suite (not PlatformManager though).
+
+Lookup data can now be fetched via the new web service, given a category ID.
+------------------------------------------------------------------------
+r10760 | tm | Thu Oct 14 13:47:30 BST 2010
+
+Amended date parsing
+------------------------------------------------------------------------
+r10757 | tm | Thu Oct 14 12:50:57 BST 2010
+
+Amended startWorkflow method
+------------------------------------------------------------------------
+r10756 | tm | Thu Oct 14 12:50:42 BST 2010
+
+Added wrapper for query job data
+------------------------------------------------------------------------
+r10748 | darrenj | Wed Oct 13 15:46:54 BST 2010
+
+Added Workflow Profile functionality for starting workflows
+------------------------------------------------------------------------
+r10741 | tm | Wed Oct 13 12:28:33 BST 2010
+
+Rebuilt SPP Java classes from updated WSDL.
+------------------------------------------------------------------------
+r10739 | tm | Wed Oct 13 12:04:30 BST 2010
+
+Added latest SPP WSDL from Brian
+------------------------------------------------------------------------
+r10665 | tm | Fri Oct 08 10:15:22 BST 2010
+
+Added minimum bundle age restriction to getNextPendingBundle
+------------------------------------------------------------------------
+r10663 | tm | Thu Oct 07 19:22:47 BST 2010
+
+Added basic bundle priority support
+------------------------------------------------------------------------
+r10598 | tm | Wed Oct 06 10:15:58 BST 2010
+
+Added extra check in custom Batch Validator for bundle status.
+
+flagBundle() method enhanced to include DocMeta snapshot methods
+
+
+------------------------------------------------------------------------
+r10542 | tm | Fri Sep 24 18:58:37 BST 2010
+
+Added temporary methods to enable 'Validation' step in CCLA_MailHandling workflow
+------------------------------------------------------------------------
+r10539 | kib | Fri Sep 24 15:42:40 BST 2010
+
+Fixed baseutils reference
+------------------------------------------------------------------------
+r10404 | tm | Fri Sep 10 18:42:44 BST 2010
+
+Refactored SPP submission, added method for kicking off CLIENTQUERY jobs
+------------------------------------------------------------------------
+r10387 | tm | Thu Sep 09 11:49:25 BST 2010
+
+Added new Parking Lot suppression flag
+------------------------------------------------------------------------
+r10366 | tm | Tue Sep 07 18:41:51 BST 2010
+
+Added extra services for resetting parking lot bundles and fetching the next pending bundle.
+------------------------------------------------------------------------
+r10257 | tm | Fri Aug 27 10:19:15 BST 2010
+
+Added isApp util method and supporting doc suppression for bundles containing APP items
+------------------------------------------------------------------------
+r9566 | tm | Fri Jul 02 14:48:45 BST 2010
+
+No longer required
+------------------------------------------------------------------------
+r9565 | tm | Fri Jul 02 14:48:24 BST 2010
+
+Original (bugged) axis 1.4 build
+------------------------------------------------------------------------
+r9564 | tm | Fri Jul 02 14:43:48 BST 2010
+
+Amended some code here for initDependantDocsForEnvelope, most of it is now commented out though as not required at this stage
+------------------------------------------------------------------------
+r9563 | tm | Fri Jul 02 14:43:05 BST 2010
+
+Changed Log.error to Log.warn for safe exception
+------------------------------------------------------------------------
+r9562 | tm | Fri Jul 02 14:39:59 BST 2010
+
+Added extra debugging when assigning xDependantDocName values on SPP submission
+------------------------------------------------------------------------
+r9561 | tm | Fri Jul 02 14:39:24 BST 2010
+
+Edited checkinChildDocs() method to only apply xDependantDocName value to non-supporting & instruction documents.
+
+This prevents xDependantDocName being set to point at MULTIDOC/XXX items, which never go to SPP.
+------------------------------------------------------------------------
+r9530 | tm | Wed Jun 30 19:00:42 BST 2010
+
+Added new builds of axis.jar, contains rebuilt class file to fix issue with 1.4 final release.
+------------------------------------------------------------------------
+r9529 | tm | Wed Jun 30 19:00:24 BST 2010
+
+Added new builds of axis.jar, contains rebuilt class file to fix issue with 1.4 final release.
+------------------------------------------------------------------------
+r9208 | tm | Thu Jun 03 18:16:12 BST 2010
+
+Added new batch trigger method. Works on ResultSet of content items
+------------------------------------------------------------------------
+r9188 | tm | Fri May 28 18:36:36 BST 2010
+
+Removed call to fetch bundle notes in triggerSppWorkflow method
+------------------------------------------------------------------------
+r9103 | tm | Fri May 14 18:52:02 BST 2010
+
+Added ProcessDateService
+------------------------------------------------------------------------
+r8840 | tm | Fri Apr 23 20:03:24 BST 2010
+
+Added timezone issue fix
+------------------------------------------------------------------------
+r8838 | tm | Thu Apr 22 19:30:30 BST 2010
+
+Added new control flag, SPP_SUPPRESS_SUPPORTING_DOC_MAND_SUBMISSION. If a bundle contains a MAND, any supporting documents will not be released to SPP if this flag is set.
+------------------------------------------------------------------------
+r8689 | tm | Fri Apr 09 19:15:35 BST 2010
+
+Amended comments, removed useless statements
+------------------------------------------------------------------------
+r8666 | tm | Wed Mar 31 19:53:24 BST 2010
+
+Change to assignment of xFormId values as workflow IDs: now controlled by list of document classes. Will not occur by default.
+------------------------------------------------------------------------
+r8591 | tm | Fri Mar 26 14:38:51 GMT 2010
+
+Amended checkItemWorkflowId method to insert new workflow ID on items which don't have a workflow ID OR bundle reference.
+
+Added new service method for adding SPP job notes.
+------------------------------------------------------------------------
+r8590 | tm | Fri Mar 26 14:37:21 GMT 2010
+
+Removed Duplicate_JobStarted status on duplicate items.
+Instead, an extra flag is set in the audit message to indicate a dupe was submitted to SPP.
+
+Added a new method for adding SPP Job Notes.
+------------------------------------------------------------------------
+r8583 | tm | Fri Mar 26 10:51:19 GMT 2010
+
+Added createNewJob web service method
+------------------------------------------------------------------------
+r8582 | tm | Fri Mar 26 10:46:15 GMT 2010
+
+Adjusted bundle ref prefixes to separate method
+------------------------------------------------------------------------
+r8581 | tm | Fri Mar 26 10:34:19 GMT 2010
+
+Adjusted checkin filter to automatically append a new bundle reference on checkin, if the 'addBundleRef' flag is present in the binder
+------------------------------------------------------------------------
+r8491 | tm | Fri Mar 12 18:13:21 GMT 2010
+
+Refactored document class config methods to use separate Java cache
+------------------------------------------------------------------------
+r8432 | tm | Fri Mar 05 19:31:11 GMT 2010
+
+Added AUTOMAND document class handling
+------------------------------------------------------------------------
+r8393 | tm | Tue Mar 02 18:55:10 GMT 2010
+
+Amended createDependantDocs web service method to allow for empty clientId/account no. lists
+------------------------------------------------------------------------
+r8034 | tm | Fri Jan 29 20:05:20 GMT 2010
+
+Various things
+------------------------------------------------------------------------
+r7876 | tm | Wed Jan 20 18:44:34 GMT 2010
+
+Deleted commented-out code.
+Fixed bug which was not setting the Archived status on items after passing through the workflow trigger.
+Deprecacted the old multipleTriggerSppWorkflow() method
+------------------------------------------------------------------------
+r7875 | tm | Wed Jan 20 18:43:22 GMT 2010
+
+Added log entry each time an item status is updated using updateItemStatus() method
+------------------------------------------------------------------------
+r7874 | tm | Wed Jan 20 18:42:53 GMT 2010
+
+Edited log output line
+------------------------------------------------------------------------
+r7873 | tm | Wed Jan 20 18:41:44 GMT 2010
+
+Updates to gateway classes
+------------------------------------------------------------------------
+r7624 | tm | Mon Jan 11 18:31:03 GMT 2010
+
+Added lots of extra SubmitConfig classes for the SPP Gateway. Updated various outdated references to BatchDocumentServices static methods
+------------------------------------------------------------------------
+r7615 | tm | Fri Jan 08 19:11:48 GMT 2010
+
+Improving timing debug code, child document creation (can now happen asynchronously)
+------------------------------------------------------------------------
+r7549 | tm | Wed Jan 06 16:40:43 GMT 2010
+
+Minor optimisations and timing output
+------------------------------------------------------------------------
+r7548 | tm | Wed Jan 06 16:40:32 GMT 2010
+
+Minor optimisations and timing output
+------------------------------------------------------------------------
+r7547 | tm | Wed Jan 06 16:40:11 GMT 2010
+
+Added duplicate checking method with timing info
+------------------------------------------------------------------------
+r7524 | tm | Mon Jan 04 19:32:05 GMT 2010
+
+Added comment for getCheckinStatus
+------------------------------------------------------------------------
+r7523 | tm | Mon Jan 04 19:31:28 GMT 2010
+
+Implemented custom multi-doc classes handling
+------------------------------------------------------------------------
+r7522 | tm | Mon Jan 04 19:30:47 GMT 2010
+
+Skeleton classes for gateway.
+
+ParkingLotImporter class will be used to transfer items from existing VerifyMandate workflow into SPP queue (unfinished)
+------------------------------------------------------------------------
+r7487 | tm | Wed Dec 30 12:54:32 GMT 2009
+
+Removing dependencies and references to XXX document class
+------------------------------------------------------------------------
+r7483 | tm | Wed Dec 30 12:05:17 GMT 2009
+
+Removed deprecated splitMultipleDocs method
+------------------------------------------------------------------------
+r7482 | tm | Wed Dec 30 12:03:10 GMT 2009
+
+Removed old checkinWithInstructionDocs method
+------------------------------------------------------------------------
+r7481 | tm | Wed Dec 30 12:02:30 GMT 2009
+
+Started removing dependencies and references to XXX document class
+------------------------------------------------------------------------
+r7480 | tm | Wed Dec 30 12:01:53 GMT 2009
+
+Added new filter implementor: this is used to tag status values to newly checked-in items destined for SPP release.
+------------------------------------------------------------------------
+r7460 | tm | Tue Dec 22 18:14:18 GMT 2009
+
+Started adding skeleton classes for Gateway stuff
+------------------------------------------------------------------------
+r7409 | tm | Fri Dec 18 19:37:32 GMT 2009
+
+Added custom DocumentValidator implementor. 
+------------------------------------------------------------------------
+r7323 | tm | Tue Dec 15 19:27:16 GMT 2009
+
+Added additional check to UpdateFilter to remove form ID values if the doc class is not CLIENTCONF
+------------------------------------------------------------------------
+r7305 | darrenj | Tue Dec 15 16:56:40 GMT 2009
+
+Added Bank xSource to envelope prefix code
+------------------------------------------------------------------------
+r7304 | tm | Tue Dec 15 16:45:59 GMT 2009
+
+Modified checkinChildDocs method to use LWDocument with synchronised checkin.
+
+Old method copied and renamed to checkinChildDocs_OLD
+------------------------------------------------------------------------
+r7252 | darrenj | Mon Dec 14 11:02:37 GMT 2009
+
+Modified code to add extraneous documents that were added as supporting documents from SPP. Also, temporary fix implemented while SPP fix a bug where workflow Id needs to be passed to the get supp docs call
+------------------------------------------------------------------------
+r7169 | darrenj | Wed Dec 09 14:37:24 GMT 2009
+
+Lots of changes for iris mark 2 work
+------------------------------------------------------------------------
+r6946 | darrenj | Wed Dec 02 15:36:07 GMT 2009
+
+Created dependant document functionality that uses the table TDEPENDANTDOCS to relationships between documents. At the moment, only supporting documents are supported
+------------------------------------------------------------------------
+r6945 | darrenj | Wed Dec 02 15:35:08 GMT 2009
+
+created executeCustomSearch method for reusability
+------------------------------------------------------------------------
+r6944 | darrenj | Wed Dec 02 15:34:23 GMT 2009
+
+Added method for supporting document checking, and also moved GET_SEARCH_RESULTS query code into it's own method so it can be reused 
+------------------------------------------------------------------------
+r6943 | darrenj | Wed Dec 02 15:32:47 GMT 2009
+
+Updated TODOs, no code updates
+------------------------------------------------------------------------
+r6788 | darrenj | Thu Nov 26 10:58:04 GMT 2009
+
+Added code for new job id requirement (every content item that starts a job in SPP should have it's own job ID.)
+------------------------------------------------------------------------
+r6787 | darrenj | Thu Nov 26 10:57:12 GMT 2009
+
+Added code for new Instruction doc handling
+------------------------------------------------------------------------
+r6786 | darrenj | Thu Nov 26 10:56:36 GMT 2009
+
+Added code for new Instruction doc handling
+------------------------------------------------------------------------
+r6778 | darrenj | Tue Nov 24 13:01:24 GMT 2009
+
+Added code that checks if a job is being manually started for a Duplicate and changes it's status accordingly
+------------------------------------------------------------------------
+r6777 | darrenj | Tue Nov 24 12:55:27 GMT 2009
+
+Added Duplicate rules to envelope submission code
+------------------------------------------------------------------------
+r6776 | darrenj | Tue Nov 24 12:54:48 GMT 2009
+
+Dev upgrades made to duplicate checking process
+------------------------------------------------------------------------
+r6759 | tm | Thu Nov 19 19:25:38 GMT 2009
+
+Extended InstructionDocServices to deal with checking in transfer ChildDocuments for every transfer listed on a CLIENTCONF form.
+------------------------------------------------------------------------
+r6753 | darrenj | Wed Nov 18 18:20:34 GMT 2009
+
+Half completed duplicate checking code. Can be built to live - will not impact anything.
+------------------------------------------------------------------------
+r6744 | tm | Tue Nov 17 16:46:29 GMT 2009
+
+Added handler code to deal with xFormId values. Any set form IDs will override assigned workflow IDs on batch/single item checkins.
+------------------------------------------------------------------------
+r6736 | darrenj | Tue Nov 17 14:35:04 GMT 2009
+
+Removed hasInstruction line for safety
+------------------------------------------------------------------------
+r6718 | darrenj | Mon Nov 16 11:17:19 GMT 2009
+
+Added extended commenting
+------------------------------------------------------------------------
+r6717 | darrenj | Mon Nov 16 11:17:09 GMT 2009
+
+Added public static method to resolve Fund fields from account numbers. Also added extended commenting.
+------------------------------------------------------------------------
+r6716 | darrenj | Mon Nov 16 11:16:22 GMT 2009
+
+Added extended commenting
+------------------------------------------------------------------------
+r6715 | darrenj | Mon Nov 16 11:15:49 GMT 2009
+
+Added extended commenting
+------------------------------------------------------------------------
+r6714 | darrenj | Mon Nov 16 11:14:59 GMT 2009
+
+Added comments, this class is deprecated. Leaving class in for safety
+------------------------------------------------------------------------
+r6713 | darrenj | Mon Nov 16 11:13:43 GMT 2009
+
+Added functionality for Fund values to be up to be auto completed up to 3 characters in length.
+------------------------------------------------------------------------
+r6712 | darrenj | Mon Nov 16 11:12:24 GMT 2009
+
+Added code to check if DOC_INFO call is invoked from SPP via a web service call. If it is, we check that the dDocType has not been changed. If it has, we revert it back to the original doc type of the content item currently in UCM.
+------------------------------------------------------------------------
+r6708 | darrenj | Fri Nov 13 15:49:17 GMT 2009
+
+Patched hole where MANDs may have dropped out
+------------------------------------------------------------------------
+r6707 | tm | Fri Nov 13 11:43:28 GMT 2009
+
+Added comments for Darren's benefit
+------------------------------------------------------------------------
+r6697 | tm | Mon Nov 09 18:51:33 GMT 2009
+
+Added new filter class to force createPrimaryMetaFile flag into binder if dDocType is ChildDocument
+------------------------------------------------------------------------
+r6696 | tm | Mon Nov 09 18:00:17 GMT 2009
+
+Added placeholder method for getNextWorkflowId
+------------------------------------------------------------------------
+r6695 | tm | Mon Nov 09 17:59:23 GMT 2009
+
+Added checkForEnvelopeId method, this is used to auto-append envelope ID
+values (xBatchNumber field) to manual document checkins via the Iris interface.
+
+The envelope ID char prefix is based on the value of the xSource field:
+f: fax
+e: anything else
+------------------------------------------------------------------------
+r6452 | tm | Fri Oct 23 19:02:45 BST 2009
+
+Optimized SPP workflow submission routines, adding timing debug information
+------------------------------------------------------------------------
+r6209 | tm | Tue Sep 29 23:05:47 BST 2009
+
+-Added extra libraries for webservices NTML auth (commons-httpclient)
+-Modified all SPP submissions to occur via one method only
+-Iris submission code simplified although most old code left. Can be safely removed after this revision.
+
+Refactored our Java classes:
+-retired 'Sow6' naming
+-all ServiceHandlersSow6 methods are now in the InstructionDocService class
+-SppIntegrationServices should contain all UCM service methods
+-SppIntegrationUtils contains only static methods, including the triggerSppWorkflow method which should be used for all SPP submissions.
+-FilterImplementor used before document updating has been moved and extended as UpdateFilter class.
+-BundleServices contains more Iris-specific methods, should really be in CCLA_MailHandling component but there's no package for that yet.
+   
+------------------------------------------------------------------------
+r6057 | tm | Fri Sep 18 18:13:42 BST 2009
+
+Added TODO
+------------------------------------------------------------------------
+r6056 | tm | Fri Sep 18 18:12:48 BST 2009
+
+Added clause to remove old revisions from extended report query
+------------------------------------------------------------------------
+r6027 | tm | Wed Sep 16 20:02:47 BST 2009
+
+Added methods to fetch new workflow ID and check for existing workflow IDs
+------------------------------------------------------------------------
+r5987 | tm | Thu Sep 10 18:12:49 BST 2009
+
+Fixed issue with copying workflow date to XXX items
+------------------------------------------------------------------------
+r5860 | tm | Sat Sep 05 03:38:00 BST 2009
+
+Pre-deployment on Saturday. Many changes to SPP submission, added Utils class containing static methods
+------------------------------------------------------------------------
+r5859 | tm | Sat Sep 05 01:20:19 BST 2009
+
+
+------------------------------------------------------------------------
+r5802 | tm | Fri Sep 04 00:07:30 BST 2009
+
+A million updates
+------------------------------------------------------------------------
+r5399 | tm | Wed Aug 12 11:25:42 BST 2009
+
+Marked triggerSppWorkflow() as deprecated
+------------------------------------------------------------------------
+r5382 | tm | Tue Aug 11 15:29:37 BST 2009
+
+Added extra tasks for UAT deployment
+------------------------------------------------------------------------
+r5381 | tm | Tue Aug 11 15:26:04 BST 2009
+
+Added more verbose logging to SPP data conversions
+------------------------------------------------------------------------
+r5379 | tm | Tue Aug 11 11:06:11 BST 2009
+
+Changed date parsing code in triggerSppWorkflow
+------------------------------------------------------------------------
+r4590 | tm | Thu Jul 02 21:33:58 BST 2009
+
+Changed the way MAND items are handled on batch submission: they are now assigned the same workflow ID as the other batch items before being checked out/checked in.
+------------------------------------------------------------------------
+r4566 | tm | Thu Jul 02 00:40:35 BST 2009
+
+Added condition to prevent MAND items being submitted to SPP as part of a batch.
+------------------------------------------------------------------------
+r4565 | tm | Wed Jul 01 23:49:23 BST 2009
+
+Added auditing for single item SPP submission
+------------------------------------------------------------------------
+r4553 | darrenj | Tue Jun 30 13:46:09 BST 2009
+
+Changed naming convention of child docs
+------------------------------------------------------------------------
+r4545 | tm | Mon Jun 29 15:28:59 BST 2009
+
+
+------------------------------------------------------------------------
+r4543 | tm | Mon Jun 29 12:57:37 BST 2009
+
+Added:
+-generation of child docs when multi doc flag is detected
+-extra auditing calls
+-support for MAND/APP supporting doc flag
+------------------------------------------------------------------------
+r4511 | tm | Mon Jun 22 17:29:54 BST 2009
+
+Added Redirect suppresion
+------------------------------------------------------------------------
+r4508 | tm | Fri Jun 19 00:51:42 BST 2009
+
+Added extra auditing and guards to batch SPP submission
+------------------------------------------------------------------------
+r4502 | tm | Wed Jun 17 16:12:51 BST 2009
+
+Changed ResultCount to 1000 to prevent OracleTextSearch error
+------------------------------------------------------------------------
+r4499 | tm | Tue Jun 16 19:43:44 BST 2009
+
+
+------------------------------------------------------------------------
+r4486 | tm | Tue Jun 16 19:05:05 BST 2009
+
+Component code now has dependency on IrisBatchDocuments component.
+------------------------------------------------------------------------
+r4485 | darrenj | Tue Jun 16 18:30:22 BST 2009
+
+
+------------------------------------------------------------------------
+r4484 | tm | Tue Jun 16 16:13:42 BST 2009
+
+Added irisBatchTriggerSppWorkflow()
+------------------------------------------------------------------------
+r4442 | darrenj | Wed Jun 10 11:55:37 BST 2009
+
+
+------------------------------------------------------------------------
+r4419 | darrenj | Tue Jun 09 10:54:09 BST 2009
+
+
+------------------------------------------------------------------------
+r4418 | darrenj | Tue Jun 09 10:50:58 BST 2009
+
+
+------------------------------------------------------------------------
+r4417 | darrenj | Tue Jun 09 10:50:43 BST 2009
+
+
+------------------------------------------------------------------------
+r4356 | darrenj | Thu Jun 04 11:45:53 BST 2009
+
+
+------------------------------------------------------------------------
+r4314 | darrenj | Mon Jun 01 11:43:09 BST 2009
+
+
+------------------------------------------------------------------------
+r4180 | darrenj | Fri May 15 17:33:11 BST 2009
+
+Patch for CC00018
+------------------------------------------------------------------------
+r4063 | darrenj | Wed Apr 29 11:41:23 BST 2009
+
+Fixed FTS bug
+------------------------------------------------------------------------
+r4062 | darrenj | Wed Apr 29 11:08:55 BST 2009
+
+
+------------------------------------------------------------------------
+r3817 | darrenj | Tue Mar 17 13:40:46 GMT 2009
+
+
+------------------------------------------------------------------------
+r3739 | darrenj | Thu Feb 26 12:06:26 GMT 2009
+
+
+------------------------------------------------------------------------
+r3738 | darrenj | Thu Feb 26 12:06:21 GMT 2009
+
+
+------------------------------------------------------------------------
+r3626 | darrenj | Mon Feb 16 10:51:32 GMT 2009
+
+
+------------------------------------------------------------------------
+r3546 | darrenj | Tue Jan 27 16:10:08 GMT 2009
+
+Extra debug
+------------------------------------------------------------------------
+r3434 | darrenj | Tue Jan 20 15:38:32 GMT 2009
+
+
+------------------------------------------------------------------------
+r3428 | darrenj | Mon Jan 19 15:37:13 GMT 2009
+
+Added search functionality so an entire query string can be passed in via the name 'extraQueryText'
+------------------------------------------------------------------------
+r3414 | darrenj | Thu Jan 15 13:48:28 GMT 2009
+
+Fixed searching by date bug.
+------------------------------------------------------------------------
+r3388 | darrenj | Tue Jan 06 16:35:48 GMT 2009
+
+Modified to handle more .NET types.
+------------------------------------------------------------------------
+r3367 | darrenj | Mon Dec 22 12:09:31 GMT 2008
+
+Changes from CCLA Live server deployment
+------------------------------------------------------------------------
+r3331 | darrenj | Mon Dec 08 11:49:59 GMT 2008
+
+Added absolute urls in case doc search results.
+------------------------------------------------------------------------
+r3322 | darrenj | Fri Dec 05 21:28:09 GMT 2008
+
+
+------------------------------------------------------------------------
+r3321 | darrenj | Fri Dec 05 21:27:48 GMT 2008
+
+Initial POC WSDL build, working.
+------------------------------------------------------------------------
+r3303 | gs | Thu Dec 04 12:17:15 GMT 2008
+
+
+------------------------------------------------------------------------
+r3302 | gs | Thu Dec 04 12:16:54 GMT 2008
+
+Created service stubs
+------------------------------------------------------------------------
+r3301 | gs | Thu Dec 04 12:16:29 GMT 2008
+
+
+------------------------------------------------------------------------
+r3300 | gs | Thu Dec 04 11:52:09 GMT 2008
+
+Initial component version
+------------------------------------------------------------------------
+r3299 | gs | Thu Dec 04 11:48:04 GMT 2008
+
+Modified project files
+------------------------------------------------------------------------
+r3297 | gs | Thu Dec 04 11:43:58 GMT 2008
+
+Added items remotely
+
+C:\Temp\CCLA\Components
+

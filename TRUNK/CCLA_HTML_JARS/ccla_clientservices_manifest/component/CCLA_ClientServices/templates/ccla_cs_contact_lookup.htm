@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<$if pageTitle$><$pageName= "- " & pageTitle$><$endif$>
+	<title>
+		Lookup <$pageName$>
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<$include ccla_cs_set_params_js$>
+	
+	<$if not searchScope$>
+		<$searchScope = "all"$>
+	<$endif$>
+	
+	<$include ccla_cs_contact_lookup_js$>
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container">
+		
+		<$include ccla_cs_action_button_js$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+		<div id='ccla_cs_content' class="cs-content-container searchFormContainer" >
+
+		<$include ccla_cs_contact_lookup_form$>
+	
+		</div>
+	</div>
+		
+</body>
+</html>

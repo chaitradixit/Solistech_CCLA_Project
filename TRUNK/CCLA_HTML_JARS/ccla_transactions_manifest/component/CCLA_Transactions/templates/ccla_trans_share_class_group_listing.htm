@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Share Class Group Listings
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<$if #local.ORGANISATION_ID$>
+		<!-- Org/Person relationship -->
+		<$ELEMENT_ID = ORGANISATION_ID$>
+
+	<$elseif #local.ACCOUNT_ID$>
+		<!-- Person/Account relationship -->
+		<$ELEMENT_ID = ACCOUNT_ID$>
+
+	<$endif$>
+	
+	<script type="text/javascript">
+	
+	function addGroup()
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_NEW<$include add_idc_token_to_url$>" ;
+	}
+
+	function editGroup(accountId)
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_EDIT<$include add_idc_token_to_url$>&GROUP_ID=" + accountId;
+	}
+		
+	</script>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_contact_lookup_js$>
+	<$include ccla_cs_contact_lookup_mini_styles$>
+</head>
+
+<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+
+			
+							<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Share Class Groups
+							</div>
+
+
+							<table cellpadding="0" cellspacing="0"  width="100%" class="accounts-table">
+							<tr class="account-details-row">
+								<th width="40%">Group</th>
+								<th width="10%">Fund</th>
+								<th width="20%">Total Latest Balance (£)*</th>
+								<th width="15%">Last Updated</th>
+								<th width="15%"></th>
+							</tr>
+							<$loop rsShareClassGroups$>
+								<tr  class="account-details-row" >
+									<td><a href="?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_EDIT<$include add_idc_token_to_url$>&GROUP_ID=<$#active.GROUP_ID$>"><$#active.GROUP_NAME$></a></td>
+									<td><$#active.FUND_CODE$></td>
+									<td><$#active.TOTAL_CASH_VALUE$>&nbsp;</td>
+									<td><$#active.LAST_UPDATED$></td>
+									<td><input type="button" value="Edit" onclick="editGroup('<$#active.GROUP_ID$>')"></td>
+								</tr>	
+							<$endloop$>
+							</table>
+							<br>
+							<div align="right">
+								<input type="button" value="Add new group" onclick="addGroup();">
+							</div>
+							<br>
+							<p>* value calculated at end of day</p>
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<html>
+	<head>		
+		<link href="../../core/css/base/ui.all.css" rel="stylesheet" type="text/css" />
+
+		<script type="text/javascript" src="../../jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="../../core/js/ui.core.js"></script>
+		<script type="text/javascript" src="js/ui.slider.js"></script>
+		
+		<style type="text/css">
+	    #slider { 
+	    	float:left;
+				margin-top:7px;
+				width:500px;
+	    }
+	  </style>
+		
+		<script type="text/javascript">
+			
+			$(document).ready(function() {
+				
+				$("#slider").slider({ 
+					min: -100,
+					max: 150,
+					slide: function(event, ui) { $('#slidePosition').html(ui.value) }
+				});
+		
+			});
+		
+		</script>
+ 	</head>
+ 	
+ 	<body>
+ 		<h1 id="slidePosition">0</h1>
+ 		<div id="slider"></div>
+ 	</body>
+</html>

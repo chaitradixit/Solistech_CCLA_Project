@@ -1,0 +1,173 @@
+﻿<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Flag Bundle
+	</title>
+	
+	<$include iris_styles$>
+	
+	<$include iris_common_js$>
+	
+	<script type="text/javascript">
+		
+		// Open the next pending bundle after the flag action is submitted.
+		$(document).ready( function() {
+			
+			var flagged = "<$#local.flagged$>";
+			
+			if (flagged != "") {
+				window.parent.location.assign("?IdcService=CCLA_GET_NEXT_BUNDLE<$include add_idc_token_to_url$>");
+			}
+		});
+		
+		function submitFlagBundleForm() {
+			var frm = document.forms["flagBundleForm"];
+			
+			if (frm.elements["FLAG_REASON_ID"].value == "") {
+				alert("Please selected a reason for flagging the bundle before continuing.");
+				return;
+			}
+			
+			frm.submit();
+		}
+		
+	</script>
+	
+	<style type="text/css">
+		.label{
+			width:90px;
+			display:block;
+			float:left;
+			clear:left;
+			font-weight:bold;
+			text-align:right;
+			margin-right: 2px;
+		}
+		
+		.duplicateList {
+			padding-left: 5px;
+		}
+		
+		.duplicateList li{
+			list-style:none;
+			margin-top:4px;
+		}
+	</style>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+		
+			<$include orangeContainer_top$>
+			
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Flag Bundle: <$bundleRef$></b>
+				</div>
+					
+				<div style="margin: 5px">
+					
+					<p>
+						You are about to flag this bundle and divert it to a separate queue. Please ensure you
+						have selected a reason for flagging it and the relevant document is selected below.
+					</p>
+					
+					<form id="flagBundleForm" name="flagBundleForm">
+						<input type="hidden" name="IdcService" 	value="CCLA_FLAG_BUNDLE_SUBMIT" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_FLAG_BUNDLE<$include add_idc_token_to_url$>&bundleRef=<$#local.bundleRef$>&flagged=1" />
+						
+						<input type="hidden" name="bundleDocName" value="<$#local.dDocName$>" />
+						<input type="hidden" name="bundleRef"	  value="<$#local.bundleRef$>" />
+						
+						<input type="hidden" name="selDocName"	  value="<$#local.selDocName$>" />
+						
+						<table width="100%">
+							<tr>
+								<td><b>Bundle document:</b></td>
+							
+								<td>
+									<$executeService("IRIS_BATCH_GET_ITEMS")$>
+									
+									<$useThumbnails=1$>
+									<$loop rsBatchItems$>
+										<$if #active.dDocName like selDocName$>
+											<!-- Display thumbnail/content info for selected document -->
+											<table>
+												<tr>
+													<!--Display the batch item trying to be submitted to SPP-->
+													<td style="width:25px;">
+
+														<$include searchapi_result_table_content_begin_img$>
+
+													</td>
+													<td style="background-color:#DDD;width:230px;" align="left">
+														<ul style="margin-left:0px;" class="duplicateList">
+															<li><div class="label">Doc ID:&nbsp;</div><$#active.dDocName$>&nbsp;</li>
+															<li><div class="label">Doc Class:&nbsp;</div><$#active.xDocumentClass$>&nbsp;</li>
+															<li><div class="label">Account:&nbsp;</div><$#active.xAccountNumber$>&nbsp;</li>
+															<li><div class="label">Amount:&nbsp;</div><$#active.xAmount$>&nbsp;</li>
+														</ul>
+													</td>
+												</tr>
+											</table>
+										<$endif$>
+									<$endloop$>
+								</td>
+							</tr>
+						
+							<tr>
+								<td><b>Flag reason*:</b></td>
+								<td>
+									
+									<select name="FLAG_REASON_ID">
+										<option value=""></option>
+										
+										<$loop rsBundleFlagReasons$>
+											<option value="<$#active.FLAG_REASON_ID$>"><$#active.FLAG_REASON$></option>
+										<$endloop$>
+										
+									</select>
+									
+								</td>
+							</tr>
+							
+							<tr>
+								<td><b>Comment:</b></td>
+								<td>
+									<textarea name="FLAG_COMMENT" style="width: 95%; height: 5em;"></textarea>
+								</td>
+							</tr>
+							
+							<tr>
+								<td><br/></td>
+							</tr>
+							
+							<tr>
+								<td colspan=2 align=center>
+									<input type="button" onclick="submitFlagBundleForm();" value="Flag Bundle" /> <input type="button" value="Cancel" onclick="window.parent.closePopup();" />
+								</td>
+							</tr>
+							
+						</table>
+						
+					</form>
+				
+				</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+		
+	</div>
+
+</body>
+</html>

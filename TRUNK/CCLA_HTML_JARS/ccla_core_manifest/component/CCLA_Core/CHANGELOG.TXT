@@ -1,0 +1,4218 @@
+------------------------------------------------------------------------
+r22156 | tm | Fri Jul 11 13:59:25 BST 2014
+
+c
+------------------------------------------------------------------------
+r22154 | tm | Fri Jul 11 13:57:32 BST 2014
+
+Added new non-validating persist method
+------------------------------------------------------------------------
+r22138 | tm | Tue Jul 08 15:12:18 BST 2014
+
+Added Default Priority value of zero, new Instruction Status
+------------------------------------------------------------------------
+r22130 | tm | Tue Jul 08 14:17:26 BST 2014
+
+Removed needless logging
+------------------------------------------------------------------------
+r21972 | tm | Thu Apr 10 15:59:00 BST 2014
+
+New RPI fetch query
+------------------------------------------------------------------------
+r21969 | tm | Thu Apr 10 14:26:18 BST 2014
+
+Ensured outputstream gets closed after use
+------------------------------------------------------------------------
+r21968 | tm | Thu Apr 10 14:24:56 BST 2014
+
+Refactored string pad functions to use StringBuilder instead.
+
+Added getName() and implementations to Element class.
+
+New DAO 'RpiDrawdown' - designed to be read-only in UCM, stores Comm First RPI available drawdown amounts.
+
+------------------------------------------------------------------------
+r21923 | tm | Thu Mar 13 15:50:45 GMT 2014
+
+Added new xDocumentAuthor ext. string
+------------------------------------------------------------------------
+r21610 | tm | Fri Nov 22 08:43:19 GMT 2013
+
+Removed logging
+------------------------------------------------------------------------
+r21541 | tm | Fri Nov 08 11:01:44 GMT 2013
+
+Added dummy authenticate response for simulating in test environments.
+
+Added calculated expiry dates to binder before calling some old queries relating to ID checks. 
+------------------------------------------------------------------------
+r21440 | tm | Thu Oct 24 19:24:08 BST 2013
+
+Added support for auto-calculation of Gov Match amounts
+------------------------------------------------------------------------
+r21438 | tm | Thu Oct 24 19:20:19 BST 2013
+
+Added new columns to contributions fetch query
+------------------------------------------------------------------------
+r21425 | tm | Wed Oct 23 16:57:20 BST 2013
+
+New constructors for InstructionDataApplied and Instruction instances.
+
+
+------------------------------------------------------------------------
+r21333 | tm | Wed Sep 25 11:54:14 BST 2013
+
+New query for fetching elem attrs by their value
+------------------------------------------------------------------------
+r21328 | tm | Tue Sep 24 18:31:13 BST 2013
+
+Added guard to prevent subscriptions against unopened accounts
+------------------------------------------------------------------------
+r21327 | tm | Tue Sep 24 18:30:38 BST 2013
+
+New method for fetching applied attribs by their type/value
+------------------------------------------------------------------------
+r21326 | tm | Tue Sep 24 18:30:20 BST 2013
+
+New ID
+------------------------------------------------------------------------
+r21325 | tm | Tue Sep 24 18:30:04 BST 2013
+
+Added compareTo, equals
+------------------------------------------------------------------------
+r21324 | tm | Tue Sep 24 18:29:45 BST 2013
+
+Added compareTo, hashcode
+------------------------------------------------------------------------
+r21323 | tm | Tue Sep 24 18:28:53 BST 2013
+
+Ensured population of superclass Element fields in constructor
+------------------------------------------------------------------------
+r21322 | tm | Tue Sep 24 18:28:11 BST 2013
+
+Util method for fetching the next highest, unused account numbers for a given Org
+------------------------------------------------------------------------
+r21321 | tm | Tue Sep 24 18:27:38 BST 2013
+
+Added toString
+------------------------------------------------------------------------
+r21320 | tm | Tue Sep 24 18:27:23 BST 2013
+
+Replaced use of dodgy FWFAcade methods - these didn't work if there were multiple entities with the same name in the tablespace.
+------------------------------------------------------------------------
+r21175 | tm | Wed Aug 07 10:25:11 BST 2013
+
+Added check when creating new enrolments to ensure Org ID is not already enrolled to the same campaign
+------------------------------------------------------------------------
+r21166 | tm | Tue Aug 06 11:44:58 BST 2013
+
+Added trimming to field value strings before running comparison
+------------------------------------------------------------------------
+r21165 | tm | Tue Aug 06 11:44:36 BST 2013
+
+Updated comment
+------------------------------------------------------------------------
+r21161 | tm | Tue Aug 06 09:07:18 BST 2013
+
+Applied Property Relations are now audited on removal
+------------------------------------------------------------------------
+r21022 | tm | Tue Jun 11 08:27:02 BST 2013
+
+Removed validate call from getExistingAuroraEntity.
+------------------------------------------------------------------------
+r21011 | tm | Mon Jun 10 14:41:31 BST 2013
+
+Implemented hashCode method
+------------------------------------------------------------------------
+r20967 | tm | Fri May 31 16:46:51 BST 2013
+
+First stable cut of Aurora Sig import, pre UAT release
+------------------------------------------------------------------------
+r20948 | tm | Wed May 29 18:08:23 BST 2013
+
+So many changes. For the CR.
+
+Also a small update to a previously obselete related person fetch method
+------------------------------------------------------------------------
+r20912 | tm | Tue May 28 17:22:27 BST 2013
+
+Removed debug of entire Account instance post-generation
+------------------------------------------------------------------------
+r20911 | tm | Tue May 28 17:21:47 BST 2013
+
+Prevented null account instances being added to list
+------------------------------------------------------------------------
+r20894 | tm | Thu May 16 17:28:43 BST 2013
+
+New check for deleted relpropapplied on nominated bank accounts.
+------------------------------------------------------------------------
+r20893 | tm | Thu May 16 17:28:08 BST 2013
+
+New audit query
+------------------------------------------------------------------------
+r20892 | tm | Thu May 16 16:47:03 BST 2013
+
+Not much really
+------------------------------------------------------------------------
+r20891 | tm | Thu May 16 16:35:36 BST 2013
+
+Fixed bug with MultiSigsInfo field value assignment
+------------------------------------------------------------------------
+r20886 | tm | Thu May 16 15:06:42 BST 2013
+
+Debugging of dates
+------------------------------------------------------------------------
+r20883 | tm | Thu May 16 14:19:00 BST 2013
+
+Fixed bug with Org value being assigned to Country field
+------------------------------------------------------------------------
+r20880 | tm | Thu May 16 12:11:15 BST 2013
+
+Modified address validity check - now more lenient.
+------------------------------------------------------------------------
+r20879 | tm | Thu May 16 12:07:06 BST 2013
+
+Removed DataProtection field group from Client - no way to set it currently.
+------------------------------------------------------------------------
+r20877 | tm | Thu May 16 11:34:08 BST 2013
+
+Logging
+------------------------------------------------------------------------
+r20875 | tm | Thu May 16 11:00:37 BST 2013
+
+Changed name of cfg var
+------------------------------------------------------------------------
+r20874 | tm | Thu May 16 10:46:38 BST 2013
+
+Fixed req. signatory stuff.
+
+Added validation check flag for reinvestment to same account.
+------------------------------------------------------------------------
+r20869 | tm | Wed May 15 16:33:41 BST 2013
+
+Added support for signatory header field capture/population
+------------------------------------------------------------------------
+r20862 | tm | Wed May 15 14:14:45 BST 2013
+
+Suppressed query logging
+------------------------------------------------------------------------
+r20856 | tm | Wed May 15 12:48:19 BST 2013
+
+typo
+------------------------------------------------------------------------
+r20853 | tm | Wed May 15 12:46:17 BST 2013
+
+typo
+------------------------------------------------------------------------
+r20849 | tm | Wed May 15 12:24:18 BST 2013
+
+typo
+------------------------------------------------------------------------
+r20848 | tm | Wed May 15 12:23:26 BST 2013
+
+Added switch to control whether or not full sig names are sent to Aurora instead of abbreviated version
+------------------------------------------------------------------------
+r20842 | tm | Wed May 15 11:31:04 BST 2013
+
+Modified validation checks.
+
+When isValidateAll flag is set, the linked bank accounts are checked for the presence of Short Names.
+------------------------------------------------------------------------
+r20835 | tm | Wed May 15 09:17:21 BST 2013
+
+Added validation checks to getExistingAuroraEntity methods - ensures that invalid entity data is flagged up early.
+------------------------------------------------------------------------
+r20826 | tm | Tue May 14 15:54:08 BST 2013
+
+Removed JUnit test class
+------------------------------------------------------------------------
+r20824 | tm | Tue May 14 15:36:57 BST 2013
+
+New queries to support STP changes
+------------------------------------------------------------------------
+r20819 | tm | Tue May 14 15:16:17 BST 2013
+
+Implemented better AccNumExt generation that closely matches Aurora
+------------------------------------------------------------------------
+r20818 | tm | Tue May 14 15:15:44 BST 2013
+
+'Final' set of updates to support Aurora comparisons before first UAT deployment
+------------------------------------------------------------------------
+r20806 | tm | Fri May 10 18:06:31 BST 2013
+
+Static Data Updates
+------------------------------------------------------------------------
+r20805 | tm | Fri May 10 18:06:16 BST 2013
+
+Changes to Client Number fetching
+------------------------------------------------------------------------
+r20785 | tm | Fri May 03 17:50:39 BST 2013
+
+Merged Cam's stuff in AccountUtils - check next week.
+
+Other updates for Account STP
+------------------------------------------------------------------------
+r20778 | tm | Thu May 02 17:40:21 BST 2013
+
+Todays work
+------------------------------------------------------------------------
+r20772 | tm | Wed May 01 17:49:08 BST 2013
+
+All my changes today. All of em
+------------------------------------------------------------------------
+r20759 | tm | Tue Apr 30 18:24:02 BST 2013
+
+Various updates - Correspondent stuff now stable.
+
+Working on Org stuff.
+------------------------------------------------------------------------
+r20734 | tm | Fri Apr 26 18:38:44 BST 2013
+
+Loadsa stuff
+------------------------------------------------------------------------
+r20731 | tm | Thu Apr 25 18:38:31 BST 2013
+
+Changes today
+------------------------------------------------------------------------
+r20724 | tm | Wed Apr 24 18:32:05 BST 2013
+
+Updates from today
+------------------------------------------------------------------------
+r20713 | tm | Tue Apr 23 17:08:16 BST 2013
+
+Updates for supporting partial Static Data Updates to Aurora entities.
+
+Not finished quite yet
+------------------------------------------------------------------------
+r20617 | tm | Fri Apr 05 10:40:21 BST 2013
+
+Added new idoc function for fetching system config vars
+
+New FormHandler methods for enqueuing msgs
+------------------------------------------------------------------------
+r20616 | tm | Fri Apr 05 10:39:49 BST 2013
+
+Updates
+------------------------------------------------------------------------
+r20543 | tm | Tue Mar 19 12:04:00 GMT 2013
+
+Fixed bug when printing amounts with a penny amount that was a factor of 10, i.e. 10p, 20p, 50p
+------------------------------------------------------------------------
+r20529 | tm | Fri Mar 15 09:02:20 GMT 2013
+
+Modified UCM Field Name -> Translator cache to:
+
+UCM Field Name -> List<Translator>
+
+This is due to some UCM metadata fields having more than 1 mapping!
+------------------------------------------------------------------------
+r20528 | tm | Thu Mar 14 18:28:06 GMT 2013
+
+Added 2.7.9 release scripts
+------------------------------------------------------------------------
+r20484 | tm | Mon Mar 11 12:52:45 GMT 2013
+
+Added Comm First Trans Feed type
+------------------------------------------------------------------------
+r20472 | tm | Fri Mar 08 16:19:19 GMT 2013
+
+New method: addExtraBinderParams. Implement this to insert extra binder parameters which are returned from a getDocMetaByFormId call from Iris.
+
+Adding 2 special CustomLink parameters will automatically display the corresponding URL under the Form ID field.
+------------------------------------------------------------------------
+r20464 | tm | Fri Mar 08 15:24:11 GMT 2013
+
+Updated GetInstructionsByOrg to include Instructions with a matching BENEFICIARY_ORG_ID applied value
+------------------------------------------------------------------------
+r20463 | tm | Fri Mar 08 15:23:34 GMT 2013
+
+New Form fields
+------------------------------------------------------------------------
+r20436 | tm | Fri Mar 01 17:06:40 GMT 2013
+
+New columns in Form table
+------------------------------------------------------------------------
+r20422 | tm | Wed Feb 27 16:54:04 GMT 2013
+
+Added new RETURN_DEADLINE_DATE col to Form table
+
+Added validity check for expired forms.
+------------------------------------------------------------------------
+r20421 | tm | Wed Feb 27 16:53:33 GMT 2013
+
+Added new RETURN_DEADLINE_DATE col to Form table
+------------------------------------------------------------------------
+r19946 | tm | Wed Dec 19 16:12:29 GMT 2012
+
+Removed deprecated element locking vars. They are now System Config Vars.
+------------------------------------------------------------------------
+r19945 | tm | Wed Dec 19 16:10:53 GMT 2012
+
+scripy
+------------------------------------------------------------------------
+r19941 | tm | Wed Dec 19 15:49:10 GMT 2012
+
+Refactored Integers to BigIntegers
+------------------------------------------------------------------------
+r19940 | tm | Wed Dec 19 15:48:43 GMT 2012
+
+Amended admin services
+------------------------------------------------------------------------
+r19891 | tm | Thu Dec 13 18:30:54 GMT 2012
+
+Fixed element locking, added delay functionality to Relation DAO for testing purposes.
+------------------------------------------------------------------------
+r19789 | tm | Mon Nov 26 18:46:17 GMT 2012
+
+Extra scripts (should have been part of prev release)
+------------------------------------------------------------------------
+r19781 | tm | Mon Nov 26 18:27:24 GMT 2012
+
+Added trimming to various Search fields
+
+Subscription status calculation amended
+------------------------------------------------------------------------
+r19764 | tm | Thu Nov 22 18:02:03 GMT 2012
+
+Removing refs to deprecated method getAuroraClient
+------------------------------------------------------------------------
+r19744 | tm | Mon Nov 19 18:05:33 GMT 2012
+
+script
+------------------------------------------------------------------------
+r19738 | tm | Mon Nov 19 12:04:10 GMT 2012
+
+Started work on updated ElementLockManager
+------------------------------------------------------------------------
+r19734 | tm | Mon Nov 19 11:50:43 GMT 2012
+
+Added replacement var note
+------------------------------------------------------------------------
+r19733 | tm | Mon Nov 19 11:48:26 GMT 2012
+
+Modified queries for Form/Subscription tables
+------------------------------------------------------------------------
+r19660 | tm | Tue Nov 06 17:51:35 GMT 2012
+
+Various updates prior to 2.7.6 release
+------------------------------------------------------------------------
+r19638 | tm | Mon Nov 05 17:39:43 GMT 2012
+
+Added deploy to dev
+------------------------------------------------------------------------
+r19512 | camli | Thu Oct 11 18:10:55 BST 2012
+
+added default capital income account details.
+------------------------------------------------------------------------
+r19511 | tm | Thu Oct 11 17:15:59 BST 2012
+
+Amended 'metadata from string' functionality to extract Payment Refs from DICONDIN items
+------------------------------------------------------------------------
+r19495 | tm | Wed Oct 10 14:00:41 BST 2012
+
+Added new queries for fetching instructions by applied data values.
+
+Fixed bug in qCore_GetAccountByOrg - ensures that accounts can no longer be created with the same org/account number/fund combination
+------------------------------------------------------------------------
+r19458 | camli | Tue Oct 02 16:57:28 BST 2012
+
+added default capital income account details.
+------------------------------------------------------------------------
+r19441 | camli | Mon Oct 01 18:29:18 BST 2012
+
+updated to include dummy values or mandatedAccount values if it exist
+------------------------------------------------------------------------
+r19440 | camli | Mon Oct 01 18:28:55 BST 2012
+
+updated to include dummy values or mandatedAccount values if it exist
+------------------------------------------------------------------------
+r19439 | camli | Mon Oct 01 11:46:05 BST 2012
+
+fixed potential null pointer error.
+------------------------------------------------------------------------
+r19435 | camli | Thu Sep 27 16:56:46 BST 2012
+
+added speculative fix for dateformat.
+------------------------------------------------------------------------
+r19434 | camli | Thu Sep 27 14:10:13 BST 2012
+
+added logging for error message.
+------------------------------------------------------------------------
+r19380 | camli | Tue Sep 11 10:11:49 BST 2012
+
+updated error message to make it easier to debug.
+------------------------------------------------------------------------
+r19378 | camli | Fri Sep 07 17:51:19 BST 2012
+
+update ivs logic
+------------------------------------------------------------------------
+r19332 | tm | Wed Sep 05 12:05:55 BST 2012
+
+Removed requirement to verify Correspondent identity as part of default Account IVS check
+------------------------------------------------------------------------
+r19329 | camli | Wed Sep 05 10:49:02 BST 2012
+
+fixed psdf logic for accounts.
+------------------------------------------------------------------------
+r19320 | tm | Tue Sep 04 09:51:27 BST 2012
+
+Improved messages
+------------------------------------------------------------------------
+r19319 | tm | Tue Sep 04 09:46:02 BST 2012
+
+Improved messages
+------------------------------------------------------------------------
+r19317 | tm | Tue Sep 04 09:37:16 BST 2012
+
+Fixed typo
+------------------------------------------------------------------------
+r19290 | tm | Fri Aug 31 17:08:41 BST 2012
+
+Added account type to compare
+------------------------------------------------------------------------
+r19289 | tm | Fri Aug 31 17:02:17 BST 2012
+
+Added last sys config var
+------------------------------------------------------------------------
+r19288 | tm | Fri Aug 31 17:00:31 BST 2012
+
+Missing loop
+------------------------------------------------------------------------
+r19286 | tm | Fri Aug 31 16:43:26 BST 2012
+
+Accounts are now comparable
+------------------------------------------------------------------------
+r19278 | camli | Fri Aug 31 16:06:59 BST 2012
+
+temp fix for psdf account until the account logic is rectified.
+------------------------------------------------------------------------
+r19271 | tm | Fri Aug 31 15:48:19 BST 2012
+
+Added AUTOMAND doc class
+------------------------------------------------------------------------
+r19262 | camli | Fri Aug 31 12:56:11 BST 2012
+
+added new messages
+------------------------------------------------------------------------
+r19259 | camli | Fri Aug 31 11:50:58 BST 2012
+
+added campaign queries
+------------------------------------------------------------------------
+r19244 | tm | Thu Aug 30 18:34:32 BST 2012
+
+Added logging
+------------------------------------------------------------------------
+r19242 | tm | Thu Aug 30 17:57:28 BST 2012
+
+Amended query to return extra columns
+------------------------------------------------------------------------
+r19226 | tm | Thu Aug 30 11:55:17 BST 2012
+
+Added new fetch method for common acc relations
+------------------------------------------------------------------------
+r19222 | tm | Thu Aug 30 10:29:24 BST 2012
+
+Added new query for fetching common account person relations
+------------------------------------------------------------------------
+r19218 | camli | Wed Aug 29 17:10:50 BST 2012
+
+fixed typo
+------------------------------------------------------------------------
+r19217 | camli | Wed Aug 29 17:00:20 BST 2012
+
+reversed logic.
+------------------------------------------------------------------------
+r19212 | camli | Wed Aug 29 14:48:03 BST 2012
+
+update logic
+------------------------------------------------------------------------
+r19170 | tm | Tue Aug 28 17:59:56 BST 2012
+
+Added cont. type codes
+------------------------------------------------------------------------
+r19164 | tm | Tue Aug 28 17:19:14 BST 2012
+
+Added new IDs
+------------------------------------------------------------------------
+r19156 | camli | Tue Aug 28 11:56:11 BST 2012
+
+added new campaign actions
+------------------------------------------------------------------------
+r19150 | camli | Fri Aug 24 17:17:03 BST 2012
+
+updated aurora account logic.
+------------------------------------------------------------------------
+r19141 | camli | Fri Aug 24 14:53:30 BST 2012
+
+updated to fix issue with date conversions when operating through LWDocument context.
+------------------------------------------------------------------------
+r19127 | camli | Tue Aug 21 15:16:45 BST 2012
+
+added script.
+------------------------------------------------------------------------
+r19126 | camli | Tue Aug 21 15:11:24 BST 2012
+
+corrected column name.
+------------------------------------------------------------------------
+r19124 | camli | Tue Aug 21 12:22:31 BST 2012
+
+corrected caching values.
+------------------------------------------------------------------------
+r19123 | camli | Tue Aug 21 12:08:35 BST 2012
+
+updated aurora validation flag
+------------------------------------------------------------------------
+r19122 | camli | Tue Aug 21 11:52:32 BST 2012
+
+removed validateAuroraAccount flag, this is now controlled via the systemconfig var setting.
+------------------------------------------------------------------------
+r19121 | camli | Tue Aug 21 11:49:34 BST 2012
+
+updated aurora validation flag
+------------------------------------------------------------------------
+r19113 | camli | Mon Aug 20 17:15:03 BST 2012
+
+added new inter_fund_transactions query
+------------------------------------------------------------------------
+r19090 | tm | Fri Aug 17 16:31:07 BST 2012
+
+Added TODO note
+------------------------------------------------------------------------
+r19029 | tm | Mon Aug 13 10:56:56 BST 2012
+
+Update script for Fund table
+------------------------------------------------------------------------
+r19022 | tm | Mon Aug 13 10:51:22 BST 2012
+
+Aurora Account Validation switch
+------------------------------------------------------------------------
+r19004 | tm | Fri Aug 10 16:10:34 BST 2012
+
+Exception throwing
+------------------------------------------------------------------------
+r19003 | tm | Fri Aug 10 16:10:07 BST 2012
+
+Just comments
+------------------------------------------------------------------------
+r18986 | tm | Fri Aug 10 09:55:04 BST 2012
+
+New script
+------------------------------------------------------------------------
+r18978 | tm | Thu Aug 09 15:55:21 BST 2012
+
+Query migration
+------------------------------------------------------------------------
+r18966 | camli | Tue Aug 07 17:36:04 BST 2012
+
+added full stops.
+------------------------------------------------------------------------
+r18963 | camli | Mon Aug 06 17:19:17 BST 2012
+
+updated column names
+------------------------------------------------------------------------
+r18962 | camli | Mon Aug 06 16:41:58 BST 2012
+
+added extra params to fund object.
+------------------------------------------------------------------------
+r18961 | camli | Mon Aug 06 16:40:55 BST 2012
+
+added logic to force validate aurora accounts.
+------------------------------------------------------------------------
+r18960 | camli | Mon Aug 06 16:40:20 BST 2012
+
+added logic to validate account.
+------------------------------------------------------------------------
+r18959 | camli | Mon Aug 06 16:39:58 BST 2012
+
+added flag to validate aurora account.
+------------------------------------------------------------------------
+r18958 | camli | Mon Aug 06 16:20:43 BST 2012
+
+added validate aurora account logic. 
+------------------------------------------------------------------------
+r18939 | tm | Thu Aug 02 15:46:00 BST 2012
+
+Added new metatadata field name
+
+Forced strict fetch of default contacts when building Aurora Address instances
+------------------------------------------------------------------------
+r18938 | tm | Thu Aug 02 15:45:23 BST 2012
+
+Added validateCorrespondent method, checks an address is set.
+------------------------------------------------------------------------
+r18929 | tm | Wed Aug 01 18:03:42 BST 2012
+
+Split up contact fetch methods.
+------------------------------------------------------------------------
+r18909 | tm | Fri Jul 27 15:23:17 BST 2012
+
+Removed xDocumentDate mapping - bit temperamental due to ISO date format expectation when checking in from ODC
+------------------------------------------------------------------------
+r18908 | tm | Fri Jul 27 12:30:19 BST 2012
+
+Added extra check fields
+------------------------------------------------------------------------
+r18906 | tm | Fri Jul 27 10:35:12 BST 2012
+
+First stab at MetadataFromString utilities
+------------------------------------------------------------------------
+r18900 | camli | Tue Jul 24 16:05:17 BST 2012
+
+updated wsdl
+------------------------------------------------------------------------
+r18899 | camli | Tue Jul 24 16:04:58 BST 2012
+
+updated logic.
+------------------------------------------------------------------------
+r18898 | camli | Tue Jul 24 15:58:39 BST 2012
+
+new validation logic for add/update
+------------------------------------------------------------------------
+r18897 | camli | Tue Jul 24 15:58:13 BST 2012
+
+new util method
+------------------------------------------------------------------------
+r18896 | camli | Tue Jul 24 15:57:55 BST 2012
+
+new webservice class from aurora
+------------------------------------------------------------------------
+r18895 | camli | Tue Jul 24 15:57:24 BST 2012
+
+updated wsdl from aurora. 
+------------------------------------------------------------------------
+r18880 | camli | Thu Jul 12 14:09:51 BST 2012
+
+only attempt to convert to integer if value is not null.
+------------------------------------------------------------------------
+r18860 | camli | Mon Jul 09 12:33:24 BST 2012
+
+fixed issue with mandated account lookup when trying to amend an account.
+------------------------------------------------------------------------
+r18857 | camli | Fri Jul 06 17:34:43 BST 2012
+
+initial version
+------------------------------------------------------------------------
+r18834 | camli | Thu Jul 05 14:56:00 BST 2012
+
+use compareTo instead of equals when comparing bigdecimals
+------------------------------------------------------------------------
+r18803 | camli | Mon Jul 02 16:30:57 BST 2012
+
+fixed issue with missing right parenthesis when doing search with postcode and house number.
+------------------------------------------------------------------------
+r18784 | tm | Thu Jun 28 16:52:56 BST 2012
+
+Removed needless log output of alias members
+------------------------------------------------------------------------
+r18720 | PAULT | Thu Jun 21 11:16:33 BST 2012
+
+added irisGetAliasMembers custom idoc script function
+------------------------------------------------------------------------
+r18653 | tm | Fri Jun 15 10:02:16 BST 2012
+
+Added new env var CCLA_stripNTDomainFromUsernames
+------------------------------------------------------------------------
+r18652 | tm | Fri Jun 15 10:00:56 BST 2012
+
+Refactoring fixUserNameCase method to normalizeUserName. Now removes NT Domain from passed user name, if an env. flag is set. 
+------------------------------------------------------------------------
+r18562 | tm | Thu Jun 07 15:31:22 BST 2012
+
+Various updates to DAOs - externalising strings and new Instr. Process fetch method
+------------------------------------------------------------------------
+r18516 | tm | Thu May 31 09:55:15 BST 2012
+
+Removed bck files
+------------------------------------------------------------------------
+r18515 | tm | Thu May 31 09:54:34 BST 2012
+
+Changed JDBC connector string to point at new Oracle DB host
+------------------------------------------------------------------------
+r18501 | tm | Tue May 29 17:31:27 BST 2012
+
+Extra tweak to ensure mandated account update/creation will always include a Mandated Company value set
+------------------------------------------------------------------------
+r18500 | tm | Tue May 29 17:30:38 BST 2012
+
+Extra tweak to ensure mandated account update/creation will always include a Mandated Company value set
+------------------------------------------------------------------------
+r18431 | PAULT | Fri May 25 14:25:21 BST 2012
+
+updated manifest.hda
+------------------------------------------------------------------------
+r18355 | PAULT | Thu May 24 14:22:36 BST 2012
+
+added final readme entry notes
+------------------------------------------------------------------------
+r18352 | PAULT | Thu May 24 14:15:25 BST 2012
+
+removed resources entry
+------------------------------------------------------------------------
+r18335 | PAULT | Thu May 24 11:32:16 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18324 | PAULT | Thu May 24 10:37:11 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18274 | PAULT | Wed May 23 12:57:14 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18241 | PAULT | Tue May 22 15:37:08 BST 2012
+
+removing jar
+------------------------------------------------------------------------
+r18240 | PAULT | Tue May 22 15:34:03 BST 2012
+
+adding required buildfiles
+------------------------------------------------------------------------
+r18195 | PAULT | Mon May 21 17:59:23 BST 2012
+
+adding idcautopublish
+------------------------------------------------------------------------
+r18114 | PAULT | Mon May 21 17:16:06 BST 2012
+
+removing idcautopublish folder
+------------------------------------------------------------------------
+r18113 | PAULT | Mon May 21 17:14:52 BST 2012
+
+adding ccla_core
+------------------------------------------------------------------------
+r18112 | PAULT | Mon May 21 17:12:12 BST 2012
+
+creating folder
+------------------------------------------------------------------------
+r18111 | PAULT | Mon May 21 17:11:41 BST 2012
+
+creating folder
+------------------------------------------------------------------------
+r17968 | tm | Fri May 11 15:21:36 BST 2012
+
+Forced Mandated Company to be set when no Mandated Account is specified.
+------------------------------------------------------------------------
+r17958 | tm | Thu May 10 17:06:58 BST 2012
+
+Added env. switch to forces generated doc URLs to lowercase strings.
+------------------------------------------------------------------------
+r17957 | tm | Thu May 10 17:06:31 BST 2012
+
+Amendments to allow manual instruction data updates.
+------------------------------------------------------------------------
+r17920 | tm | Tue May 08 15:55:15 BST 2012
+
+Moved validate call
+------------------------------------------------------------------------
+r17906 | tm | Tue May 08 13:26:53 BST 2012
+
+Added IDs to separate class
+------------------------------------------------------------------------
+r17905 | tm | Tue May 08 13:26:25 BST 2012
+
+Updated Account DAO validation to force Income Distribution Method to REIN when an Accumulation Fund is selected.
+------------------------------------------------------------------------
+r17904 | tm | Tue May 08 12:29:12 BST 2012
+
+Various fixes/changes:
+
+- Changed how Aurora Account instances are populated in STP AmendAccount/AddAccount web
+  service calls: Mandated Company field is always populated for accounts with an Inc. Dist.
+  Method of RETN (Retain Interest). The mandated company will match the Account's Fund Company.
+- Organisation Names are now truncated to 80 characters when converted to Aurora Client Names.
+- Added extra logging calls to Amend/Create Aurora STP web services.
+- Removed duplication of House Name in Street field of Aurora address data fields, where Street
+  isn't specified in an Central DB address.
+
+------------------------------------------------------------------------
+r17895 | tm | Thu May 03 10:39:59 BST 2012
+
+Always set the Mandated Company field on Accounts, if the Income Dist. Method is set to RETN (Retain Interest).
+------------------------------------------------------------------------
+r17888 | camli | Tue May 01 16:37:18 BST 2012
+
+added quick unix detect class.
+------------------------------------------------------------------------
+r17887 | camli | Tue May 01 16:36:58 BST 2012
+
+added linux printing.
+------------------------------------------------------------------------
+r17875 | camli | Mon Apr 30 16:26:58 BST 2012
+
+updated for 11g compatibility.
+------------------------------------------------------------------------
+r17874 | camli | Mon Apr 30 16:25:23 BST 2012
+
+updated for 11g compatibility.
+------------------------------------------------------------------------
+r17859 | tm | Mon Apr 30 10:20:13 BST 2012
+
+Changed param label
+------------------------------------------------------------------------
+r17836 | camli | Fri Apr 27 11:26:55 BST 2012
+
+reverted back to normal caching as issues with production startup.
+------------------------------------------------------------------------
+r17722 | tm | Thu Apr 19 15:51:12 BST 2012
+
+New getDocGUID method - fetches latest Doc GUID for a given dDocName.
+------------------------------------------------------------------------
+r17701 | tm | Wed Apr 18 15:46:11 BST 2012
+
+Fixed/renamed facades
+------------------------------------------------------------------------
+r17679 | tm | Tue Apr 17 18:07:24 BST 2012
+
+Added new Account column ACC_ACCOUNT_CODE
+------------------------------------------------------------------------
+r17673 | tm | Tue Apr 17 16:30:27 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17661 | tm | Tue Apr 17 11:59:49 BST 2012
+
+Fixed error message in getResultSetBigDecimal
+------------------------------------------------------------------------
+r17649 | tm | Mon Apr 16 15:48:17 BST 2012
+
+Removed old Subscription Type class.
+
+Various updates to form handlers. Cancelled forms will no longer auto-fill metadata.
+------------------------------------------------------------------------
+r17645 | tm | Fri Apr 13 16:56:06 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17640 | tm | Fri Apr 13 14:45:00 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17616 | tm | Fri Apr 13 11:10:07 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17615 | tm | Fri Apr 13 11:09:18 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17613 | tm | Fri Apr 13 10:26:50 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17601 | tm | Thu Apr 12 18:08:53 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17585 | tm | Thu Apr 12 14:15:41 BST 2012
+
+Various comm first updates
+------------------------------------------------------------------------
+r17549 | tm | Wed Apr 11 17:12:15 BST 2012
+
+Added extra precision to convertCashToPercentage
+------------------------------------------------------------------------
+r17537 | PAULT | Wed Apr 11 16:33:40 BST 2012
+
+added new classhandling code for 11g compatibility 
+------------------------------------------------------------------------
+r17532 | tm | Wed Apr 11 16:19:13 BST 2012
+
+Query name updates
+------------------------------------------------------------------------
+r17520 | tm | Wed Apr 11 14:02:51 BST 2012
+
+Query name updates
+------------------------------------------------------------------------
+r17505 | tm | Wed Apr 11 11:15:35 BST 2012
+
+Various Comm FIrst-related updates
+------------------------------------------------------------------------
+r17504 | tm | Wed Apr 11 11:15:05 BST 2012
+
+Removed exception throw if a Person record doesn't have the individual name fields set.
+------------------------------------------------------------------------
+r17444 | camli | Thu Apr 05 17:25:44 BST 2012
+
+tidy up
+------------------------------------------------------------------------
+r17443 | camli | Thu Apr 05 17:24:49 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17442 | camli | Thu Apr 05 17:23:25 BST 2012
+
+corrected facade.
+------------------------------------------------------------------------
+r17407 | pradcliffe | Thu Apr 05 11:14:30 BST 2012
+
+remove double ;
+------------------------------------------------------------------------
+r17398 | tm | Wed Apr 04 18:22:48 BST 2012
+
+Added computeAllocation method
+------------------------------------------------------------------------
+r17397 | tm | Wed Apr 04 17:35:18 BST 2012
+
+Added integer/string/bigDecimal comparison methods
+------------------------------------------------------------------------
+r17396 | tm | Wed Apr 04 17:34:56 BST 2012
+
+Various refactoring for Subscription/Contrib tables
+------------------------------------------------------------------------
+r17379 | camli | Wed Apr 04 15:13:43 BST 2012
+
+re-instated initial loading of caches
+------------------------------------------------------------------------
+r17376 | camli | Wed Apr 04 14:56:50 BST 2012
+
+refactored.
+------------------------------------------------------------------------
+r17370 | pradcliffe | Wed Apr 04 12:14:37 BST 2012
+
+added some error handling
+------------------------------------------------------------------------
+r17368 | camli | Wed Apr 04 11:36:35 BST 2012
+
+removed full initialisation.
+------------------------------------------------------------------------
+r17366 | tm | Wed Apr 04 11:29:44 BST 2012
+
+Added reference to existing workspace instance
+------------------------------------------------------------------------
+r17365 | camli | Wed Apr 04 11:29:08 BST 2012
+
+created lazy caching.
+------------------------------------------------------------------------
+r17363 | camli | Wed Apr 04 11:23:53 BST 2012
+
+missed reference.
+------------------------------------------------------------------------
+r17362 | camli | Wed Apr 04 11:13:51 BST 2012
+
+created lazy caching.
+------------------------------------------------------------------------
+r17356 | tm | Tue Apr 03 19:23:16 BST 2012
+
+Most way through Subscription/Contribution/Payment refactoring and new classes 
+------------------------------------------------------------------------
+r17355 | tm | Tue Apr 03 17:48:06 BST 2012
+
+First try at CoreServiceHandler
+------------------------------------------------------------------------
+r17349 | camli | Tue Apr 03 17:19:15 BST 2012
+
+temporary switched to default connector for usage. 
+------------------------------------------------------------------------
+r17340 | tm | Tue Apr 03 14:21:15 BST 2012
+
+Midway through Subscription/Contribution/Payment refactoring and new classes
+------------------------------------------------------------------------
+r17335 | camli | Tue Apr 03 13:07:23 BST 2012
+
+oops
+------------------------------------------------------------------------
+r17334 | camli | Tue Apr 03 12:59:25 BST 2012
+
+added debug
+------------------------------------------------------------------------
+r17333 | camli | Tue Apr 03 12:56:17 BST 2012
+
+added debug
+------------------------------------------------------------------------
+r17332 | camli | Tue Apr 03 12:54:44 BST 2012
+
+added debug
+------------------------------------------------------------------------
+r17330 | camli | Tue Apr 03 12:30:13 BST 2012
+
+added debug
+------------------------------------------------------------------------
+r17329 | camli | Tue Apr 03 12:23:59 BST 2012
+
+use cachable objects to determine the connector to use.
+------------------------------------------------------------------------
+r17319 | camli | Mon Apr 02 18:11:39 BST 2012
+
+use cachable objects to determine the connector to use.
+------------------------------------------------------------------------
+r17318 | camli | Mon Apr 02 17:48:27 BST 2012
+
+use cachable objects to determine the connector to use.
+------------------------------------------------------------------------
+r17317 | camli | Mon Apr 02 17:47:34 BST 2012
+
+added null poolid cache
+------------------------------------------------------------------------
+r17308 | camli | Mon Apr 02 13:13:25 BST 2012
+
+added comments
+------------------------------------------------------------------------
+r17307 | camli | Mon Apr 02 13:10:25 BST 2012
+
+alter method to return latest revision (for now) until we re-factor to use revision id.
+------------------------------------------------------------------------
+r17208 | PAULT | Wed Mar 28 12:36:06 BST 2012
+
+Refactored Instruction and Comm to use docGuids instead of docIds
+------------------------------------------------------------------------
+r17131 | camli | Mon Mar 26 00:24:43 BST 2012
+
+fixed convertToGBP double pound word.
+------------------------------------------------------------------------
+r17121 | PAULT | Fri Mar 23 17:34:41 GMT 2012
+
+bullet proofed numbers to words
+------------------------------------------------------------------------
+r17100 | tm | Fri Mar 23 09:18:40 GMT 2012
+
+Added SignaturesValid field
+------------------------------------------------------------------------
+r17098 | tm | Thu Mar 22 19:56:57 GMT 2012
+
+Subscription.getByPaymentRef
+
+New UCM field: xPaymentRef
+------------------------------------------------------------------------
+r17077 | camli | Thu Mar 22 15:59:46 GMT 2012
+
+updated obj for extra properties.
+------------------------------------------------------------------------
+r17070 | tm | Thu Mar 22 12:14:48 GMT 2012
+
+Added new Date attrib: Date Cash Processed
+------------------------------------------------------------------------
+r17052 | tm | Wed Mar 21 14:36:32 GMT 2012
+
+Refactored BigDecimal retailPriceIndex param to Integer retailPriceIndexId.
+
+Added new Date attribs: Date Cash Processed and Date Form Received
+------------------------------------------------------------------------
+r17030 | camli | Tue Mar 20 14:33:54 GMT 2012
+
+added debug.
+------------------------------------------------------------------------
+r17023 | camli | Tue Mar 20 13:01:03 GMT 2012
+
+deprecated class
+------------------------------------------------------------------------
+r17022 | camli | Tue Mar 20 13:00:43 GMT 2012
+
+retired ucmnotes
+------------------------------------------------------------------------
+r17021 | camli | Tue Mar 20 13:00:21 GMT 2012
+
+re-factored interaction classes
+------------------------------------------------------------------------
+r16944 | camli | Thu Mar 15 15:32:24 GMT 2012
+
+fixed converting percentage to amount.
+------------------------------------------------------------------------
+r16937 | tm | Thu Mar 15 13:29:45 GMT 2012
+
+Added max subtitle length truncation
+------------------------------------------------------------------------
+r16925 | camli | Thu Mar 15 10:27:34 GMT 2012
+
+added test fix.
+------------------------------------------------------------------------
+r16912 | camli | Wed Mar 14 17:10:23 GMT 2012
+
+added test fix.
+------------------------------------------------------------------------
+r16911 | camli | Wed Mar 14 16:39:54 GMT 2012
+
+added debug.
+------------------------------------------------------------------------
+r16902 | PAULT | Wed Mar 14 10:30:10 GMT 2012
+
+changed default value of element locking to 0 (off) so that removing the value from env value doesn't mean its turned on
+------------------------------------------------------------------------
+r16901 | camli | Wed Mar 14 10:29:44 GMT 2012
+
+fixed null pointer exception.
+------------------------------------------------------------------------
+r16894 | tm | Tue Mar 13 18:56:57 GMT 2012
+
+Wrapped LWDoc constructors and accessors with try-catch to ensure they dont throw generic Exception
+------------------------------------------------------------------------
+r16858 | tm | Tue Mar 13 11:05:13 GMT 2012
+
+Added global refs
+------------------------------------------------------------------------
+r16846 | tm | Mon Mar 12 11:04:02 GMT 2012
+
+Contrib/Subdivision fields missing from setAttributes method
+------------------------------------------------------------------------
+r16845 | tm | Mon Mar 12 11:03:37 GMT 2012
+
+Contrib/Subdivision fields missing from setAttributes method
+------------------------------------------------------------------------
+r16844 | tm | Mon Mar 12 11:00:30 GMT 2012
+
+Contrib/Subdivision fields missing from setAttributes method
+------------------------------------------------------------------------
+r16833 | tm | Fri Mar 09 15:41:14 GMT 2012
+
+Added missing GUID field string
+------------------------------------------------------------------------
+r16802 | PAULT | Thu Mar 08 17:45:56 GMT 2012
+
+Refactored FORM code to use docGuids in place of docIds
+------------------------------------------------------------------------
+r16774 | PAULT | Thu Mar 08 12:11:58 GMT 2012
+
+refactored element attribute applied code to use GUIDs instead of docID
+------------------------------------------------------------------------
+r16763 | tm | Wed Mar 07 15:34:38 GMT 2012
+
+Subscription Type IDs updated
+------------------------------------------------------------------------
+r16753 | tm | Wed Mar 07 14:23:11 GMT 2012
+
+Renamed subscription type Ids to match updated data
+------------------------------------------------------------------------
+r16752 | tm | Wed Mar 07 14:20:18 GMT 2012
+
+Added CONDINS doc class
+
+Added fetch by subscription ID methods to Form class
+------------------------------------------------------------------------
+r16749 | tm | Wed Mar 07 13:18:00 GMT 2012
+
+Added new status ID column
+------------------------------------------------------------------------
+r16742 | camli | Wed Mar 07 11:51:36 GMT 2012
+
+added generateAccNumExt method based on logic by kainos.
+------------------------------------------------------------------------
+r16733 | tm | Tue Mar 06 16:49:44 GMT 2012
+
+Added some more ints
+------------------------------------------------------------------------
+r16732 | PAULT | Tue Mar 06 16:45:13 GMT 2012
+
+chnage docGuid method to take int instead of string
+------------------------------------------------------------------------
+r16726 | tm | Tue Mar 06 15:16:39 GMT 2012
+
+Use DB constructor for LWDocument in getDocGuidFromDid method
+
+Added new Elem Attrib ID, new org fetch method
+------------------------------------------------------------------------
+r16725 | PAULT | Tue Mar 06 15:04:57 GMT 2012
+
+added docGuid generation methods
+------------------------------------------------------------------------
+r16721 | tm | Mon Mar 05 18:46:20 GMT 2012
+
+Various ID strings/ints etc
+------------------------------------------------------------------------
+r16719 | camli | Mon Mar 05 17:41:58 GMT 2012
+
+added methods for getting the cfAccount types.
+------------------------------------------------------------------------
+r16710 | tm | Fri Mar 02 17:12:19 GMT 2012
+
+FORM_ID column
+------------------------------------------------------------------------
+r16690 | camli | Fri Mar 02 12:28:17 GMT 2012
+
+added method for converting amount to percentage.
+------------------------------------------------------------------------
+r16689 | tm | Fri Mar 02 12:26:39 GMT 2012
+
+Added SUBSCRIPTION_ID to getDocMetaMapping
+------------------------------------------------------------------------
+r16684 | tm | Thu Mar 01 18:28:54 GMT 2012
+
+Added amount field to ContribTTLA
+------------------------------------------------------------------------
+r16674 | PAULT | Thu Mar 01 16:07:22 GMT 2012
+
+fixed thread timeout issue
+------------------------------------------------------------------------
+r16670 | tm | Thu Mar 01 14:06:08 GMT 2012
+
+Added percentage->amount conversion
+------------------------------------------------------------------------
+r16664 | PAULT | Thu Mar 01 11:17:48 GMT 2012
+
+Element Lock - added ability to add specific elementid to test lock service
+------------------------------------------------------------------------
+r16663 | PAULT | Thu Mar 01 11:10:25 GMT 2012
+
+Element Locking - Added ability to disable via env value, and to control whether service exception is thrown instead of thread sleeping and retrying
+------------------------------------------------------------------------
+r16653 | PAULT | Wed Feb 29 16:38:58 GMT 2012
+
+element lock dev checkin
+------------------------------------------------------------------------
+r16652 | PAULT | Wed Feb 29 15:00:36 GMT 2012
+
+element lock dev checkin
+------------------------------------------------------------------------
+r16639 | tm | Tue Feb 28 19:05:58 GMT 2012
+
+Bug-fixin
+------------------------------------------------------------------------
+r16635 | PAULT | Tue Feb 28 17:01:30 GMT 2012
+
+adding ElementLockService
+------------------------------------------------------------------------
+r16634 | tm | Tue Feb 28 16:42:47 GMT 2012
+
+Bug-fixin
+------------------------------------------------------------------------
+r16633 | tm | Tue Feb 28 16:37:56 GMT 2012
+
+Extra debugging
+------------------------------------------------------------------------
+r16631 | tm | Tue Feb 28 16:29:15 GMT 2012
+
+Bug-fixin
+------------------------------------------------------------------------
+r16628 | PAULT | Tue Feb 28 15:52:57 GMT 2012
+
+adding Element lock classes 
+------------------------------------------------------------------------
+r16627 | PAULT | Tue Feb 28 15:52:37 GMT 2012
+
+adding Element lock classes 
+------------------------------------------------------------------------
+r16625 | tm | Tue Feb 28 12:13:46 GMT 2012
+
+Forced 2-decimal precision
+------------------------------------------------------------------------
+r16615 | tm | Mon Feb 27 18:45:58 GMT 2012
+
+Bug - fixin'
+------------------------------------------------------------------------
+r16607 | tm | Mon Feb 27 16:50:24 GMT 2012
+
+Bug - fixin'
+------------------------------------------------------------------------
+r16606 | tm | Mon Feb 27 16:15:41 GMT 2012
+
+Bug - fixin'
+------------------------------------------------------------------------
+r16597 | tm | Fri Feb 24 17:21:10 GMT 2012
+
+Refactoring Donation->Contribution, Investment->Subscription
+------------------------------------------------------------------------
+r16566 | PAULT | Wed Feb 22 15:00:41 GMT 2012
+
+removed un-needed logging
+------------------------------------------------------------------------
+r16565 | PAULT | Wed Feb 22 14:56:00 GMT 2012
+
+changed NumberToWords class to have "and" words in the conversion 
+------------------------------------------------------------------------
+r16559 | tm | Tue Feb 21 17:35:07 GMT 2012
+
+Added TODO fix for Paul
+------------------------------------------------------------------------
+r16555 | tm | Tue Feb 21 15:43:24 GMT 2012
+
+Added various ID values etc.
+------------------------------------------------------------------------
+r16525 | tm | Fri Feb 17 14:59:03 GMT 2012
+
+Added column aliases
+------------------------------------------------------------------------
+r16524 | PAULT | Fri Feb 17 14:21:27 GMT 2012
+
+added ability to get organisation details from multiple values passed into the service
+------------------------------------------------------------------------
+r16521 | tm | Thu Feb 16 17:50:56 GMT 2012
+
+Added xOrgAccountCode population
+------------------------------------------------------------------------
+r16518 | tm | Thu Feb 16 17:12:20 GMT 2012
+
+Bug fix
+------------------------------------------------------------------------
+r16514 | tm | Thu Feb 16 14:40:22 GMT 2012
+
+Added automatic Org Account Code updating to match allocated Client Numbers.
+------------------------------------------------------------------------
+r16507 | camli | Wed Feb 15 17:01:49 GMT 2012
+
+added new form method getFormByTypeAndInvestmentWithReturnedDoc
+------------------------------------------------------------------------
+r16503 | camli | Wed Feb 15 14:19:14 GMT 2012
+
+refactored to use Cols class for field name.
+------------------------------------------------------------------------
+r16502 | camli | Wed Feb 15 12:42:46 GMT 2012
+
+fixed PERSON_ACCOUNT_CODE field.
+------------------------------------------------------------------------
+r16499 | tm | Tue Feb 14 16:51:00 GMT 2012
+
+Changes to Account DAO to incorporate changes to Account queries
+
+Relation contains new helper enum used in updateAllRelations method
+------------------------------------------------------------------------
+r16496 | camli | Tue Feb 14 16:14:59 GMT 2012
+
+fixed col name
+------------------------------------------------------------------------
+r16494 | tm | Tue Feb 14 14:00:42 GMT 2012
+
+Added extra debugging to account.add method
+
+Added column names to RelationType
+------------------------------------------------------------------------
+r16482 | tm | Mon Feb 13 17:38:40 GMT 2012
+
+Extra bits to covering letter
+------------------------------------------------------------------------
+r16471 | tm | Mon Feb 13 14:30:31 GMT 2012
+
+Added investment amount updating
+------------------------------------------------------------------------
+r16458 | tm | Mon Feb 13 13:19:49 GMT 2012
+
+Bug fix
+------------------------------------------------------------------------
+r16457 | tm | Mon Feb 13 13:15:42 GMT 2012
+
+Bug fix
+------------------------------------------------------------------------
+r16454 | tm | Mon Feb 13 12:46:17 GMT 2012
+
+Bug fix
+------------------------------------------------------------------------
+r16453 | camli | Mon Feb 13 12:45:59 GMT 2012
+
+added CF Donor Subscription
+------------------------------------------------------------------------
+r16451 | tm | Mon Feb 13 11:49:43 GMT 2012
+
+Amended Relation Checking (again)
+------------------------------------------------------------------------
+r16449 | camli | Mon Feb 13 11:28:01 GMT 2012
+
+fixed PSDF Transfer issue. Instructions were double counting.
+------------------------------------------------------------------------
+r16448 | camli | Mon Feb 13 10:53:58 GMT 2012
+
+added additional debug
+------------------------------------------------------------------------
+r16445 | tm | Fri Feb 10 18:09:33 GMT 2012
+
+Added support for anon donors (org and person)
+------------------------------------------------------------------------
+r16425 | tm | Fri Feb 10 13:45:12 GMT 2012
+
+Added support for anon donors (org and person)
+------------------------------------------------------------------------
+r16420 | camli | Thu Feb 09 17:39:40 GMT 2012
+
+added correct ids
+------------------------------------------------------------------------
+r16413 | tm | Wed Feb 08 18:41:41 GMT 2012
+
+Added TTLA Alloc deletion in remove method, appended Investment ID to audit entries.
+------------------------------------------------------------------------
+r16406 | tm | Wed Feb 08 14:53:09 GMT 2012
+
+Amended getIVSCheck - UNKNOWN status can now be returned, if there is at least 1 person with unknown identity check status and no persons with failed status
+------------------------------------------------------------------------
+r16402 | camli | Tue Feb 07 18:33:11 GMT 2012
+
+added TTLAentityCache
+------------------------------------------------------------------------
+r16400 | tm | Tue Feb 07 18:27:48 GMT 2012
+
+Fixed bug in remove
+------------------------------------------------------------------------
+r16399 | tm | Tue Feb 07 18:01:57 GMT 2012
+
+Fixed missing ID assignment
+------------------------------------------------------------------------
+r16398 | camli | Tue Feb 07 17:54:31 GMT 2012
+
+added getAllEntitiesByCategoryId
+------------------------------------------------------------------------
+r16397 | tm | Tue Feb 07 17:51:45 GMT 2012
+
+Bug fixed BigDecimal accumulation
+------------------------------------------------------------------------
+r16396 | tm | Tue Feb 07 16:48:59 GMT 2012
+
+Amended Donation Allocations to deal with null TTLA Org Ids.
+------------------------------------------------------------------------
+r16393 | camli | Tue Feb 07 13:26:25 GMT 2012
+
+added extra param investmentId
+------------------------------------------------------------------------
+r16392 | tm | Tue Feb 07 12:05:49 GMT 2012
+
+Various updates for Investment/Donation stuff.
+------------------------------------------------------------------------
+r16382 | tm | Mon Feb 06 12:16:21 GMT 2012
+
+New Fund Code
+------------------------------------------------------------------------
+r16377 | tm | Fri Feb 03 18:08:24 GMT 2012
+
+Fixed validateIntention call
+------------------------------------------------------------------------
+r16376 | tm | Fri Feb 03 18:07:42 GMT 2012
+
+Added new method addEnrolmentDataToBinder
+------------------------------------------------------------------------
+r16373 | camli | Fri Feb 03 15:56:34 GMT 2012
+
+added investmentId to form
+------------------------------------------------------------------------
+r16368 | tm | Thu Feb 02 19:29:13 GMT 2012
+
+Added first builds of new Investment/Donation DAO classes
+------------------------------------------------------------------------
+r16326 | tm | Mon Jan 30 18:03:34 GMT 2012
+
+Externalised isAuth value
+------------------------------------------------------------------------
+r16315 | tm | Fri Jan 27 15:59:29 GMT 2012
+
+Refactoring work in IdentityCheck DAOs.
+
+IdentityCheckAudit DAO now handles additions of new ID Check Audit entries
+------------------------------------------------------------------------
+r16314 | camli | Fri Jan 27 11:46:12 GMT 2012
+
+added FundEOD on secondary element type.
+------------------------------------------------------------------------
+r16313 | camli | Thu Jan 26 17:25:14 GMT 2012
+
+added new methods
+------------------------------------------------------------------------
+r16312 | camli | Thu Jan 26 17:24:42 GMT 2012
+
+updated methods and backwards compatible with older psdf.
+------------------------------------------------------------------------
+r16311 | camli | Thu Jan 26 13:41:01 GMT 2012
+
+added wrapper getBinderStringValue
+------------------------------------------------------------------------
+r16270 | tm | Wed Jan 25 10:28:36 GMT 2012
+
+Amended module list refreshing mechanism
+------------------------------------------------------------------------
+r16259 | tm | Tue Jan 24 17:54:55 GMT 2012
+
+Refactored Comm Proc core data classes into Core
+------------------------------------------------------------------------
+r16256 | tm | Tue Jan 24 16:55:34 GMT 2012
+
+Moved SDU package
+------------------------------------------------------------------------
+r16255 | tm | Tue Jan 24 16:49:38 GMT 2012
+
+Fixed hard-coded IDs
+------------------------------------------------------------------------
+r16246 | tm | Tue Jan 24 13:03:29 GMT 2012
+
+Added/fixed utility methods
+------------------------------------------------------------------------
+r16245 | tm | Tue Jan 24 13:01:41 GMT 2012
+
+Fixed getDataApplied to return an empty Vector instead of null
+------------------------------------------------------------------------
+r16244 | tm | Tue Jan 24 13:00:34 GMT 2012
+
+Fixed validation check
+------------------------------------------------------------------------
+r16222 | tm | Fri Jan 20 01:06:05 GMT 2012
+
+Removed old class
+
+Added new wrapper class
+------------------------------------------------------------------------
+r16220 | tm | Thu Jan 19 17:59:12 GMT 2012
+
+Ensured that new AuroraCorrespondent instances will always end up with a value assigned
+
+
+------------------------------------------------------------------------
+r16213 | tm | Tue Jan 17 18:24:43 GMT 2012
+
+Bug fixing and error catching
+------------------------------------------------------------------------
+r16208 | tm | Tue Jan 17 15:10:52 GMT 2012
+
+Added extra validation check to BankAccount instances
+
+Added error to getNewCorrespondentNumber method
+------------------------------------------------------------------------
+r16207 | tm | Tue Jan 17 15:10:03 GMT 2012
+
+Modified error messages to remove mention of mappings, Aurora Client/Corr Numbers.
+
+Removed use of separate Corr Code sequence - new Corr Codes will just use the Correspondent's ELEMENT_ID instead
+------------------------------------------------------------------------
+r16203 | tm | Mon Jan 16 14:09:59 GMT 2012
+
+Applied data protection mail group indicator mapping to Aurora Client objects, using the value of the 'Do Not Contact' flag against the nominated Correspondent record
+------------------------------------------------------------------------
+r16202 | tm | Mon Jan 16 12:33:06 GMT 2012
+
+Applied data protection mail group indicator mapping to Aurora Client objects, using the value of the 'Do Not Contact' flag against the nominated Correspondent record
+------------------------------------------------------------------------
+r16194 | tm | Fri Jan 13 18:15:37 GMT 2012
+
+Bug fixes
+------------------------------------------------------------------------
+r16191 | tm | Fri Jan 13 16:55:20 GMT 2012
+
+Added extra utility methods to support bulk applied Relation Property updates.
+
+Includes new caching on Property instances and fetch methods for Element ID lists
+------------------------------------------------------------------------
+r16189 | tm | Fri Jan 13 15:00:02 GMT 2012
+
+Fixed incorrect exception if EITHER income/withdrawal bank account short name fields aren't set, regardless of there being an income/withdrawal bank account being set.
+------------------------------------------------------------------------
+r16183 | camli | Thu Jan 12 15:42:40 GMT 2012
+
+added new getMethod to allow for null values.
+------------------------------------------------------------------------
+r16182 | tm | Thu Jan 12 15:38:57 GMT 2012
+
+Fixed bug in applying Element Attributes post ID check
+------------------------------------------------------------------------
+r16178 | tm | Thu Jan 12 13:30:49 GMT 2012
+
+Started externalizing column names
+
+Added getExtendedData method to Relation
+------------------------------------------------------------------------
+r16176 | camli | Thu Jan 12 13:17:48 GMT 2012
+
+refactored TransactionBatch to use BankAccountId as opposed to sortcode and bankAccountNo.
+------------------------------------------------------------------------
+r16169 | tm | Wed Jan 11 20:09:55 GMT 2012
+
+Added new ID
+------------------------------------------------------------------------
+r16165 | tm | Wed Jan 11 15:02:32 GMT 2012
+
+Query name fix
+------------------------------------------------------------------------
+r16164 | tm | Wed Jan 11 15:01:39 GMT 2012
+
+Added more caching
+------------------------------------------------------------------------
+r16161 | camli | Wed Jan 11 13:26:04 GMT 2012
+
+oops
+------------------------------------------------------------------------
+r16160 | camli | Wed Jan 11 13:24:53 GMT 2012
+
+added checks for withdrawal and income bank account short names and display an appropriate error message.
+------------------------------------------------------------------------
+r16159 | camli | Wed Jan 11 12:56:01 GMT 2012
+
+updated error messages.
+------------------------------------------------------------------------
+r16158 | tm | Wed Jan 11 12:15:51 GMT 2012
+
+Added new ID ref
+------------------------------------------------------------------------
+r16155 | camli | Wed Jan 11 11:51:32 GMT 2012
+
+added comment.
+------------------------------------------------------------------------
+r16154 | camli | Wed Jan 11 11:38:32 GMT 2012
+
+added AURORA_USE_ABBREVIATED_FULL_NAME flag to determine which full name flavour to use.
+------------------------------------------------------------------------
+r16153 | camli | Wed Jan 11 11:37:11 GMT 2012
+
+added utility method for abbreviated full name.
+------------------------------------------------------------------------
+r16152 | tm | Wed Jan 11 10:04:25 GMT 2012
+
+Added with/inc bank account switches
+------------------------------------------------------------------------
+r16148 | tm | Tue Jan 10 13:49:16 GMT 2012
+
+Added flag to control inspection of Legacy AML Checked attribute
+
+Added trimming for Person name fields
+------------------------------------------------------------------------
+r16147 | tm | Tue Jan 10 13:48:50 GMT 2012
+
+Added flag to control inspection of Legacy AML Checked attribute
+------------------------------------------------------------------------
+r16145 | tm | Mon Jan 09 18:25:45 GMT 2012
+
+Added placeholders for new doc columns in Comm table
+
+Added new Shared Column names
+------------------------------------------------------------------------
+r16142 | tm | Mon Jan 09 16:39:16 GMT 2012
+
+Changed name of Experian_expired score to Identity_check_expired
+
+Added new utility methods for resolving dDocName values
+------------------------------------------------------------------------
+r16138 | tm | Fri Jan 06 18:23:48 GMT 2012
+
+Various updates and minor refactoring to Identity Checking.
+
+Introduced new Element Attributes and Identity Check Scores
+------------------------------------------------------------------------
+r16116 | camli | Fri Dec 23 12:41:31 GMT 2011
+
+added getByTypeIdAndFund
+------------------------------------------------------------------------
+r16115 | camli | Fri Dec 23 12:35:33 GMT 2011
+
+initial version
+------------------------------------------------------------------------
+r16107 | camli | Thu Dec 22 15:45:48 GMT 2011
+
+added conversion of big decimal. need to refactor so all big decimal will use a common rule.
+------------------------------------------------------------------------
+r16071 | tm | Wed Dec 21 15:34:02 GMT 2011
+
+Added new Re-Auth status
+
+Added method to CCLAUtils to format user name case
+------------------------------------------------------------------------
+r16048 | tm | Tue Dec 20 18:02:01 GMT 2011
+
+Added new IDs
+------------------------------------------------------------------------
+r16043 | camli | Tue Dec 20 16:39:17 GMT 2011
+
+added bigDecimal param
+------------------------------------------------------------------------
+r16042 | camli | Tue Dec 20 16:36:59 GMT 2011
+
+removed float reference and changed to BigDecimal
+------------------------------------------------------------------------
+r16035 | camli | Tue Dec 20 10:43:27 GMT 2011
+
+updated transaction batch object
+------------------------------------------------------------------------
+r16033 | camli | Mon Dec 19 17:44:43 GMT 2011
+
+added BigDecimalSupport
+------------------------------------------------------------------------
+r16031 | tm | Mon Dec 19 17:10:32 GMT 2011
+
+Added new Audit Action ID
+------------------------------------------------------------------------
+r16028 | camli | Mon Dec 19 14:49:01 GMT 2011
+
+updated transaction batch object
+------------------------------------------------------------------------
+r15979 | tm | Mon Dec 12 13:51:28 GMT 2011
+
+Added new enrolment attrib IDs
+------------------------------------------------------------------------
+r15964 | tm | Thu Dec 08 19:05:57 GMT 2011
+
+Added new IDs
+------------------------------------------------------------------------
+r15952 | tm | Wed Dec 07 14:07:15 GMT 2011
+
+Added helper methods and new appl. enrolment ID
+------------------------------------------------------------------------
+r15943 | camli | Wed Dec 07 10:28:35 GMT 2011
+
+updated logic.
+------------------------------------------------------------------------
+r15942 | camli | Wed Dec 07 10:28:26 GMT 2011
+
+updated logic.
+------------------------------------------------------------------------
+r15941 | tm | Tue Dec 06 18:52:00 GMT 2011
+
+Added proper equals() method
+------------------------------------------------------------------------
+r15939 | camli | Tue Dec 06 17:32:17 GMT 2011
+
+initial logic for updating mandate accounts. Will require some rework.
+------------------------------------------------------------------------
+r15938 | camli | Tue Dec 06 15:18:50 GMT 2011
+
+added share class calculation utils
+------------------------------------------------------------------------
+r15936 | camli | Tue Dec 06 13:43:08 GMT 2011
+
+added account attributes
+------------------------------------------------------------------------
+r15935 | camli | Mon Dec 05 18:08:58 GMT 2011
+
+set shareclass if applicable.
+------------------------------------------------------------------------
+r15934 | tm | Mon Dec 05 17:54:41 GMT 2011
+
+Extra bits
+------------------------------------------------------------------------
+r15933 | camli | Mon Dec 05 17:53:39 GMT 2011
+
+must set the statement month 1 to default 1
+------------------------------------------------------------------------
+r15932 | tm | Mon Dec 05 17:24:36 GMT 2011
+
+Added new cachable
+------------------------------------------------------------------------
+r15930 | camli | Mon Dec 05 17:01:09 GMT 2011
+
+fixed typo
+------------------------------------------------------------------------
+r15929 | camli | Mon Dec 05 16:56:44 GMT 2011
+
+added GetAuroraCorrespondentsByPersonIdAndCompanyId method
+------------------------------------------------------------------------
+r15928 | camli | Mon Dec 05 16:56:22 GMT 2011
+
+added GetAuroraCorrespondentsByPersonIdAndCompanyId method
+------------------------------------------------------------------------
+r15926 | tm | Mon Dec 05 16:42:02 GMT 2011
+
+rel ID bug fix
+------------------------------------------------------------------------
+r15925 | camli | Mon Dec 05 16:16:45 GMT 2011
+
+changed ReportUsage to integer in the add method
+------------------------------------------------------------------------
+r15923 | tm | Mon Dec 05 15:59:56 GMT 2011
+
+Added new ID
+------------------------------------------------------------------------
+r15921 | tm | Mon Dec 05 14:52:59 GMT 2011
+
+Added more hard-coded IDs
+------------------------------------------------------------------------
+r15920 | camli | Mon Dec 05 12:54:25 GMT 2011
+
+added logging of soap messages
+------------------------------------------------------------------------
+r15919 | camli | Mon Dec 05 12:54:10 GMT 2011
+
+added logging
+------------------------------------------------------------------------
+r15917 | tm | Fri Dec 02 18:16:08 GMT 2011
+
+Added Enrolment Attrib stuff
+------------------------------------------------------------------------
+r15909 | tm | Thu Dec 01 19:54:59 GMT 2011
+
+Removed AuroraClient fetch operations
+------------------------------------------------------------------------
+r15897 | tm | Mon Nov 28 18:46:59 GMT 2011
+
+Added new instruction fetch methods and refined equals method in AuroraClientUtils
+------------------------------------------------------------------------
+r15892 | tm | Fri Nov 25 18:23:28 GMT 2011
+
+Various changes
+------------------------------------------------------------------------
+r15891 | tm | Fri Nov 25 18:23:07 GMT 2011
+
+Removed dodgy-looking facade.beginTran() call in getFacade. What is it doing there - very weird
+------------------------------------------------------------------------
+r15878 | tm | Fri Nov 25 12:55:35 GMT 2011
+
+Various updates to object equality/persistence methods
+------------------------------------------------------------------------
+r15875 | tm | Thu Nov 24 16:21:56 GMT 2011
+
+Fixed typo
+------------------------------------------------------------------------
+r15874 | tm | Thu Nov 24 16:21:13 GMT 2011
+
+Added newer version of Common HTTP Client
+------------------------------------------------------------------------
+r15873 | tm | Thu Nov 24 16:20:50 GMT 2011
+
+1. Hacked the AxisClient class to remove invoke() calls when using
+   CommonsHTTPSender as a transport method. These extra calls were
+   forcing redundant web service calls, causing errors on any services
+   that updated or added to downstream systems (e.g. Aurora databases)
+   
+2. Changed CommonsHTTPSender to force NTLM as the only attempted
+   authentication method.
+ 
+3. Added ECS-CHANGES.txt to explain above changes to jar  
+------------------------------------------------------------------------
+r15872 | tm | Wed Nov 23 17:59:30 GMT 2011
+
+Added test method
+------------------------------------------------------------------------
+r15870 | tm | Wed Nov 23 17:49:19 GMT 2011
+
+Fixed Corr ID allocation
+------------------------------------------------------------------------
+r15869 | tm | Wed Nov 23 17:48:50 GMT 2011
+
+Removed comment
+------------------------------------------------------------------------
+r15868 | camli | Wed Nov 23 13:57:56 GMT 2011
+
+added default.
+------------------------------------------------------------------------
+r15866 | camli | Wed Nov 23 12:43:18 GMT 2011
+
+added accnum test
+------------------------------------------------------------------------
+r15865 | camli | Wed Nov 23 12:35:51 GMT 2011
+
+added default values.
+------------------------------------------------------------------------
+r15864 | camli | Wed Nov 23 12:17:18 GMT 2011
+
+added long
+------------------------------------------------------------------------
+r15863 | camli | Wed Nov 23 12:13:49 GMT 2011
+
+added more defaults
+------------------------------------------------------------------------
+r15862 | camli | Wed Nov 23 12:05:19 GMT 2011
+
+added Double
+------------------------------------------------------------------------
+r15861 | camli | Wed Nov 23 12:01:32 GMT 2011
+
+added more default values
+------------------------------------------------------------------------
+r15859 | camli | Wed Nov 23 11:42:13 GMT 2011
+
+check for null dates before formatting
+------------------------------------------------------------------------
+r15858 | camli | Wed Nov 23 11:40:36 GMT 2011
+
+added default values
+------------------------------------------------------------------------
+r15857 | tm | Wed Nov 23 11:31:40 GMT 2011
+
+Changes to Aurora Corr creation
+------------------------------------------------------------------------
+r15856 | tm | Wed Nov 23 11:03:23 GMT 2011
+
+Security stuff
+------------------------------------------------------------------------
+r15855 | camli | Wed Nov 23 10:50:01 GMT 2011
+
+added space in log.
+------------------------------------------------------------------------
+r15854 | camli | Wed Nov 23 10:43:52 GMT 2011
+
+small test
+------------------------------------------------------------------------
+r15853 | tm | Wed Nov 23 10:32:16 GMT 2011
+
+Externalised WS URL
+------------------------------------------------------------------------
+r15852 | tm | Tue Nov 22 18:38:47 GMT 2011
+
+Added switch for NTLM auth
+------------------------------------------------------------------------
+r15851 | camli | Tue Nov 22 18:05:18 GMT 2011
+
+set default values
+------------------------------------------------------------------------
+r15850 | camli | Tue Nov 22 18:02:17 GMT 2011
+
+added default values
+------------------------------------------------------------------------
+r15848 | camli | Tue Nov 22 17:19:26 GMT 2011
+
+refactored
+------------------------------------------------------------------------
+r15847 | tm | Tue Nov 22 17:16:45 GMT 2011
+
+Re-added security credentials
+------------------------------------------------------------------------
+r15846 | tm | Tue Nov 22 17:16:19 GMT 2011
+
+Amended getEngineConfiguration call location
+------------------------------------------------------------------------
+r15845 | camli | Tue Nov 22 17:15:02 GMT 2011
+
+added check for null pointer
+------------------------------------------------------------------------
+r15844 | camli | Tue Nov 22 17:12:29 GMT 2011
+
+initial version of object utils.
+------------------------------------------------------------------------
+r15843 | tm | Tue Nov 22 17:05:23 GMT 2011
+
+Modified name of building soc. fields
+------------------------------------------------------------------------
+r15842 | tm | Tue Nov 22 17:05:15 GMT 2011
+
+Modified name of building soc. fields
+------------------------------------------------------------------------
+r15839 | camli | Tue Nov 22 14:04:15 GMT 2011
+
+reverted back.
+------------------------------------------------------------------------
+r15838 | camli | Tue Nov 22 13:54:09 GMT 2011
+
+added contacts to default empty vector.
+------------------------------------------------------------------------
+r15836 | tm | Tue Nov 22 13:23:00 GMT 2011
+
+added short name field
+------------------------------------------------------------------------
+r15835 | tm | Tue Nov 22 13:07:42 GMT 2011
+
+Added extra updates to Account instance on Aurora account creation
+------------------------------------------------------------------------
+r15829 | camli | Fri Nov 18 14:02:39 GMT 2011
+
+added Parent Instruction Reference
+------------------------------------------------------------------------
+r15824 | camli | Fri Nov 18 12:43:03 GMT 2011
+
+fixed spelling mistake
+------------------------------------------------------------------------
+r15823 | camli | Fri Nov 18 11:22:28 GMT 2011
+
+add correspondent code
+------------------------------------------------------------------------
+r15822 | camli | Fri Nov 18 11:10:32 GMT 2011
+
+generate our own ids
+------------------------------------------------------------------------
+r15821 | camli | Fri Nov 18 11:09:51 GMT 2011
+
+added method to generate own ids
+------------------------------------------------------------------------
+r15820 | camli | Thu Nov 17 18:02:07 GMT 2011
+
+update account
+------------------------------------------------------------------------
+r15819 | camli | Thu Nov 17 17:52:00 GMT 2011
+
+updated accNumExt logic.
+------------------------------------------------------------------------
+r15817 | camli | Thu Nov 17 17:32:43 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15816 | camli | Thu Nov 17 17:13:44 GMT 2011
+
+fixed logic.
+------------------------------------------------------------------------
+r15815 | camli | Thu Nov 17 17:00:56 GMT 2011
+
+added default values.
+------------------------------------------------------------------------
+r15814 | camli | Thu Nov 17 16:56:29 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15812 | tm | Thu Nov 17 16:32:45 GMT 2011
+
+Updated AuroraWS.wsdl. Features new GetAccNumExt method.
+
+Rebuilt all Axis stub files, commented out auth changes in Locator and BindingStub (search for 'TM' to see the bits)
+------------------------------------------------------------------------
+r15809 | tm | Thu Nov 17 15:19:14 GMT 2011
+
+Allowed corr maps with empty corr IDs
+------------------------------------------------------------------------
+r15807 | tm | Thu Nov 17 13:45:37 GMT 2011
+
+Added getNominatedCorr methods
+------------------------------------------------------------------------
+r15801 | camli | Thu Nov 17 10:34:02 GMT 2011
+
+updated logic
+------------------------------------------------------------------------
+r15800 | camli | Thu Nov 17 10:33:49 GMT 2011
+
+added default values.
+------------------------------------------------------------------------
+r15798 | tm | Wed Nov 16 19:02:55 GMT 2011
+
+Added changes for singleton scoping
+------------------------------------------------------------------------
+r15796 | camli | Wed Nov 16 15:50:28 GMT 2011
+
+added default values.
+------------------------------------------------------------------------
+r15795 | camli | Wed Nov 16 15:48:45 GMT 2011
+
+added default values
+------------------------------------------------------------------------
+r15794 | camli | Wed Nov 16 15:48:00 GMT 2011
+
+added default values for paper indicator
+------------------------------------------------------------------------
+r15793 | camli | Wed Nov 16 15:39:59 GMT 2011
+
+copy contributor code over.
+------------------------------------------------------------------------
+r15790 | camli | Wed Nov 16 14:00:52 GMT 2011
+
+update instance method
+------------------------------------------------------------------------
+r15788 | camli | Wed Nov 16 13:44:25 GMT 2011
+
+change references to final
+------------------------------------------------------------------------
+r15786 | tm | Wed Nov 16 13:35:03 GMT 2011
+
+Exposed Aurora Account flag in constructor
+------------------------------------------------------------------------
+r15784 | camli | Wed Nov 16 13:04:15 GMT 2011
+
+added new action ids
+------------------------------------------------------------------------
+r15782 | camli | Wed Nov 16 01:34:12 GMT 2011
+
+added checks for data
+------------------------------------------------------------------------
+r15781 | camli | Wed Nov 16 01:33:20 GMT 2011
+
+add new statuses
+------------------------------------------------------------------------
+r15778 | tm | Tue Nov 15 18:35:13 GMT 2011
+
+Bug fix
+------------------------------------------------------------------------
+r15776 | camli | Tue Nov 15 17:54:25 GMT 2011
+
+fixed typo for CORR instead of COMPANY
+------------------------------------------------------------------------
+r15775 | tm | Tue Nov 15 13:36:03 GMT 2011
+
+Changes to AuroraClient
+------------------------------------------------------------------------
+r15774 | tm | Tue Nov 15 13:11:20 GMT 2011
+
+Fixed addBinderFields
+------------------------------------------------------------------------
+r15773 | tm | Tue Nov 15 12:56:50 GMT 2011
+
+Fixed AuroraClient generation
+------------------------------------------------------------------------
+r15772 | camli | Tue Nov 15 12:53:52 GMT 2011
+
+added subdivison code.
+------------------------------------------------------------------------
+r15771 | camli | Tue Nov 15 12:51:49 GMT 2011
+
+update AuroraClient
+------------------------------------------------------------------------
+r15770 | camli | Tue Nov 15 12:47:43 GMT 2011
+
+added tom's changes.
+------------------------------------------------------------------------
+r15769 | camli | Tue Nov 15 12:45:11 GMT 2011
+
+change data types
+------------------------------------------------------------------------
+r15768 | tm | Tue Nov 15 12:42:52 GMT 2011
+
+Changed clientNumber to Integer to allow initially null values
+------------------------------------------------------------------------
+r15767 | camli | Mon Nov 14 17:34:24 GMT 2011
+
+updated
+------------------------------------------------------------------------
+r15766 | camli | Mon Nov 14 17:33:15 GMT 2011
+
+added debug
+------------------------------------------------------------------------
+r15765 | tm | Mon Nov 14 15:10:31 GMT 2011
+
+Amended AuroraClient stuff
+------------------------------------------------------------------------
+r15763 | camli | Mon Nov 14 14:03:56 GMT 2011
+
+added debug
+------------------------------------------------------------------------
+r15762 | camli | Mon Nov 14 14:00:43 GMT 2011
+
+added debug
+------------------------------------------------------------------------
+r15761 | tm | Mon Nov 14 13:28:19 GMT 2011
+
+Tonne of new fields
+------------------------------------------------------------------------
+r15760 | camli | Mon Nov 14 12:45:41 GMT 2011
+
+added logging to getClientByClientNumber
+------------------------------------------------------------------------
+r15758 | camli | Mon Nov 14 12:29:56 GMT 2011
+
+added dates to webservice
+------------------------------------------------------------------------
+r15756 | tm | Mon Nov 14 12:29:20 GMT 2011
+
+Fixed person creation
+------------------------------------------------------------------------
+r15755 | camli | Mon Nov 14 12:25:47 GMT 2011
+
+added logging.
+------------------------------------------------------------------------
+r15754 | camli | Mon Nov 14 12:20:31 GMT 2011
+
+change dateEnrolled filed to dateAdded.
+------------------------------------------------------------------------
+r15753 | camli | Mon Nov 14 12:16:04 GMT 2011
+
+removed debug.
+------------------------------------------------------------------------
+r15751 | camli | Mon Nov 14 12:05:50 GMT 2011
+
+added some debug.
+------------------------------------------------------------------------
+r15750 | tm | Mon Nov 14 11:52:08 GMT 2011
+
+Changed Corr ID to Integer
+------------------------------------------------------------------------
+r15749 | camli | Mon Nov 14 11:37:30 GMT 2011
+
+added update and set new fields to the correspondent.
+------------------------------------------------------------------------
+r15748 | tm | Mon Nov 14 11:28:48 GMT 2011
+
+Resolved conflicts
+------------------------------------------------------------------------
+r15747 | camli | Mon Nov 14 11:24:06 GMT 2011
+
+updated AuroraCorrespondent to ReportUsage to in value
+------------------------------------------------------------------------
+r15746 | camli | Mon Nov 14 11:08:40 GMT 2011
+
+added ReportUsage default value 1 
+------------------------------------------------------------------------
+r15745 | tm | Mon Nov 14 10:29:04 GMT 2011
+
+Updates
+------------------------------------------------------------------------
+r15743 | camli | Mon Nov 14 10:10:09 GMT 2011
+
+default value of 1 for reportusage.
+------------------------------------------------------------------------
+r15742 | camli | Mon Nov 14 10:07:18 GMT 2011
+
+added webservices call.
+------------------------------------------------------------------------
+r15741 | camli | Mon Nov 14 10:03:04 GMT 2011
+
+updated webservice call for auto generation.
+------------------------------------------------------------------------
+r15739 | tm | Fri Nov 11 13:49:50 GMT 2011
+
+Amended AuroraCorr to add new fields
+------------------------------------------------------------------------
+r15736 | tm | Fri Nov 11 13:11:04 GMT 2011
+
+Changed col name
+------------------------------------------------------------------------
+r15719 | tm | Thu Nov 10 17:08:54 GMT 2011
+
+Added Building Soc. No.
+------------------------------------------------------------------------
+r15717 | camli | Thu Nov 10 16:21:38 GMT 2011
+
+fixed small error
+------------------------------------------------------------------------
+r15713 | tm | Thu Nov 10 12:54:41 GMT 2011
+
+Replaced axis.jar with modified axis-ecs.jar.
+
+Fixes empty xmlns bug that was causing interop issues with .Net:
+
+https://issues.apache.org/jira/browse/AXIS-1827
+------------------------------------------------------------------------
+r15710 | camli | Thu Nov 10 11:56:08 GMT 2011
+
+added new entity method call
+------------------------------------------------------------------------
+r15698 | camli | Mon Nov 07 11:42:08 GMT 2011
+
+added new static method.
+------------------------------------------------------------------------
+r15690 | tm | Wed Nov 02 12:57:44 GMT 2011
+
+Bits
+------------------------------------------------------------------------
+r15677 | tm | Tue Nov 01 15:31:53 GMT 2011
+
+Added new ID refs
+------------------------------------------------------------------------
+r15673 | camli | Tue Nov 01 12:02:06 GMT 2011
+
+added toString for enum matching.
+------------------------------------------------------------------------
+r15671 | tm | Tue Nov 01 10:47:55 GMT 2011
+
+Bug fix
+------------------------------------------------------------------------
+r15664 | camli | Mon Oct 31 11:05:21 GMT 2011
+
+updated ids
+------------------------------------------------------------------------
+r15663 | camli | Fri Oct 28 16:45:47 BST 2011
+
+update ids
+------------------------------------------------------------------------
+r15659 | tm | Fri Oct 28 16:08:14 BST 2011
+
+Changes to Relation class, new helper methods in Address/Contact classes
+------------------------------------------------------------------------
+r15658 | camli | Fri Oct 28 16:06:03 BST 2011
+
+update instruction status ids
+------------------------------------------------------------------------
+r15644 | camli | Thu Oct 27 10:49:08 BST 2011
+
+fixed typo.
+------------------------------------------------------------------------
+r15640 | camli | Thu Oct 27 09:58:51 BST 2011
+
+update method names
+------------------------------------------------------------------------
+r15639 | camli | Wed Oct 26 17:53:34 BST 2011
+
+added correct elementid for person.
+------------------------------------------------------------------------
+r15636 | camli | Wed Oct 26 17:02:37 BST 2011
+
+added accountNumExt
+------------------------------------------------------------------------
+r15630 | camli | Wed Oct 26 14:47:31 BST 2011
+
+added new property
+------------------------------------------------------------------------
+r15629 | camli | Wed Oct 26 14:46:54 BST 2011
+
+added new caches
+------------------------------------------------------------------------
+r15626 | camli | Wed Oct 26 13:42:23 BST 2011
+
+changed to use code instead of name.
+------------------------------------------------------------------------
+r15625 | camli | Wed Oct 26 13:22:19 BST 2011
+
+added nameCache
+------------------------------------------------------------------------
+r15622 | camli | Wed Oct 26 12:31:06 BST 2011
+
+fixed id name.
+------------------------------------------------------------------------
+r15620 | camli | Wed Oct 26 11:03:54 BST 2011
+
+added getDataApplied utility method
+------------------------------------------------------------------------
+r15619 | camli | Wed Oct 26 10:12:56 BST 2011
+
+added new ids
+------------------------------------------------------------------------
+r15618 | camli | Tue Oct 25 16:51:06 BST 2011
+
+added idCache
+------------------------------------------------------------------------
+r15601 | camli | Tue Oct 25 13:52:02 BST 2011
+
+added initial version of static data updates
+------------------------------------------------------------------------
+r15600 | tm | Tue Oct 25 13:06:17 BST 2011
+
+Added getCorrespondents() methods to Account, Organisation data classes.
+
+Refactoring Aurora helper methods to use these
+------------------------------------------------------------------------
+r15599 | tm | Tue Oct 25 11:58:32 BST 2011
+
+Added get methods for checking presence in Aurora
+------------------------------------------------------------------------
+r15591 | tm | Mon Oct 24 18:14:51 BST 2011
+
+New WSDL file containing static data web services.
+
+Has been manually modified to ensure Axis doesn't mess up the Java conversion
+------------------------------------------------------------------------
+r15585 | tm | Mon Oct 24 18:09:03 BST 2011
+
+Newly updated Aurora web service stub/object classes.
+
+Added various utility classes for calling the new static data web services.
+------------------------------------------------------------------------
+r15563 | camli | Fri Oct 21 15:20:07 BST 2011
+
+added delete
+------------------------------------------------------------------------
+r15559 | camli | Fri Oct 21 12:04:18 BST 2011
+
+removed campaign import.
+------------------------------------------------------------------------
+r15558 | camli | Fri Oct 21 12:03:48 BST 2011
+
+added helpMapping
+------------------------------------------------------------------------
+r15488 | tm | Thu Oct 13 19:13:01 BST 2011
+
+Implemented validate() method to check House Number field length.
+------------------------------------------------------------------------
+r15437 | tm | Fri Sep 30 16:46:33 BST 2011
+
+Touched CampaignEnrolment every time a CampaignActivity is added
+------------------------------------------------------------------------
+r15424 | camli | Thu Sep 29 13:14:37 BST 2011
+
+added xcomments
+------------------------------------------------------------------------
+r15420 | camli | Wed Sep 28 16:46:47 BST 2011
+
+added new type.
+------------------------------------------------------------------------
+r15418 | camli | Wed Sep 28 15:46:39 BST 2011
+
+added new ids
+------------------------------------------------------------------------
+r15409 | tm | Tue Sep 27 17:15:22 BST 2011
+
+Bug fixes
+------------------------------------------------------------------------
+r15405 | tm | Tue Sep 27 16:30:42 BST 2011
+
+Amended to getPdfDocUrl
+------------------------------------------------------------------------
+r15404 | tm | Tue Sep 27 16:26:52 BST 2011
+
+Amended to use getActiveValue and terminate if not ChildDocument type
+------------------------------------------------------------------------
+r15403 | tm | Tue Sep 27 16:26:07 BST 2011
+
+Amended to use getActiveValue and terminate if not ChildDocument type
+------------------------------------------------------------------------
+r15401 | tm | Tue Sep 27 16:23:23 BST 2011
+
+Amended ChildDocument parent URL resolution
+------------------------------------------------------------------------
+r15400 | camli | Tue Sep 27 16:16:17 BST 2011
+
+added more params
+------------------------------------------------------------------------
+r15399 | tm | Tue Sep 27 16:15:46 BST 2011
+
+Added partition ID
+------------------------------------------------------------------------
+r15396 | camli | Tue Sep 27 16:07:49 BST 2011
+
+added custom idoc function
+------------------------------------------------------------------------
+r15395 | tm | Tue Sep 27 16:01:56 BST 2011
+
+Added helper methods
+------------------------------------------------------------------------
+r15394 | camli | Tue Sep 27 15:54:37 BST 2011
+
+intial version
+------------------------------------------------------------------------
+r15385 | tm | Mon Sep 26 16:36:23 BST 2011
+
+Added new method for fetching related bank accounts
+------------------------------------------------------------------------
+r15381 | camli | Mon Sep 26 16:09:09 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r15378 | camli | Mon Sep 26 12:00:58 BST 2011
+
+added new methods
+------------------------------------------------------------------------
+r15376 | tm | Fri Sep 23 16:42:17 BST 2011
+
+Added size checks to getMultipleRelationsData and new method to fetch Org bank accounts
+------------------------------------------------------------------------
+r15370 | camli | Fri Sep 23 11:09:35 BST 2011
+
+added padding to getYearAndMonthStr
+------------------------------------------------------------------------
+r15366 | camli | Thu Sep 22 17:56:41 BST 2011
+
+added new method
+------------------------------------------------------------------------
+r15365 | camli | Thu Sep 22 17:56:17 BST 2011
+
+added new vars
+------------------------------------------------------------------------
+r15364 | camli | Thu Sep 22 17:56:00 BST 2011
+
+added new vars
+------------------------------------------------------------------------
+r15354 | tm | Thu Sep 22 14:38:02 BST 2011
+
+Added stuff for Account Agreement Type 
+------------------------------------------------------------------------
+r15292 | tm | Mon Sep 19 17:56:29 BST 2011
+
+Added extra UCM field names to Globals.
+
+UCMMetadataTranslation has a reverse Cache now, which maps UCM var maps to UCMMetadataTranslation instances.
+------------------------------------------------------------------------
+r15228 | camli | Wed Sep 14 17:57:12 BST 2011
+
+fixed logic for single update.
+------------------------------------------------------------------------
+r15226 | camli | Wed Sep 14 17:36:40 BST 2011
+
+fixed equals method as this will never be equal due to signature of the hash object.
+------------------------------------------------------------------------
+r15218 | camli | Wed Sep 14 15:13:20 BST 2011
+
+added more debug to error messages.
+------------------------------------------------------------------------
+r15215 | camli | Wed Sep 14 14:50:12 BST 2011
+
+added transaction_batch commType
+------------------------------------------------------------------------
+r15214 | tm | Wed Sep 14 14:35:27 BST 2011
+
+Added new CommType
+------------------------------------------------------------------------
+r15202 | camli | Tue Sep 13 17:38:51 BST 2011
+
+added new data types
+------------------------------------------------------------------------
+r15196 | tm | Tue Sep 13 17:00:40 BST 2011
+
+Externalized Experian server name
+------------------------------------------------------------------------
+r15187 | camli | Tue Sep 13 11:53:29 BST 2011
+
+added missing transaction types
+------------------------------------------------------------------------
+r15172 | camli | Fri Sep 09 11:09:29 BST 2011
+
+added new method
+------------------------------------------------------------------------
+r15162 | camli | Tue Sep 06 16:40:06 BST 2011
+
+added allow null to boolean value and replace BinderUtils and DataResultSetUtils with CCLAUtils.
+------------------------------------------------------------------------
+r15140 | camli | Tue Sep 06 11:23:09 BST 2011
+
+added new instruction date field.
+------------------------------------------------------------------------
+r15134 | camli | Mon Sep 05 12:12:55 BST 2011
+
+added BNKCONDIN
+------------------------------------------------------------------------
+r15133 | camli | Mon Sep 05 11:21:55 BST 2011
+
+fixes
+------------------------------------------------------------------------
+r15127 | camli | Fri Sep 02 11:51:24 BST 2011
+
+added new status
+------------------------------------------------------------------------
+r15103 | tm | Wed Aug 31 16:05:50 BST 2011
+
+Fixed bug in Form class
+------------------------------------------------------------------------
+r15102 | camli | Wed Aug 31 15:18:35 BST 2011
+
+added statuses
+------------------------------------------------------------------------
+r15099 | tm | Tue Aug 30 16:27:22 BST 2011
+
+Added hook to form handler
+
+Removed AccountIntention class (replaced by FundInvestmentIntention)
+------------------------------------------------------------------------
+r15089 | camli | Tue Aug 30 14:26:44 BST 2011
+
+fixed column name
+------------------------------------------------------------------------
+r15088 | tm | Tue Aug 30 13:50:27 BST 2011
+
+Added AuthStatus cache
+------------------------------------------------------------------------
+r15087 | camli | Tue Aug 30 13:21:41 BST 2011
+
+re-added Transaction_Reference
+------------------------------------------------------------------------
+r15085 | camli | Tue Aug 30 12:09:21 BST 2011
+
+added new instruction data fields
+------------------------------------------------------------------------
+r15084 | camli | Tue Aug 30 11:25:04 BST 2011
+
+update sequence col
+------------------------------------------------------------------------
+r15083 | tm | Tue Aug 30 11:24:07 BST 2011
+
+Added AuthStatus obj
+------------------------------------------------------------------------
+r15075 | tm | Fri Aug 26 15:21:45 BST 2011
+
+Added new fetch method
+------------------------------------------------------------------------
+r15073 | camli | Fri Aug 26 15:02:03 BST 2011
+
+update status
+------------------------------------------------------------------------
+r15070 | tm | Fri Aug 26 14:37:44 BST 2011
+
+Added support for email indemnity forms and FundInvestmentIntention validation via EnrolmentHandler implementors
+------------------------------------------------------------------------
+r15066 | camli | Thu Aug 25 17:23:27 BST 2011
+
+added get instructions by commId
+------------------------------------------------------------------------
+r15060 | tm | Thu Aug 25 15:58:00 BST 2011
+
+Extra work required for Dio Loans
+------------------------------------------------------------------------
+r15056 | camli | Thu Aug 25 09:52:57 BST 2011
+
+added more methods
+------------------------------------------------------------------------
+r15041 | camli | Mon Aug 22 16:26:54 BST 2011
+
+added transaction batch data classes
+------------------------------------------------------------------------
+r15040 | tm | Fri Aug 19 17:39:56 BST 2011
+
+NumberToWords
+------------------------------------------------------------------------
+r15034 | tm | Thu Aug 18 19:14:06 BST 2011
+
+Added custom sequence for Loan account numbers
+------------------------------------------------------------------------
+r15011 | tm | Wed Aug 17 11:02:34 BST 2011
+
+Updated Entity Checking outcome objects
+------------------------------------------------------------------------
+r14993 | tm | Tue Aug 16 10:41:53 BST 2011
+
+Added value truncation to prevent very long field values breaking inserts to SDADUIT_DATA
+------------------------------------------------------------------------
+r14953 | tm | Wed Aug 10 17:46:04 BST 2011
+
+Added Account ID to flag auditing
+------------------------------------------------------------------------
+r14942 | tm | Tue Aug 09 17:28:03 BST 2011
+
+Fixing up Campaign data column names, refactored form code so more is re-used.
+------------------------------------------------------------------------
+r14919 | tm | Fri Aug 05 18:07:09 BST 2011
+
+Added OracleJDBCFacade transactions
+------------------------------------------------------------------------
+r14872 | tm | Mon Jul 25 14:52:53 BST 2011
+
+Fixes
+------------------------------------------------------------------------
+r14867 | tm | Mon Jul 25 14:19:00 BST 2011
+
+Epic refactoring of cache stuff.
+
+Cache class and all subclasses have been killed off. Always use Cachable implementors from now on.
+
+When creating a new Cachable, implement the doRebuild method, NOT the public rebuild one.
+------------------------------------------------------------------------
+r14864 | tm | Fri Jul 22 14:02:28 BST 2011
+
+Added addOrRemove method
+------------------------------------------------------------------------
+r14861 | camli | Thu Jul 21 17:41:55 BST 2011
+
+removed redundant imports
+------------------------------------------------------------------------
+r14860 | camli | Thu Jul 21 17:40:43 BST 2011
+
+optimised queries for org and person address searches.
+------------------------------------------------------------------------
+r14858 | camli | Thu Jul 21 17:21:14 BST 2011
+
+added email field to searches
+------------------------------------------------------------------------
+r14839 | tm | Thu Jul 21 12:05:05 BST 2011
+
+Removed logging
+------------------------------------------------------------------------
+r14835 | tm | Thu Jul 21 11:40:00 BST 2011
+
+Removed logging
+------------------------------------------------------------------------
+r14833 | tm | Thu Jul 21 11:22:53 BST 2011
+
+Added equals method
+------------------------------------------------------------------------
+r14827 | camli | Thu Jul 21 10:55:23 BST 2011
+
+changed system reference to user the global variable.
+------------------------------------------------------------------------
+r14825 | camli | Thu Jul 21 10:51:49 BST 2011
+
+fixed global reference
+------------------------------------------------------------------------
+r14807 | tm | Wed Jul 20 17:54:00 BST 2011
+
+Amendments to updateAll
+------------------------------------------------------------------------
+r14802 | tm | Wed Jul 20 13:13:21 BST 2011
+
+Changes to Instr Data Applied updating
+------------------------------------------------------------------------
+r14791 | tm | Tue Jul 19 18:01:54 BST 2011
+
+Added remove method.
+
+Amended addOrUpdateAll so that unused field values are removed.
+------------------------------------------------------------------------
+r14790 | camli | Tue Jul 19 17:43:11 BST 2011
+
+added transactionRef field
+------------------------------------------------------------------------
+r14789 | camli | Tue Jul 19 17:42:47 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r14783 | camli | Tue Jul 19 17:10:42 BST 2011
+
+Fixed null pointer exception if previous value is null
+------------------------------------------------------------------------
+r14729 | tm | Mon Jul 18 15:00:12 BST 2011
+
+Removed unneccessary logging
+------------------------------------------------------------------------
+r14699 | camli | Fri Jul 15 12:35:15 BST 2011
+
+added new instruction data/type ids
+------------------------------------------------------------------------
+r14618 | tm | Wed Jul 13 11:50:01 BST 2011
+
+Amended getCSV method
+------------------------------------------------------------------------
+r14585 | tm | Tue Jul 12 13:30:30 BST 2011
+
+Added convertToCSV method
+------------------------------------------------------------------------
+r14536 | tm | Fri Jul 08 16:06:11 BST 2011
+
+Amended query used to fetch companies belonging to Organisation.
+------------------------------------------------------------------------
+r14456 | tm | Thu Jul 07 13:18:01 BST 2011
+
+Added WorkGroup/UserWorkGroup objs.
+------------------------------------------------------------------------
+r14402 | tm | Tue Jul 05 17:37:55 BST 2011
+
+Fixed bug in Entity.getVerificationStatus
+------------------------------------------------------------------------
+r14391 | camli | Tue Jul 05 13:04:40 BST 2011
+
+fixed static reference
+------------------------------------------------------------------------
+r14355 | camli | Mon Jul 04 16:16:31 BST 2011
+
+added special date comparison.
+------------------------------------------------------------------------
+r14354 | camli | Mon Jul 04 16:15:54 BST 2011
+
+added more debug
+------------------------------------------------------------------------
+r14328 | tm | Fri Jul 01 15:58:25 BST 2011
+
+Added AccountFlag class and amendments to GetAccountAMLStatus
+------------------------------------------------------------------------
+r14327 | camli | Fri Jul 01 15:41:41 BST 2011
+
+re-factored SystemConfigVar caching
+------------------------------------------------------------------------
+r14288 | camli | Thu Jun 30 17:45:18 BST 2011
+
+fixed static operators
+------------------------------------------------------------------------
+r14279 | camli | Thu Jun 30 14:27:57 BST 2011
+
+check for empty condition.
+------------------------------------------------------------------------
+r14277 | camli | Thu Jun 30 13:03:34 BST 2011
+
+added method getDateFromDate
+------------------------------------------------------------------------
+r14276 | camli | Thu Jun 30 12:37:02 BST 2011
+
+added new method getDateFromNow(float numDays)
+i.e. 1.5 adds 1.5 days to the current date, -1.5 removes 1.5 days from the current date.
+
+------------------------------------------------------------------------
+r14255 | tm | Tue Jun 28 19:04:38 BST 2011
+
+Added new method to AuroraClient class
+------------------------------------------------------------------------
+r14232 | tm | Tue Jun 28 12:40:24 BST 2011
+
+Various updates to bank account fetching and validation.
+------------------------------------------------------------------------
+r14180 | tm | Fri Jun 24 11:09:10 BST 2011
+
+Removed complexity from getNow function
+------------------------------------------------------------------------
+r14176 | tm | Fri Jun 24 10:23:27 BST 2011
+
+Added outcome ID values
+------------------------------------------------------------------------
+r14172 | tm | Thu Jun 23 17:41:01 BST 2011
+
+Added extra comment
+------------------------------------------------------------------------
+r14170 | camli | Thu Jun 23 15:52:01 BST 2011
+
+change fundCode lookup mechanism
+------------------------------------------------------------------------
+r14169 | tm | Thu Jun 23 15:50:03 BST 2011
+
+Updated form types
+------------------------------------------------------------------------
+r14165 | katie | Thu Jun 23 13:16:22 BST 2011
+
+updated for end of month psdf
+------------------------------------------------------------------------
+r14153 | tm | Wed Jun 22 17:40:09 BST 2011
+
+Hardened up hasChanged method
+------------------------------------------------------------------------
+r14152 | camli | Wed Jun 22 16:01:36 BST 2011
+
+overridden equals method
+------------------------------------------------------------------------
+r14144 | tm | Wed Jun 22 13:25:43 BST 2011
+
+Added blank form types
+------------------------------------------------------------------------
+r14141 | tm | Wed Jun 22 12:34:01 BST 2011
+
+Removed references to old getPaddedAcc/SortCode methods
+------------------------------------------------------------------------
+r14129 | camli | Tue Jun 21 18:10:06 BST 2011
+
+reverted back.
+------------------------------------------------------------------------
+r14128 | camli | Tue Jun 21 17:43:35 BST 2011
+
+added default params
+------------------------------------------------------------------------
+r14127 | camli | Tue Jun 21 17:43:12 BST 2011
+
+added some pointless code, getting desperate!
+------------------------------------------------------------------------
+r14125 | camli | Tue Jun 21 17:29:36 BST 2011
+
+fixed fields.
+------------------------------------------------------------------------
+r14123 | camli | Tue Jun 21 12:11:04 BST 2011
+
+added interactionId to toString method.
+------------------------------------------------------------------------
+r14121 | camli | Tue Jun 21 11:19:57 BST 2011
+
+added missing commType
+------------------------------------------------------------------------
+r14113 | camli | Tue Jun 21 10:29:29 BST 2011
+
+added debug.
+------------------------------------------------------------------------
+r14093 | camli | Mon Jun 20 14:39:02 BST 2011
+
+added commType interaction.
+------------------------------------------------------------------------
+r14092 | tm | Mon Jun 20 14:34:19 BST 2011
+
+Modified getAccountNumberString methods.
+
+Always use getAccountNumberString() instance method where possible.
+------------------------------------------------------------------------
+r14088 | tm | Mon Jun 20 14:08:08 BST 2011
+
+Amended getNominatedBankAccount method to incorporate 'strict' lookup mode
+------------------------------------------------------------------------
+r14084 | camli | Mon Jun 20 11:51:08 BST 2011
+
+fixed variable name
+------------------------------------------------------------------------
+r14079 | camli | Fri Jun 17 17:33:39 BST 2011
+
+added toString() method for debugging. 
+------------------------------------------------------------------------
+r14075 | camli | Fri Jun 17 17:13:59 BST 2011
+
+add setDataApplied to temporary set the data, useful for when you are not persisting data to the database
+------------------------------------------------------------------------
+r14074 | camli | Fri Jun 17 17:13:04 BST 2011
+
+added additional query fields
+------------------------------------------------------------------------
+r14073 | tm | Fri Jun 17 16:01:28 BST 2011
+
+bug fix
+------------------------------------------------------------------------
+r14072 | tm | Fri Jun 17 15:55:55 BST 2011
+
+Added new methods to fetch bank accounts with a particular relation type
+------------------------------------------------------------------------
+r14062 | pault | Fri Jun 17 11:04:10 BST 2011
+
+Updated code to fix issues with process date validation
+------------------------------------------------------------------------
+r14053 | tm | Wed Jun 15 18:16:02 BST 2011
+
+Changed form type name
+------------------------------------------------------------------------
+r14046 | pault | Wed Jun 15 17:16:11 BST 2011
+
+consolodate panelValidationExtra
+------------------------------------------------------------------------
+r14041 | tm | Wed Jun 15 15:38:47 BST 2011
+
+Added new Form Type
+------------------------------------------------------------------------
+r14037 | pault | Wed Jun 15 15:13:29 BST 2011
+
+added isNominatedBankAccount method
+------------------------------------------------------------------------
+r14024 | tm | Wed Jun 15 12:35:29 BST 2011
+
+Added SPP Batch Ref to constructor
+------------------------------------------------------------------------
+r14009 | camli | Tue Jun 14 16:04:13 BST 2011
+
+added caching for InstrRulePriorityApplied
+------------------------------------------------------------------------
+r14008 | camli | Tue Jun 14 15:50:37 BST 2011
+
+fixed null pointer exception
+------------------------------------------------------------------------
+r14007 | camli | Tue Jun 14 15:38:28 BST 2011
+
+fixed logic for priority calculations
+------------------------------------------------------------------------
+r14006 | camli | Tue Jun 14 15:37:39 BST 2011
+
+added error to log.
+------------------------------------------------------------------------
+r14003 | camli | Tue Jun 14 13:59:47 BST 2011
+
+added debug to instruction rule.
+------------------------------------------------------------------------
+r13999 | camli | Tue Jun 14 12:32:22 BST 2011
+
+fixed logic for calculating priority
+------------------------------------------------------------------------
+r13997 | camli | Tue Jun 14 12:25:54 BST 2011
+
+added workflow date
+------------------------------------------------------------------------
+r13981 | camli | Fri Jun 10 16:15:25 BST 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r13979 | camli | Fri Jun 10 16:14:32 BST 2011
+
+account intention CR
+------------------------------------------------------------------------
+r13957 | katie | Fri Jun 10 13:35:25 BST 2011
+
+created ordered list for share class
+------------------------------------------------------------------------
+r13955 | camli | Fri Jun 10 13:22:42 BST 2011
+
+updated convertToDecimal method to handle the large value amounts.
+------------------------------------------------------------------------
+r13908 | camli | Wed Jun 08 10:54:40 BST 2011
+
+fixed persist method to handle base rule updates
+------------------------------------------------------------------------
+r13850 | camli | Fri Jun 03 17:33:27 BST 2011
+
+added instruction rule priorities
+------------------------------------------------------------------------
+r13805 | tm | Wed Jun 01 14:29:46 BST 2011
+
+Added new fields and convertToDecimal method
+------------------------------------------------------------------------
+r13770 | pault | Tue May 31 17:55:33 BST 2011
+
+added flags in entitychecking for instruction for coloring bank fields
+------------------------------------------------------------------------
+r13769 | camli | Tue May 31 17:50:43 BST 2011
+
+added remove method
+------------------------------------------------------------------------
+r13767 | tm | Tue May 31 17:16:54 BST 2011
+
+Updated audit table
+------------------------------------------------------------------------
+r13764 | tm | Tue May 31 17:02:30 BST 2011
+
+Fixed audit call
+------------------------------------------------------------------------
+r13757 | pault | Tue May 31 16:00:57 BST 2011
+
+externalised getNominatedBankAccount to the Account class
+------------------------------------------------------------------------
+r13756 | camli | Tue May 31 15:57:24 BST 2011
+
+added property DATE_ADDED
+------------------------------------------------------------------------
+r13755 | camli | Tue May 31 15:32:44 BST 2011
+
+added some fields
+------------------------------------------------------------------------
+r13754 | tm | Tue May 31 15:29:08 BST 2011
+
+Externalized Cols
+------------------------------------------------------------------------
+r13751 | tm | Tue May 31 14:00:17 BST 2011
+
+Added new fetch method to grab single ApplInstrData for a given instruction type/data field
+------------------------------------------------------------------------
+r13736 | tm | Tue May 31 10:42:30 BST 2011
+
+Added stub method isNominatedBankAccount
+------------------------------------------------------------------------
+r13733 | pault | Fri May 27 18:13:30 BST 2011
+
+modified new relationproperty method to return relation properties
+------------------------------------------------------------------------
+r13727 | tm | Fri May 27 17:06:48 BST 2011
+
+Added comments
+------------------------------------------------------------------------
+r13725 | camli | Fri May 27 16:52:37 BST 2011
+
+convert fields
+------------------------------------------------------------------------
+r13722 | camli | Fri May 27 16:51:21 BST 2011
+
+new action
+------------------------------------------------------------------------
+r13721 | tm | Fri May 27 16:14:10 BST 2011
+
+Added fetch for RelPropApplied for a given set of Relations
+------------------------------------------------------------------------
+r13715 | tm | Fri May 27 13:43:24 BST 2011
+
+New fetch methods
+------------------------------------------------------------------------
+r13711 | tm | Thu May 26 17:30:17 BST 2011
+
+Comment/bug fix
+------------------------------------------------------------------------
+r13710 | tm | Thu May 26 17:24:46 BST 2011
+
+Added Instr Data ID refs and new fetch methods for InstrDataApplied objects
+------------------------------------------------------------------------
+r13708 | camli | Thu May 26 16:59:36 BST 2011
+
+added instruction audit when instruction is created.
+------------------------------------------------------------------------
+r13705 | camli | Thu May 26 16:34:18 BST 2011
+
+added USER_ID and more action ids
+------------------------------------------------------------------------
+r13696 | tm | Wed May 25 19:16:58 BST 2011
+
+Added fetch methods for Comms
+------------------------------------------------------------------------
+r13694 | tm | Wed May 25 18:24:58 BST 2011
+
+Added correct formatted Float string when saving Instruction String Value for float values
+------------------------------------------------------------------------
+r13687 | tm | Wed May 25 16:05:23 BST 2011
+
+Added setUCMDocStatus method for setting the xStatus value of a UCM document.
+------------------------------------------------------------------------
+r13684 | pault | Wed May 25 14:47:46 BST 2011
+
+changed looping through result set and added logging
+------------------------------------------------------------------------
+r13678 | tm | Tue May 24 17:59:08 BST 2011
+
+Added 'Archived' status
+------------------------------------------------------------------------
+r13676 | camli | Tue May 24 17:56:26 BST 2011
+
+minor fixes. Instruction_Condition_id could be null.
+------------------------------------------------------------------------
+r13675 | camli | Tue May 24 17:53:17 BST 2011
+
+added missing methods.
+------------------------------------------------------------------------
+r13671 | katie | Tue May 24 17:04:04 BST 2011
+
+tweak to treat a PEP/Sanction return on IVS the same as a PEP return when calculating account IVS status
+------------------------------------------------------------------------
+r13670 | tm | Tue May 24 17:02:33 BST 2011
+
+Fixed audit bug
+------------------------------------------------------------------------
+r13661 | katie | Tue May 24 14:50:17 BST 2011
+
+fixed problem with getting identity check score (was looking at wrong object)
+------------------------------------------------------------------------
+r13658 | pault | Tue May 24 14:08:12 BST 2011
+
+now using instr.getInstructionId instead of instructionId
+------------------------------------------------------------------------
+r13657 | katie | Tue May 24 13:59:39 BST 2011
+
+fixed potential out of bounds error
+------------------------------------------------------------------------
+r13654 | tm | Tue May 24 13:34:52 BST 2011
+
+Not sure what I did here
+------------------------------------------------------------------------
+r13653 | camli | Tue May 24 13:06:12 BST 2011
+
+fixed typo
+
+------------------------------------------------------------------------
+r13652 | camli | Tue May 24 12:27:00 BST 2011
+
+added xjobId
+------------------------------------------------------------------------
+r13651 | camli | Tue May 24 12:25:55 BST 2011
+
+new data objects for Instruction_audit
+------------------------------------------------------------------------
+r13650 | tm | Tue May 24 12:17:19 BST 2011
+
+Added equals method
+------------------------------------------------------------------------
+r13647 | pault | Tue May 24 12:00:58 BST 2011
+
+forgot to add auditRelations HashMap
+------------------------------------------------------------------------
+r13646 | tm | Tue May 24 11:59:39 BST 2011
+
+Added auditRelations to add audit method
+------------------------------------------------------------------------
+r13644 | pault | Tue May 24 11:40:50 BST 2011
+
+added auditing for Comm,CommGroup and Instruction
+------------------------------------------------------------------------
+r13641 | katie | Tue May 24 10:49:47 BST 2011
+
+added internal account identified value
+------------------------------------------------------------------------
+r13640 | tm | Tue May 24 10:42:00 BST 2011
+
+Added Duplicate instruction status
+------------------------------------------------------------------------
+r13634 | tm | Mon May 23 22:39:32 BST 2011
+
+Added DripFeed user
+------------------------------------------------------------------------
+r13631 | tm | Mon May 23 21:38:39 BST 2011
+
+Added refreshCache method for refreshing a single cache by its name.
+------------------------------------------------------------------------
+r13630 | tm | Mon May 23 20:29:24 BST 2011
+
+Changed handling of UCMMetaDataTranslators to take the current ucm field name.
+
+Added Yes/No -> boolean field handling.
+------------------------------------------------------------------------
+r13628 | tm | Mon May 23 17:56:32 BST 2011
+
+Reformatted code in getIVSCheck, added immediate fail if no auth persons are found for the account
+------------------------------------------------------------------------
+r13619 | tm | Mon May 23 16:22:22 BST 2011
+
+Change to default spool file header output
+------------------------------------------------------------------------
+r13616 | pault | Mon May 23 16:08:16 BST 2011
+
+added DATE_ADDED to the addToBinderParams method
+------------------------------------------------------------------------
+r13609 | pault | Mon May 23 15:23:10 BST 2011
+
+added dInDate
+------------------------------------------------------------------------
+r13608 | pault | Mon May 23 15:22:38 BST 2011
+
+added new check for date field
+------------------------------------------------------------------------
+r13601 | pault | Mon May 23 13:24:01 BST 2011
+
+added util methods for obtaining the instructions in a group
+------------------------------------------------------------------------
+r13596 | tm | Mon May 23 10:59:39 BST 2011
+
+Audit msgs
+------------------------------------------------------------------------
+r13594 | tm | Mon May 23 10:41:44 BST 2011
+
+Removed enrolment 'form returned' activity for non-singleton forms
+------------------------------------------------------------------------
+r13591 | tm | Mon May 23 10:26:43 BST 2011
+
+Added stub method for fetching instructions for a given Comm Group
+------------------------------------------------------------------------
+r13587 | tm | Mon May 23 00:34:57 BST 2011
+
+Various updates to support new PSDF account forms.
+
+New Globals class contains UCM metadata field names.
+------------------------------------------------------------------------
+r13581 | tm | Fri May 20 17:20:56 BST 2011
+
+Fixed PC/PI fund code equality check
+------------------------------------------------------------------------
+r13580 | katie | Fri May 20 17:17:17 BST 2011
+
+updated logic for checking person to include 'Person override' and 'Pep override'
+------------------------------------------------------------------------
+r13578 | katie | Fri May 20 15:57:33 BST 2011
+
+added person account attribute
+------------------------------------------------------------------------
+r13577 | katie | Fri May 20 15:57:15 BST 2011
+
+added person account override option
+------------------------------------------------------------------------
+r13576 | katie | Fri May 20 14:53:07 BST 2011
+
+added pep lookup value
+------------------------------------------------------------------------
+r13575 | katie | Fri May 20 14:52:51 BST 2011
+
+added PEP override logic
+------------------------------------------------------------------------
+r13558 | katie | Fri May 20 10:50:36 BST 2011
+
+added pep lookup value
+------------------------------------------------------------------------
+r13554 | katie | Fri May 20 10:26:43 BST 2011
+
+added manual pep override
+------------------------------------------------------------------------
+r13553 | katie | Fri May 20 10:26:23 BST 2011
+
+updated to add manual pep override
+------------------------------------------------------------------------
+r13551 | katie | Fri May 20 09:55:00 BST 2011
+
+Added PEP override int
+------------------------------------------------------------------------
+r13549 | tm | Thu May 19 18:46:21 BST 2011
+
+Added addToBinder() method for IVSCheck object
+------------------------------------------------------------------------
+r13546 | tm | Thu May 19 17:45:14 BST 2011
+
+Added TODO note for KD in getIVSCheck()
+------------------------------------------------------------------------
+r13542 | tm | Thu May 19 16:33:08 BST 2011
+
+Refactored addOrRemoveAttrib method, added addOrUpdateSingle
+
+
+------------------------------------------------------------------------
+r13541 | tm | Thu May 19 16:33:01 BST 2011
+
+Refactored addOrRemoveAttrib method, added addOrUpdateSingle
+
+
+------------------------------------------------------------------------
+r13531 | tm | Thu May 19 13:03:17 BST 2011
+
+Added hard-coded Org Category ID for 'Nominee'.
+
+Account IVS checking has been updated to exclude Nominee clients from IVS checks.
+
+Relation Check Status code is now returned from getAccountAMLStatus service.
+------------------------------------------------------------------------
+r13516 | katie | Thu May 19 09:57:45 BST 2011
+
+fix for adding share classes (sets min threshold to 0 if not set)
+------------------------------------------------------------------------
+r13509 | tm | Wed May 18 18:14:46 BST 2011
+
+Added stripSpaceChars method
+------------------------------------------------------------------------
+r13498 | katie | Wed May 18 15:21:41 BST 2011
+
+fixes to update/add
+------------------------------------------------------------------------
+r13492 | katie | Wed May 18 14:08:43 BST 2011
+
+removed parameters
+------------------------------------------------------------------------
+r13491 | katie | Wed May 18 14:03:54 BST 2011
+
+removed parameters
+------------------------------------------------------------------------
+r13490 | tm | Wed May 18 13:56:28 BST 2011
+
+Audit Log.debug() calls are now delegated to another internal static debug() method. By default, debug() calls will not be output to log4j.
+------------------------------------------------------------------------
+r13485 | camli | Wed May 18 11:49:28 BST 2011
+
+added original process date
+------------------------------------------------------------------------
+r13483 | tm | Wed May 18 11:21:23 BST 2011
+
+Added new fetch methods for ElementAttributes.
+
+Amended Aurora Client number assignment to use ORG_ACCOUNT_CODE, if the numeric suffix is valid.
+------------------------------------------------------------------------
+r13468 | tm | Tue May 17 20:30:10 BST 2011
+
+Updated elem attrib stuff to deal with different attrib types
+------------------------------------------------------------------------
+r13440 | camli | Tue May 17 11:07:25 BST 2011
+
+added isExcludedFromMovement property to share class
+------------------------------------------------------------------------
+r13439 | tm | Tue May 17 11:01:19 BST 2011
+
+Removed unused method for fetching Org by ClientNumber/Fund.
+------------------------------------------------------------------------
+r13438 | tm | Tue May 17 11:00:17 BST 2011
+
+Fixed bug in Bank Account validate function: now forces padding on acc number/sort code before dispatching to Aurora web service.
+------------------------------------------------------------------------
+r13437 | katie | Tue May 17 10:55:08 BST 2011
+
+fixed problem with getTrueShareClass
+------------------------------------------------------------------------
+r13434 | katie | Tue May 17 10:47:12 BST 2011
+
+moved and renamed queries to qCore from qTransactions
+------------------------------------------------------------------------
+r13425 | katie | Tue May 17 09:36:24 BST 2011
+
+added method to get current share class (including possible overrides) for an account
+------------------------------------------------------------------------
+r13409 | tm | Mon May 16 13:48:27 BST 2011
+
+Amended FormType
+------------------------------------------------------------------------
+r13407 | tm | Mon May 16 13:31:29 BST 2011
+
+fixed bug
+------------------------------------------------------------------------
+r13405 | tm | Mon May 16 13:23:59 BST 2011
+
+added getAccountNumberStringWithPadding method
+------------------------------------------------------------------------
+r13403 | tm | Mon May 16 13:05:55 BST 2011
+
+Changed FormHandler instance creator
+------------------------------------------------------------------------
+r13401 | tm | Mon May 16 12:48:04 BST 2011
+
+Added getHandlerClassInstance method
+------------------------------------------------------------------------
+r13399 | tm | Mon May 16 11:49:12 BST 2011
+
+Fixed incorrect query in getAccountStatusFund
+------------------------------------------------------------------------
+r13384 | tm | Fri May 13 16:05:01 BST 2011
+
+THings
+------------------------------------------------------------------------
+r13379 | tm | Fri May 13 13:02:59 BST 2011
+
+Date added not being passed
+------------------------------------------------------------------------
+r13378 | camli | Fri May 13 12:50:36 BST 2011
+
+fixed inverted logic
+------------------------------------------------------------------------
+r13375 | tm | Fri May 13 11:43:18 BST 2011
+
+Added new caches
+------------------------------------------------------------------------
+r13374 | camli | Fri May 13 11:38:08 BST 2011
+
+added account padded length and char
+------------------------------------------------------------------------
+r13373 | camli | Fri May 13 11:37:08 BST 2011
+
+added getExtendedAccountNumber
+------------------------------------------------------------------------
+r13370 | tm | Fri May 13 11:14:27 BST 2011
+
+Bug
+------------------------------------------------------------------------
+r13369 | tm | Fri May 13 11:10:11 BST 2011
+
+Fixed bug in Entity add
+------------------------------------------------------------------------
+r13367 | pault | Fri May 13 11:09:35 BST 2011
+
+added createCompanionAccountForExistingPcFund
+------------------------------------------------------------------------
+r13366 | tm | Fri May 13 10:51:12 BST 2011
+
+Amended Entity.add to force Client Number generation
+------------------------------------------------------------------------
+r13364 | tm | Thu May 12 20:28:02 BST 2011
+
+Removed redundant Element addition in add(DataBinder) method in Account class.
+
+Added new ElementAttributeType DAO.
+
+Changes to Org Account Code generation.
+------------------------------------------------------------------------
+r13363 | pault | Thu May 12 19:07:28 BST 2011
+
+When creating a PC fund account, it now creates a companion PI account
+------------------------------------------------------------------------
+r13348 | camli | Thu May 12 09:50:43 BST 2011
+
+added differenceInDays method
+------------------------------------------------------------------------
+r13335 | tm | Wed May 11 12:41:10 BST 2011
+
+Moved cache back agaiN!!
+------------------------------------------------------------------------
+r13333 | camli | Wed May 11 11:21:11 BST 2011
+
+fixed float exception
+------------------------------------------------------------------------
+r13332 | tm | Wed May 11 10:35:36 BST 2011
+
+Moved instruction data caches back here from commproc
+------------------------------------------------------------------------
+r13321 | tm | Tue May 10 20:56:56 BST 2011
+
+New bits
+------------------------------------------------------------------------
+r13317 | tm | Tue May 10 16:01:45 BST 2011
+
+Added orgId
+------------------------------------------------------------------------
+r13311 | tm | Tue May 10 11:38:03 BST 2011
+
+Moved cachable inits for Instruction/Comm data into CommProcessing StartupFilter
+------------------------------------------------------------------------
+r13310 | tm | Tue May 10 11:29:07 BST 2011
+
+Added getBankDetails method
+------------------------------------------------------------------------
+r13290 | camli | Mon May 09 12:14:29 BST 2011
+
+added LA and not LA form generation actions
+------------------------------------------------------------------------
+r13288 | camli | Mon May 09 11:23:00 BST 2011
+
+added getExtendedData method
+------------------------------------------------------------------------
+r13282 | camli | Mon May 09 10:34:22 BST 2011
+
+added getFormData method
+------------------------------------------------------------------------
+r13280 | camli | Mon May 09 10:19:59 BST 2011
+
+reverted code as this is done by the query
+------------------------------------------------------------------------
+r13279 | camli | Mon May 09 10:11:53 BST 2011
+
+set the address to the contact obj
+------------------------------------------------------------------------
+r13276 | tm | Mon May 09 02:42:15 BST 2011
+
+Various changes
+------------------------------------------------------------------------
+r13274 | tm | Sun May 08 20:47:40 BST 2011
+
+Added Element instantiation inside Person constructor, so Element-based fields should be set.
+
+Updated some CampaignMessages
+------------------------------------------------------------------------
+r13271 | tm | Sun May 08 02:36:44 BST 2011
+
+Added new string fetch method to CCLAUtils.
+
+Added various util methods to Account/Address/Contact classes.
+
+Person getTitle() method now changed getTitleId() which returns an Integer datatype.
+------------------------------------------------------------------------
+r13269 | tm | Sat May 07 17:10:30 BST 2011
+
+Added Plain Number Format to use when adding Float values to the binder (prevents exponents being placed etc)
+------------------------------------------------------------------------
+r13267 | camli | Sat May 07 16:54:00 BST 2011
+
+removed cache
+------------------------------------------------------------------------
+r13266 | camli | Sat May 07 16:09:01 BST 2011
+
+added missing activities
+------------------------------------------------------------------------
+r13264 | tm | Sat May 07 16:03:46 BST 2011
+
+Removed dead import
+------------------------------------------------------------------------
+r13263 | tm | Sat May 07 16:03:23 BST 2011
+
+Started work on getAccountsByFundAndStatus service method
+------------------------------------------------------------------------
+r13261 | tm | Sat May 07 14:39:02 BST 2011
+
+Added fetch by orgs method
+------------------------------------------------------------------------
+r13258 | tm | Sat May 07 14:13:50 BST 2011
+
+Added null check in isAddressValid
+------------------------------------------------------------------------
+r13257 | camli | Sat May 07 14:02:55 BST 2011
+
+amended statuses base on DB scheme
+------------------------------------------------------------------------
+r13256 | camli | Sat May 07 13:56:31 BST 2011
+
+added await response status
+------------------------------------------------------------------------
+r13253 | camli | Sat May 07 11:45:03 BST 2011
+
+refactored old NOTE to UCMNote and created new Note obj
+------------------------------------------------------------------------
+r13249 | camli | Fri May 06 18:58:49 BST 2011
+
+added new message
+------------------------------------------------------------------------
+r13248 | tm | Fri May 06 18:29:48 BST 2011
+
+Refactored SpoolHeader
+------------------------------------------------------------------------
+r13245 | camli | Fri May 06 17:38:53 BST 2011
+
+added custom action handler
+------------------------------------------------------------------------
+r13244 | camli | Fri May 06 17:36:49 BST 2011
+
+added custom action
+------------------------------------------------------------------------
+r13241 | camli | Fri May 06 16:23:12 BST 2011
+
+fixed messages
+------------------------------------------------------------------------
+r13236 | pault | Fri May 06 16:00:41 BST 2011
+
+added ENROLMENT_STATUS_ID
+------------------------------------------------------------------------
+r13234 | tm | Fri May 06 15:16:19 BST 2011
+
+Changes
+------------------------------------------------------------------------
+r13232 | camli | Fri May 06 15:09:21 BST 2011
+
+added campaignId
+------------------------------------------------------------------------
+r13227 | tm | Fri May 06 13:22:30 BST 2011
+
+Moved form/spool implementors back to ClientSerivces
+------------------------------------------------------------------------
+r13226 | tm | Fri May 06 13:10:24 BST 2011
+
+Moved all form stuff to Core
+------------------------------------------------------------------------
+r13224 | tm | Fri May 06 13:04:29 BST 2011
+
+Moved some classes from CCLA_ClientServices
+------------------------------------------------------------------------
+r13217 | camli | Fri May 06 11:20:34 BST 2011
+
+added fund to setAttributes method
+------------------------------------------------------------------------
+r13216 | camli | Fri May 06 11:12:50 BST 2011
+
+change params to act activity
+------------------------------------------------------------------------
+r13215 | pault | Fri May 06 11:11:20 BST 2011
+
+added new message for updating details
+------------------------------------------------------------------------
+r13214 | camli | Fri May 06 11:03:22 BST 2011
+
+removed params
+------------------------------------------------------------------------
+r13213 | camli | Fri May 06 11:01:07 BST 2011
+
+updated DAO
+------------------------------------------------------------------------
+r13211 | camli | Fri May 06 10:12:58 BST 2011
+
+add fundInvestmentIntention
+------------------------------------------------------------------------
+r13210 | camli | Fri May 06 10:12:42 BST 2011
+
+completed DAO object
+------------------------------------------------------------------------
+r13201 | tm | Thu May 05 20:19:32 BST 2011
+
+Added ref data to ElementIdentifier.
+
+Added new fetch/add methods to Form.
+
+Added FormType DAO with ref data.
+
+Added more SharedCols.
+
+CampaignEnrolment now has its own addActivity method.
+
+FormHandler moved from CCLA_ClientServices
+------------------------------------------------------------------------
+r13200 | camli | Thu May 05 18:18:24 BST 2011
+
+change identifier for the rows
+------------------------------------------------------------------------
+r13195 | pault | Thu May 05 17:13:20 BST 2011
+
+added rsIntentionStatuses
+------------------------------------------------------------------------
+r13192 | camli | Thu May 05 16:16:50 BST 2011
+
+fixed cache name
+
+------------------------------------------------------------------------
+r13190 | camli | Thu May 05 15:59:20 BST 2011
+
+updated base objects in include new columns
+------------------------------------------------------------------------
+r13180 | camli | Thu May 05 14:34:48 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13166 | camli | Thu May 05 13:19:10 BST 2011
+
+added static get methods
+------------------------------------------------------------------------
+r13161 | camli | Thu May 05 11:31:31 BST 2011
+
+added getActivityData resultset
+------------------------------------------------------------------------
+r13160 | camli | Thu May 05 11:30:53 BST 2011
+
+added new message
+------------------------------------------------------------------------
+r13152 | tm | Wed May 04 19:34:58 BST 2011
+
+Added new isRelationsVerified method.
+------------------------------------------------------------------------
+r13142 | camli | Wed May 04 16:22:18 BST 2011
+
+fixed activity type ids
+------------------------------------------------------------------------
+r13140 | camli | Wed May 04 16:03:55 BST 2011
+
+added queries
+------------------------------------------------------------------------
+r13139 | camli | Wed May 04 15:48:02 BST 2011
+
+added space 
+------------------------------------------------------------------------
+r13138 | camli | Wed May 04 15:46:20 BST 2011
+
+fixed typo with enrolment status id on addFieldsToBinder method
+------------------------------------------------------------------------
+r13136 | camli | Wed May 04 15:30:57 BST 2011
+
+fixed processHandler class
+------------------------------------------------------------------------
+r13133 | camli | Wed May 04 14:02:30 BST 2011
+
+initial version of campaign messages
+------------------------------------------------------------------------
+r13132 | camli | Wed May 04 11:43:39 BST 2011
+
+added activity type id
+------------------------------------------------------------------------
+r13130 | camli | Wed May 04 10:33:43 BST 2011
+
+fixed cache name
+------------------------------------------------------------------------
+r13128 | camli | Wed May 04 10:26:51 BST 2011
+
+added campaign caches 
+------------------------------------------------------------------------
+r13126 | camli | Wed May 04 10:16:40 BST 2011
+
+added actions and statuses to objects
+------------------------------------------------------------------------
+r13124 | tm | Tue May 03 18:57:21 BST 2011
+
+Added getExtendedData method for fetching a richer ResultSet of data for a single instruction
+------------------------------------------------------------------------
+r13121 | camli | Tue May 03 17:56:57 BST 2011
+
+updated interface
+------------------------------------------------------------------------
+r13114 | pault | Tue May 03 16:33:11 BST 2011
+
+added getEnrolmentHandlerInstance method
+------------------------------------------------------------------------
+r13113 | pault | Tue May 03 16:32:35 BST 2011
+
+deprecated old campaign class
+------------------------------------------------------------------------
+r13112 | pault | Tue May 03 16:03:18 BST 2011
+
+moved the interface class from client services to core
+------------------------------------------------------------------------
+r13108 | pault | Tue May 03 15:29:19 BST 2011
+
+combined the cams code and my code
+------------------------------------------------------------------------
+r13104 | camli | Tue May 03 15:23:54 BST 2011
+
+added new method and externalized db column names
+------------------------------------------------------------------------
+r13103 | tm | Tue May 03 15:03:40 BST 2011
+
+Refactored Element/Entity/InvestmentIntention to reflect amendments to new DB schema
+------------------------------------------------------------------------
+r13094 | tm | Sat Apr 30 19:02:30 BST 2011
+
+Updated bits
+------------------------------------------------------------------------
+r13089 | tm | Thu Apr 28 17:53:33 BST 2011
+
+Removed pointless audit line
+------------------------------------------------------------------------
+r13083 | katie | Thu Apr 28 15:50:34 BST 2011
+
+changes for eelement attributes
+------------------------------------------------------------------------
+r13074 | tm | Thu Apr 28 15:06:39 BST 2011
+
+Added SharedCols class, contains commonly-used DB column names.
+
+Updated InvestmentIntention
+------------------------------------------------------------------------
+r13072 | katie | Thu Apr 28 14:59:05 BST 2011
+
+updated to add attribute value
+------------------------------------------------------------------------
+r13071 | tm | Thu Apr 28 14:31:20 BST 2011
+
+Added InvestmentIntention class placeholder.
+------------------------------------------------------------------------
+r13070 | tm | Thu Apr 28 13:31:24 BST 2011
+
+Added sequence grabber
+------------------------------------------------------------------------
+r13068 | katie | Thu Apr 28 10:21:08 BST 2011
+
+amended element after NOTES and GSS_LOCATION_ID attributes added
+------------------------------------------------------------------------
+r13066 | camli | Wed Apr 27 17:48:16 BST 2011
+
+added comments
+------------------------------------------------------------------------
+r13065 | camli | Wed Apr 27 17:43:07 BST 2011
+
+updated to include add methods
+------------------------------------------------------------------------
+r13064 | camli | Wed Apr 27 17:42:51 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13060 | camli | Wed Apr 27 16:43:24 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13054 | katie | Wed Apr 27 15:52:03 BST 2011
+
+new
+------------------------------------------------------------------------
+r13053 | katie | Wed Apr 27 15:13:34 BST 2011
+
+added form type
+------------------------------------------------------------------------
+r13051 | camli | Wed Apr 27 13:08:55 BST 2011
+
+updated method.
+------------------------------------------------------------------------
+r13050 | camli | Wed Apr 27 13:07:36 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13049 | camli | Wed Apr 27 13:02:17 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13048 | camli | Wed Apr 27 12:59:00 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13047 | camli | Wed Apr 27 12:42:47 BST 2011
+
+added audit logging
+------------------------------------------------------------------------
+r13045 | camli | Wed Apr 27 12:32:34 BST 2011
+
+add auditLogging
+------------------------------------------------------------------------
+r13044 | camli | Wed Apr 27 12:19:56 BST 2011
+
+updated DAO
+------------------------------------------------------------------------
+r13043 | katie | Wed Apr 27 12:15:12 BST 2011
+
+renamed Form to UCMForm
+------------------------------------------------------------------------
+r13041 | katie | Wed Apr 27 12:08:41 BST 2011
+
+finished
+------------------------------------------------------------------------
+r13040 | camli | Wed Apr 27 11:12:38 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13039 | katie | Wed Apr 27 11:01:50 BST 2011
+
+added 3 campaign types
+------------------------------------------------------------------------
+r13038 | katie | Wed Apr 27 10:59:19 BST 2011
+
+updated
+------------------------------------------------------------------------
+r13037 | camli | Wed Apr 27 10:55:45 BST 2011
+
+added comments
+------------------------------------------------------------------------
+r13036 | camli | Wed Apr 27 10:48:07 BST 2011
+
+finished campaign DAO
+------------------------------------------------------------------------
+r13035 | camli | Wed Apr 27 09:26:52 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r13016 | tm | Tue Apr 26 14:06:48 BST 2011
+
+Added getNextSppJobId method to Utils.
+------------------------------------------------------------------------
+r13008 | camli | Tue Apr 26 11:59:48 BST 2011
+
+updated calculations
+------------------------------------------------------------------------
+r13005 | tm | Tue Apr 26 00:41:59 BST 2011
+
+Added new vars
+------------------------------------------------------------------------
+r13002 | camli | Thu Apr 21 17:57:08 BST 2011
+
+initial version for instruction priority
+------------------------------------------------------------------------
+r13001 | camli | Thu Apr 21 17:56:31 BST 2011
+
+updated method
+------------------------------------------------------------------------
+r12995 | camli | Thu Apr 21 16:11:35 BST 2011
+
+initial version
+------------------------------------------------------------------------
+r12993 | camli | Thu Apr 21 16:08:43 BST 2011
+
+remove the need for the fwfacade as rule is evaluated using the cache.
+------------------------------------------------------------------------
+r12992 | camli | Thu Apr 21 16:03:11 BST 2011
+
+added additional methods, isEmpty() and getValuesIterator()
+------------------------------------------------------------------------
+r12984 | tm | Wed Apr 20 16:15:37 BST 2011
+
+Removed validation check in Instruction
+------------------------------------------------------------------------
+r12983 | tm | Wed Apr 20 16:08:35 BST 2011
+
+Added new fetch methods
+------------------------------------------------------------------------
+r12974 | katie | Wed Apr 20 12:29:28 BST 2011
+
+Added method to get accounts by client, status and fund
+------------------------------------------------------------------------
+r12965 | tm | Tue Apr 19 17:44:00 BST 2011
+
+Added Process Date to Instruction toString method
+------------------------------------------------------------------------
+r12940 | katie | Tue Apr 19 13:56:07 BST 2011
+
+Added method to check if address is valid from id passed
+------------------------------------------------------------------------
+r12930 | katie | Mon Apr 18 16:48:15 BST 2011
+
+added method to get accounts by status for an org
+------------------------------------------------------------------------
+r12923 | tm | Mon Apr 18 15:04:16 BST 2011
+
+Added default comm status
+------------------------------------------------------------------------
+r12922 | tm | Mon Apr 18 14:59:00 BST 2011
+
+Added Process Date presense check in validate method
+------------------------------------------------------------------------
+r12918 | katie | Mon Apr 18 14:35:13 BST 2011
+
+added 'TEMP' status for account
+------------------------------------------------------------------------
+r12916 | tm | Mon Apr 18 14:24:34 BST 2011
+
+Intermediate updates to Instruction register stuff
+------------------------------------------------------------------------
+r12898 | camli | Mon Apr 18 10:37:38 BST 2011
+
+fixed persist method, setting the rule name instead of addedBy 
+------------------------------------------------------------------------
+r12895 | camli | Mon Apr 18 10:11:48 BST 2011
+
+added get method
+------------------------------------------------------------------------
+r12868 | tm | Fri Apr 15 17:26:45 BST 2011
+
+Change
+------------------------------------------------------------------------
+r12838 | camli | Fri Apr 15 13:19:36 BST 2011
+
+added logic for eval method
+------------------------------------------------------------------------
+r12837 | camli | Fri Apr 15 13:03:04 BST 2011
+
+fixed null pointer exception
+------------------------------------------------------------------------
+r12836 | camli | Fri Apr 15 12:52:18 BST 2011
+
+moved order on cache
+------------------------------------------------------------------------
+r12833 | camli | Fri Apr 15 11:26:25 BST 2011
+
+fixed get all query
+------------------------------------------------------------------------
+r12832 | camli | Fri Apr 15 11:17:34 BST 2011
+
+added InstructionRule, Operator, InstructionCondition, InstructionRuleConditionApplied to cache
+------------------------------------------------------------------------
+r12828 | camli | Fri Apr 15 11:12:31 BST 2011
+
+refactored from CCLA_Commproc to CCLA_Core as a few components will use this.
+------------------------------------------------------------------------
+r12788 | tm | Thu Apr 14 10:44:20 BST 2011
+
+Added changes to Entity Checking/Verification
+------------------------------------------------------------------------
+r12754 | katie | Tue Apr 12 16:19:51 BST 2011
+
+added fund_code to campaign and renamed preferred contact method to address id for process
+------------------------------------------------------------------------
+r12746 | tm | Tue Apr 12 14:24:21 BST 2011
+
+Added addCacheAndInit method
+------------------------------------------------------------------------
+r12675 | tm | Thu Apr 07 09:58:05 BST 2011
+
+Removed comments from new addCache lines
+------------------------------------------------------------------------
+r12660 | tm | Wed Apr 06 17:39:17 BST 2011
+
+Commented out InstructionData caches for now so deployment isnt dependent on table presence.
+
+Added new userGroups member var to ElementAttribute.
+------------------------------------------------------------------------
+r12657 | katie | Wed Apr 06 17:13:35 BST 2011
+
+moved share class override and groups into core (from transactions)
+------------------------------------------------------------------------
+r12636 | katie | Wed Apr 06 14:02:07 BST 2011
+
+moved getExpectedShareClass method back to Transactions component
+------------------------------------------------------------------------
+r12634 | katie | Wed Apr 06 12:48:09 BST 2011
+
+added add method to shareclass
+------------------------------------------------------------------------
+r12633 | katie | Wed Apr 06 12:45:06 BST 2011
+
+added add method to shareclass
+------------------------------------------------------------------------
+r12573 | tm | Mon Apr 04 15:02:33 BST 2011
+
+Added new secondary elem type: Document
+------------------------------------------------------------------------
+r12572 | tm | Mon Apr 04 13:43:48 BST 2011
+
+Removed some logging from RelationType.
+
+Fixed error message in CCLAUtils.getResultSetIntValue
+------------------------------------------------------------------------
+r12558 | katie | Fri Apr 01 16:39:47 BST 2011
+
+corrected share_class to share_class_id
+------------------------------------------------------------------------
+r12554 | camli | Fri Apr 01 16:10:01 BST 2011
+
+added type to SystemConfigVar
+------------------------------------------------------------------------
+r12550 | camli | Fri Apr 01 12:38:49 BST 2011
+
+added settlement offset
+------------------------------------------------------------------------
+r12519 | katie | Thu Mar 31 15:23:51 BST 2011
+
+updated to add some more types
+------------------------------------------------------------------------
+r12517 | katie | Thu Mar 31 15:05:23 BST 2011
+
+moved shareclass object here to avoid dependency on transaction component
+------------------------------------------------------------------------
+r12389 | katie | Mon Mar 28 13:54:48 BST 2011
+
+amended add method
+------------------------------------------------------------------------
+r12381 | tm | Mon Mar 28 12:49:46 BST 2011
+
+Extra comments
+------------------------------------------------------------------------
+r12364 | camli | Fri Mar 25 12:56:49 GMT 2011
+
+missed out break statement.
+------------------------------------------------------------------------
+r12361 | camli | Fri Mar 25 12:31:54 GMT 2011
+
+added last_updated_by field
+------------------------------------------------------------------------
+r12358 | camli | Fri Mar 25 10:18:32 GMT 2011
+
+removed redundant import
+------------------------------------------------------------------------
+r12357 | camli | Fri Mar 25 10:18:00 GMT 2011
+
+update getWorkingDay, getPreviousWorkingDate to include holidays
+This is requires the cachemanager.
+------------------------------------------------------------------------
+r12356 | camli | Fri Mar 25 10:08:07 GMT 2011
+
+updated setAttributes method
+------------------------------------------------------------------------
+r12350 | katie | Thu Mar 24 16:07:43 GMT 2011
+
+added updateDataValueById method
+------------------------------------------------------------------------
+r12349 | katie | Thu Mar 24 15:49:52 GMT 2011
+
+added method to get transactions at a particular status
+------------------------------------------------------------------------
+r12339 | camli | Thu Mar 24 11:08:20 GMT 2011
+
+updated old style caches
+------------------------------------------------------------------------
+r12338 | camli | Thu Mar 24 10:49:39 GMT 2011
+
+added getName method to interface
+------------------------------------------------------------------------
+r12336 | tm | Thu Mar 24 10:41:28 GMT 2011
+
+Instruction routing stuff
+------------------------------------------------------------------------
+r12335 | camli | Thu Mar 24 10:03:45 GMT 2011
+
+added HOLIDAY_DATE_CACHE to cache manager. 
+This caches the holidays for the current year only.
+------------------------------------------------------------------------
+r12334 | camli | Thu Mar 24 09:59:20 GMT 2011
+
+initial version of holiday cache
+------------------------------------------------------------------------
+r12319 | camli | Wed Mar 23 12:25:39 GMT 2011
+
+Added DateUtils, previously this was in SPP, now moved to CCLA_Core Package
+------------------------------------------------------------------------
+r12313 | tm | Wed Mar 23 09:54:08 GMT 2011
+
+Added new Banking/Settlement Date fields
+------------------------------------------------------------------------
+r12293 | tm | Mon Mar 21 15:47:59 GMT 2011
+
+Added extra guards on setter methods
+------------------------------------------------------------------------
+r12292 | tm | Mon Mar 21 15:44:21 GMT 2011
+
+Updated to deal with numeric data types correctly
+------------------------------------------------------------------------
+r12290 | tm | Mon Mar 21 15:30:16 GMT 2011
+
+Updated to deal with numeric data types correctly
+------------------------------------------------------------------------
+r12268 | tm | Fri Mar 18 16:50:38 GMT 2011
+
+Things
+------------------------------------------------------------------------
+r12247 | tm | Fri Mar 18 11:49:59 GMT 2011
+
+New instruction/tran type methods
+------------------------------------------------------------------------
+r12239 | tm | Thu Mar 17 18:33:22 GMT 2011
+
+Fixed auditing bug in Address.add method.
+
+Other things.
+------------------------------------------------------------------------
+r12232 | katie | Thu Mar 17 16:04:01 GMT 2011
+
+Added global files (to hold ids)
+------------------------------------------------------------------------
+r12229 | katie | Thu Mar 17 10:07:08 GMT 2011
+
+added another method needed by eod
+------------------------------------------------------------------------
+r12228 | katie | Thu Mar 17 09:57:50 GMT 2011
+
+added some methods from old transactions class needed for eod processing
+------------------------------------------------------------------------
+r12222 | katie | Wed Mar 16 15:13:35 GMT 2011
+
+added method for bulk updating status of instructions
+------------------------------------------------------------------------
+r12219 | tm | Wed Mar 16 14:59:52 GMT 2011
+
+Added getDataValueByName method
+------------------------------------------------------------------------
+r12218 | tm | Wed Mar 16 14:46:32 GMT 2011
+
+Add setStatusById method
+------------------------------------------------------------------------
+r12215 | tm | Wed Mar 16 14:13:07 GMT 2011
+
+Updated Instruction classes, retired older ones
+------------------------------------------------------------------------
+r12206 | tm | Tue Mar 15 17:25:21 GMT 2011
+
+Bug fix
+------------------------------------------------------------------------
+r12204 | tm | Tue Mar 15 16:57:18 GMT 2011
+
+Changed cache model
+------------------------------------------------------------------------
+r12195 | tm | Tue Mar 15 13:48:02 GMT 2011
+
+Loads of stuff
+------------------------------------------------------------------------
+r12167 | tm | Fri Mar 11 18:21:16 GMT 2011
+
+Added/implemented new DAO classes.
+
+New Cache model, started work on translating old cache model.
+------------------------------------------------------------------------
+r12153 | katie | Thu Mar 10 16:11:06 GMT 2011
+
+updated query names
+------------------------------------------------------------------------
+r12152 | katie | Thu Mar 10 16:00:35 GMT 2011
+
+updated query names
+------------------------------------------------------------------------
+r12150 | katie | Thu Mar 10 15:52:11 GMT 2011
+
+moved from transactions
+------------------------------------------------------------------------
+r12142 | tm | Wed Mar 09 16:23:10 GMT 2011
+
+Fixed classpath to point at src dir
+------------------------------------------------------------------------
+r12141 | tm | Wed Mar 09 16:20:57 GMT 2011
+
+Deleted everything from bin dir
+------------------------------------------------------------------------
+r12140 | tm | Wed Mar 09 16:19:44 GMT 2011
+
+Moved source Java files into new src dir
+------------------------------------------------------------------------
+r12139 | tm | Wed Mar 09 16:19:27 GMT 2011
+
+src
+------------------------------------------------------------------------
+r12138 | tm | Wed Mar 09 16:18:25 GMT 2011
+
+Removed unused method
+------------------------------------------------------------------------
+r12135 | camli | Wed Mar 09 14:11:28 GMT 2011
+
+added static variable UNKNOWN 
+------------------------------------------------------------------------
+r12134 | camli | Wed Mar 09 14:08:46 GMT 2011
+
+added static variable FUND_TYPECODE_ID_PSDF
+------------------------------------------------------------------------
+r12133 | camli | Wed Mar 09 12:55:59 GMT 2011
+
+added FundDefinitionCode to Fund Object
+------------------------------------------------------------------------
+r12132 | camli | Wed Mar 09 12:55:19 GMT 2011
+
+initial version of fund definition code
+------------------------------------------------------------------------
+r12122 | tm | Tue Mar 08 10:27:39 GMT 2011
+
+Added removeAll method
+------------------------------------------------------------------------
+r12116 | tm | Mon Mar 07 14:53:27 GMT 2011
+
+Added VerificationSource cache, bug fixes to ElementAttribute stuff
+------------------------------------------------------------------------
+r12106 | tm | Mon Mar 07 10:58:49 GMT 2011
+
+Added support for Supporting Doc ID column
+------------------------------------------------------------------------
+r12087 | tm | Thu Mar 03 16:59:48 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12086 | tm | Thu Mar 03 16:59:48 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12085 | tm | Thu Mar 03 16:59:47 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12084 | tm | Thu Mar 03 16:59:47 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12083 | tm | Thu Mar 03 16:59:47 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12082 | tm | Thu Mar 03 16:59:47 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12081 | tm | Thu Mar 03 16:59:46 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12080 | tm | Thu Mar 03 16:59:42 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12079 | tm | Thu Mar 03 16:59:39 GMT 2011
+
+ff
+------------------------------------------------------------------------
+r12078 | tm | Thu Mar 03 16:58:29 GMT 2011
+
+dd
+------------------------------------------------------------------------
+r12077 | tm | Thu Mar 03 16:57:50 GMT 2011
+
+fff
+------------------------------------------------------------------------
+r12076 | tm | Thu Mar 03 16:56:53 GMT 2011
+
+t

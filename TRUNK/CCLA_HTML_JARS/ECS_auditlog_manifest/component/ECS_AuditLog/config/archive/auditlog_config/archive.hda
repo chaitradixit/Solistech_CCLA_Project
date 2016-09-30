@@ -1,0 +1,17 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=aTotalTransferedIn message,aTotalTransferedOut message
+aExportTableTAUDITCONFIG_SERVICEMAP=	aTableName TAUDITCONFIG_SERVICEMAP	aCreateTimeStamp schCreateTimestamp	aModifiedTimeStamp schModifyTimestamp	aUseSourceID 0	aIsCreateNewField 1	aParentTables 	aTableRelations 	aIsReplicateDeletedRows 0	aUseParentTS 0	aRemoveExistingChildren 0	aDeleteParentOnlyWhenNoChild 0	aAllowDeleteParentRows 0	Clauses 	CustomQuery 	IsCustom 0
+aLastImport={ts '2009-01-01 14:46:43.516'}
+aTotalLastExported=0
+aExportTables=TAUDITCONFIG_FIXEDMAP,TAUDITCONFIG_SERVICEMAP,TAUDITCONFIG_BINDERMAP
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+IDC_Name=idcxe
+aExportQuery=Standard Query	ValuePanel 	UseExportDate 0	AllowExportPublished 0	AllRevisions 1	LatestRevisions 0	NotLatestRevisions 0	MostRecentMatching 0	CurrentIndex 0	Clauses dDocName:sqlEq:sdfsdf	CustomQuery dDocName%=%'sdfsdf'	IsCustom 0
+aTotalLastImported=0
+aExportTableTAUDITCONFIG_FIXEDMAP=	aTableName TAUDITCONFIG_FIXEDMAP	aCreateTimeStamp schCreateTimestamp	aModifiedTimeStamp schModifyTimestamp	aUseSourceID 0	aIsCreateNewField 1	aParentTables 	aTableRelations 	aIsReplicateDeletedRows 0	aUseParentTS 0	aRemoveExistingChildren 0	aDeleteParentOnlyWhenNoChild 0	aAllowDeleteParentRows 0	Clauses 	CustomQuery 	IsCustom 0
+aExportTableTAUDITCONFIG_BINDERMAP=	aTableName TAUDITCONFIG_BINDERMAP	aCreateTimeStamp schCreateTimestamp	aModifiedTimeStamp schModifyTimestamp	aUseSourceID 0	aIsCreateNewField 1	aParentTables 	aTableRelations 	aIsReplicateDeletedRows 0	aUseParentTS 0	aRemoveExistingChildren 0	aDeleteParentOnlyWhenNoChild 0	aAllowDeleteParentRows 0	Clauses 	CustomQuery 	IsCustom 0
+aLastExport={ts '2009-05-09 17:43:11.561'}
+aCopyWebDocuments=1
+@end
+

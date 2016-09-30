@@ -1,0 +1,94 @@
+﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+	<$defaultPageTitle="Upload Applet Test"$>
+	<$include std_html_head_declarations$>
+</head>
+
+	<$include body_def$>
+
+	<$include std_page_begin$>
+	
+	<h1>Upload Applet Test Page</h1>
+	<small>[Ensure that the server is configured to automatically generate Content IDs and that the Document Type and Security Group have been correctly defined in the ECSBaseUtils component configuration file]</small><br/><br/>
+
+<table border=1><tr><td>
+<script language="JavaScript">
+ <!--
+  var _info = navigator.userAgent;
+  var ie = (_info.indexOf("MSIE") > 0);
+  var win = (_info.indexOf("Win") > 0);
+
+	if(win)
+	{
+		if(ie)
+		{
+            /* Call embed.js to force applet to load enabled - note embed.js includes path to dndplus.jar */
+            /* which is set to /stellent/common/dndplus.jar.  If the HttpRelativeWebRoot is not stellent  */
+            /* then embed.js will have to be modified directly to reflect your new web root value.        */
+            document.writeln('<' + 'script language="JavaScript" src="<$HttpRelativeWebRoot$>common/ECS_BaseUtils/embed.js"'+'>'+ '</' + 'script'+'>');
+            
+		}
+		else
+		{
+                document.writeln('<object type="application/x-java-applet;version=1.4.1"');
+                document.writeln('width= "350" height= "350"  >');
+                document.writeln('<param name="archive" value="<$HttpRelativeWebRoot$>common/ECS_BaseUtils/dndplus.jar">');
+                document.writeln('<param name="code" value="com.radinks.dnd.DNDAppletPlus">');
+                document.writeln('<param name="name" value="ECS Uploader Plus">');
+        }
+    }
+    else
+    {
+            /* mac and linux */
+            document.writeln('<applet ');
+            document.writeln('                      archive  = "<$HttpRelativeWebRoot$>common/ECS_BaseUtils/dndplus.jar"');
+            document.writeln('                      code     = "com.radinks.dnd.DNDAppletPlus"');
+            document.writeln('                      name     = "ECS Uploader Plus"');
+            document.writeln('                      hspace   = "0"');
+            document.writeln('                      vspace   = "0" MAYSCRIPT="yes"');
+            document.writeln('                      width	 = "290"');
+            document.writeln('                      height	 = "290"');
+            document.writeln('                      align	 = "middle">');
+	}
+
+ //-->
+</script>
+        <!-- BEGIN APPLET CONFIGURATION PARAMETERS -->
+            <param name="max_upload" value="100000">
+            <!-- size in kilobytes (takes effect only in Rad Upload Plus) -->
+            <param name = "url" value = "http://<$HttpServerAddress$><$HttpRelativeWebRoot$>jsp/ECS_BaseUtils/file_uploader.jsp?&dUser=<$dUser$>&dDocType=<$UPLOAD_DOCTYPE$>&dSecurityGroup=<$UPLOAD_DOCSECURITYGROUP$>">
+            <!-- you can pass additional parameters by adding them to the url-->
+            <!-- to upload to an ftp server instead of a web server, please specify a url
+                in the following format:
+                ftp://username:password@ftp.myserver.com
+                        replacing username, password and ftp.myserver.com with corresponding entries for
+                        your site -->
+
+            <param name = "message" value="Drop your files here.<br>They will be uploaded into Stellent.">
+            <!-- edit the above line to customize your applet's display -->
+        <!-- END APPLET CONFIGURATION PARAMETERS -->
+
+<script language="JavaScript">
+ <!--
+ 	if(win)
+	{
+		document.writeln('</object>');
+	}
+	else
+	{
+		document.writeln('</applet>');
+        }
+ //-->
+</script>
+
+</td></tr></table>
+
+
+<div>
+If you can see this text then the applet test page has failed to load correctly.
+</div>
+
+</body>
+</html>
+

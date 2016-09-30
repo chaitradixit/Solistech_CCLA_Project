@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html style="height: auto">
+<head>
+	<$include iris_styles$>
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<title>
+		Batch actions
+	</title>
+
+<$include iris_paginator_header$>	
+	
+<$include float_menu_header$>
+<$include doc_listing_styles$>
+
+<$include linkeditems_searchandfilter_styles$>
+<$include iris_batch_docs_js$>
+<$include group_classification_js$>
+<!--include std_upload_java_script-->
+
+<$include iris_resolve_user_access$>
+
+</head>
+
+<body <$include iris_body_def_internal$> style="width:97%; height: auto" class="iframe_body">
+	
+	<$include iris_batch_docs_listing_pre$>
+	
+  <div>
+  	<div style="margin:2px;">
+  	
+			<!-- 	Ensure user has read access on document
+				  	before displaying 'add new doc' form -->
+			<$if userCanWrite$>
+				<$include batch_SandF_add_doc_header$>
+			<$endif$>
+		
+	
+		 <$if #active.deleted_dDocName$>
+		 	<div style="margin-left: 5px">
+		  	<h3>The document was successfuly deleted.</h3>
+		  </div>
+		 <$endif$>
+		 
+	 		<$c="setting for use in move action"$>
+			<$bundleDocName = #active.parentDocName$>
+	
+			<$include ecsSearchAndFilter$>
+			<$include batch_delete_form$>
+				
+		</div>
+	</div>
+	
+	<$include std_page_end$>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+Person
+------
+CCLA_PERSON has new column IS_DECEASED. Should default to 0.
+Need PERSON_CODE field
+
+Account
+-------
+ACC_AML_CHECKED is now ACC_AML_CHECK_OVERRIDE_USER (varchar)
+Need ACCOUNT_CODE field
+
+Entity
+------
+Need ENTITY_CODE field
+Need classification fields
+

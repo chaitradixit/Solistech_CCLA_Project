@@ -1,0 +1,48 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_04_23 v1.0.18
+blFieldTypes=
+ComponentName=ECS_Javascript
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/ecs_javascript_resource.htm
+null
+10
+service
+resources/ecs_javascript_service.htm
+ECS_Javascript_Services
+10
+query
+resources/ecs_javascript_query.htm
+ECS_Javascript_Queries
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end
+

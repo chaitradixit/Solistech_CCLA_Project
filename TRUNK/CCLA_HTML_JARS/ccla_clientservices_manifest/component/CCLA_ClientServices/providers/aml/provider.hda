@@ -1,0 +1,25 @@
+<?hda version="10.1.3.3.3 (080807)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+ProviderType=database
+blFieldTypes=
+JdbcUser=AML_UCM
+ProviderConnection=intradoc.jdbc.JdbcConnection
+ProviderClass=intradoc.jdbc.JdbcWorkspace
+JdbcPassword=6KYT0ZirJDfF5mAoquSaQlCJh7yRlXSF/nNQUoNMG7w=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+DatabaseName=AML
+IsJdbc=1
+JdbcConnectionString=jdbc:jtds:sqlserver://ccla-sq01/AML
+TestQuery=SELECT TOP 1 * FROM AML_CheckList
+JdbcPasswordEncoding=Intradoc
+DatabaseDir=
+JdbcDriver=net.sourceforge.jtds.jdbc.Driver
+NumConnections=5
+ProviderConfig=intradoc.server.DbProviderConfig
+@end
+@ResultSet ColumnMap
+2
+column
+alias
+@end
+

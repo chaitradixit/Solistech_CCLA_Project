@@ -1,0 +1,61 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2011_08_08 (Version 1.1.5)
+classpath=$COMPONENT_DIR/classes
+blFieldTypes=
+ComponentName=ECS_PopupMenus
+libpath=$COMPONENT_DIR/lib
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+ECS_PopupMenus_
+IntradocTemplates
+name
+1
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/ecs_popupmenus_resource.htm
+null
+1
+resource
+resources/ecs_popupdivs_resource.htm
+null
+1
+template
+templates/ecs_popupmenus_template.hda
+null
+1
+service
+resources/ecs_popupmenus_service.htm
+ECS_PopupMenus_Services
+1
+environment
+ecs_popupmenus_environment.cfg
+null
+30
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end
+

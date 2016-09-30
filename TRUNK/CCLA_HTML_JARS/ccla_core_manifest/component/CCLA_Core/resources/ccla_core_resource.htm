@@ -1,0 +1,52 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Core htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@table CCLACoreServiceHandlers@>
+<table border=1>
+	<caption><strong>CCLACoreServiceHandlers</strong></caption>
+	<tr>
+		<td>name</td><td>class</td><td>loadOrder</td>
+	</tr>
+	<tr>
+		<td>DocService</td>
+		<td>com.ecs.ucm.ccla.CoreServiceHandler</td>
+		<td>40</td>
+	</tr>
+</table>
+<@end@>
+
+<@table CustomIdocFunction@>
+<table border=1>
+	<caption><strong>NewIdocScript Extensions</strong></caption>
+	<tr>
+		<td>name</td><td>class</td><td>loadOrder</td>
+	</tr>
+	<tr>
+		<td>CustomIdocFunction</td>
+		<td>com.ecs.ucm.ccla.customIdoc.CustomIdocFunction</td>
+		<td>10</td>
+	</tr>
+</table>
+<@end@>
+
+<!-- Common CCLA Javascript functions -->
+<@dynamichtml ccla_common_js@>
+	
+	<script type="text/javascript" src="<$HttpWebRoot$>resources/ccla/js/ccla_common.js"></script>
+	
+<@end@>
+
+<!-- Document indexing Javascript functions -->
+<@dynamichtml ccla_indexing_js@>
+	
+	<script type="text/javascript" src="<$HttpWebRoot$>resources/ccla/js/ccla_indexing.js"></script> 
+	
+<@end@>
+
+</body></html>

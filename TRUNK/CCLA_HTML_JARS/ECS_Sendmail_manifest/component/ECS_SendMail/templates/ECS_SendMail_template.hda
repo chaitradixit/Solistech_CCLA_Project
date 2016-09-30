@@ -1,0 +1,34 @@
+﻿<?hda version="7.5.1 (050330)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ECS_SendMail_Message_Templates
+5
+name
+class
+formtype
+filename
+description
+ECS_MAIL_SIMPLE
+ECS_SendMail
+ECS_SendMailSimple
+ECS_SendMail_simple_mail.htm
+A simple e-mail template
+ECS_MAIL_REAL_SIMPLE
+ECS_SendMail
+ECS_SendMailSimple
+ECS_SendMail_real_simple_mail.htm
+A really basic e-mail template
+ECS_UNDO_CHECK_OUT_MAIL
+ECS_SendMail
+EcsUndoCheckOutMail
+ECS_SendMail_UndoCheckOut.htm
+This is the mail template for Undo Checkout notifications
+ECS_MAIL_TEST
+ECS_SendMail
+ECS_SendMailSimple
+ECS_SendMail_test.htm
+
+@end
+

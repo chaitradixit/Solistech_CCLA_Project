@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<$pageTitle = "Generate Forms"$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+		<div class='ccla_cs_panel_header'>
+			<$pageTitle$>
+		</div>
+		
+		<div class="ccla_cs_panel_content">
+						
+			<script type="text/javascript">
+				
+				function submitGenerateElementForms() {
+					var frm = document.forms["generateFormsForm"];
+					submitGenerateForms(frm);
+				}
+				
+				function submitGenerateOrgForms() {
+					var frm = document.forms["generateOrgFormsForm"];
+					submitGenerateForms(frm);
+				}
+				
+				function submitGenerateForms(frm) {
+					var formTypeIds = "";
+					
+					$("#" + frm.id + " .form-type-checkbox").each( function() {
+						if ($(this).is(":checked")) {
+							var thisFormTypeId = $(this).attr("id").substring("selFormTypeId_".length);
+						
+							if (formTypeIds.length > 0)
+								formTypeIds += ",";
+								
+							formTypeIds += thisFormTypeId;
+						}
+					});
+					
+					if (formTypeIds.length == 0) {
+						alert("You haven't selected any forms to generate.");
+						return;
+					}
+					
+					$("#" + frm.id + " #formTypeIds").val(formTypeIds);
+					frm.submit();
+				}
+				
+			</script>
+			
+			<$if formsGenerated$>
+				<div class="message_panel info_icon">
+					<$if numFormsGenerated$>
+						<$numFormsGenerated$> forms generated successfully.
+					<$else$>
+						Forms generated successfully.
+					<$endif$>
+				</div>
+			<$endif$>
+			
+			<h3 class="ccla_data_panel_header"><$#local.ELEMENT_TYPE_NAME$> forms</h3>
+			
+			<p>Select the <$#local.ELEMENT_TYPE_NAME$> forms you wish to generate below</p>
+			
+			<form name="generateFormsForm" id="generateFormsForm">
+				
+				<input type="hidden" name="IdcService" value="CCLA_CS_GENERATE_ELEMENT_FORMS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="ELEMENT_ID" value="<$#local.ELEMENT_ID$>" />
+				<input type="hidden" name="formTypeIds" id="formTypeIds" />
+				
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_GET_FORM_TYPES_BY_ELEMENT<$include add_idc_token_to_url$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&formsGenerated=1" />
+				
+				<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">	
+					
+					<tr>
+						<th class="first-col">Sel.</th>
+						<th width="90%">Form Type Name</th>
+					</tr>
+					
+					<$loop rsFormTypes$>
+						<$if #active.ELEMENT_TYPE_ID like rsElement.ELEMENT_TYPE_ID$>
+							<tr class="account-details-row">
+								
+								<td class="first-col" align="center">
+									<input 	type="checkbox" class="form-type-checkbox" 
+											id="selFormTypeId_<$#active.FORM_TYPE_ID$>" />
+								</td>
+								<td><$#active.FORM_TYPE_NAME$></td>
+								
+							</tr>
+						<$endif$>
+			
+					<$endloop$>
+					
+				</table>
+				
+				<br/>
+				
+				<div align="right">	
+					<input type="button" value="Generate selected" 	onclick="submitGenerateElementForms()" />
+					<input type="button" value="Close" 				onclick="window.parent.closePopup()" />			
+				</div>
+			
+			</form>
+			
+			<$if #local.ORGANISATION_ID$>
+				[[% Org ID will get placed into the binder if we are generating Account forms. %]]
+			
+				<h3 class="ccla_data_panel_header">Organisation forms</h3>
+			
+				<p>Select the owning Organisation forms you wish to generate below</p>
+				
+				<form name="generateOrgFormsForm" id="generateOrgFormsForm">
+					
+					<input type="hidden" name="IdcService" value="CCLA_CS_GENERATE_ELEMENT_FORMS" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="ELEMENT_ID" value="<$#local.ORGANISATION_ID$>" />
+					<input type="hidden" name="formTypeIds" id="formTypeIds" />
+					
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_GET_FORM_TYPES_BY_ELEMENT<$include add_idc_token_to_url$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&formsGenerated=1" />
+					
+					<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">	
+						
+						<tr>
+							<th class="first-col">Sel.</th>
+							<th width="90%">Form Type Name</th>
+						</tr>
+						
+						<$loop rsFormTypes$>
+							<$if #active.ELEMENT_TYPE_ID like #env.CCLA_ElementType_Org$>
+								<tr class="account-details-row">
+									
+									<td class="first-col" align="center">
+										<input 	type="checkbox" class="form-type-checkbox" 
+												id="selFormTypeId_<$#active.FORM_TYPE_ID$>" />
+									</td>
+									<td><$#active.FORM_TYPE_NAME$></td>
+									
+								</tr>
+							<$endif$>
+				
+						<$endloop$>
+						
+					</table>
+					
+					<br/>
+					
+					<div align="right">	
+						<input type="button" value="Generate selected" 	onclick="submitGenerateOrgForms()" />
+						<input type="button" value="Close" 				onclick="window.parent.closePopup()" />			
+					</div>
+				
+				</form>
+			<$endif$>
+			
+		</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

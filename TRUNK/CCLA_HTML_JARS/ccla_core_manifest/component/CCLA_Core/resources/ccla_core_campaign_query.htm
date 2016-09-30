@@ -1,0 +1,494 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Core query
+</title>
+</head>
+<body>
+
+<@table CCLA_Core_Queries2@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qCore_GetAllCampaigns</td>
+	<td>select * from campaign</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignById</td>
+	<td>SELECT * FROM CAMPAIGN
+		WHERE CAMPAIGN_ID=?</td>
+	<td>CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllCampaignStatus</td>
+	<td>SELECT * FROM REF_CAMPAIGN_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCampaignEnrolmentAction</td>
+	<td>SELECT * FROM REF_CAMPAIGN_ENROLMENT_ACTION</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCampaignEnrolmentStatus</td>
+	<td>SELECT * FROM REF_CAMPAIGN_ENROLMENT_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetNumBanksAccountsForAccount</td>
+	<td>
+		select count(distinct(b.BANK_ACCOUNT_ID)) AS NUM_BANKACCOUNTS, r.element_id1 AS ACCOUNT_ID from relations r
+		right join BANK_ACCOUNT b on (r.element_id2 = b.BANK_ACCOUNT_ID)
+		left join REF_RELATION_NAMES rrn on (r.relation_name_id = rrn.relation_name_id)
+		where rrn.relation_type_id = 40 
+		AND r.element_id1 = ?
+		GROUP BY r.element_id1
+	</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetRelationTotals</td>
+	<td>SELECT elem1Relations.ACCOUNT_ID, NUM_AUTHS, NUM_SIGS, NUM_BANK_ACCOUNTS FROM (
+		  SELECT r.ELEMENT_ID2 as ACCOUNT_ID, 
+		  SUM (Case WHEN RELATION_NAME_ID=81 THEN 1 else 0  END) AS NUM_AUTHS,
+		  SUM (Case WHEN RELATION_NAME_ID=84 THEN 1 else 0 END) AS NUM_SIGS
+		  FROM relations r
+		  WHERE  r.ELEMENT_ID2 in (
+				SELECT ELEMENT_ID2 FROM RELATIONS re
+				  INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (re.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+				  WHERE re.ELEMENT_ID1 = ? 
+					AND FUND_CODE LIKE ?)
+		  GROUP BY r.ELEMENT_ID2) elem1Relations
+		  
+		  LEFT JOIN  (
+			SELECT r.ELEMENT_ID1 as ACCOUNT_ID, COUNT(DISTINCT(r.ELEMENT_ID2)) AS NUM_BANK_ACCOUNTS
+			FROM relations r
+			WHERE  r.ELEMENT_ID1 in (
+				  SELECT ELEMENT_ID1 FROM RELATIONS re
+					INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (re.ELEMENT_ID1 = ACC.ACCOUNT_ID)
+					WHERE acc.organisation_id = ? 
+					  AND FUND_CODE LIKE ?)
+					  
+			AND RELATION_NAME_ID IN (120,121)       
+			GROUP BY r.ELEMENT_ID1) elem2Relations
+		 ON (elem1Relations.ACCOUNT_ID = elem2Relations.ACCOUNT_ID)
+	</td>
+	<td>ORGANISATION_ID int
+		FUND_CODE varchar
+		ORGANISATION_ID int
+		FUND_CODE varchar</td>
+</tr>
+
+
+
+
+<tr>
+	<td>qCore_GetAllEnrolmentStatusActionApplied</td>
+	<td>SELECT * FROM ENROLMENT_STATUS_ACTION_APPL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignStatus</td>
+	<td>select * from REF_CAMPAIGN_STATUS WHERE 
+	CAMPAIGN_STATUS_ID=?</td>
+	<td>CAMPAIGN_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignType</td>
+	<td>SELECT * from REF_CAMPAIGN_TYPE 
+		WHERE CAMPAIGN_TYPE_ID=?</td>
+	<td>CAMPAIGN_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignProcessStatus</td>
+	<td>SELECT * from REF_CAMPAIGN_PROCESS_STATUS
+		WHERE CAMPAIGN_PROCESS_STATUS_ID=?</td>
+	<td>CAMPAIGN_PROCESS_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextCampaignEnrolmentId</td>
+	<td>SELECT SEQ_CAMPAIGN_ENROLMENT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextCampaignActivityId</td>
+	<td>SELECT SEQ_CAMPAIGN_ACTIVITY.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextFormId</td>
+	<td>SELECT SEQ_FORM.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextEnrolmentActionQueueId</td>
+	<td>SELECT SEQ_ENROLMENT_ACTION_QUEUE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInvestmentIntentionId</td>
+	<td>SELECT SEQ_FUND_INVESTMENT_INTENTION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddCampaignEnrolment</td>
+	<td>INSERT INTO CAMPAIGN_ENROLMENT
+		VALUES (?,?,?,?,?,?,SYSDATE,SYSDATE,?,?)</td>
+	<td>CAMPAIGN_ENROLMENT_ID int
+		CAMPAIGN_ID int
+	    PERSON_ID int
+		ORGANISATION_ID int
+	    ENROLMENT_STATUS_ID int
+		CONTACT_ID int		
+		LAST_UPDATED_BY varchar
+		CAMPSUBJECTSTATUS_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateEnrolment</td>
+	<td>UPDATE CAMPAIGN_ENROLMENT
+		SET PERSON_ID=?,
+		ORGANISATION_ID=?,
+		CONTACT_ID=?,
+		ENROLMENT_STATUS_ID=?,
+		LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?,
+		CAMPSUBJECTSTATUS_ID=?
+		WHERE CAMPAIGN_ENROLMENT_ID=?</td>
+	<td>PERSON_ID int
+		ORGANISATION_ID int
+		CONTACT_ID int
+		ENROLMENT_STATUS_ID int
+		LAST_UPDATED_BY varchar
+		CAMPSUBJECTSTATUS_ID int
+	    CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetClientEnrolment</td>
+	<td>SELECT * FROM CAMPAIGN_ENROLMENT
+		WHERE CAMPAIGN_ENROLMENT_ID = ?</td>
+	<td>CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFormsByCampaignEnrolmentId</td>
+	<td>SELECT FORM.*
+from (
+    SELECT * FROM FORM F
+		INNER JOIN REF_FORM_STATUS RFS ON (F.FORM_STATUS_ID = RFS.FORM_STATUS_ID)
+		INNER JOIN REF_FORM_TYPE RFT ON (F.FORM_TYPE_ID = RFT.FORM_TYPE_ID)
+		WHERE F.CAMPAIGN_ENROLMENT_ID=? ) FORM  
+		 ORDER BY DATE_ADDED desc</td>
+	<td>CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetClientEnrolmentExtended</td>
+	<td>SELECT * FROM CAMPAIGN_ENROLMENT CE
+		INNER JOIN REF_CAMPAIGN_ENROLMENT_STATUS  RCES
+		ON (CE.ENROLMENT_STATUS_ID = RCES.ENROLMENT_STATUS_ID)
+		WHERE CAMPAIGN_ENROLMENT_ID = ?</td>
+	<td>CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignEnrolmentExtendedByOrg</td>
+	<td>SELECT * FROM CAMPAIGN_ENROLMENT CE
+		INNER JOIN CAMPAIGN cam ON (CE.CAMPAIGN_ID = cam.CAMPAIGN_ID)
+		INNER JOIN REF_CAMPAIGN_ENROLMENT_STATUS  RCES
+		ON (CE.ENROLMENT_STATUS_ID = RCES.ENROLMENT_STATUS_ID)
+		INNER JOIN REF_CAMPAIGN_SUBJECT_STATUS subjStatus
+		ON (CE.CAMPSUBJECTSTATUS_ID = subjStatus.CAMPSUBJECTSTATUS_ID)
+		WHERE CE.ORGANISATION_ID = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetClientEnrolmentByIds</td>
+	<td>SELECT * FROM CAMPAIGN_ENROLMENT
+		WHERE CAMPAIGN_ID=? AND ORGANISATION_ID=?</td>
+	<td>CAMPAIGN_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllFormTypes</td>
+	<td>SELECT * FROM REF_FORM_TYPE 
+		ORDER BY ELEMENT_TYPE_ID, FORM_TYPE_NAME</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetFormTypesByElementTypeId</td>
+	<td>SELECT * FROM REF_FORM_TYPE WHERE ELEMENT_TYPE_ID = ?
+		ORDER BY FORM_TYPE_NAME</td>
+	<td>ELEMENT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddFormElementApplied</td>
+	<td>INSERT INTO FORM_ELEMENT_APPLIED (FORM_ID, ELEMENT_ID)
+		VALUES (?,?)</td>
+	<td>FORM_ID int
+		ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddFormContactApplied</td>
+	<td>INSERT INTO FORM_CONTACT_APPLIED (FORM_ID, CONTACT_ID)
+		VALUES (?,?)</td>
+	<td>FORM_ID int
+		CONTACT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFormContactsByFormId</td>
+	<td>SELECT * FROM CONTACT_POINT cp 
+		LEFT JOIN ADDRESS addr ON (cp.ADDRESS_ID = addr.ADDRESS_ID) 
+		WHERE CONTACT_ID IN 
+			(SELECT CONTACT_ID FROM FORM_CONTACT_APPLIED WHERE FORM_ID = ?)
+	</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFormElementApplied</td>
+	<td>SELECT elem.* FROM FORM_ELEMENT_APPLIED frmElem 
+		INNER JOIN ELEMENT elem ON (frmElem.ELEMENT_ID = elem.ELEMENT_ID)
+		WHERE FORM_ID = ?</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddForm</td>
+	<td>INSERT INTO FORM
+		(FORM_ID, 
+		FORM_TYPE_ID, 
+		FORM_STATUS_ID, 
+		CAMPAIGN_ENROLMENT_ID,
+		CAMPAIGN_ACTIVITY_ID, 
+		USER_ID, 
+		PERSON_ID, 
+		GEN_DOC_GUID, 
+		RET_DOC_GUID,
+		DATE_ADDED, 
+		DATE_GENERATED, 
+		DATE_UPLOADED, 
+		DATE_PRINTED, 
+		DATE_RETURNED, 
+		LAST_UPDATED,
+		ORGANISATION_ID, 
+		SUBSCRIPTION_ID,
+		IS_VALID,
+		RETURN_DEADLINE_DATE,
+		CALCULATION_DATE)
+		VALUES (?,?,?,?,?,?,?,?,?,SYSDATE,?,?,?,?,SYSDATE,?,?,?,?,?)</td>
+	<td>FORM_ID int
+		FORM_TYPE_ID int
+		FORM_STATUS_ID int
+		CAMPAIGN_ENROLMENT_ID int
+		CAMPAIGN_ACTIVITY_ID int
+		USER_ID varchar
+	    PERSON_ID int
+		GEN_DOC_GUID varchar
+		RET_DOC_GUID varchar
+	    DATE_GENERATED date
+		DATE_UPLOADED date
+		DATE_PRINTED date
+		DATE_RETURNED date
+		ORGANISATION_ID int
+		SUBSCRIPTION_ID int
+		IS_VALID int
+		RETURN_DEADLINE_DATE date
+		CALCULATION_DATE date</td>
+</tr>
+<tr>
+	<td>qCore_GetForm</td>
+	<td>SELECT * FROM FORM
+		WHERE FORM_ID = ?</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFormsExtended</td>
+	<td>SELECT * FROM FORM F
+		LEFT JOIN REF_FORM_STATUS RFS ON (F.FORM_STATUS_ID = RFS.FORM_STATUS_ID)
+		LEFT JOIN REF_FORM_TYPE RFT ON (F.FORM_TYPE_ID = RFT.FORM_TYPE_ID)
+		WHERE F.FORM_ID=?
+		ORDER BY FORM_ID DESC</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateForm</td>
+	<td>UPDATE FORM
+		SET FORM_TYPE_ID=?,
+		FORM_STATUS_ID=?,
+		CAMPAIGN_ENROLMENT_ID=?,
+		CAMPAIGN_ACTIVITY_ID=?,
+		PERSON_ID=?,
+		GEN_DOC_GUID=?,
+		RET_DOC_GUID=?,
+		DATE_GENERATED=?,
+		DATE_UPLOADED=?,
+		DATE_PRINTED=?,
+		DATE_RETURNED=?,
+		USER_ID=?,
+		ORGANISATION_ID=?,
+		LAST_UPDATED=SYSDATE,
+		SUBSCRIPTION_ID=?,
+		IS_VALID=?,
+		RETURN_DEADLINE_DATE=?,
+		CALCULATION_DATE=?
+		WHERE FORM_ID=?</td>
+	<td>FORM_TYPE_ID int
+		FORM_STATUS_ID int
+		CAMPAIGN_ENROLMENT_ID int
+		CAMPAIGN_ACTIVITY_ID int
+	    PERSON_ID int
+		GEN_DOC_GUID varchar
+		RET_DOC_GUID varchar
+	    DATE_GENERATED date
+		DATE_UPLOADED date
+		DATE_PRINTED date
+		DATE_RETURNED date
+		USER_ID varchar
+		ORGANISATION_ID int
+		SUBSCRIPTION_ID int
+		IS_VALID int
+		RETURN_DEADLINE_DATE date
+		CALCULATION_DATE date
+		FORM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddCampaignActivity</td>
+	<td>INSERT INTO CAMPAIGN_ACTIVITY
+		(CAMPAIGN_ACTIVITY_ID, CAMPAIGN_ENROLMENT_ID, 
+		PERSON_ID, CAMPAIGN_ACTIVITY_TYPE_ID, ACTIVITY_DESCRIPTION, 
+		DATE_ADDED, LAST_UPDATED_BY, NOTE_ID)
+		VALUES (?,?,?,?,?,SYSDATE,?,?)</td>
+	<td>CAMPAIGN_ACTIVITY_ID int
+		CAMPAIGN_ENROLMENT_ID int
+		PERSON_ID int
+		CAMPAIGN_ACTIVITY_TYPE_ID int
+		ACTIVITY_DESCRIPTION varchar
+		LAST_UPDATED_BY varchar
+	    NOTE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignActivityById</td>
+	<td>SELECT * FROM CAMPAIGN_ACTIVITY
+		WHERE CAMPAIGN_ACTIVITY_ID=?</td>
+	<td>CAMPAIGN_ACTIVITY_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCampaignActivitiesByEnrolmentId</td>
+	<td>SELECT CA.*, RCAT.*, N.NOTE_CONTENT 
+		FROM CAMPAIGN_ACTIVITY CA
+		LEFT JOIN REF_CAMPAIGN_ACTIVITY_TYPE RCAT
+		ON (CA.CAMPAIGN_ACTIVITY_TYPE_ID = RCAT.CAMPAIGN_ACTIVITY_TYPE_ID)
+		LEFT JOIN NOTE N ON (CA.NOTE_ID = N.NOTE_ID)
+		WHERE CA.CAMPAIGN_ENROLMENT_ID=?
+		ORDER BY CA.DATE_ADDED DESC</td>
+	<td>CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllCampaignSubjectStatus</td>
+	<td>SELECT * FROM REF_CAMPAIGN_SUBJECT_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInvestmentIntentionStatus</td>
+	<td>SELECT * FROM REF_INVESTMENT_INTENT_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddInvestmentIntention</td>
+	<td>INSERT INTO FUND_INVESTMENT_INTENTION 
+		(INVESTMENT_INTENTION_ID, FUND_CODE, ORGANISATION_ID, PERSON_ID, 
+		CAMPAIGN_ID, CASH, UNITS, DATE_ADDED, LAST_UPDATED, 
+		LAST_UPDATED_BY, INVINTENTSTATUS_ID, ACCOUNT_ID) 
+		VALUES (?,?,?,?,?,?,?,SYSDATE, SYSDATE,?,?,?)</td>
+	<td>INVESTMENT_INTENTION_ID int
+		FUND_CODE varchar
+		ORGANISATION_ID int
+		PERSON_ID int
+		CAMPAIGN_ID int
+		CASH int
+		UNITS int
+		LAST_UPDATED_BY varchar
+		INVINTENTSTATUS_ID int
+		ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInvestmentIntention</td>
+	<td>UPDATE FUND_INVESTMENT_INTENTION 
+		SET FUND_CODE=?, ORGANISATION_ID=?, PERSON_ID=?, 
+		CAMPAIGN_ID=?, CASH=?, UNITS=?, LAST_UPDATED=SYSDATE, 
+		LAST_UPDATED_BY=?, INVINTENTSTATUS_ID=?, ACCOUNT_ID=? 
+		WHERE INVESTMENT_INTENTION_ID=?</td>
+	<td>FUND_CODE varchar
+		ORGANISATION_ID int
+		PERSON_ID int
+		CAMPAIGN_ID int
+		CASH int
+		UNITS int
+		LAST_UPDATED_BY varchar
+		INVINTENTSTATUS_ID int
+		ACCOUNT_ID int
+		INVESTMENT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteInvestmentIntention</td>
+	<td>DELETE FROM FUND_INVESTMENT_INTENTION 
+		WHERE INVESTMENT_INTENTION_ID=?</td>
+	<td>INVESTMENT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInvestmentIntentionById</td>
+	<td>SELECT * FROM FUND_INVESTMENT_INTENTION FII
+		INNER JOIN REF_INVESTMENT_INTENT_STATUS IIS ON (FII.INVINTENTSTATUS_ID = IIS.INVINTENTSTATUS_ID)
+		WHERE FII.INVESTMENT_INTENTION_ID=?</td>
+	<td>INVESTMENT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInvestmentIntentionByAccountId</td>
+	<td>SELECT * FROM FUND_INVESTMENT_INTENTION FII
+		INNER JOIN REF_INVESTMENT_INTENT_STATUS IIS ON (FII.INVINTENTSTATUS_ID = IIS.INVINTENTSTATUS_ID)
+		WHERE FII.ACCOUNT_ID=?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInvestmentIntentionsByOrgAndCampaignId</td>
+	<td>SELECT * FROM FUND_INVESTMENT_INTENTION FII
+		INNER JOIN REF_INVESTMENT_INTENT_STATUS IIS ON (FII.INVINTENTSTATUS_ID = IIS.INVINTENTSTATUS_ID)
+		WHERE FII.ORGANISATION_ID = ? AND FII.CAMPAIGN_ID = ?</td>
+	<td>ORGANISATION_ID int
+		CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFundInvestmentIntentionByEntity</td>
+	<td>SELECT fii.*,p.FULL_NAME,p.FIRST_NAME,rt.TITLE,p.LAST_NAME, IIS.INVINTENTSTATUS_NAME 
+		FROM FUND_INVESTMENT_INTENTION fii
+		INNER JOIN REF_INVESTMENT_INTENT_STATUS IIS ON (fii.INVINTENTSTATUS_ID = IIS.INVINTENTSTATUS_ID)
+		INNER JOIN PERSON p ON (fii.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN REF_TITLE rt on (p.TITLE_ID = rt.TITLE_ID)
+		WHERE fii.ORGANISATION_ID=? AND fii.FUND_CODE=?</td>
+	<td>ORGANISATION_ID int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetFundInvestmentIntention</td>
+	<td>SELECT fii.*,p.FULL_NAME,p.FIRST_NAME,rt.TITLE,p.LAST_NAME 
+		FROM FUND_INVESTMENT_INTENTION fii
+		INNER JOIN PERSON p ON (fii.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN REF_TITLE rt on (p.TITLE_ID = rt.TITLE_ID)
+		WHERE fii.ORGANISATION_ID=? AND fii.INVESTMENT_INTENTION_ID=?</td>
+	<td>ORGANISATION_ID int
+		INVESTMENT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteEnrolmentAttrByTypeAndEnrolment</td>
+	<td>DELETE FROM ENROLMENT_ATTRIBUTE_APPLIED WHERE APPLENROLATTR_ID=? AND CAMPAIGN_ENROLMENT_ID=?</td>
+	<td>APPLENROLATTR_ID int
+		CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetEnrolmentAttrByTypeAndEnrolment</td>
+	<td>SELECT * FROM ENROLMENT_ATTRIBUTE_APPLIED WHERE APPLENROLATTR_ID=? AND CAMPAIGN_ENROLMENT_ID=?</td>
+	<td>APPLENROLATTR_ID int
+		CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

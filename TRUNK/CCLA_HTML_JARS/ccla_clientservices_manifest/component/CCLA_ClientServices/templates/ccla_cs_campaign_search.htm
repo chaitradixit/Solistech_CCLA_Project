@@ -1,0 +1,521 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Campaign Search
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+	<$include float_menu_header$>
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	<$include epoch_calendar_header$>
+
+	<script type="text/javascript">
+		function togglePriceAmount() {
+			var selectedOp = $("#operator").val();
+			if (selectedOp==3){
+				$("#priceAmountExt").removeAttr("disabled");
+			}else{
+				$("#priceAmountExt").attr("disabled",true);
+				$("#priceAmountExt").val("");
+			}	
+		}
+		
+		
+		function checkAndPopulateValues() {
+			var regions = "";
+			var company = "";
+			var postcode = "";		
+			var countPC = 0;
+			var countCOMP = 0;
+			
+			var allCompanyChecked = document.getElementById('ALL_COMPANY').checked; 			
+			var allRegionChecked = document.getElementById('ALL_REGIONS').checked;
+			
+			var objInputs = document.getElementsByTagName('input');
+			
+			for (var i=0; i<objInputs.length; i++) {
+				if (objInputs[i].getAttribute('type') == 'checkbox') 
+				{				
+					if (objInputs[i].getAttribute('id').indexOf('POSTCODE_')!=-1 && objInputs[i].checked) {
+							
+						if (countPC!=0) {
+							postcode+=",";
+						}
+						postcode+=objInputs[i].value;
+						countPC++;		
+					}					
+				
+					
+					if (objInputs[i].getAttribute('id').indexOf('comp_')!=-1 && objInputs[i].checked) 
+					{
+						if (countCOMP!=0) {
+							company+=",";
+						}
+						company+=objInputs[i].value;
+						countCOMP++;		
+					}
+				}
+			}
+			if (company==null || company.length==0) {
+				alert("You must select at least 1 company");
+				return false;
+			}
+
+			if (postcode==null || postcode.length==0) {
+				alert("You must select at least 1 postcode");
+				return false;
+			}
+			
+			
+			//Populate the fields
+			document.getElementById('company').value=company;
+			document.getElementById('postcode').value=postcode;
+			//document.getElementById('region').value=region;
+			
+			var aggregate = document.getElementById('aggregateResults').checked;
+			if (aggregate) {
+			
+				var test = getL2SearchTerm(null, postcode, company, '0', '10000000');
+				alert(test);
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+				{
+					"incName": "ccla_cs_campaign_L2_search_results",
+					"search_params": test,
+					"ts":	new Date().getTime() 
+				}, function(data) {
+					$('#breakdown').html(data);
+				});
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+		
+		function toggleRegionBoxes(obj) {
+			
+			//name strings are in the form of POSTCODE_[REGION_ID]_[POSTCODE]
+			var values = obj.name.split("_");
+			var regionID = values[1];
+			var checked = obj.checked;
+			
+			if (!checked) {
+				document.getElementById('ALL_REGIONS').checked = checked;
+				document.getElementById('REGION_'+regionID).checked = checked;
+			}
+		
+		}
+		
+		function toggleAllRegion(checked) {
+			var objInputs = document.getElementsByTagName('input');
+			for (var i=0; i<objInputs.length; i++) {
+				if (objInputs[i].getAttribute('type') == 'checkbox' && 
+					(objInputs[i].getAttribute('id').indexOf('POSTCODE_')!=-1 ||
+						objInputs[i].getAttribute('id').indexOf('REGION_')!=-1)) {
+					objInputs[i].checked = checked;
+				}
+			}
+		}
+		
+		function toggleRegion(obj) 
+		{
+			//Strings come in as REGION_XX 
+			//where XX is the region_id
+			var values = obj.name.split("_");
+			var regionID = values[1];
+			var checked = obj.checked;
+			
+			var objInputs = document.getElementsByTagName('input');
+			for (var i=0; i<objInputs.length; i++) {
+				if (objInputs[i].getAttribute('type') == 'checkbox' && 
+					objInputs[i].getAttribute('id').indexOf('POSTCODE_'+regionID+"_")!=-1) {
+					objInputs[i].checked = checked;
+				} 
+			}
+			
+			if (!checked) {
+				document.getElementById('ALL_REGIONS').checked = checked;
+			}
+
+		}
+		
+		function toggleCompany(checked) {
+			var objInputs = document.getElementsByTagName('input');
+			for (var i=0; i<objInputs.length; i++) {
+				if (objInputs[i].getAttribute('type') == 'checkbox' && 
+					objInputs[i].getAttribute('id').indexOf('comp_')!=-1) {
+					objInputs[i].checked = checked;
+				}
+			}
+		}
+		
+		function toggleAllCompany(checked) {
+			if (!checked) {
+				document.getElementById('ALL_COMPANY').checked = checked;
+			}
+		}
+		
+		function getL2SearchTerm(region, postcode, company, amountA, amountB) {
+			
+			var text = '';
+			
+			
+			if (region)
+				text+=region;
+			text+='|';
+			if (postcode)
+				text+=postcode;
+			text+='|';
+			if (company)
+				text+=company;
+			text+='|';
+			if (amountA)
+				text+=amountA;
+			text+='|';
+			if (amountB)
+				text+=amountB;
+					
+			return text;
+		}
+		
+		function getLink(region, postcode, company, amountA, amountB, linkValue) {
+			
+			if (linkValue==null || linkValue==0) {
+				document.writeln('0');
+				return;
+			}
+			
+			var text = getL2SearchTerm(region, postcode, company, amountA, amountB);
+			
+			document.writeln('<a id="name" name="TEST" href="'+text+'">'+linkValue+'</a>')	
+		}
+		
+		
+		$(document).ready(function() {
+			$('a[name=TEST]').click(function (e) {
+				e.preventDefault();
+				
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+				{
+					"incName": "ccla_cs_campaign_L2_search_results",
+					"search_params": $(this).attr("href"),
+					"ts":	new Date().getTime() 
+				}, function(data) {
+					$('#breakdown').html(data);
+				});
+			});
+		});
+	</script>
+	
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Campaign Aggregate Search Form 
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+						
+						<form name="campaignSearchForm" method="POST" onsubmit="return checkAndPopulateValues()">
+							<input type="hidden" name="IdcService" value="CCLA_CS_CAMPAIGN_SEARCH" /><$include add_idc_token_to_form$>
+							
+							<table border="1" width="800" cellspacing="0" cellpadding="0">
+								<tr>
+									<th>Region 
+										&nbsp;
+										All <input type="checkbox" id="ALL_REGIONS" name="ALL_REGIONS" onclick="toggleAllRegion(this.checked);"/>
+									</th>
+									<th>PostCode</th>
+								<tr>
+								<$intial=0$>
+								<$count=1$>
+								<$loop rsRegionPostcodes$>
+									<!-- Initial block -->
+									<$if (not currentRegion) or (not strEquals(currentRegion,#active.REGION))$>
+										
+										<$currentRegion = #active.REGION$>
+										<$count=0$>	
+										<$if initial!=0$>
+											</td></tr>
+										<$endif$>
+										
+										<tr>
+											<td align="center">
+												<$currentRegion$><input type="checkbox" id="REGION_<$#active.REGION_ID$>" name="REGION_<$REGION_ID$>" value="<$#active.REGION$>" onclick="toggleRegion(this);"/> 	
+											</td>
+											<td>
+										<$initial = initial+1$>
+									<$endif$>
+									
+									
+									<$test = eval(#active.POSTCODE&"("&#active.POST_TOWN&")")$><$test$><input type="checkbox" id="POSTCODE_<$REGION_ID$>_<$#active.POSTCODE$>" name="POSTCODE_<$REGION_ID$>_<$#active.POSTCODE$>" value="<$#active.POSTCODE$>" onclick="toggleRegionBoxes(this);" />&nbsp;
+									<$count = count+1$>
+									
+									<$if count==4$>
+										<br/>
+										<$count=0$>
+									<$endif$>	
+								
+								<$endloop$>
+							</table>
+							
+							<table border="1" width="800">
+								<tr>
+									<th width="30%">Fields</th>
+									<th width="70%">Values</th>
+								</tr>
+								<tr>
+									<td align="right">
+										Company Type*: <br/>
+										ALL <input type="checkbox" id="ALL_COMPANY" name="ALL_COMPANY" value="ALL" onclick="toggleCompany(this.checked);" />
+									</td>
+									<td>
+										<$loop rsCompanyList$>
+											<input type="checkbox" id="comp_<$#active.COMPANY_CODE$>" name="comp_<$#active.COMPANY_CODE$>" value="<$#active.COMPANY_CODE$>" onclick="toggleAllCompany(this.checked);" /> <$#active.COMPANY_CODE$>
+										<$endloop$>
+											<input type="checkbox" id="comp_NOT_DEFINED" name="comp_NOT_DEFINED" value="NOT_DEFINED" onclick="toggleAllCompany(this.checked);" /> OTHER
+									</td>
+								</tr>
+								<tr>
+									<td align="right">Price Range:</td> 
+									<td>
+										<select id="operator" name="operator" onchange="togglePriceAmount();">
+											<option value="0">Equals</option>
+											<option value="1">Less Than</option>
+											<option value="2">Greater Than</option>
+											<option value="3">Between</option>
+										 </select>
+										<input type="text" name="priceAmount" id="priceAmount" value="" />
+										To <input type="text" name="priceAmountExt" id="priceAmountExt" value="" disabled/>									
+									</td>
+								</tr>
+								<tr>
+									<td align="right">Group By</td>
+									<td>Region <input type="checkbox" id="show_region" name="show_region">
+										PostCode <input type="checkbox" id="show_postcode" name="show_postcode">
+										Company <input type="checkbox" id="show_company" name="show_company">
+									</td>
+								</tr>
+								<tr>
+									<td align="right">Aggregate Results</td>
+									<td><input type="checkbox" id="aggregateResults" name="aggregateResults">
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" align="right">
+										<input type="submit" value="Go" />
+									</td>
+								</tr>
+							</table>
+							
+							<!-- hidden aggregated list values that will be populated when the form is submitted -->
+							<input type="hidden" id="company" name="company" />
+							<input type="hidden" id="postcode" name="postcode" />
+							<input type="hidden" id="region" name="region" />
+							
+						</form>
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+			
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_content'>
+			
+			
+				
+			
+			<$if rsSearchResults$>
+	
+				Search Performed for <br/>
+				<$if #local.company$>Company: <$#local.company$><br/><$endif$>
+				<$if #local.postcode$>PostCode: <table width="100%" border="0" style="overflow:hidden;word-wrap:break-word;"><tr><td><$#local.postcode$></td></tr><table><br/><$endif$>
+				<$if #local.region$>Region: <$#local.region$><br/><$endif$>
+				
+				<$if NOT strEquals(#local.priceAmount,"")$>Price: <$#local.priceAmount$> <br/><$endif$>
+								
+				<$if #local.show_company OR #local.show_region OR #local.show_region$>GroupBy: 
+					<$if #local.show_region$>Region <$endif$>
+					<$if #local.show_postcode$>PostCode <$endif$>
+					<$if #local.show_company$>Company <$endif$>
+					<br/>	
+				<$endif$>
+						
+
+		
+				Num of Results <$rsSearchResults.#numRows$><br/>
+					
+				<table border="1">
+				<tr>
+					<$if #local.show_region$>
+					<th>Region</th>
+					<$endif$>
+					
+					<$if #local.show_postcode$>
+					<th>Area</th>
+					<th>PostCode</th>
+					<$endif$>
+					
+					<$if #local.show_company$>
+					<th>Company</th>
+					<$endif$>
+					
+					<th>Total</th>
+					<th>Under 100K</th>
+					<th>100K-250K</th>
+					<th>250K-1M</th>
+					<th>1M-5M</th>
+					<th>5M-10M</th>
+					<th>10M-25M</th>
+					<th>Over 25M</th>
+				</tr>
+				<$loop rsSearchResults$>
+					<tr>
+						<$if #local.show_region$>
+							<td><$#active.REGION$></td>
+						<$endif$>
+						
+						<$if #local.show_postcode$>
+							<td><$#active.POST_TOWN$></td>
+							<td><$#active.SHORT_POSTCODE$></td>
+						<$endif$>
+						
+						<$if #local.show_company$>
+						<td>ALL</td>
+						<$endif$>
+						
+						<$if not #local.show_region and not #local.show_postcode$>
+							<$regionToUse = #local.region$> 
+							<$postcodeToUse = #local.postcode$>
+						<$else$>
+							<$rsgionToUse = getValue("rsSearchResults", "REGION")$>
+							<$postcodeToUse = #active.SHORT_POSTCODE$>
+						<$endif$>
+						
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','ALL','ALL','<$#active.TOTAL$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','0','100000','<$#active.BETWEEN_0_100K$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','100000','250000','<$#active.BETWEEN_100K_250K$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','250000','1000000','<$#active.BETWEEN_250K_1M$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','1000000','5000000','<$#active.BETWEEN_1M_5M$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','5000000','10000000','<$#active.BETWEEN_5M_10M$>');</script></td>						
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','10000000','25000000','<$#active.BETWEEN_10M_25M$>');</script></td>
+						<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#local.company$>','25000000','ALL','<$#active.OVER_25M$>');</script></td>
+					</tr>
+					<$if show_company$>
+						<$exec rsFirst("rsCompanyList")$>
+						<$loop rsCompanyList$>
+							<$eval("<$variableName=#local.comp_" & getValue('rsCompanyList','COMPANY_CODE') & "$>")$>
+							<$if variableName$>
+							<tr>
+								<$if #local.show_region$>
+								<td>&nbsp;</td>
+								<$endif$>
+
+								<$if #local.show_postcode$>								
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<$endif$>
+								
+								<$if #local.show_company$>
+								<td><$variableName$></td>
+								<$endif$>
+								
+								
+								<$if not #local.show_region and not #local.show_postcode$>
+									<$regionToUse = #local.region$> 
+									<$postcodeToUse = #local.postcode$>
+								<$else$>
+									<$regionToUse = getValue("rsSearchResults", "REGION")$>
+									<$postcodeToUse = #active.SHORT_POSTCODE$>
+								<$endif$>
+								
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','ALL','ALL','<$getValue("rsSearchResults", "TOTAL_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','0','100000','<$getValue("rsSearchResults", "BETWEEN_0_100K_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','100000','250000','<$getValue("rsSearchResults", "BETWEEN_100K_250K_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','250000','1000000','<$getValue("rsSearchResults", "BETWEEN_250K_1M_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','1000000','5000000','<$getValue("rsSearchResults", "BETWEEN_1M_5M_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','5000000','10000000','<$getValue("rsSearchResults", "BETWEEN_5M_10M_"&variableName)$>');</script></td>						
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','10000000','25000000','<$getValue("rsSearchResults", "BETWEEN_10M_25M_"&variableName)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','25000000','ALL','<$getValue("rsSearchResults", "OVER_25M_"&variableName)$>');</script></td>
+							</tr>						
+							<$endif$>
+						<$endloop$>
+						
+						<$if #local.comp_NOT_DEFINED$>
+							<tr>
+								<$if #local.show_region$>
+								<td>&nbsp;</td>
+								<$endif$>
+
+								<$if #local.show_postcode$>								
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<$endif$>
+								
+								<$if #local.show_company$>
+								<td><$#local.comp_NOT_DEFINED$></td>
+								<$endif$>
+
+								<$if not #local.show_region and not #local.show_postcode$>
+									<$regionToUse = #local.region$> 
+									<$postcodeToUse = #local.postcode$>
+								<$else$>
+									<$rsgionToUse = getValue("rsSearchResults", "REGION")$>
+									<$postcodeToUse = #active.SHORT_POSTCODE$>
+								<$endif$>
+								
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','ALL','ALL','<$getValue("rsSearchResults", "TOTAL_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','0','100000','<$getValue("rsSearchResults", "BETWEEN_0_100K_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','100000','250000','<$getValue("rsSearchResults", "BETWEEN_100K_250K_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','250000','1000000','<$getValue("rsSearchResults", "BETWEEN_250K_1M_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','1000000','5000000','<$getValue("rsSearchResults", "BETWEEN_1M_5M_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','5000000','10000000','<$getValue("rsSearchResults", "BETWEEN_5M_10M_"&#local.comp_NOT_DEFINED)$>');</script></td>						
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','10000000','25000000','<$getValue("rsSearchResults", "BETWEEN_10M_25M_"&#local.comp_NOT_DEFINED)$>');</script></td>
+								<td><script>getLink('<$regionToUse$>','<$postcodeToUse$>','<$#active.COMPANY_CODE$>','25000000','ALL','<$getValue("rsSearchResults", "OVER_25M_"&#local.comp_NOT_DEFINED)$>');</script></td>
+							</tr>
+						<$endif$>
+					</tr>
+					<$endif$>
+				<$endloop$>
+				</table>
+				</div>
+				<$include orangeContainer_bottom$>
+			<$endif$>
+		
+		<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_content'>	
+			<div id="breakdown" name="breakdown"></div>
+		</div>
+		<$include orangeContainer_bottom$>
+			
+			
+		</div>
+	</div>
+</body>
+</html>

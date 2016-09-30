@@ -1,0 +1,4 @@
+-- Amends existing Accumulation Fund accounts to have REIN distribution method.
+UPDATE ACCOUNT SET INCOME_DISTRIBUTION_METHOD = 'REIN' WHERE FUND_CODE IN (
+  SELECT FUND_CODE FROM FUND WHERE INCOME_TYPECODE_ID = 2
+);

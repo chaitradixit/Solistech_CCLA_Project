@@ -1,0 +1,83 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices CCLA_CS_AUTOCOMP_TEST
+</title>
+</head>
+
+<$include ecs_javascript_jquery_include$>
+<$include ccla_javascript_autocomplete_include$>
+<$include ccla_cs_ajax_js$>
+
+<script type="text/javascript">
+
+	$(function() {  
+
+		 //attach autocomplete  
+		 $("#autoCompleteText").autocomplete({  
+
+			// simple URL method.
+			//source: "?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_autocomplete_test",
+			minLength: 3,
+			delay: 400,
+			
+			source: function(request, add) {
+				
+				var searchParams = new Object();
+				
+				searchParams.SEARCH_NAME = request.term;
+				searchParams.searchScope = "person";
+				searchParams.ts = new Date().getTime();
+				
+				$.getJSON("?IdcService=CCLA_CS_JSON_CONTACT_LOOKUP_SUBMIT<$include add_idc_token_to_url$>", searchParams, function(jsonData) {
+					var suggestions = [];  
+					
+					// Extract rsExistingClients ResultSet.
+					
+					if (jsonData.ResultSets.rsExistingPerson) {
+						var existingClients = jsonData.ResultSets.rsExistingPerson;
+						for (var i=0; i<existingClients.rows.length; i++) {	
+							var personId = getJsonResultSetValue(existingClients, "PERSON_ID", i);
+							var title = getJsonResultSetValue(existingClients, "TITLE", i);
+							var firstname = getJsonResultSetValue(existingClients, "FIRST_NAME", i);
+							var secondname = getJsonResultSetValue(existingClients, "LAST_NAME", i);
+							var displayName = title + ' ' + firstname + ' ' + secondname;
+							var fullname = getJsonResultSetValue(existingClients, "FULL_NAME", i);
+							var postcode = getJsonResultSetValue(existingClients, "POSTCODE", i);
+							if (secondname==null || secondname.length==0)
+								displayName = fullname;
+							if (postcode!=null && postcode.length!=0)
+								displayName = displayName + " (" + postcode + ")";
+							var entry = new Object();
+							entry.value=personId;
+							entry.label=displayName;
+							suggestions.push(entry);
+						}
+						if (existingClients.rows.length==10)
+						{
+						var entry = new Object();
+						entry.label='**** ONLY THE FIRST TEN RESULTS HAVE BEEN RETURNED ******';
+						entry.value='';
+						suggestions.push(entry);
+						}
+					}
+
+					//pass array to callback  
+					add(suggestions);
+					
+				});
+				
+			}
+			
+		});
+		
+	});  
+
+</script>
+
+<body>
+	
+	Enter text: <input type="text" id="autoCompleteText" />
+
+</body></html>

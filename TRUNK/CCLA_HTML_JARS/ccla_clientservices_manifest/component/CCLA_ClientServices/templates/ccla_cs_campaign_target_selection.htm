@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Campaign Target Selection
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' class='grey_bg campaignTargetContainer'>
+			
+				<$include orangeContainer_top$>
+				
+				<$if not campaignId$>
+					<$curDate = dateCurrent()$>
+					<$executeService("CCLA_CS_GET_ACTIVE_CAMPAIGNS")$>
+				<$else$>
+					<$executeService("CCLA_CS_GET_CAMPAIGN_INFO")$>
+				<$endif$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					Campaign Target Selection<$if rsCampaign$>: <$rsCampaign.NAME$><$endif$>
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$if not campaignId$>
+						<p>
+							Please choose a campaign:
+						</p>
+						
+						<form name="campaignSelForm" method="POST">
+							<input type="hidden" name="IdcService" value="CCLA_CS_CAMPAIGN_TARGET_SELECTION" /><$include add_idc_token_to_form$>
+							
+							<select name="campaignId" id="campaignId">
+								<$loop rsCampaigns$>
+									<option value="<$#active.CAMPAIGN_ID$>"><$#active.NAME$></option>
+								<$endloop$>
+							
+							</select>
+							
+							<input type="submit" value="Go" />
+						</form>
+						
+						<br/>
+					<$else$>
+						
+						<$if not rsCampaign$>
+							<div class="message_panel error_icon">
+								<div class="validation_error_title">Error</div>
+								
+								<p>No matching campaign found for ID: <$campaignId$></p>
+						
+							</div>
+						<$endif$>
+						
+						<$loop rsCampaign$>
+							<$if userHasRole("admin")$>
+								<a href="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_ADD_CLIENTS_TO_CAMPAIGN&campaignId=<$#active.CAMPAIGN_ID$>">Add clients via SQL query</a>
+								<br/>
+								<br/>
+							<$endif$>
+						
+							<$campaignName = #active.NAME$>
+						
+							<$if not #active.TARGET or #active.TARGET like "client"$>
+								<$campaignTarget = "client"$>
+							<$else$>
+								<$campaignTarget = "person"$>
+							<$endif$>
+							
+							<$#active.DESCRIPTION$>
+							<br/>
+							
+							<!-- Work out the number of enrolled/excluded clients/people by totalling
+								 up all the process status counts. -->
+							<$numEnrolled = 0$>
+							<$numExcluded = 0$>
+							
+							<$loop rsProcessStatusCounts$>
+								<$if #active.PROCESS_STATUS like "Excluded"$>
+									<$numExcluded = #active.COUNT$>
+								<$else$>
+									<$numEnrolled = numEnrolled + #active.COUNT$>
+								<$endif$>
+							<$endloop$>
+							
+							<p>
+								<a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&campaignId=<$#active.campaignId$>"><$numEnrolled$> enrolled <$campaignTarget$>(s)</a>
+							</p>
+							
+							<p>
+								<a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&campaignId=<$#active.campaignId$>&processStatus=Excluded"><$numExcluded$> excluded <$campaignTarget$>(s)</a>
+							</p>
+							
+							<$if rsProcessStatusCounts$>
+								<table class="ccla-table">
+									<tr>
+										<th>Process status</th><th>Count</th>
+									</tr>
+
+									<$loop rsProcessStatusCounts$>
+										<$if not (#active.PROCESS_STATUS like "Excluded")$>
+											<tr>
+												<td><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&campaignId=<$#active.campaignId$>&processStatus=<$#active.PROCESS_STATUS$>"><$#active.PROCESS_STATUS$></a></td>
+												<td><$#active.COUNT$></td>
+											</tr>
+										<$endif$>
+									<$endloop$>
+								</table>
+								
+							<$endif$>
+						<$endloop$>
+						
+					<$endif$>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				
+				<$if campaignTarget$>
+					<!-- include ccla_cs_campaign_target_selection -->
+						<$include ccla_cs_basic_campaign_search_form$>
+				<$endif$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Add new related organisation
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_javascript_autocomplete_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<!-- Prep organisation auto-complete -->
+	<$autoCompleteFieldId 	= "entity_autoComplete"$>
+	<$hiddenFieldId			= "PARENT_ELEMENT_ID"$>
+	
+	<$include ccla_cs_entity_autocomplete_js$>
+	
+	<script type="text/javascript">
+	
+		// Determines whether a new association was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;	
+	
+		// ID of the newly-created relation
+		var newRelationId = "<$#local.newRelationId$>";
+	
+		$().ready(function() {
+			if (newRelationId != "" && window.parent) {
+				// Refresh background page to display newly-added relation.
+				//window.parent.refreshAssociationDetails(newRelationId);
+				window.parent.refreshRelations('<$#local.PERSON_ID$>',newRelationId);
+			}
+		});
+	
+		function createNewEntity(personId)
+		{
+			window.open("?IdcService=CCLA_CS_ENTITY_NEW<$include add_idc_token_to_url$>&includeAssociation=yes" +
+			 "&PERSON_ID=<$#local.PERSON_ID$>", "createNewEntity",
+			 "toolbar=1,location=1,menubar=1,scrollbars=1,height=800,width=1000");
+		}
+		
+		function refreshRelations(elementId, newRelationId) {
+			if (window.parent) {
+				window.parent.refreshRelations(elementId, newRelationId);
+				window.parent.closePopup();
+			}
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<form name="addAssociation" id="addAssociation" method="POST">
+			<input type="hidden" name="IdcService" value="CCLA_CS_ADD_ELEMENT_RELATIONS"><$include add_idc_token_to_form$>
+			<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ADD_ORG_RELATION<$include add_idc_token_to_url$>&PERSON_ID=<$#local.PERSON_ID$>&showAllSearchFields=true&added=1&newRelationId=" />		
+			
+			<input type="hidden" name="PARENT_ELEMENT_ID" id="PARENT_ELEMENT_ID" value="" />
+			<input type="hidden" name="RELATED_ELEMENT_ID" VALUE="<$#local.PERSON_ID$>" />
+			<input type="hidden" name="RELATION_TYPE_ID" value="1" />
+			
+			<$include orangeContainer_top$>
+		
+			<div class='ccla_cs_panel_header'>
+				Add new related organisation
+			</div>	
+				
+			<div class='ccla_cs_panel_content'>
+			
+				<$if added$>
+					<div class="message_panel info_icon">
+						New relationship added.	
+					</div>
+				<$endif$>
+				
+				<div class="message_panel info_icon">
+					<ul>
+						<li>
+							Search for an existing organisation using the fields below. 
+							Select the required relationships by ticking the checkboxes.
+						</li>
+						<li>
+							If no matching organisation is found, add a new one by clicking 'Create new organisation'.
+						</li>
+					</ul>
+				</div>
+				
+				Link to organisation: <input type="text" name="entity_autoComplete" id="entity_autoComplete" size="50" value="" />
+				
+				<img src="<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif" id="entity_autoComplete_loading" style="visibility:hidden" />
+				
+				with role: <$include association_select_dropdown$>
+				
+				<div align="right" class="cs-margin-all-5">
+					<input 	type="button" 
+							name="createEntity" 
+							id="createEntity" 
+							value="Create new organisation..." 
+							onclick="createNewEntity('<$#active.PERSON_ID$>');" />
+					<input type="submit" value="Add association" id="addAssociationButton" disabled="disabled" />
+
+				</div>
+			
+			</div>
+			
+			<$include orangeContainer_bottom$>	
+		
+		</form>
+		
+		<$include orangeContainer_top$>	
+		
+		<div class='ccla_cs_panel_content'>
+			<$searchScope="organisation"$>				
+			<$include ccla_cs_contact_lookup_fields$>
+		</div>
+			
+		<$include orangeContainer_bottom$>	
+						
+		<!-- Search results container for lookup query. -->
+		<div id="contactSearchResults" style="height: 300px; overflow-y: scroll;">
+		</div>
+		
+	</div>
+</body>
+</html>

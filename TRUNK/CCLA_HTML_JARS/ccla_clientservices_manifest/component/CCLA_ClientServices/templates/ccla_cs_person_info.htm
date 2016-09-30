@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$isInfo=1$>
+		<title>
+			<$#active.FULL_NAME$> | Person Info
+		</title>
+		
+		<$ELEMENT_ID = #active.PERSON_ID$>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ccla_cs_element_relations_js$>
+		<$include ccla_cs_set_params_js$>
+		
+		<$include ccla_cs_ajax_js$>
+		
+		<script type="text/javascript">
+		
+		var blanketStatus = 0;
+		var expandWin;
+		
+		function openEditPerson(personId)
+		{
+			window.location.href = "?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&PERSON_ID=" + personId;
+		}
+		
+		$(document).ready( function() {
+			
+			<$if #active.added AND #active.isUltraCompact$>
+				var otherFieldValue = '<$#active.PERSON_ID$>';
+				updateIframeValue('iframeOrg', 'relatedPersonId', otherFieldValue); 
+				updateParentFormValue('mainForm','PERSON_ID',otherFieldValue)
+			<$endif$>
+			
+			$('#expand').click(function() {
+				//BlanketOut Screen to prevent data entry
+				var myWidth=0;
+				var myHeight=0;
+					
+				if( typeof( window.innerWidth ) == 'number' ) {
+					//Non-IE
+					myWidth = window.innerWidth;
+					myHeight = window.innerHeight;
+				} else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+					//IE 6+ in 'standards compliant mode'
+					myWidth = document.documentElement.clientWidth;
+					myHeight = document.documentElement.clientHeight;
+				} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+					//IE 4 compatible
+					myWidth = document.body.clientWidth;
+					myHeight = document.body.clientHeight;
+				}	
+					
+				$("#blanket").css({  
+					"height": myHeight,  
+					"width": myWidth  
+				});
+							
+				loadBlanket();
+				expandWindowOpen()			
+				
+			});		
+			
+			$('#closeExpand').click(function() {
+				var parentWin = window.opener;
+				if (parentWin)
+					parentWin.disableBlanket();
+				window.close();
+			});				
+		});
+		
+		
+		function expandWindowOpen() {
+			expandWin = window.open("<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=<$#active.PERSON_ID$>&isCompact=1&isFromExpanded=1&added=0", "Person", "top=100, left=100, width=832px, height=850px, toolbar=no,location=no, status=no, menubar=no, directories=no, resizable=no, scrollbars=yes");
+		}
+		
+		function loadBlanket(){  
+			//loads popup only if it is disabled  
+			if(blanketStatus==0){  
+				$("#blanket").css({"opacity": "0.7"});  
+				$("#blanket").slideDown("slow");  
+				blanketStatus = 1;  
+			}  
+		}
+
+		function disableBlanket(){  
+			//disables popup only if it is enabled  
+			if(blanketStatus==1){  
+				$("#blanket").fadeOut("slow");  
+				blanketStatus = 0;  
+			}  
+		}  		
+		
+		//set form variable in another iframe in the parent widow
+		function updateIframeValue(iframeID, fieldName, fieldValue) {
+			var parentOtherIframe = window.parent.document.getElementById(iframeID);
+			if (parentOtherIframe) {
+				var fielda = parentOtherIframe.contentWindow.document.getElementById(fieldName);
+				if (fielda) {
+					fielda.value= fieldValue;
+				} 			
+				
+			} 
+		}
+
+		//set form variable in another iframe in the parent widow
+		function updateParentFormValue(formName, fieldName, fieldValue) {
+			var parentWindowForm = window.parent.document.getElementById(formName);
+			if (parentWindowForm) {
+				var fielda = parentWindowForm.elements[fieldName];
+				if (fielda) {
+					fielda.value= fieldValue;
+				} 			
+			} 		
+		}
+
+		</script>
+		
+		
+		
+		<$if #active.isCompact$>
+			<$include ccla_cs_compact_styles$>
+		<$endif$>
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$if not #active.isCompact$>
+			<$include iris_header$>
+		<$endif$>
+		
+		<$if #active.isFromExpanded$>
+			<center><p id="closeExpand">Click Here to Return Back</p><center>
+		<$endif$>
+	<div  id="cs_page_container" class="cs-page-container">		
+			<$if NOT hideActionButtons$>
+			<$buttonContext = "person"$>
+				<$include ccla_cs_include_tab_parameters$>			
+				<$include ccla_cs_action_buttons$>
+			<$endif$>
+			<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+				<$if not #active.isUltraCompact$>
+					<$include ccla_cs_toggle_info_edit_display$>
+				<$endif$>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Person info: <$#active.FULL_NAME$>
+					
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$loop rsPerson$>
+					<table width="100%" cellspacing="0" cellpadding="0">
+					
+					<$if false$>
+						<tr>
+						<td width="30%"  align="left"></td>
+							<$include person_authentication_status$>
+						</tr>
+					<$endif$>
+					
+					</table>
+					<div style="padding-top:5px"></div>
+					
+						<$include ccla_cs_display_person_info$>
+						
+					<div style="padding-top:5px"></div>
+
+						<$include ccla_cs_display_readonly_contact_details$>
+						
+					<div style="padding-top:5px"></div>
+						
+					<$endloop$>
+					
+				</div>
+	
+				<$if not #active.isUltraCompact$>
+					<$include orangeContainer_bottom$>
+								
+						<$include ccla_cs_person_relations$>
+
+					<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Account listing
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+					
+					<$include ccla_cs_display_accounts_last_update$>
+					<br/><br/>
+					<$if rsAccounts$>
+						<$displayAccSummary=1$>
+						<$include ccla_cs_display_accounts$>
+					
+					<$else$>
+						<p class="no-info">
+							No registered accounts for this person
+						</p>
+					<$endif$>
+					
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Campaigns
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<$if not rsProcesses$>
+							<p class="no-info">
+								This person has not been enrolled to any campaigns.
+							</p>
+						<$else$>
+							
+							<table class="accounts-table" cellspacing="0" cellpadding="0" width="100%">
+								<tr>
+									<th class="first-col" width="15%">Process ID</th>
+									<th>Campaign</th>
+									<th>Status</th>
+									<th>Start date</th>
+								</tr>
+							
+							<$loop rsProcesses$>
+								<tr class="account-details-row">
+									<td class="first-col"><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_INFO<$include add_idc_token_to_url$>&processId=<$#active.PROCESS_ID$>"><$#active.PROCESS_ID$></a></td>
+									<td><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_INFO<$include add_idc_token_to_url$>&processId=<$#active.PROCESS_ID$>"><$#active.NAME$></a></td>
+									<td><$#active.PROCESS_STATUS$></td>
+									<td><$#active.PROCESS_DATE$></td>
+								</tr>
+							<$endloop$>
+							
+							</table>
+							
+						<$endif$>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Interactions
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<$executeService("CCLA_CS_GET_PERSON_INTERACTIONS")$>
+			
+						<$if rsInteractions$>
+							<$include ccla_cs_display_interactions$>
+						
+						<$else$>
+							<br/>
+							<p class="no-info">No interactions logged for this person</p>
+						<$endif$>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					
+					<$if isTrue(#env.CCLA_SC_ShowSignaturePanels) and #active.PERSON_ID$>
+						<$include ccla_sc_sig_person_update_panel$>
+						<$include orangeContainer_top$>
+							<$include ccla_sc_sig_person_panel$>
+						<$include orangeContainer_bottom$>
+					<$endif$>
+
+						
+					<br/>
+					
+					
+				<$else$>
+					<div style="text-align: right;padding:10px;" class="ccla_cs_panel_content">
+						<$if #active.isUltraCompact$>
+							<input tabindex="160"  id="expand" name="expand" type="button" value="Expand"/>				
+							&nbsp;
+						<$endif$>
+					</div>				
+				<$endif$>	
+			</div>
+		</div>
+		</div>
+	</body>
+</html>

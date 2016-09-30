@@ -1,0 +1,133 @@
+﻿<$include MailHeader$>
+
+
+<$if isTrue(isTextEmail)$>Workflow Review Notification
+
+	<$lc("wwLabelWorkflowName")$> <$dWfName$>
+	<$lc("wwLabelDocNameTag")$> <$dDocName$>
+	<$lc("wwLabelTitle")$> <$dDocTitle$>
+	<$lc("wwRejectedBy")$> <$dUser$> <$if UserAddress$><<$UserAddress$>><$endif$>
+	
+	<$lc("wwMessage")$> <$wfMessage$>
+	
+	<$lc("wwWfReviewWorkflowContent")$>: <$HttpCgiPath$>?IdcService=INV_APPROVAL<$include add_idc_token_to_url$>&dID=<$dID$>
+
+<$else$>
+
+	<$include std_html_head_declarations$>
+	
+	
+	<$if wfAction like 'REJECT'$>
+		<$rejected="Y"$>
+	<$endif$>
+	
+	<title>Workflow Review Notification</title>
+	
+	<div style="margin: 5px; width: <$StdPageWidth$>">
+	
+	<table border=0 width=<$StdPageWidth$>>
+		<tr>
+			<td width=<$StdPageWidth$>><center><h4 class=pageTitle>
+				<$if IsNotifyOnly$>
+					Iris - <$lc("wwWorkflowNotification")$>
+				<$else$>
+					Iris - <$lc("wwWorkflowReviewNotification")$>
+				<$endif$>
+				</h4></center></td>
+		</tr>
+	</table>
+		
+		
+		<$fileLink = HttpCgiPath & "?IdcService=GET_FILE&dID=" & dID & "&Rendition=Web"&inc("add_idc_token_to_url")$>
+		
+		
+		<$if rejected$>
+			<$wfIrisMsg = dDocType & " '" & "<a href='" & fileLink & "'>" &  dDocName & "</a>' has been rejected. Click the 'Review' link below in order to rectify the item."$>
+		<$else$>		
+			<$wfIrisMsg = dDocType & " '" & "<a href='" & fileLink & "'>" &  dDocName & "</a>' has entered workflow step '" & dWfStepName & "' and requires your attention. Clicking the 'Review' link below will take you directly to the approval page for this item."$>
+		<$endif$>
+	
+		<table border=0 width=<$StdPageWidth$>>
+		<tr>
+			<td colspan=2><span class=tableEntry><$wfIrisMsg$></span></td>
+		</tr>
+			
+		<tr>
+			<td colspan=2 align=center color="#FF0000">
+			
+			<br>
+			
+			<$if IsEditRev$>
+				<$actionStr = "&action=edit"$>
+			<$endif$>
+			
+			<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dID=<$dID$><$getValue('#active','actionStr')$>">
+					<b><h3>Review</h3></b></a>
+					
+			<br>
+			
+			</td>
+		</tr>
+		
+		<$if wfRejectMessage$>
+		
+			<tr>
+				<td width = "20%"><span class=infoLabel>Reason for rejection:</span></td>
+				<td width = "20%"><span class=infoLabel><font color='#FF0000'><$wfRejectMessage$></font></span></td>
+			</tr>
+			
+		<$endif$>
+	
+		<tr>
+			<td width = "20%"><span class=infoLabel>Title:</span></td>
+			<td width = "20%"><span class=tableEntry><$dDocTitle$></span></td>
+		</tr>
+		
+		<tr>
+			<td width = "20%"><span class=infoLabel>Status:</span></td>
+			<td width = "20%"><span class=infoLabel><$xStatus$></span></td>
+		</tr>
+		
+		
+	
+		<$if wfApproveMessage$>
+			<tr>
+				<td width = "20%"><span class=infoLabel>Comments:</span></td>
+				<td width = "20%"><span class=tableEntry><$wfApproveMessage$></span></td>
+			</tr>
+		<$endif$>
+	
+		<tr>
+			<td colspan=2><br></td>
+		</tr>
+	
+		<tr>
+			<td width = "20%"><span class=infoLabel>Contributor:</span></td>
+			
+			<$fullName = getValueForSpecifiedUser(dDocAuthor,'dFullName')$>
+			<$if not fullName$>
+				<$fullName = dDocAuthor$>
+			<$endif$>
+			
+			<td width = "20%"><span class=tableEntry>			
+				<$if AuthorAddress$>
+					<a href="mailto:<$#active.AuthorAddress$>"><$fullName$></a>
+				<$else$>
+					<$fullName$>
+				<$endif$>
+			</span></td>
+		</tr>
+	
+		</tr>
+		</table>
+	
+		<br>
+		<br>
+		
+		
+	
+	</div>
+
+<$endif$>
+	
+<$include MailFooter$>

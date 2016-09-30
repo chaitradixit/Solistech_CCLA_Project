@@ -1,0 +1,26 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+ComponentName=CCLA_SignatureChecking
+CreateDate=11/05/2012 16:12
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+blFieldTypes=CreateDate date
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+CCLA_SignatureChecking/CCLA_SignatureChecking.hda
+componentExtra
+CCLA_SignatureChecking/readme.txt
+componentClasses
+CCLA_SignatureChecking/classes/
+jsp
+CCLA_SignatureChecking/
+common
+CCLA_SignatureChecking/
+resources
+CCLA_SignatureChecking/
+componentExtra
+CCLA_SignatureChecking/scripts/
+@end

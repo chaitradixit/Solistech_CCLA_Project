@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Add account to share class group
+	</title>
+	
+	<$searchScope="account"$>
+		<$searchResultsButtonValue = "Select"$>	
+		<$isParentCallBackAccount = "yes"$>
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<$if #local.ORGANISATION_ID$>
+		<!-- Org/Person relationship -->
+		<$ELEMENT_ID = ORGANISATION_ID$>
+
+	<$elseif #local.ACCOUNT_ID$>
+		<!-- Person/Account relationship -->
+		<$ELEMENT_ID = ACCOUNT_ID$>
+
+	<$endif$>
+	
+	<script type="text/javascript">
+	
+
+		// if account just added
+		var IsUpdated 	= "<$#local.IsUpdated$>";
+		
+		
+		$().ready(function() {	
+			if ((IsUpdated == "1") && window.parent) {
+			window.parent.refreshGroupLinks('<$#active.GROUP_ID$>');
+			window.parent.closePopup();
+			}
+		});
+		
+	
+		
+function selectAccountResultReturn(accountNo,accountId)
+	{
+			$('#ACCOUNT_ID').val(accountId);
+
+			$('#addAssociation').submit();
+	}
+		
+	</script>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_contact_lookup_js$>
+	<$include ccla_cs_contact_lookup_mini_styles$>
+</head>
+
+<body class="popupBody">
+
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<form name="addAssociation" id="addAssociation" method="POST">
+				
+			<input type="hidden" name="GROUP_ID" value="<$#local.GROUP_ID$>">
+			<input type="hidden" name="ACCOUNT_ID" id="ACCOUNT_ID" value="<$#local.ACCOUNT_ID$>">
+			<input type="hidden" name="ERROR_MESSAGE" id="ERROR_MESSAGE" value="<$#local.hasError$>">
+			<input  type="hidden" name="IdcService" value="CCLA_TRANS_SHARE_CLASS_GROUP_APPLIED_ADD">
+			<input 	type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_ADD_ACCOUNT_SHARE_CLASS_GROUP<$include add_idc_token_to_url$>&GROUP_ID=<$#local.GROUP_ID$>" />
+			<$include add_idc_token_to_form$>
+		</form>
+			
+						
+		<div class='ccla_cs_panel_content'>	
+
+				<$if hasError$>	
+					<div class="message_panel error_icon">
+						<$#local.hasError$>
+					</div>
+				<$endif$>
+			
+			<$include ccla_cs_contact_lookup_form$>
+			
+			<$include orangeContainer_top$>
+			
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+</body>
+</html>

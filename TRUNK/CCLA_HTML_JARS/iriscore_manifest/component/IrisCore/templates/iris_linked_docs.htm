@@ -1,0 +1,56 @@
+<html>
+<head>
+	<$include iris_styles$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<title>
+		Associated documents listing
+	</title>
+
+	<$include iris_jquery_js$>
+
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+
+	<$include float_menu_header$>
+	<$include doc_listing_styles$>
+	
+	<$include linkeditems_searchandfilter_styles$>
+	<$include std_upload_java_script$>
+	
+	<$include iris_resolve_user_access$>
+
+</head>
+
+<body <$include iris_body_def_internal$> style="<$if MSIE$>width:97%;<$endif$>height:auto;" >
+	
+	<div style="margin: 5px">
+	
+	<$if dDocName$>
+		<$executeService("DOC_INFO_LATESTRELEASE")$>
+	<$endif$>
+	
+	<$if not DOC_INFO$>
+		<div class="error">
+			<p>Error</p>
+			<$if not dDocName$>
+				Parent document reference is missing.
+			<$else$>
+				Parent document reference is invalid.
+			<$endif$>
+		</div>
+	<$else$>
+		
+		<$include iris_linked_doc_listing_pre$>
+
+		<$include ecsSearchAndFilter$>
+		<$include linkeddoc_delete_form$>
+	
+	<$endif$>
+	</div>
+	
+	<$include std_page_end$>
+
+</body>
+</html>

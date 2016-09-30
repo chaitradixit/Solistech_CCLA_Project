@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<$if #active.GROUP_ID$>
+			<$isEdit = 1$>
+		<$else$>
+			<$isCreate=1$>
+		<$endif$>
+		
+		<title>
+			<$if isCreate$>Create Share Class Group <$else$> Edit Share Class Group <$#active.GROUP_NAME$><$endif$>
+		</title>
+		
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+			function refreshGroupLinks(groupId){
+
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_trans_share_class_group_accounts_div",
+					{
+						"GROUP_ID": groupId,
+						"ajaxRefresh": 1,
+						"ts":	new Date().getTime()
+					},
+					function(data) {
+						$("#groupAccounts").html(data);
+					}
+				);
+			}
+				function removeAccount(accountId, groupId) {
+				if (confirm("Are you sure you want to delete this link to the group?")) {
+					
+					$.getJSON("?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_APPLIED_REMOVE<$include add_idc_token_to_url$>&ACCOUNT_ID=" + accountId + "&GROUP_ID=" + groupId,
+						{
+							"IsJSON": 1
+						},
+						function(jsonData) {
+							// TODO: handle potential errors after deleting a contact.
+							// For now just refresh the contact list.
+							refreshGroupLinks(groupId);
+						}
+					);
+					refreshGroupLinks(groupId);
+				}
+				
+			}
+			
+			
+	function shareClassGroupListing()
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_LISTING<$include add_idc_token_to_url$>";
+	}			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+			<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>
+
+				
+				<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								<$if isCreate$>Create Share Class Group <$else$> Edit Share Class Group <$#active.GROUP_NAME$><$endif$>
+							</div>
+
+						<$if isUpdated$>
+							<div class="message_panel info_icon">
+							Group Updated
+							</div>
+						<$endif$>
+							
+						<form name="frmUnitPrice" method="POST">
+						<$include add_idc_token_to_form$>
+						<$if isCreate$>
+							<$include ccla_trans_share_class_group_detail$>
+						<$else$>
+							<$loop rsShareClassGroup$>
+							<input type="hidden" name="FUND_CODE" value="<$#active.FUND_CODE$>">
+							<input type="hidden" name="GROUP_ID" value="<$#active.GROUP_ID$>">		
+							<input type="hidden" name="TOTAL_CASH_VALUE" value="<$#active.TOTAL_CASH_VALUE$>">								
+								<$thisShareClass = rsShareClassGroup.SHARE_CLASS_ID$>
+								<$thisFundCode = #active.FUND_CODE$>
+								<$include ccla_trans_share_class_group_detail$>
+							<$endloop$>
+						<$endif$>
+							<br>
+							<div style="float:left">
+								<input type="submit" value="Save" >
+							</div>
+
+						<$if isCreate$>
+							<input type="hidden" name="IdcService" value="CCLA_TRANS_SHARE_CLASS_GROUP_CREATE">
+						<$else$>				
+							<input type="hidden" name="IdcService" value="CCLA_TRANS_SHARE_CLASS_GROUP_UPDATE">
+
+						<$endif$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_SHARE_CLASS_GROUP_EDIT<$include add_idc_token_to_url$>&isUpdated=1&GROUP_ID=">
+						</form>
+						
+						<$if isEdit$>
+						<br><br>
+							<div class='ccla_cs_panel_header'>
+								Accounts in group
+							</div>
+							<$if rsShareClassGroupAccounts$>
+								<div id="groupAccounts">
+									<$include ccla_trans_share_class_group_accounts$>
+								</div>
+							<$else$>
+								None
+							<$endif$>
+							<br>
+							<div style="float:right">							
+								<input type="button"  onclick="openPopup('?IdcService=CCLA_TRANS_ADD_ACCOUNT_SHARE_CLASS_GROUP<$include add_idc_token_to_url$>&GROUP_ID=<$#active.GROUP_ID$>&includeAssociation=yes&FUND=<$thisFundCode$>&searchScope=account',800);" value="Add account...">							
+							</div>
+							<br>
+						<$endif$>
+
+				<br><br>			
+				<div style="float:right">
+				<input type="button" value="Back to Share Class Group Listing" onClick="shareClassGroupListing()">
+				</div>
+				<br><br>
+							
+						<$include orangeContainer_bottom$>
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html></body></html>

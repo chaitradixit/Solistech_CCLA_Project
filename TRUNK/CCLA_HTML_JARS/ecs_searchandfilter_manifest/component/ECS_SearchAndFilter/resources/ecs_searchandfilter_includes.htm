@@ -1,0 +1,2178 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_SearchAndFilter htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml sfDisplay@>
+  
+  <$if isAdvSearchField$>
+     <$if isTrue(autoSearchAdv)$>
+      <$autoSearch=1$>
+     <$else$>
+      <$autoSearch=''$>
+     <$endif$>      
+  <$else$>
+    <$if isTrue(autoSearchSimple)$>
+      <$autoSearch=1$>
+     <$else$>
+      <$autoSearch=''$>
+     <$endif$>  
+  <$endif$>
+  	
+	<$if sf$>
+  	<$sfCaption = getValue("#active","SF_" & sf & "_caption")$>
+  	<$sfType 		= getValue("#active","SF_" & sf & "_type")$>
+  	<$sfName 		= getValue("#active","SF_" & sf & "_shortname")$>
+  	<$sfSearch	= getValue("#active","SF_" & sf & "_search")$>
+		<$sfValue   = ""$>
+		
+		<$if getValue("#local",sfName)$>
+			<$sfValue = getValue("#local",sfName)$>
+		<$endif$>
+
+		<$trace("Field: " & sfCaption & ", autoSearch? " & autoSearch)$>
+
+  	<$if strEquals(SF_styleAppender,"MAXIMISE")$>
+  	  <$sfClass 	= "SF_maximise"$>
+    <$elseif strEquals(SF_styleAppender,"MEDIUM")$>
+  	  <$sfClass 	= "SF_medium"$>
+  	<$elseif strEquals(SF_styleAppender,"MOST")$>
+  	  <$sfClass 	= "SF_most"$>
+  	<$else$>
+		  <$if useCommonSearchResultStyles$>
+    		<$sfClass = ""$>
+    	<$else$>
+    		<$sfClass 	= "SF_" & fieldName & "_" & SF_styleAppender$>
+    	<$endif$>
+		<$endif$>
+
+		<$sfList 	  = getValue("#active","SF_" & sf & "_list")$>
+
+<!--INPUT-->
+  	<$if strEquals(sfType,"input")$>
+
+			<!-- Add a button adjacent to this date field to toggle the calendar applet,
+				   providing that the field name is present in calendarSelectFields -->
+			<$if strEquals(getValue("#active","SF_" & sf & "_search"),"DATE") and strIndexOf(calendarSelectFields,sf) >= 0 and not useAccessibleSF$>	
+				 	
+				<table width='100%'>
+					<tr>
+						<td width='95%'>
+							<input title="<$sfCaption$> filter" type="text" name="<$sfName$>" id="<$sfName$>" value="<$sfValue$>" class="sfInput"/>
+						</td>
+						<td width='5%' valign='center' align='center'>
+							<image alt="date picker" src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="<$sfName$>_picker" id="<$sfName$>_picker" class="calbutton"/>
+						</td>
+					</tr>
+				</table>
+				
+			<$else$>
+				<!-- Standard text input field -->
+				
+				<input title="<$sfCaption$> filter" type="text" name="<$sfName$>" id="<$sfName$>" value="<$sfValue$>" class="sfInput" 
+				 <$if autoSearch$>onkeydown="if(event.keyCode ==13){document.forms['SEARCHFILTER'].submit();}"<$endif$> />
+				 	
+			<$endif$>
+
+
+<!--FROM/TO DATE FIELDS-->
+		<$elseif strEquals(sfType,"fromto")$>
+		
+			<$sfValue_from = getValue("#active", sfName & "_from")$>
+			<$sfValue_to   = getValue("#active", sfName & "_to")$>
+
+			<!-- Two text input fields here -->
+			<$if useAccessibleSF$>
+				
+				<label class="sfDateLabel" for="<$sfName$>_from"><$ecslc("wwFrom",locale)$>:
+					<input title="from date - <$sfCaption$>" type="text" name="<$sfName$>_from" id="<$sfName$>_from" value="<$#active.sfValue_from$>" class="sfInput" style="width: 6em" />
+				</label>
+					
+				<label class="sfDateLabel" for="<$sfName$>_to">&nbsp;<$ecslc("wwTo",locale)$>:
+					<input title="to date - <$sfCaption$>" type="text" name="<$sfName$>_to" id="<$sfName$>_to" value="<$#active.sfValue_to$>" class="sfInput" style="width: 6em" />	
+				</label>
+			<$else$>			
+			
+				<table cellspacing=0 cellpadding=0 border=0 width='100%'>
+					<tr>
+						<td width='10%'>
+							<label class="sfDateLabel" for="<$sfName$>_from"><$ecslc("wwFrom",locale)$>:</label>
+						</td>
+						
+						<$if noCalendars$>
+							<td width='40%'>
+								<input type="text" name="<$sfName$>_from" id="<$sfName$>_from" value="<$#active.sfValue_from$>" class="sfInput"/>		
+							</td>
+						<$else$>
+							<td width='35%'>
+								<input type="text" name="<$sfName$>_from" id="<$sfName$>_from" value="<$#active.sfValue_from$>" class="sfInput"/>		
+							</td>
+						
+							<td width='5%'  valign='center' align='center'>
+								<image src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="<$sfName$>_from_picker" id="<$sfName$>_from_picker" class="calbutton"/>
+							</td>
+						<$endif$>		
+						
+						<td width='10%'>
+							<label class="sfDateLabel" for="<$sfName$>_to">&nbsp;<$ecslc("wwTo",locale)$>:</label>
+						</td>
+						
+						<$if noCalendars$>
+							<td width='40%'>
+								<input type="text" name="<$sfName$>_to" id="<$sfName$>_to" value="<$#active.sfValue_to$>" class="sfInput"/>
+							</td>
+						<$else$>
+							<td width='35%'>
+								<input type="text" name="<$sfName$>_to" id="<$sfName$>_to" value="<$#active.sfValue_to$>" class="sfInput"/>
+							</td>
+							
+							<td width='5%' valign='center' align='center'>
+								<image src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="<$sfName$>_to_picker" id="<$sfName$>_to_picker" class="calbutton"/>
+							</td>
+						<$endif$>
+						
+					</tr>
+				</table>
+			
+			<$endif$>
+			
+			<!-- This hidden field ensures that the date metadata field always has a value, allowing it to be picked up
+					 by the buildSearchQuery include -->
+			<input type="hidden" name="<$sfName$>" id="<$sfName$>" value="1234" />
+
+<!--CUSTOM-->
+
+		<$elseif strEquals(sfType,"custom")$>
+			<!-- Display a custom filter header for this column -->
+			
+			<$customFilter = getValue("#active",sf & "_CustomFilterScript")$>
+			
+			<$if customFilter$>
+				<$inc(customFilter)$>
+			<$else$>
+				<$ecslc("wwCheckCustomFilterInc",locale)$>
+			<$endif$>
+
+<!--DROPDOWN-->
+		<$elseif strEquals(sfType,"dropdown")$>
+
+			<select title="<$sfCaption$> filter" class="sfSelect" name="<$sfName$>" id="<$sfName$>" <$if autoSearch$>onchange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+		      <option value="" <$if strEquals(sfValue,'')$>selected="selected"<$endif$> ></option>
+              <$dKey=sfList$>
+              <$executeService("GET_VALUES")$>
+
+							<$include blank_string_option$>
+	      			
+              <$if rsValues$>
+                <$loop rsValues$>
+                  <option value="<$dOption$>" <$if strEquals(dOption,sfValue)$>SELECTED<$endif$>><$dOption$></option>
+                <$endloop$>
+              <$endif$>
+      </select>
+      
+<!--DROPDOWNLIST-->
+		<$elseif strEquals(sfType,"dropdownlist")$>
+
+			<$trace(ecslc("wwDropDownListField", locale, sfName, autoSearch))$>
+
+			<select title="<$sfCaption$> filter" class="sfSelect" name="<$sfName$>" id="<$sfName$>" <$if autoSearch$>onchange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+	      <option value="" <$if strEquals(sfValue,'')$>selected="selected"<$endif$> ></option>
+	      	 
+    	  <$include blank_string_option$>
+
+    	  <$fieldListValues = getValue("#active", "SF_" & fieldName & "_listvalues")$>
+    	  
+    	  <$if fieldListValues$>
+      	  <$rsMakeFromString("rsValues",fieldListValues,"dOption")$>
+      	  	
+          <$loop rsValues$>
+            <option value="<$dOption$>" <$if strEquals(dOption,sfValue)$>SELECTED<$endif$>><$dOption$></option>
+            <$if false$>
+              <option value="<$dOption$>" <$if strEquals(dOption,sfValue)$>SELECTED<$sfPrefillStr = sfPrefillStr & "&amp;" & sfName & "=" & sfValue$><$endif$>><$dOption$></option>
+            <$endif$>
+          <$endloop$>
+          	
+        <$endif$>
+      </select>
+
+<!--DROPDOWNVIEW-->
+		<$elseif strEquals(sfType,"dropdownView")$>
+
+			<select title="<$sfCaption$> filter" class="sfSelect" name="<$sfName$>"  id="<$sfName$>" <$if autoSearch$>onchange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+	      <option value="" <$if strEquals(#local.sfValue,'')$>selected<$endif$> ></option>
+	      
+    	  <$include blank_string_option$>
+
+        <$tableName="" & #local.sfList & ""$>
+
+        <$executeService("GET_TABLE")$>
+        <$rsRename(tableName, getValue("#local","rsResults_" & sfName))$>
+				
+        <$if getValue("#local","rsResults_" & sfName)$>
+
+       		<$sfValueColumn = getValue("#active","SF_" & sf & "_valueColumn")$>
+       		<$sfDescColumn  = getValue("#active","SF_" & sf & "_descColumn")$>
+					
+					<!-- TODO: sort this stuff out so its not in an eval string. -->
+          <$eval("<$loop rsResults_" & sfName & "$>" &
+              "<$sfListValue=rsResults_" & sfName & "." & sfValueColumn & "$>" &
+              "<$sfListDesc=rsResults_" & sfName & "." & sfDescColumn & "$>" &
+              "<$include sf_option_list_entry_display$>" &
+              "<$endloop$>")$>
+
+        <$else$>
+          <$trace(ecslc("wwNoValuesFor", locale, tableName))$>
+        <$endif$>
+      </select>
+
+<!--DROPDOWNLINKED-->
+		<$elseif strEquals(sfType,"dropdownLinked")$>
+
+		  <$linkedList 				= getValue("#active","SF_" & sf & "_linkedList")$>
+		  <$linkedListParent 	= getValue("#active","LL_" & linkedList & "_parent")$>
+
+		  <$fieldName = sf$>
+      <$include getLinkedListFieldPosition$>
+
+	    <$if strEquals(linkedListParent,sf)$>
+        <$if false$>
+          <$cacheInclude("calculateSmartLinkedValues","application",600,"calculateSmartLinkedValues",12345)$>
+        <$endif$>
+
+        <$include calculateSmartLinkedValues$>
+
+        <$include smartDropDownJavaScript$>
+
+        <$onLoadStr = #active.onLoadStr & "Init_" & linkedList & "(),"$>
+	
+				<$trace(ecslc("wwOnLoadStr",locale, onLoadStr))$>
+				<$trace(strField1)$>
+				<$trace(strField2)$>
+				<$trace(strField3)$>
+				<$trace(strField4)$>
+
+		  <$endif$>
+
+      <$childName  = getValue("#active","SF_" & sf & "_child")$>
+      <$childField = getValue("#active","SF_" & childName & "_shortname")$>
+
+		  <$llChildArray = getValue("#active", linkedList & "_child" & (llFieldCounter + 1))$>
+
+		  <$if strEquals(llTotalFields - 1,llFieldCounter)$>
+		    <$llChildArray = getValue("#active", linkedList & "_child" & llFieldCounter)$>
+      <$endif$>
+			
+		  <select title="<$sfCaption$> filter" value="<$#local.sfValue$>" class="sfSelect"  name="<$sfName$>_ll"  id="<$sfName$>_ll" onchange="SetBoxs_<$linkedList$>(this.selectedIndex,this,<$linkedList$>_child<$llFieldCounter$>,<$llChildArray$>)">
+			 <input value="<$#local.sfValue$>" type="hidden" name="<$sfName$>" id="<$sfName$>" />
+			 	
+			  <script lang="javascript">
+	        function setupField_<$sfName$> (){
+	        	<$realValue=getValue("#active",sfName & "_ll")$>
+	        	<$if realValue$>
+	         	  //alert("realvalue is: <$realValue$>");
+			        //selectBoxByText_<$linkedList$>("<$sfName$>_ll","<$sfValue$>");
+			        selectBoxValue_<$linkedList$>("<$sfName$>_ll","<$realValue$>");
+			      <$endif$>
+			    }
+			  </script>
+
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+<!-- used to support empty string searching in option lists. -->
+<@dynamichtml blank_string_option@>
+	<$if not (strEqualsIgnoreCase(sfSearch,"QUICKDATE")) and not (suppressBlankSearchOptions)$>
+		<option value="<$#env.SF_blankSearchString$>" <$if #env.SF_blankSearchString like sfValue$>SELECTED<$endif$>>
+			<$ecslc("wwNone", locale)$>
+		</option>
+	<$endif$>
+<@end@>
+
+<@dynamichtml sfResizableColumns@><$if #active.RESIZABLECOLUMNS and (RESIZABLECOLUMNS= 1 or strEquals(strLower(RESIZABLECOLUMNS), "true") or strEquals(strLower(RESIZABLECOLUMNS), "yes") or strEquals(strSubstring(strLower(RESIZABLECOLUMNS), 0,1),"y"))$> id="column_1_<$columnCounter$>" onmousedown="resizeColumns_horizontal('column_1_<$columnCounter$>', 'column_1_<$columnCounter+1$>', event)" onmouseover="this.style.cursor='e-resize'" onmouseout="this.style.cursor='default'"<$endif$>
+<@end@>
+
+<@dynamichtml sfMakeURL@>
+  <$if parameters$>
+	  <$locURL = HttpCgiPath & "?IdcService=" & #active.IdcService & parameters$>
+	<$else$>
+	  <$locURL = HttpCgiPath & "?IdcService=" & #active.IdcService$>
+  <$endif$>
+  	
+  <$locURL = strReplace(locURL,"&","&amp;")$>	
+  
+<@end@>
+
+<@dynamichtml sfCaptionDisplay@>
+
+  <$sd 					= getValue("#active","SF_" & sf & "_idcname")$>
+	<$sfCaption 	= getValue("#active","SF_" & sf & "_caption")$>
+  <$sfShortName = getValue("#active","SF_" & sf & "_shortname")$>
+  <$sfType 			= getValue("#active","SF_" & sf & "_type")$>
+  	
+  <$if strEquals(#local.SortField,sd)$>
+    <!-- The search reslts are being sorted by this column -->
+    <$sortCol = "Y"$>
+  <$endif$>
+
+	<$if sf$>
+		<$if useAccessibleSF and not (useAdvancedSearch and not isAdvSearchField) and not (sfType like 'none')$>
+			<$if sfType like 'fromto'$>
+				<label class="sfColumnHeader" for="<$#local.sfShortName & '_from'$>" <$if #active.sortCol$>style="text-decoration: underline"<$endif$>>
+  				<$#local.sfCaption$>
+  			</label>
+			<$else$>
+				<label class="sfColumnHeader" for="<$#local.sfShortName$>" <$if #active.sortCol$>style="text-decoration: underline"<$endif$>>
+  				<$#local.sfCaption$>
+  			</label>
+			<$endif$>		
+		<$else$>
+			<span class="sfColumnHeader" <$if #active.sortCol$>style="text-decoration: underline"<$endif$>>
+				<$#local.sfCaption$>
+			</span>
+		<$endif$>
+	<$endif$>
+	
+	<$sortCol = ""$>
+
+<@end@>
+
+
+<@dynamichtml sfSortLink@>
+	
+  <$if SF_SORTBYDROPDOWN$>
+  
+  <$else$>
+  
+    <$if strIndexOf(getValue('#active', 'suppressSortLinks'), sf) gt -1$>
+  		<!-- Suppress sort links for this column -->
+  	<$else$>
+  
+    	<$if isTrue(displayColumnHeaderSortOptions)$>
+  	  	<$if sf$>
+  	  		<$tosort = 0$>
+  	  		
+  	  		<$if strEquals(#active.so,"")$>
+  	  			<$so = ecslc("wwDesc", locale)$>
+  	  		<$else$>
+  	  			<$tosort = 1$>
+  	  		<$endif$>
+  	  
+  	  		<$sd 					= getValue("#active","SF_" & sf & "_idcname")$>
+  	  		<$sfCaption 	= getValue("#active","SF_" & sf & "_caption")$>
+			
+		<$cleanedLocURL = locURL$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&so=Asc","")$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&amp;so=Asc","")$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&so=Desc","")$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&amp;so=Desc","")$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&amp;sf="&currentSortField,"")$>
+		<$cleanedLocURL = strReplace(cleanedLocURL,"&sf="&currentSortField,"")$>
+
+  	      <$if strEquals(SortField,sd)$>
+  	  			
+  	  			<$if strEquals(strLower(so),"asc")$>
+  	  				<$pURL = cleanedLocURL & "&amp;sf=" & sd & "&amp;so=Desc"$>
+  	  				<a title="sort by <$sfCaption$> descending" href="<$pURL$>&amp;<$#active.additonalUrlParameters$>"><img src="<$sortImage_up$>" class="sfSortImage" style="vertical-align:middle"
+  	  					 alt="sort by <$sfCaption$> descending" /></a>
+  	  			<$else$>
+  	  				<$pURL = cleanedLocURL & "&amp;sf=" & sd & "&amp;so=Asc"$>
+  	  				<a title="sort by <$sfCaption$> ascending" href="<$pURL$>&amp;<$#active.additonalUrlParameters$>"><img src="<$sortImage_down$>" class="sfSortImage" style="vertical-align:middle"
+  	  					 alt="sort by <$sfCaption$> ascending" /></a>
+  	  			<$endif$>
+  	  			
+  	  		<$else$>
+  	  		
+  	  		    <$pURL = cleanedLocURL & "&amp;sf=" & sd & "&amp;so=Desc"$>
+  	  		    <a title="sort by <$sfCaption$> descending" href="<$pURL$>&amp;<$#active.additonalUrlParameters$>"><img src="<$sortImage_off$>" class="sfSortImage" style="vertical-align:middle" 
+  	  		    	 alt="sort by <$sfCaption$> descending" /></a>
+  	  		    
+  	  		<$endif$>
+  	  
+  	  	<$endif$>
+  	  	
+  	  <$endif$>
+  	
+  	<$endif$>
+  	
+	<$endif$>
+
+<@end@>
+
+
+<@dynamichtml makeFilterHeader@>
+
+  <$if fieldList$>
+
+    <tr class="sfHeaderRow">
+      <$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+      <$totalColumns = getValue("rsFieldList","#numRows")$>
+   
+      <$columnCounter = 0$>
+      
+      <$if DISPLAYTHUMBNAILS == 1$>
+        <$totalColumns = totalColumns+1$>
+      <$endif$>     
+      <$if SF_displayInfoLink$>
+        <$totalColumns = totalColumns+1$>
+			<$endif$>
+			
+			<$if DISPLAYTHUMBNAILS == 1$>
+			  <$sf="THUMBNAIL"$>
+			  	
+				<$include columnHeaderDisplay$>
+				  <div align="left" class="searchHeader">&nbsp;</div>
+				</th>
+				
+			  <$columnCounter = 1$>
+			  
+			<$endif$>
+			
+      <$loop rsFieldList$>
+        <$sf = fieldName$>
+        <$shortName = getValue("#active","SF_" & sf & "_shortName")$> 
+          
+        <$include columnHeaderDisplay$>
+          
+				  <table border=0 cellpadding=0 cellspacing=0 width='100%'>
+				    <tr><td align='left' valign='center'>
+				  
+    				  <$if useIndividualHeaders$>
+    				    <div align="left" class="SF_<$fieldName$>_Header">
+    				  <$else$>
+    				    <div align="left" class="searchHeader">
+    				  <$endif$>
+    				  
+    				    <$include sfCaptionDisplay$>
+    				  
+    				  </div>
+    				  
+    			  </td><td align='right' valign='center'>
+				      <$include sfSortLink$>
+				    </td></tr>
+				  </table>
+			  
+			  </th>
+  
+     		<$columnCounter = columnCounter+1$>
+    	<$endloop$>
+    	
+  		<$if SF_displayInfoLink$>
+  		  <$include columnHeaderDisplay$>
+  		    <div align="left" class="searchHeader"><$ecslc("wwInfo", locale)$></div>
+  		  </th>
+  		  
+  		  <$columnCounter = columnCounter+1$>
+  		<$endif$>
+    </tr>
+
+
+  <$endif$>
+
+  <$if fieldWidth$>
+
+    <tr height='1px'>
+      <$rsMakeFromString("rsFieldWidth",fieldWidth,"fieldWidth")$>
+      <$loop rsFieldWidth$>
+        <$sf=fieldWidth$>
+        <td border="0" width='<$fieldWidth$>%'></td>
+      <$endloop$>
+      
+      <$if SF_displayInfoLink$>
+        <td border="0" width="5px" ></td>
+      <$endif$>
+    </tr>
+
+  <$endif$>
+
+<@end@>
+
+<!--  Defines the opening table header tag. Includes support for custom IDOC evaluation
+      for each header. -->
+<@dynamichtml columnHeaderDisplay@>
+
+  <th id="<$sf$>_header"
+  	<$if useAccessibleSF and fieldWidth$>
+  		style="width: <$rsFieldWidth.fieldWidth$>%"
+ 			<$exec rsNext("rsFieldWidth")$>		
+  	<$endif$>	  
+    <$if #active.custColumnHeaderEval$>
+      <$eval(custColumnHeaderEval)$>
+    <$else$>
+    	class="sfHeaderCell"
+    	<$if not useAccessibleSF$>bgcolor="<$HEADER_BG_COLOUR$>"<$endif$>
+      	
+      <$if #active.bgImage$>
+      	background="<$HttpWebRoot$>images/<$SF_DISPLAY_IMAGES$>/<$#active.bgImage$>"
+      <$endif$>
+      <$include sfResizableColumns$>
+    <$endif$> >
+ 
+<@end@>
+
+<@dynamichtml sf_option_list_entry_display@>
+   <option value="<$sfListValue$>" <$if strEquals(sfListValue,sfValue)$>SELECTED<$endif$>><$sfListDesc$></option>
+<@end@>
+
+<@dynamichtml makeFilterColumns@>
+
+	<$if fieldList$>
+		
+  	<$if  DISPLAYTHUMBNAILS==1$>
+			<th class="sfFilterCell" id="THUMBNAIL_filter">&nbsp;</th>
+	 	<$endif$>
+	 	
+    <$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+    
+    <$loop rsFieldList$>
+			<$if shortName$>
+     		<$sfValue 	= getValue("#active", shortName)$>
+     	<$endif$>
+     		
+      <$sf				= fieldName$>
+      <th class="sfFilterCell" id="<$sf$>_filter"><$include sfDisplay$></th>
+      
+		<$endloop$>
+		
+		<$if SF_displayInfoLink$>
+			<th class="sfFilterCell">&nbsp;</th>
+		<$endif$>
+		
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml makeAdvSearchHiddenFields@>
+
+  <$if QueryFieldList$>
+    <$rsMakeFromString("rsParameters",QueryFieldList,"param")$>
+
+    <$if rsParameters$>
+
+      <$loop rsParameters$>
+        <$foundField=0$>
+        <$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+        <$loop rsFieldList$>
+          <$if strEquals(fieldName,param)$>
+            <$foundField=1$>
+          <$endif$>
+        <$endloop$>
+
+
+        <$if strEquals(foundField,"0")$>
+
+          <$shortName = getValue("#active","SF_" & param & "_shortname")$>
+          <$value 		= getValue("#active",shortName)$>
+
+          <$if value$>
+            <input type=hidden name="<$shortName$>" value="<$value$>"> </input>
+          <$endif$>
+          
+        <$else$>
+        <$endif$>
+
+      <$endloop$>
+    <$endif$>
+
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml makeAdvSearchDisplay@>
+
+  <$if advSearchFieldList$>
+
+      <$rsMakeFromString("rsFieldList",advSearchFieldList,"fieldName")$>
+      <$advSearchFieldSpacer=0$>
+
+      <$loop rsFieldList$>
+
+				<$shortName = getValue("#active","SF_" & fieldName & "_shortname")$>
+        <$sfValue	= getValue("#active", shortName)$>
+        <$sf	= fieldName$>
+
+				<$if advSearchFieldSpacer == 0$>
+					<tr>
+				<$endif$>
+
+        <td colspan="1" class="sfAdvSearchCaption blueboldRight"><$include sfCaptionDisplay$></td>
+        <td colspan="3" class="sfAdvSearchField"><$include sfDisplay$></td>
+
+				<$if advSearchFieldSpacer == 1$>
+					</tr>
+					<$advSearchFieldSpacer=0$>
+				<$else$>
+					<$advSearchFieldSpacer=1$>
+				<$endif$>
+
+      <$endloop$>
+  <$endif$>
+  	
+<@end@>
+
+<@dynamichtml makeMoreAdvSearchDisplay@>
+
+  <$if moreAdvSearchFieldList$>
+    <tr>
+      <$moreAdvFirstField=1$>
+
+      <$rsMakeFromString("rsFieldList",moreAdvSearchFieldList,"fieldName")$>
+
+      <$advSearchFieldSpacer = 2$>
+
+      <$loop rsFieldList$>
+
+        <$shortName = getValue("#active","SF_" & fieldName & "_shortname")$>
+        <$sfValue		= getValue("#active", shortName)$>
+        <$sf				= fieldName$>
+
+				<$if #active.forceMoreAdvFieldsLineBreak$>
+					<$colLimit = 0$>
+					<$colSpan = 1$>
+				<$else$>
+					<$colLimit = 3$>
+					<$colSpan = 3$>
+				<$endif$>
+
+        <td colspan="1" class="sfAdvSearchCaption blueboldRight"><$include sfCaptionDisplay$></td>
+
+        <$if moreAdvFirstField$>
+          <td colspan="<$colSpan$>" class="sfAdvSearchField"><$include sfDisplay$></td>
+          <$moreAdvFirstField=""$>
+        <$else$>
+          <td colspan="1" class="sfAdvSearchField"><$include sfDisplay$></td>
+          <$advSearchFieldSpacer = advSearchFieldSpacer + 1$>
+        <$endif$>
+
+        <$if advSearchFieldSpacer > colLimit$>
+          <$advSearchFieldSpacer = "0"$>
+          </tr>
+          <tr>
+        <$endif$>
+
+      <$endloop$>
+
+    </tr>
+
+  <$endif$>
+
+<@end@>
+
+
+<@dynamichtml makeSearchResultsUrl@>
+
+  <$if allowContentTypeLinkOverride$>
+    <$overrideResultsLink = getValue("#active", "overrideResultsLink_" & #active.dDocType)$>
+    	
+    <$if overrideResultsLink$>
+    <$else$>
+      <$overrideResultsLink=overrideResultsLink_DEFAULT$>
+    <$endif$>
+    
+  <$endif$>
+
+  <$if #active.overrideResultsLink$>
+
+    <$urlToDisplay=eval(overrideResultsLink)$>
+
+  <$else$>
+
+	  <$urlToDisplay=URL$>
+
+	  <$if xWebsiteObjectType$>
+	    <$if strEqualsIgnoreCase(xWebsiteObjectType,"Data File")$>
+	      <$if xWebsiteSection$>
+	        <$websiteSection=xWebsiteSection$>
+	        <$include compute_website_section_info$>
+	        <$urlToDisplay=HttpCgiPath & "?IdcService=SS_GET_PAGE&nodeId=" & nodeId & "&siteId=" & url(siteId) $>
+	      <$endif$>
+	    <$endif$>
+	  <$endif$>
+
+  <$endif$>
+
+  <$if strEquals(urlToDisplay,"NONE")$>
+  <$else$>
+  	href="<$urlToDisplay$>"
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml displaySearchFields@>
+
+  <$if fieldList$>
+
+    <$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+
+    <$firstColumn = 1$>
+
+    <$if DISPLAYTHUMBNAILS==1$>
+    	<td class="sfResultCell SF_THUMBNAIL_RESULTS" >
+    		<$include document_thumbnail$>
+    	</td>
+    <$endif$>
+
+    <$loop rsFieldList$>
+
+    	<$sfIdcName = getValue("#active","SF_" & fieldName & "_idcname")$>
+    	
+    	<$if useCommonSearchResultStyles$>
+    		<$sfClass = ""$>
+    	<$else$>
+    		<$sfClass 	= "SF_" & fieldName & "_" & SF_styleAppender$>
+    	<$endif$>
+    	
+    	<$sfSearch 	= getValue("#active","SF_" & fieldName & "_search")$>
+
+    	<$customInclude = getValue("#active", fieldName & "_CustomIncludeScript")$>
+    	<$if customInclude$>
+    		<$customColumnInclude = "1"$>
+    	<$else$>
+    		<$customColumnInclude = ""$>
+    	<$endif$>
+
+			<$if customColumnInclude or firstColumn$>
+				
+				<td class="sfResultCell <$sfClass$>" headers="<$fieldName$>_header<$if useAdvancedSearch$><$else$> <$fieldName$>_filter<$endif$>" >
+					<$if customColumnInclude$>
+						<$inc(customInclude)$>
+					<$else$>				
+						<$c = "If the first column doesnt have a custom include, show it as a predefined URL"$>
+						<a <$include makeSearchResultsUrl$> <$if openSearchResultInNewWindow$>target="_blank"<$endif$> >
+							<$getValue("#active", sfIdcName)$>
+						</a>
+					<$endif$>
+				</td>
+								
+				<$firstColumn=""$>
+				
+	    <$else$>
+	    	  
+  	    <td class="sfResultCell <$sfClass$>" headers="<$fieldName$>_header<$if useAdvancedSearch$><$else$> <$fieldName$>_filter<$endif$>" >
+  	    	<$if strEqualsIgnoreCase(sfSearch,"DATE") or strEqualsIgnoreCase(sfSearch,"QUICKDATE")$>  	   
+  	    		<$dateToFormat = getValue("#active", sfIdcName)$>
+  	    		<$formatDateWithPattern(dateToFormat,SF_DEFAULT_DATE_FORMAT)$>
+  	    	<$else$>
+  	    		<$getValue("#active", sfIdcName)$>
+  	    	<$endif$>
+  	    </td>
+	 
+	    <$endif$>
+
+  	<$endloop$>
+
+  	<$if SF_displayInfoLink$>
+    	<td align="center" width="2%">
+    	  <$if customInfoLinkInclude$>
+    	     <$inc(customInfoLinkInclude)$>
+    	  <$else$>
+	    	   <a href="<$HttpWebRoot$>idcplg?IdcService=DOC_INFO&dID=<$dID$>&dDocName=<$dDocName$>&<$if infoLinkFlag$><$infoLinkFlag$><$else$><$DEFAULTINFOLINKFLAG$><$endif$>" target="_NEW">
+	    	     <center><img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/InfoIcon_sm.gif" alt="Info" title="Info" height="16" width="16" border="0"></center>
+	    	   </a>
+    	  <$endif$>
+    	</td>
+  	<$endif$>
+
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml document_thumbnail@>
+<$if DISPLAYTHUMBNAILS==1 or strEqualsIgnoreCase(DISPLAYTHUMBNAILS,"true") or strEqualsIgnoreCase(DISPLAYTHUMBNAILS,"yes")$>  <$endif$>
+  <$useThumbnails="1"$>
+
+  <$ImageWidth=THUMBNAILWIDTH$>
+  <$ImageHeight=THUMBNAILHEIGHT$>
+
+  <a <$include makeSearchResultsUrl$> <$if openSearchResultInNewWindow$>target="_blank"<$endif$> >
+  	<$include searchapi_result_table_content_begin_img$>
+  </a>
+
+<@end@>
+
+<@dynamichtml excludeMoreOptionsFields@>
+  <!--stops fields from being used in the search query if the more options are not being displayed-->
+
+  <$moreOptionsExcludeField=0$>
+
+  <$if #active.adv and strEqualsIgnoreCase(#active.adv,"true")$>
+    <$if (strEqualsIgnoreCase(#active.more,"true"))$>
+      <$moreOptionsExcludeField=0$>
+    <$else$>
+      <$rsMakeFromString("rsFieldList",moreAdvSearchFieldList,"fieldName")$>
+      <$loop rsFieldList$>
+        <$if strEquals(param,fieldName)$>
+          <$moreOptionsExcludeField=1$>
+          <$break$>
+        <$endif$>
+      <$endloop$>
+    <$endif$>
+  <$else$>
+    <$moreOptionsExcludeField=0$>
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml buildSearchQuery@>
+
+  <$if QueryFieldList$>
+    <$rsMakeFromString("rsParameters",QueryFieldList,"param")$>
+
+    <$if rsParameters$>
+      <$loop rsParameters$>
+
+        <$shortName = getValue("#active","SF_" & param & "_shortname")$>
+        
+        <$value = getValue("#active",shortName)$>
+				<$idcName = getValue("#active","SF_" & param & "_idcname")$>
+				
+        <$if value and idcName$>
+
+           <$include excludeMoreOptionsFields$>
+           <$if moreOptionsExcludeField == 0$>
+
+             <$searchType = getValue("#active","SF_" & param & "_search")$>
+						 <$trace("param = " & param & ", searchType = " & searchType)$>
+
+             <$if strEqualsIgnoreCase(searchType,"DATE")$>
+                <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") <and> "$>
+               <$endif$>
+               	
+               <$if is10g$>
+             	 	 <$QueryText= QueryText & " ( " & idcName & " >= `" & formatDateWithPattern(value,SF_SEARCHDATEFORMAT) & " 00:00:00`) <and> ( " & idcName & " <= `" & formatDateWithPattern(value,SF_SEARCHDATEFORMAT) & " 23:59:00`)"$>
+               <$else$>	
+              	 <$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(value) & " 00:00) <and> ( " & idcName & "<=" & formatDateDatabase(value) & " 23:59)"$>
+							 <$endif$>               
+             
+             <$elseif strEqualsIgnoreCase(searchType,"FROMTODATE")$>
+	           		<$from_date = getValue("#active",shortName & "_from")$>
+	           		<$to_date = getValue("#active",shortName & "_to")$>
+	           		
+	           		<$if #active.from_date or #active.to_date$>
+	           		
+		           		<$if QueryText$>
+		              	<$QueryText= "(" & QueryText & ") <and> "$>
+		           		<$endif$>
+	             		
+		           		<$if #active.from_date and not #active.to_date$>
+		           			<$if is10g$>
+		           				<$QueryText= QueryText & " ( " & idcName & " >= `" & formatDateWithPattern(from_date,SF_SEARCHDATEFORMAT) & " 00:00:00`) "$>
+	             			<$else$>
+	             				<$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(from_date) & " 00:00)"$>
+	             			<$endif$>
+	             		
+	             		<$elseif not #active.from_date and #active.to_date$>
+	             			<$if is10g$>
+	             				<$QueryText= QueryText & " ( " & idcName & " <= `" & formatDateWithPattern(to_date,SF_SEARCHDATEFORMAT) & " 23:59:00`)"$>
+	             			<$else$>
+	             				<$QueryText= QueryText & " ( " & idcName & " <=" & formatDateDatabase(to_date) & " 23:59)"$>
+	             			<$endif$>
+	             			
+	             		<$elseif #active.from_date and #active.to_date$>
+	             			<$if is10g$>
+	             				<$QueryText= QueryText & " ( " & idcName & " >= `" & formatDateWithPattern(from_date,SF_SEARCHDATEFORMAT) & " 00:00:00`) <and> ( " & idcName & " <= `" & formatDateWithPattern(to_date,SF_SEARCHDATEFORMAT) & " 23:59:00`)"$>
+	             			<$else$>
+	             				<$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(from_date) & " 00:00) <and> ( " & idcName & "<=" & formatDateDatabase(to_date) & " 23:59)"$>
+	             			<$endif$>
+	             			
+	             		<$endif$>
+	             		
+	             	<$endif$>
+               
+             <$elseif strEqualsIgnoreCase(searchType,"QUICKDATE")$>
+               <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") <and> "$>
+               <$endif$>
+               
+               <$if strEquals(value,'over a year')$>
+               	
+               	 <$endDate=dateCurrent(-365)$>
+               	 	
+               	 <$if is10g$>
+               	  <$QueryText= QueryText & " ( " & idcName & " <= `" & formatDateWithPattern(endDate,SF_SEARCHDATEFORMAT) & " 23:59:00`)"$>
+               	 <$else$>
+               	 	<$QueryText= QueryText & " ( " & idcName & " <=" & formatDateDatabase(endDate) & " 23:59)"$>
+	               <$endif$>
+	               
+               <$else$>
+               	<$startDate = dateCurrent()$>
+               	
+               	 <$if strEquals(value,ecslc("wwToday", locale))$>
+	               	 <$endDate=dateCurrent()$>
+	               <$elseif strEquals(value,ecslc("wwYesterday", locale))$>
+	               	 <$startDate=dateCurrent(-1)$>
+	               	 <$endDate=dateCurrent(-1)$>
+	               <$elseif strEquals(value,ecslc("wwLastWeek", locale))$>
+	               	 <$endDate=dateCurrent(-7)$>
+	               <$elseif strEquals(value,ecslc("wwLastMonth", locale))$>
+	               	 <$endDate=dateCurrent(-31)$>
+	               <$elseif strEquals(value,ecslc("wwLastYear", locale))$>
+	               	 <$endDate=dateCurrent(-365)$>
+	               <$elseif strEquals(value,ecslc("wwNextYear", locale))$>
+	               	 <$startDate=dateCurrent(+365)$>
+	               	 <$endDate=dateCurrent()$>
+	               <$elseif strEquals(value,ecslc("wwNextMonth", locale))$>
+	               	 <$startDate=dateCurrent(+31)$>
+	               	 	<$endDate=dateCurrent()$>
+	               <$elseif strEquals(value,ecslc("wwNextWeek", locale))$>
+	               	 <$startDate=dateCurrent(+7)$>
+	               	 	<$endDate=dateCurrent()$>
+	                 <$elseif strEquals(value,ecslc("wwOverdue", locale))$>
+	               	 <$endDate=dateCurrent()$>
+	               <$endif$>
+	               	
+	               	
+	               <$if is10g$>
+	               
+	               	<$QueryText= QueryText & " ( " & idcName & " > `" & formatDateWithPattern(endDate,SF_SEARCHDATEFORMAT) & " 00:00:00`) <and> ( " & idcName & "<= `" & formatDateWithPattern(startDate,SF_SEARCHDATEFORMAT) & " 23:59:00`)"$>
+	               <$else$>
+	               	<$QueryText= QueryText & " ( " & idcName & " >" & formatDateDatabase(endDate) & " 00:00) <and> ( " & idcName & "<=" & formatDateDatabase(startDate) & " 23:59)"$>
+	               <$endif$>
+	               
+               <$endif$>
+             
+             <$elseif strEqualsIgnoreCase(searchType,"NUMERIC")$>
+             	 <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") <and> "$>
+               <$endif$>
+             	  
+             	 <$QueryText= QueryText & " (" & idcName & " <= `" & value & "` <and> " & idcName & " >= `" & value & "`)"$>
+               
+             <$else$>
+             
+               <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") <and> "$>
+               <$endif$>
+               
+               	<$if value like #env.SF_blankSearchString$>
+						   		<$c='User has requested a blank-value search on this field'$>
+						   		
+						   		<$QueryText= QueryText & " (<not> " & idcName & " <matches> `?*`)"  $>
+						   	<$else$>
+						   		<$c='Standard string search'$>
+						   		<$QueryText= QueryText & " (" & idcName & " <" & searchType & "> `" & value  & "`)" $>
+						   	<$endif$>
+               
+             <$endif$>
+           <$endif$>
+
+        <$endif$>
+      <$endloop$>
+      	
+    <$else$>
+			<$trace(ecslc("wwNoParameters", locale))$>
+    <$endif$>
+
+    <$quickSearch = getValue("#active","qs")$>
+
+    <$if quickSearch$>
+			<$quickSearchQueryText=""$>
+      
+      <$if regexMatches(quickSearch,"^[0-9]+$")$>
+      	<$quickSearchIsNumber=1$>
+      <$endif$>
+      
+      <$if SF_enableFullTextSearch$>
+      	<$ftx=1$>
+      	
+	      <$if SF_hideFtxTags$>
+	      	<$quickSearchQueryText = #local.quickSearchQueryText & "(" & quickSearch  & ")"$>
+				<$else$>
+					<$quickSearchQueryText = #local.quickSearchQueryText & "(<ftx>" & quickSearch  & "</ftx>)"$>
+				<$endif$>
+			<$endif$>
+
+			<$quickSearchPlain=""$>
+		  <$include quickSearchSpecific$>
+
+      <$quickSearchFields= QUICKSEARCHMETADATA$>
+      
+      <$rsMakeFromString("rsQuickSearchFields",quickSearchFields,"field")$>
+
+      <$newQuickSearch=strReplace(quickSearch," ",",")$>
+      <$rsMakeFromString("rsQuickSearchWords",newQuickSearch,"word")$>
+			
+			<$loadDocMetaDefinition()$>
+			
+      <$loop rsQuickSearchFields$>		
+        <$include makeQuickSearchFieldQuery$>
+        
+        <$if addToQueryText$>
+	       	<$if quickSearchQueryText$>
+	        	<$quickSearchQueryText = quickSearchQueryText & " <or> "$>
+	        <$endif$>
+	        	
+	       	<$quickSearchQueryText = #local.quickSearchQueryText & addToQueryText$>
+	      <$endif$>
+      <$endloop$>
+			 
+			<$if #active.quickSearchPlain and strLength(quickSearchPlain) > 0$>
+				<$quickSearch=quickSearchPlain$>
+			<$endif$>
+			
+			<$if QueryText$>
+        <$QueryText=  "(" & QueryText & ")" & " <and> "$>
+      <$endif$>
+      
+      <$if quickSearchQueryText$>
+      	<$QueryText = #local.QueryText & " (" & quickSearchQueryText & ")"$>
+      <$endif$>
+			
+    <$endif$>
+  <$endif$>
+
+	<$trace(ecslc("wwBuildSearchQuery", locale, xml(QueryText)))$>
+
+<@end@>
+
+<!-- 	Adds a quick search clause for a single field and the set of
+			quick-search words to search against.
+			
+			Extended to handle correct searching against numeric field
+			types. -->
+<@dynamichtml makeQuickSearchFieldQuery@>
+	<$addToQueryText=""$>
+	
+	<$if rsFindRowPrimary("DocMetaDefinition",field)$>
+   	<$trace("Found a definition for " & field & ", type=" & DocMetaDefinition.dType)$>
+		<$fieldType = DocMetaDefinition.dType$>
+	<$endif$>
+	
+  <$loop rsQuickSearchWords$>
+    <$newQuickSearchClause = ""$>
+     
+		<$if fieldType like "Int"$>
+			<$if quickSearchIsNumber$>
+				<$newQuickSearchClause = "(" & field & " >= `" & word & "` <and> " & field & " <= `" & word & "`)"$>
+			<$endif$>
+				
+		<$else$>
+			<$newQuickSearchClause = field & " <substring> `" & word & "`"$>
+		<$endif$>	
+		
+		<$if newQuickSearchClause$>
+			<$if addToQueryText$>
+			<$addToQueryText = addToQueryText & " <and> " & newQuickSearchClause$>
+			<$else$>
+				<$addToQueryText = "(" & newQuickSearchClause & ")"$> 	
+			<$endif$>
+		<$endif$>
+     	
+  <$endloop$>
+  
+  <$if addToQueryText$> 	
+		<$addToQueryText = "(" & addToQueryText & ")"$>
+	<$endif$>
+
+	<$trace(addToQueryText)$>
+
+<@end@>
+
+<@dynamichtml buildParameterList@>
+
+  <$if QueryFieldList$>
+    <$rsMakeFromString("rsParameters",QueryFieldList,"param")$>
+
+    <$if rsParameters$>
+
+      <$loop rsParameters$>
+
+        <$shortName = getValue("#active","SF_" & param & "_shortname")$>
+        <$value = getValue("#active",shortName)$>
+
+        <$if value$>
+          <$if parameters$>
+            <$parameters= parameters & "&" & shortName & "=" & value$>
+          <$else$>
+            <$parameters= "&" & shortName & "=" & value$>
+          <$endif$>
+        <$endif$>
+
+      <$endloop$>
+
+    <$endif$>
+  <$endif$>
+
+  <$rsMakeFromString("rsParameterAdditionals",PARAMETERSLIST,"paramAdd")$>
+  <$if rsParameterAdditionals$>
+
+    <$loop rsParameterAdditionals$>
+
+      <$paramValue = getValue("#active",paramAdd)$>
+
+      <$if paramValue$>
+        <$if parameters$>
+          <$parameters= parameters & "&" & paramAdd & "=" & paramValue$>
+        <$else$>
+          <$parameters= "&" & paramAdd & "=" & paramValue$>
+        <$endif$>
+      <$endif$>
+
+    <$endloop$>
+
+  <$endif$>
+
+  <$if parameters$>
+    <$parameters=strReplace(parameters," ","+")$>
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml makeSortFields@>
+
+  <$if SF_SORTBYDROPDOWN$>
+    <$if fieldList$>
+  
+      <$if #active.additionalSortFields$>
+      	<$rsMakeFromString("rsFieldList",fieldList & additionalSortFields,"fieldName")$>
+      <$else$>
+      	<$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+      <$endif$>
+  
+  
+      <span><$ecslc("wwSortField", locale)$></span>
+      <select name="sf">
+  
+        <$loop rsFieldList$>
+  				
+  				
+  		    <$sfIdcName = getValue("#active","SF_" & fieldName & "_idcname")$>
+  		    <$sfCaption = getValue("#active","SF_" & fieldName & "_caption")$>
+  
+  		    <option value="<$sfIdcName$>" <$if strEqualsIgnoreCase(SortField,sfIdcName)$>selected<$endif$> > <$sfCaption$></option>
+  
+  		  <$endloop$>
+  
+  		</select>
+    <$endif$>
+  <$endif$>
+
+<@end@>
+
+
+
+<@dynamichtml ecsSearchAndFilter@>
+ <$currentSortField=#local.sf$>
+
+	<$if isOracleUCM$>
+		<$is10g=1$>
+	<$endif$>
+	
+	<$include sfMakeURL$>
+	
+	<!--Allow users to specify their own search function-->
+  <$if customSearchScript$>
+    <$inc(customSearchScript)$>
+  <$else$>
+    <$include performSearch$>
+  <$endif$>
+  <$include createSearchForm$>
+
+<@end@>
+
+
+<@dynamichtml arrangeDefaults@>
+
+ 	<$ssDebug=#active.debug$>
+
+	<!-- If not using custom images set default images location (in images/) -->
+	<$if not SF_DISPLAY_IMAGES$>
+    <$SF_DISPLAY_IMAGES="ECS/SearchAndFilter/"$>
+  <$endif$>
+  	
+  <$if not autoSearchAdv$>
+    <$autoSearchAdv="N"$>
+  <$endif$>
+  
+  <$if not autoSearchSimple$>
+    <$autoSearchSimple="Y"$>
+  <$endif$>
+  
+ 	<$if not displayFilterOptions$>
+ 	  <$displayFilterOptions="Y"$>
+ 	<$endif$>
+ 	
+  <$if not displayHeaderRow$>
+ 	  <$displayHeaderRow="Y"$>
+ 	<$endif$>
+ 	
+  <$if not displayCountSummary$>
+ 	  <$displayCountSummary="Y"$>
+ 	<$endif$>
+ 	
+ 	<$if not displaySearchButton$>
+ 	  <$displaySearchButton="Y"$>
+ 	<$endif$>
+
+ 	
+ 	<$if not #active.displayPagingOptions$>
+ 		<$displayPagingOptions="Y"$>
+ 		
+ 		<$if #env.displayPagingOptions$>
+ 			<$displayPagingOptions=#env.displayPagingOptions$>
+ 		<$endif$>
+
+ 	<$endif$>
+
+ 	<$if not #active.displayPaginator$>
+ 		
+ 		<$if #env.displayPaginator$>
+ 	  	<$displayPaginator=#env.displayPaginator$>
+ 	  <$endif$>
+ 		
+ 	<$endif$>
+ 	
+ 	<$if not displayColumnHeaderSortOptions$>
+ 	  <$displayColumnHeaderSortOptions="Y"$>
+ 	<$endif$>
+ 	
+ 	<$if not displayAdvSearchLink$>
+ 	  <$displayAdvSearchLink="Y"$>
+ 	<$endif$>
+ 	
+ 	<$if nodeFilterFieldNames$>
+	  <$fieldList = nodeFilterFieldNames$>
+  <$endif$>
+	<$if not fieldList$>
+	  <$fieldList=DEFAULTFILTERFIELDNAMES$>
+	<$endif$>
+
+  <$fieldWidth = #active.nodeFilterFieldWidth$>
+  <$if not fieldWidth$>
+    <$fieldWidth=""$>
+  <$endif$>
+
+	<$useAdvancedSearch = "false"$>
+	<$if #active.adv$>
+	  <$useAdvancedSearch = #active.adv$>
+	<$else$>
+	  <$useAdvancedSearch = #active.nodeUseAdvancedSearch$>
+	<$endif$>
+
+	<$queryTextLabel=#active.qt$>
+	<$if not queryTextLabel$>
+	  <$queryTextLabel = #active.nodeQueryTextLabel$>
+	<$endif$>
+	
+	<$if #active.SF_suppressBlankSearchOptions$>
+		<$suppressBlankSearchOptions=1$>
+	<$endif$>
+		
+	<!-- Check for custom sort button graphics -->
+	<$if #active.customSortImage_up$>
+	  <$sortImage_up = customSortImage_up$>
+	<$else$>
+	  <$sortImage_up = HttpImagesRoot & SF_DISPLAY_IMAGES & "/sfUp_active.gif"$>
+	<$endif$>
+	
+	<$if #active.customSortImage_down$>
+	  <$sortImage_down = customSortImage_down$>
+	<$else$>
+	  <$sortImage_down = HttpImagesRoot & SF_DISPLAY_IMAGES & "/sfDown_active.gif"$>
+	<$endif$>
+
+  <$if #active.customSortImage_off$>
+	  <$sortImage_off = customSortImage_off$>
+	<$else$>
+	  <$sortImage_off = HttpImagesRoot & SF_DISPLAY_IMAGES & "/sfDown_inactive.gif"$>
+	<$endif$>
+
+	<$SortField=#active.sf$>
+	<$if strEquals(SortField,'')$>
+	  <$if strEquals(#active.nodeSortField,'')$>
+	    <$SortField=#active.ssSortField$>
+	  <$else$>
+	    <$SortField=#active.nodeSortField$>
+	  <$endif$>
+	<$endif$>
+
+	<$SortOrder=#active.so$>
+	<$if strEquals(SortOrder,'')$>
+	  <$if strEquals(#active.nodeSortOrder,'')$>
+	    <$SortOrder=#active.ssSortOrder$>
+	  <$else$>
+	    <$SortOrder=#active.nodeSortOrder$>
+	  <$endif$>
+	<$endif$>
+		
+	<$trace(ecslc("wwSortFieldWas", locale, SortField))$>
+			
+<@end@>
+
+
+
+<@dynamichtml performSearch@>
+	<$include arrangeDefaults$>
+	<$include buildParameterList$>
+
+  <$QueryText=""$>
+  
+  <$if nodeSearchQuery$>
+	  <$QueryText = nodeSearchQuery$>
+	<$endif$>
+
+	<$if not excludeInitialQueryText$>
+		<$if INITIALQUERYTEXT$>
+			<$if QueryText$>
+			   <$QueryText= '(' & QueryText & ') <and> ' & INITIALQUERYTEXT$>
+			 <$else$>
+			   <$QueryText= INITIALQUERYTEXT$>
+			<$endif$>
+	  <$endif$>
+	<$endif$>
+
+	
+	<$if (#local.submit_clear) and strEqualsIgnoreCase(submit_clear,ecslc("wwClearFilters", locale))$>
+		<!-- User requested that filters are cleared -->
+		<$rsMakeFromString("rsParameters",QueryFieldList,"param")$>
+
+    <$if rsParameters$>
+
+      <$loop rsParameters$>
+        <$shortName = getValue("#active","SF_" & param & "_shortname")$>
+        <$fieldType = getValue("#active","SF_" & param & "_type")$>
+        <$if shortName$>
+        	<$if fieldType like 'fromto'$>
+        		<$exec setValue("#local",shortName & "_from","")$>
+        		<$exec setValue("#local",shortName & "_to","")$>
+        	<$else$>
+        		<$exec setValue("#local",shortName,"")$>
+        	<$endif$>
+        <$endif$>     	
+			<$endloop$>
+				
+		<$endif$>		
+	<$else$>
+		<$include buildSearchQuery$>
+	<$endif$>
+
+	<$ResultCount=#active.ssResultCount$>
+
+	<$ssStartRow=#active.SR$>
+
+	<$if strEquals(#active.SR, '') or (strEquals(#local.submit,ecslc("wwSearch", locale)))$>
+	  <$ssStartRow=1$>
+	<$endif$>
+
+	<$StartRow=ssStartRow$>
+
+	<$if not ResultCount$>
+	  <$ResultCount=25$>
+	<$endif$>
+
+<$if ssFragmentDebugTrace$>
+	SortField = [<$SortField$>]<br>
+	SortOrder = [<$SortOrder$>]<br>
+	ResultCount = [<$ResultCount$>]<br>
+	ssLimitScope = [<$ssLimitScope$>]<br>
+	StartRow = [<$StartRow$>]<br>
+	ssNextRow = [<$ssNextRow$>]<br>
+	QueryText = [<$QueryText$>]<br>
+<$endif$>
+
+	<$if strEquals(ssDebug,'true')$>
+		
+		<table>
+			<tr>
+				<td><b><$ecslc("wwDebugTrace", locale)$></b></td>
+			</tr>	
+			<tr>
+				<td><$ecslc("wwFilterFieldNames", locale)$></td>
+				<td><$nodeFilterFieldNames$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwQueryFieldsList", locale)$></td>
+				<td><$QueryFieldList$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwBaseQuery", locale)$></td>
+				<td><$xml(nodeSearchQuery)$></td>
+			</tr>	
+			<tr>
+				<td><$ecslc("wwQueryText", locale)$></td>
+				<td><$xml(QueryText)$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwParameters", locale)$></td>
+				<td><$parameters$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwResultCount", locale)$></td>
+				<td><$ResultCount$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwSortOrder", locale)$></td>
+				<td><$SortOrder$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwSortField", locale)$></td>
+				<td><$SortField$></td>
+			</tr>
+			<tr>
+				<td><$ecslc("wwStartRow", locale)$></td>
+				<td><$StartRow$></td>
+			</tr>
+		</table>
+
+	<$endif$>
+
+  <$trace(QueryText)$>
+  <$if SF_UseDatabaseSearch$>
+		<$executeService("GET_DB_RESULTS")$>
+	<$else$>
+		<$executeService("GET_SEARCH_RESULTS")$>
+	<$endif$>
+<@end@>
+
+
+
+
+<@dynamichtml createSortLink@>
+QT:<$QueryText$><br>
+so:<$so$><br>
+sf:<$sf$>
+<@end@>
+
+<@dynamichtml createSearchForm@>
+
+	<$if not strEquals(queryTextLabel,'')$>
+	  <p><$ecslc("wwSearchResultsFor", locale, queryTextLabel)$></b></p>
+	<$endif$>
+
+	<script type="text/javascript">
+	  function moreOptions(){
+	    <$if (strEqualsIgnoreCase(#active.more,"true"))$>
+	      document.SEARCHFILTER.more.value="false";
+	    <$else$>
+	      document.SEARCHFILTER.more.value="true";
+	    <$endif$>
+
+	    document.SEARCHFILTER.submit();
+	  }
+	</script>
+	
+	<$if strEquals(#active.advSearchBackgroundColour,'')$>
+    <$advSearchBackgroundColour="#CADFDF"$>
+  <$endif$>
+
+
+  <$if SF_DISPLAYCHECKINLINK$>
+    <$include checkinSimilarLink$>
+  <$endif$>
+
+	<$if SearchResults$>
+    <$ssFirstHit=ssStartRow$>
+    <$ssLastHit=ssStartRow + SearchResults.#numRows - 1$>
+    <$ssThisPage=(ssStartRow + ResultCount - 1)/ResultCount$>
+    <$ssLastPage=(TotalRows + ResultCount - 1)/ResultCount$>
+  <$else$>
+    <$ssFirstHit=1$>
+    <$ssLastHit=0$>
+    <$ssThisPage=1$>
+    <$ssLastPage=0$>
+  <$endif$>
+
+  <$if strEquals(ssDebug,'true')$>
+		ssStartRow = [<$ssStartRow$>]<br>
+		ssFirstHit = [<$ssFirstHit$>]<br>
+		ssLastHit  = [<$ssLastHit$>]<br>
+		ssThisPage = [<$ssThisPage$>]<br>
+		ssLastPage = [<$ssLastPage$>]<br>
+		ssNextRow  = [<$ssStartRow$>]<br>
+		TotalRows  = [<$TotalRows$>]<br>
+		ResultCount= [<$ResultCount$>]<br>
+  <$endif$>
+
+	<form <$if not useAccessibleSF$>name="SEARCHFILTER"<$endif$> id="SEARCHFILTER" action="<$if nodeUrl$><$nodeUrl$><$endif$>" method="get">
+		
+		<p style="margin: 0px; height: 0px;">
+		
+    <input type="hidden" name="IdcService" value="<$#active.IdcService$>" />
+    <$if #active.nodeId$>
+    	<input type="hidden" name="nodeId" value="<$#active.nodeId$>"  />
+    <$endif$>
+    <$if #active.ssSourceNodeId$>
+      <input type="hidden" name="ssSourceNodeId" value="<$#active.ssSourceNodeId$>" />
+    <$endif$>
+    <$if #active.debug$>
+      <input type="hidden" name="debug" value="<$#active.debug$>" />
+    <$endif$>
+    <$if #active.qt$>
+    	<input type="hidden" name="qt" value="<$#active.qt$>"  />
+    <$endif$>
+     
+    <input type="hidden" name="more" value="<$#active.more$>" />
+    
+    <$if #active.adv$>
+    	<input type="hidden" name="adv" value="<$#active.adv$>" />
+    <$endif$>
+    <$if #active.qs$>
+    	<input type="hidden" name="qs" value="<$#active.qs$>" />
+    <$endif$>
+    <$if #active.t$>
+    	<input type="hidden" name="t" value="<$#active.t$>" />
+    <$endif$>
+    <$if #active.infoLinkFlag$>
+    	<input type="hidden" name="<$infoLinkFlag$>" value="" />
+    <$endif$>
+    	
+    </p>
+
+		<$if strEqualsIgnoreCase(useAdvancedSearch,'True')$>
+			
+			<$isAdvSearchField=1$>
+			
+			<$if #active.advSearchDisplay_pre$>
+		    <$inc(advSearchDisplay_pre)$>
+		  <$endif$>
+			
+		    <table summary="advanced search fields"
+		    			 <$if not useAccessibleSF$>
+		    			 	bgcolor=<$#active.advSearchBackgroundColour$> 
+		    			 	width="100%"
+		    			 <$endif$>
+		    			 	 
+		    			 	class="IssueBlock sfAdvSearchTable"  
+		    			 	cellpadding="2" 
+		    			 	cellspacing="4" 
+		    			 	border="0">
+		      <$SF_styleAppender="MOST"$>
+		      	
+		      <$include makeAdvSearchDisplay$>
+
+					<$if moreAdvSearchFieldList$>
+
+			      <$if (strEqualsIgnoreCase(#active.more,"true"))$>
+			        <tr>
+	
+			          <td colspan="8" class="sfLink"><a href="javascript:moreOptions();"><$ecslc("wwHideOptions", locale)$></a></td>
+			         </tr>
+	
+			         <$sfClass="bluebold"$>
+			         <$include makeMoreAdvSearchDisplay$>
+	
+				   <$else$>
+			        <tr>
+	
+			          <td colspan="8" class="sfLink"><a href="javascript:moreOptions();"><$ecslc("wwMoreOptions", locale)$></a>
+			          </td>
+			         </tr>
+	
+				   <$endif$>
+			   	
+			   <$endif$>
+			   		
+			   <!-- Search result count -->
+			   <$if SF_showResultCountSelector$>
+			   	 <tr>
+			   	    <td>
+			   	    	<br/>
+			   	    </td>
+			   	 </tr>
+				   <tr>
+				   		<td class="sfAdvSearchCaption blueboldRight">
+				   			<span style="sfColumnHeader"><$ecslc("wwResultsPerPage", locale)$></span>
+				   		</td>
+				   		<td class="sfAdvSearchField">
+				   		
+				   			<select name="ssResultCount" class="sfSelect">
+				   				
+				   				<$countOpts="25,50,100,1000,2000"$>
+									<$exec rsMakeFromString("rsCountOpts",countOpts)$>
+									
+									<$loop rsCountOpts$>
+										<option value="<$rsCountOpts.row$>" <$if rsCountOpts.row like ResultCount$>selected="selected"<$endif$>>
+											<$rsCountOpts.row$>
+										</option>
+									<$endloop$>
+									
+				   			</select>
+				   		
+				   		</td>
+				   
+				   </tr>
+			   <$endif$>
+			   		
+				  <$if SF_DISPLAYCHECKINLINK$> 		
+	        	<tr>
+		          <td colspan="8" class="sfLink"><a href="javascript:" onclick="submitCheckinSimilar3(); return false;"><$ecslc("wwCheckinSimilar", locale)$></a>
+		          </td>
+	        	</tr>
+	        <$endif$>
+        
+		    </table>
+		  
+		  <$if #active.advSearchDisplay_after$>
+		    <$inc(advSearchDisplay_after)$>
+		  <$endif$>
+
+		<$else$>
+		  <$include makeAdvSearchHiddenFields$>
+		<$endif$>
+
+		<$isAdvSearchField=''$>
+
+		<$if customIncludeFieldScript$>
+		  <$inc(customIncludeFieldScript)$>
+		<$endif$>
+
+    <!-- TM: Added conditional to control the display of the br tag. -->
+    <$if #active.hideLineBreak$>
+    <$else$>
+		  <p class="sfHeaderGap">&nbsp;</p>
+    <$endif$>
+
+    <$if isTrue(displayHeaderRow)$>
+			<$include sfMakeURL$>
+			
+			<$if useAccessibleSF$>
+				
+				<div style="width: 100%;">
+					<div style="float: left; clear: both;">
+						
+						<$include sf_paging$>
+					</div>
+					
+					<div style="height: 1em; clear:both"></div>
+					
+					<div style="float:left">
+						<$include adv_search_link$>
+						<br/>
+	  		        
+	  		      <$if isTrue(displayCountSummary)$>
+	  		        
+	  		      	<$include get_result_count$> 
+	  		        <span class="sfInfo"><$resultCountStr$></span>
+
+	  		      <$endif$>	      
+	  		     	<br/>
+	 
+					</div>
+					
+					<div style="float: right">
+						<$if inlineHeaderInclude$>
+	    				<$inc(inlineHeaderInclude)$>
+    			  <$endif$>
+    			  
+    			  <$if isTrue(displayResetButton)$>
+    			  	<input type="submit" class="submitLink" name="submit_clear" value="<$ecslc('wwClearFilters', locale)$>" />
+    			  <$endif$>
+
+					<$if isTrue(displaySearchButton)$>
+						<$if #active.sfUseImageForSearchButton$>
+							<input align="bottom" type="image" src="?IdcService=GET_FILE&dDocName=<$sfUseImageForSearchButton$>&RevisionSelectionMethod=Latest"/>
+						<$else$>
+							<input type="submit" class="submitLink" value="<$lc('wwSearch', locale)$>" />
+						<$endif$>
+					<$endif$>
+				
+				
+					</div>
+					
+					<div style="height: 1em; clear:both"></div>
+					
+				</div>
+				
+			<$else$>	
+			
+				<$if not headerSideWidth$>
+				 <$headerSideWidth = '35%'$>
+				<$endif$>
+				
+				<table width="100%" cellpadding='0' cellspacing='0'>
+	  
+			    	<td width="<$headerSideWidth$>" class="HeaderLeft">
+			    	
+			    	  <$if isTrue(displayCountSummary)$>
+	  		        
+	  		      	<$include get_result_count$> 
+	  		        <span class="sfInfo"><$resultCountStr$></span>
+
+	  		      <$else$>
+	  		        &nbsp;
+	  		      <$endif$>
+	  		      
+			      </td> 
+					   
+				    <td align="center" class="HeaderCenter">
+							
+							<$include sf_paging$>
+	            
+				    </td>
+	
+				    <td align="right" width="<$headerSideWidth$>" class="HeaderRight" >
+				      <$include makeSortFields$>
+				      
+	            <$if SF_SORTBYDROPDOWN$>
+	    					<span><$ecslc("wwSortOrder", locale)$></span>
+	    					<select name="so">
+				          <option value="DESC" <$if strEquals(SortOrder,'Desc')$>selected<$endif$>><$ecslc("wwDesc", locale)$> </option>
+				          <option value="ASC"  <$if strEquals(SortOrder,'ASC' )$>selected<$endif$>><$ecslc("wwAsc", locale)$>  </option>
+				        </select>
+	    			  <$endif$>
+	    			  
+	    			  <$if inlineHeaderInclude$>
+	    			     <$inc(inlineHeaderInclude)$>
+	    			  <$endif$>
+	    			  
+	    			  <$if displayResetButton$>
+	    			  	<$if isTrue(displayResetButton)$>
+    			  		  <input type="submit" class="submitLink" name="submit_clear" value="<$ecslc('wwClearFilters', locale)$>" />
+    			  	  <$endif$>
+	    			  <$endif$>
+	    			  <$if isTrue(displaySearchButton)$>
+	    			  	<input type="submit" class="submitLink" value="<$ecslc('wwSearch', locale)$>" />
+	  			    <$endif$>
+	  			    
+				    </td>
+				    
+				  </tr>
+			  	<tr>
+						<td colspan="3">
+						  <$include adv_search_link$>
+						</td>
+			  	</tr>
+
+				</table>
+			
+			<$endif$>
+			
+    <$endif$>
+
+		<$if customIncludeResultsHeader$>
+			<$inc(customIncludeResultsHeader)$>
+		<$endif$>
+
+		<$SF_styleAppender="results"$>
+
+		<$SF_displayInfoLink=1$>
+		<$if hideInfoLink$>
+		  <$SF_displayInfoLink=""$>
+		<$endif$>
+			
+		<$include sfMakeURL$>
+
+	  <!-- TM: Allow custom attribute declarations for results table -->
+		<$defaultTableAttrs="class='IssueBlock sfResultsTable' cellpadding='2' cellspacing='4' border='0' "$>
+		
+		<$if not custTableAttrs$>
+			<$custTableAttrs = defaultTableAttrs$>
+		<$endif$>
+		
+		<$include get_result_count$>
+	  <table summary="Search Results - Page <$ssThisPage$> of <$ssLastPage$>, <$resultCountStr$>" <$custTableAttrs$>>
+	  
+	    <thead>
+	    	<$if useAccessibleSF$>
+	    		<$include makeFilterHeader_accessible$>
+	    	<$else$>
+					
+					<$if #active.SF_FILTER_HEADER_CACHING$>
+						<$key="makeFilterHeader_" & nodeFilterFieldNames & "_" & getUserValue("dUserLocale") & "_" & #local.SortField & "_" & #local.SortOrder$>
+	      		<$log4j("caching header with key: " & key)$>
+	      		<$cacheInclude("makeFilterHeader",session,86400, "", key)$>
+					<$else$>
+	      		<$include makeFilterHeader$>	
+	      	<$endif$>	
+	      		
+	      <$endif$>
+	 
+        <$if not strEqualsIgnoreCase(useAdvancedSearch,'True')$>
+		      <tr class="sfFilterRow">
+		        <$SF_styleAppender="MAXIMISE"$>
+		        <$if isTrue(displayFilterOptions)$>
+			        <$include makeFilterColumns$>
+			      <$endif$>
+		      </tr>
+        <$endif$>
+	        	
+			</thead>
+			
+			<tbody>
+
+	      <$SF_styleAppender="results"$>
+
+	      <$if SearchResults$>
+
+		    <$loop SearchResults$>
+
+		        <$c = "TM: Allow custom attribute declarations for result rows"$>
+						<$c = "TM: The custRowEval variable is useful for declaring dynamic attributes for the rows, e.g. names/ids"$>
+						<tr <$if #active.custRowAttrs$><$custRowAttrs$><$endif$> <$if #active.custRowEval$><$eval(custRowEval)$><$endif$>>
+		      		<$include displaySearchFields$>
+		      	</tr>
+
+		    <$endloop$>
+
+	      <$endif$>
+
+	    </tbody>
+
+	  </table>
+		
+		<$include displayOnLoadFunction$>
+
+  <$if customIncludeFooterScript$>
+    <$inc(customIncludeFooterScript)$>
+  <$endif$>
+
+</form>
+<@end@>
+
+<@dynamichtml adv_search_link@>
+
+	<$if SF_DISPLAYADVSEARCHLINK$>
+   	<$if isTrue(displayAdvSearchLink)$>
+	   <span class="sfRight">
+       <$if strEqualsIgnoreCase(#active.adv, "true")$>
+		     <$adv=""$>
+		     <$include sfMakeURL$>
+		     <$locURL=strReplace(locURL,"&adv=true","")$>
+		     <$locURL=strReplace(locURL,"&amp;adv=true","")$>	
+		     <a href="<$locURL$>"><$ecslc("wwSimple", locale)$></a>
+       <$else$>
+		     <a href="<$locURL$>&amp;adv=true"><$ecslc("wwAdv", locale)$></a>
+       <$endif$>
+     </span>
+    <$endif$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml get_result_count@>
+	  		        
+	<$if TotalRows le 0$>
+		<$if not SearchResults$>
+			<$resultCountStr = ecslc("wwNoItemsFound", locale)$>
+		<$else$>
+			<$resultCountStr = ecslc("wwItemsOf", locale, 1, SearchResults.#numRows, SearchResults.#numRows)$>
+		<$endif$>
+	<$else$>
+		<$resultCountStr = ecslc("wwItemsOf", locale, ssFirstHit, ssLastHit, TotalRows)$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml makeFilterHeader_accessible@>
+
+	<!-- Compute column widths first. -->
+	<$if fieldWidth$>
+  	<$exec rsMakeFromString("rsFieldWidth",fieldWidth,"fieldWidth")$>
+  <$endif$>
+
+  <$if fieldList$>
+    <tr class="sfHeaderRow">
+      <$rsMakeFromString("rsFieldList",fieldList,"fieldName")$>
+      <$totalColumns = getValue("rsFieldList","#numRows")$>
+   
+      <$columnCounter = 0$>
+      
+      <$if DISPLAYTHUMBNAILS == 1$>
+        <$totalColumns = totalColumns+1$>
+      <$endif$>     
+      <$if SF_displayInfoLink$>
+        <$totalColumns = totalColumns+1$>
+			<$endif$>
+			
+			<$if  DISPLAYTHUMBNAILS == 1$>
+			  <$sf="THUMBNAIL"$>
+			  	
+				<$include columnHeaderDisplay$>
+				  <div align="left" class="searchHeader">&nbsp;</div>
+				</th>
+				
+			  <$columnCounter = 1$>
+			  
+			<$endif$>
+			
+      <$loop rsFieldList$>
+        <$sf=fieldName$>
+          
+          <$include columnHeaderDisplay$>
+            
+            <div style="float:left">
+            	<$include sfCaptionDisplay$>
+            </div>
+            <div style="float:right">
+            	<$include sfSortLink$>
+				  	</div>
+				  </th>
+  
+     		<$columnCounter = columnCounter+1$>
+    	<$endloop$>
+    	
+  		<$if SF_displayInfoLink$>
+  		  <$include columnHeaderDisplay$>
+  		    <div align="left" class="searchHeader"><$ecslc("wwInfo", locale)$></div>
+  		  </th>
+  		  
+  		  <$columnCounter = columnCounter+1$>
+  		<$endif$>
+    </tr>
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml sf_paging@>
+
+
+    
+	<$if SF_CustomPaginator and #local.TotalRows gt 0$>
+	
+		<$inc(SF_CustomPaginator)$>
+	
+	<$elseif useAccessibleSF and #local.TotalRows gt 0$>
+		
+		<$include accessible_paginator$>
+	
+	<$elseif isTrue(displayPagingOptions) and #local.TotalRows gt 0$>
+	  <$if ssThisPage gt 1$>
+	  <$c="NN-added #active.additonalUrlParameters parameter for other parameters not added by the parameters variable e.g. for Achoring the A tag, so the user does not have to keep scrolling up/down on page reload"$>
+	    <a class="sfPageLink" href="<$locURL$>&amp;SR=<$(ssStartRow - ResultCount)$>&amp;<$parameters$>&amp;<$#active.additonalUrlParameters$>">
+	    <img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageDown.gif" /></a>
+	  <$else$>
+	    <img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageDown_inactive.gif" />
+	  <$endif$>
+	
+	  <span class="sfPagingText">
+	  	<$ecslc("wwPage", locale)$>
+	  	
+	    <select name="pageSelectList" style="width: 3.5em" onchange="document.location.href=this.options[selectedIndex].value" >
+		  <$ssCount = 1$>
+		  <$loopwhile ssCount le ssLastPage$>
+		    <$if parameters$>
+		      <option <$if ssCount eq ssThisPage$> selected<$endif$> value='<$locURL$>&amp;SR=<$((ssCount -1) * ResultCount) + 1$>&amp;<$parameters$>'>
+		    <$else$>
+		      <option <$if ssCount eq ssThisPage$> selected<$endif$> value='<$locURL$>&amp;SR=<$((ssCount -1) * ResultCount) + 1$>'>
+		    <$endif$>
+		  	  <$ssCount$>
+			  </option>
+	  		<$ssCount = ssCount+1$>
+		  <$endloop$>
+		  </select>
+	
+	  	<$ecslc("wwOf", locale, ssLastPage)$>
+	  </span>
+	  <$if ssThisPage lt ssLastPage$>
+	 
+	    <a class="sfPageLink" href="<$locURL$>&amp;SR=<$ssStartRow + ResultCount$>&amp;<$#active.additonalUrlParameters$>">
+	    	<img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageUp.gif"  />
+	    </a>
+	  <$else$>
+	    <img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageUp_inactive.gif" />
+	  <$endif$>
+	  
+	<$elseif isTrue(displayPaginator) and TotalRows gt 0$>
+	
+		<$include displayPaginator$>
+	
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml accessible_paginator@>
+	
+	<fieldset id="pagination">
+	  <legend><$ecslc("wwPages", locale)$></legend>
+
+		<$if ssThisPage gt 1$>
+	    <a class="sfPageLink" title="previous page" href="<$locURL$>&amp;SR=<$(ssStartRow - ResultCount)$>&<$parameters$>">
+	    <img alt="previous page" src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageDown.gif" /></a>
+	  <$else$>
+	    <!-- <img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageDown_inactive.gif" border=0/> -->
+	  <$endif$>
+
+		<span class="sfPagingText"><$ecslc("wwPageOf", locale, ssThisPage, ssLastPage)$></span>
+		
+		<$if ssThisPage lt ssLastPage$>
+	    <a class="sfPageLink" title="next page" href="<$locURL$>&amp;SR=<$ssStartRow + ResultCount$>">
+	    	<img alt="next page" src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageUp.gif" />
+	    </a>
+	  <$else$>
+	    <!--<img src="<$HttpImagesRoot$><$SF_DISPLAY_IMAGES$>/PageUp_inactive.gif" border=0/>-->
+	  <$endif$>
+
+		<br/>
+
+		<label for="pageNumber">
+			<span class="sfPagingText"><$ecslc("wwJumpToPage", locale)$>
+				<select title="page number" id="pageNumber" name="SR" style="width: 4em">
+					
+				  <$ssCount = 1$>
+				  <$loopwhile ssCount le ssLastPage$>
+				    <$if parameters$>
+				      <option <$if ssCount eq ssThisPage$> selected="selected"<$endif$> value='<$((ssCount -1) * ResultCount) + 1$>'>
+				    <$else$>
+				      <option <$if ssCount eq ssThisPage$> selected="selected"<$endif$> value='<$((ssCount -1) * ResultCount) + 1$>'>
+				    <$endif$>
+				  	  <$ssCount$>
+					  </option>
+			  		<$ssCount = ssCount+1$>
+				  <$endloop$>
+				  	
+				</select>
+			</span>
+		</label>
+		
+		<input type="submit" name="submit_page" value="<$ecslc('wwGo', locale)$>" />
+			
+	</fieldset>
+
+<@end@>
+
+<@dynamichtml displayPaginator@>
+  <!-- The ECS_Paginator component must be installed to correctly use this include -->
+	<$if TotalRows > 0 and ssLastPage > 1$>
+
+		<$pn_width=250$>
+		<$pn_size = 5$>
+		<$pn_total = ssLastPage$>
+		
+		<$pn_current = ssThisPage$>
+		
+		<$if not #active.pn_link_prefix$>
+			<$pn_link_prefix=locURL & "&amp;SR="$>
+		<$endif$>
+	
+		<$counter = 2$>
+		<$str = '1,'$>
+	
+		<$loopwhile counter <= ssLastPage$>
+			
+			<$str = str & (((counter-1) * ResultCount)+1) & ','$>
+			<$counter = counter + 1$>
+		
+		<$endloop$>
+		
+		<$rsMakeFromString("pn_rs",str,"ID")$>
+	
+		<$pn_rs = "pn_rs"$>
+		<$pn_rs_row = "ID"$>
+		
+		<$pn_use_rs = 1$>
+	
+		<$include paginator_compute_window$>
+		
+		<$include paginator_display_window$>
+		
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml epoch_calendar_header@>
+
+	<link rel="stylesheet" type="text/css" href="<$HttpWebRoot$>epoch/epoch_styles.css" />
+	<script type="text/javascript" src="<$HttpWebRoot$>epoch/epoch_classes.js"></script>
+	
+	<$onLoadStr = #active.onLoadStr & "prepareCalendars();"$>
+	
+	<script type="text/javascript">
+
+		function prepareCalendars() {
+		
+			//alert("onload() function");
+		
+			<$exec rsMakeFromString("rsCalendarFields",calendarSelectFields)$>
+			
+			<$if rsCalendarFields$>		
+				<$loop rsCalendarFields$>
+					
+					<$field = rsCalendarFields.row$>
+					
+					<$inputType = getValue("#active","SF_" & field & "_type")$>
+					<$shortName = getValue("#active","SF_" & field & "_shortname")$>
+					
+					<$if #active.inputType$>
+					
+						<$if inputType like 'fromto'$>
+			
+							elem = document.getElementById('<$shortName$>_from')
+							btn  = document.getElementById('<$shortName$>_from_picker');
+							
+							if (elem != null) {		
+								// Declare new calender instance for the 'from date' field
+							<$field$>_from_cal  = new Epoch('<$field$>_from_cal','popup',elem,btn,false);
+							}
+							
+							
+							
+							elem = document.getElementById('<$shortName$>_to')
+							btn  = document.getElementById('<$shortName$>_to_picker');
+							if (elem != null) {		
+								// Declare new calender instance for the 'to date' field			
+								<$field$>_to_cal    = new Epoch('<$field$>_to_cal','popup',elem,btn,false);
+							}	
+						
+						<$elseif inputType like 'input'$>
+						
+							btn  = document.getElementById('<$shortName$>_picker');						
+							elem = document.getElementById('<$shortName$>')
+							
+							if (elem != null) {		
+								// Declare new calender instance for the 'to date' field			
+								<$field$>_cal    = new Epoch('<$field$>_cal','popup',elem,btn,false);
+							}	
+						
+						
+						<$endif$>
+					<$endif$>
+				
+				<$endloop$>
+				
+			<$endif$>
+		};
+	</script>
+	
+<@end@>
+
+<@dynamichtml checkinSimilarLink@>
+	<$sfPrefillStr=SCRIPT_NAME$>
+	
+	
+	<form name="checkinSimilar" action="<$sfPrefillStr$>" method="get">
+		<input type="hidden" name="IdcService" value="<$CHECKIN_SERVICE$>" />
+		<input type="hidden" name="dDocType" value="<$SF_CHECKIN_DOCTYPE$>" />
+		<input type="hidden" name="dSecurityGroup" value="<$SF_CHECKIN_SECURITYGROUP$>" />
+		<input type="hidden" name="dDocAccount" value="<$SF_CHECKIN_ACCOUNT$>" />
+		<input type="hidden" name="xCity" value="" />
+		<input type="hidden" name="xRegion" value="" />
+		<input type="hidden" name="xCountry" value="" />
+		<input type="hidden" name="xAuthor" value="" />
+		<input type="hidden" name="dDocTitle" value="" />
+	</form>
+<SCRIPT type="text/JavaScript">
+<!--
+function submitCheckinSimilar3(){
+
+	var cf = document.forms['checkinSimilar'];
+	//var f = document.forms['SEARCHFILTER'];
+	if(document.forms['SEARCHFILTER']['sti'])
+		cf.dDocTitle.value=document.forms['SEARCHFILTER']['sti'].value;
+	if(document.forms['SEARCHFILTER']['sau'])
+		cf.xAuthor.value=document.forms['SEARCHFILTER']['sau'].value;
+	cf.xRegion.value=document.getElementById('rgn_ll')[document.getElementById('rgn_ll').selectedIndex].text;
+	cf.xCity.value=document.getElementById('cty_ll')[document.getElementById('cty_ll').selectedIndex].text;
+	cf.xCountry.value=document.getElementById('cnt_ll')[document.getElementById('cnt_ll').selectedIndex].text;
+
+	cf.submit();
+}
+//-->
+</SCRIPT>
+<@end@>
+
+<@dynamichtml quickSearchSpecific@>
+
+<@end@>
+
+<@dynamichtml UDNAME_CustomIncludeScript@>
+	<$#active.dName$>
+<@end@>
+
+</body></html>
+

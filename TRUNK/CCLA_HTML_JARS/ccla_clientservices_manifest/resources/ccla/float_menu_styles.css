@@ -1,0 +1,226 @@
+/* Overriden pop-up menu styles for CCLA.
+*/
+
+/* ===================================================== */
+/* xui menu CSS */
+
+/* Div element used to hold the link table */
+.xuiPopupContainer
+{
+	position: absolute;
+  border-top: 4px solid #0066cc;
+}
+
+/* Table element that holds menu entries */
+.xuiPopupTable
+{
+	background: #FFFFFF; /*popup_menu_background*/
+  border-top: 1px solid #418ADE; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #418ADE; /*popup_menu_inner_border_topleft*/
+	border-bottom: 2px solid #418ADE; /*popup_menu_inner_border_bottomright*/
+	border-right: 2px solid #418ADE; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.xuiPopupLink
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #418ADE; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry */
+.xuiPopupLinkMenu
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #FFFFFF; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry (mouseover) */
+.xuiPopupLink_over
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #76B900; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background: #dae5ef; /*popup_menu_link_item_background_mouseover*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
+	cursor: hand;
+}  
+
+
+/* ===================================================== */
+/* top-level menu CSS */
+
+/* Div element used to hold the link table */
+.topPopupContainer
+{
+	position: absolute;
+  border-top: 1px solid #FFF;
+  margin-top: 2px;
+  margin-left: -6px;
+  z-index: 99;
+}
+
+/* Table element that holds menu entries */
+.topPopupTable
+{
+	background: #C20072; /*popup_menu_background*/
+  border-top: 1px solid #FFF; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #FFF; /*popup_menu_inner_border_topleft*/
+	border-bottom: 1px solid #FFF; /*popup_menu_inner_border_bottomright*/
+	border-right: 1px solid #FFF; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.topPopupLink
+{
+	font-size: 1em;
+	text-align: left;
+	vertical-align: middle;
+	text-decoration: none;
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color:  #C20072; /*popup_menu_background*/
+	padding: 2px 12px;
+  /* border-bottom: 1px solid #CCCCCC; */
+}
+
+.topPopupLink a {
+	color: #FFF;
+}
+
+.topPopupLink_over a._over {
+	color: #000;
+}
+
+
+/* Link elements used for each menu entry (mouseover) */
+.topPopupLink_over
+{
+	font-size: 1em;
+	text-align: left;
+	vertical-align: middle;
+	color: #F29303; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color: #FFFFFF; /*popup_menu_link_item_background_mouseover*/
+	padding: 2px 12px;
+	cursor: pointer;
+}
+
+/* ===================================================== */
+/* Iris menu CSS */
+
+/* Div element used to hold the link table */
+.irisPopupContainer
+{
+	position: absolute;
+  border-top: 2px solid #F29303;
+}
+
+/* Table element that holds menu entries */
+.irisPopupTable
+{
+	background: #FFFFFF; /*popup_menu_background*/
+  border-top: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+	border-bottom: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+	border-right: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.irisPopupLink
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #000000; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #F29303;
+}
+
+/* Link elements used for each menu entry */
+.irisPopupLinkMenu
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #FFFFFF; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry (mouseover) */
+.irisPopupLink_over
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #76B900; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background: #dae5ef; /*popup_menu_link_item_background_mouseover*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
+	cursor: hand;
+}  

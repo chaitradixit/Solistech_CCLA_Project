@@ -1,0 +1,301 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_reports service
+</title>
+</head>
+<body>
+
+<@table CCLA_reports_services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CCLA_Report_envbydate_summary</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qEnvelopesByDate_summary:rsReport::null</td>
+</tr>
+<tr>
+	<td>CCLA_Report_envbydate_full</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qEnvelopesByDate_full:rsReport::null</td>
+</tr>
+<tr>
+	<td>CCLA_Report_envbydate_noWfDate</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qEnvelopesByDate_noWfDate:rsReport::null</td>
+</tr>
+<tr>
+	<td>CCLA_Report_summary</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getContentSummaryReport:::null
+	    5:qEnvelopeSummary:rsEnvelopeSummary::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_NUM_WF_DOCS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qWfNumDocsInWf:rsNumDocs::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_DOCS_FOR_ACTION_IN_DATE</td>
+	<td>Service
+		32
+		WORKFLOW_REPORTS
+		null
+		null<br>
+		null</td>
+	<td>5:qWfDistinctDocsWithActionInDate:rsWfDocs::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_DOCS_AT_DATE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qWfDocsAtDate:rsDocsAtDate::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_DOC_EXITED</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qWfDocExitedAtDate:rsDocExited::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_REPORT_1</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		32
+		CCLA_EXTENDED_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:runExtendedReportQuery:::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_REPORT_VIEW</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		32
+		CCLA_EXTENDED_VIEW_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:runExtendedReportViewQuery:::null</td>
+</tr>
+<tr>
+	<td>ECS_DUP_REPORT_VIEW</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		32
+		CCLA_EXTENDED_VIEW_DUP_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:runExtendedReportViewQuery:::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_MAND_WF_DOCS_SIMPLE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qWfNumDocsSimple:rsMandWorkflowDocs::null</td>
+</tr>
+<tr>
+	<td>CCLA_ODC_SUMMARY</td>
+	<td>com.ecs.stellent.ccla.OdcReporting
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBatchSummary:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ODC_REPORTS</td>
+	<td>com.ecs.stellent.ccla.OdcReporting
+		32
+		CCLA_ODC_REPORTS
+		null
+		null<br>
+		null</td>
+	<td>3:getFileCabinets:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_ODC_BATCH_LISTING</td>
+	<td>com.ecs.stellent.ccla.OdcReporting
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBatchSummary:::null
+		3:getBatchListing:::null</td>
+</tr>
+<tr>
+	<td>CCLA_FIX_DOC_CLASSES</td>
+	<td>com.ecs.stellent.ccla.DocumentClassFixer
+		8
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:fixDocumentClasses:::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_IRIS_DOCS_AT_DATE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qWfIrisDocsAtDate:rsIrisDocsAtDate::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_WF_DOCS_FOR_ACTION_IN_DATE_EXSWORDFISH</td>
+	<td>Service
+		32
+		WORKFLOW_REPORTS
+		null
+		null<br>
+		null</td>
+	<td>5:qWfDistinctDocsWithActionInDateExSwordfish:rsWfDocs::null</td>
+</tr>
+<tr>
+	<td>ECS_REMOVE_DUPE_APPS</td>
+	<td>com.ecs.stellent.ccla.DocumentClassFixer
+		15
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeDuplicateApps:::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_FLAGGED_BUNDLES_AUDIT</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qFlaggedBundlesByDate:rsFlaggedBundlesAudit::null</td>
+</tr>
+<tr>
+	<td>CCLA_FLAGGED_ITEMS_REPORT</td>
+	<td>Service
+		32
+		CCLA_FLAGGED_ITEMS_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		5:qFlaggedBundles:rsFlaggedBundles::null</td>
+</tr>
+<tr>
+	<td>CCLA_RPT_SHOW_NOTES</td>
+	<td>Service
+		35
+		CCLA_RPT_SHOW_NOTES
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UNFLAG_MULTI_BUNDLE</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:unflagMultipleBundles:::null</td>
+</tr>
+<tr>
+	<td>CCLA_USER_DOCUMENT_PROCESS_COUNTS</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		35
+		CCLA_USER_DOCUMENT_PROCESS_COUNTS
+		null
+		null<br>
+		null</td>
+	<td>3:getUserDocumentProcessCounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ODC_REC_REPORT</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		35
+		CCLA_ODC_REC_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:getODCRecReport:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DOCUMENT_VOLUMES_REPORT</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		35
+		CCLA_DOCUMENT_VOLUMES_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:getDocumentVolumesReport:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CLIENT_DATA_EXPORT</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		35
+		CCLA_CLIENT_DATA_EXPORT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:getClientDataExport:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_CLIENT_DATA_EXPORT_STATUS</td>
+	<td>com.ecs.stellent.ccla.UcmReporting
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getClientDataExportStatus:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

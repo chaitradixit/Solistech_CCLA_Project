@@ -1,0 +1,179 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Work Group Administration
+	</title>
+	
+	<script type="text/javascript">
+
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 900px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Work Group Administration
+				</div>
+				
+			<$include orangeContainer_bottom$>	
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Available Work Groups</h3>
+					
+					<p>A user can be assigned to a single Work Group below. If they haven't been
+					   assigned to any group, they are treated as a member of the default 'All items'
+					   Work Group.</p>
+					
+					<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+						<tr>
+							<th class="first-col" width="35%">
+								Group Name
+							</th>
+							<th>
+								Description
+							</th>
+						</tr>
+					
+						<$loop rsWorkGroups$>
+							<tr class="account-details-row">
+								<td class="first-col"><b><$#active.WORK_GROUP_NAME$></b></td>
+								<td>
+									<$#active.WORK_GROUP_DESCRIPTION$>
+								</td>
+							</tr>
+						<$endloop$>
+						
+					</table>
+					
+					<div style="padding-top:5px"></div>
+				
+				</div>
+				
+			<$include orangeContainer_bottom$>	
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_content'>
+				
+					<h3 class="ccla_data_panel_header">User assignments</h3>
+					
+					<p>Change user group assignments below. Click the Update button to apply changes.</p>
+					
+					<p>If you don't see a user's name in the
+					   list below, you can add them using the form at the bottom of the page.</p>
+					
+					<form method="POST">
+					
+						<input 	type="hidden" name="IdcService" value="CCLA_CP_UPDATE_USER_WORK_GROUPS" /><$include add_idc_token_to_form$>
+						<input 	type="hidden" name="RedirectUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CP_WORKGROUPS_ADMIN&userWorkGroupsUpdated=1<$include add_idc_token_to_url$>" />
+					
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th class="first-col" width="35%">
+									User Name
+								</th>
+								<th>
+									Work Group
+								</th>
+							</tr>
+						
+							<$loop rsUserWorkGroups$>
+						
+								<$if strIndexOf(#active.USER_ID,"CCLA\\")<0$>
+								<tr class="account-details-row">
+									<td class="first-col"><$#active.USER_ID$></td>
+									<td>
+										<select name="WORK_GROUP_ID_<$#active.USER_WORK_GROUP_ID$>">
+											<$selWorkGroupId = #active.WORK_GROUP_ID$>
+											
+											<$loop rsWorkGroups$>
+												<option value="<$#active.WORK_GROUP_ID$>" <$if selWorkGroupId like #active.WORK_GROUP_ID$>selected<$endif$>><$#active.WORK_GROUP_NAME$></option>
+											<$endloop$>
+										</select>
+										
+										
+									</td>
+								</tr>
+								<$endif$>
+							<$endloop$>
+							
+						</table>
+						
+						<div style="padding-top:5px"></div>
+
+						<input type="submit" value="Update" />
+						
+					</form>
+					
+					<div style="padding-top:5px"></div>
+					
+				</div>
+				
+			<$include orangeContainer_bottom$>	
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<h3 class="ccla_data_panel_header">Add New User</h3>
+					
+					<p>Use this form to add user names that don't appear in the list above. </p>
+					<p>The name should be in the form 'j.bloggs' - ensure the name portion is
+					   always lower-case!</p>
+					
+					<form method="POST">
+					
+						<input 	type="hidden" name="IdcService" value="CCLA_CP_ADD_USER_WORK_GROUP" /><$include add_idc_token_to_form$>
+						<input 	type="hidden" name="RedirectUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CP_WORKGROUPS_ADMIN&userWorkGroupAdded=1<$include add_idc_token_to_url$>" />
+					
+						Name: <input type="text" name="USER_ID" value="" />
+						
+						Work Group: <select name="WORK_GROUP_ID">
+							<$loop rsWorkGroups$>
+								<option value="<$#active.WORK_GROUP_ID$>"><$#active.WORK_GROUP_NAME$></option>
+							<$endloop$>
+						</select>
+						
+						<div style="padding-top:5px"></div>
+
+						<input type="submit" value="Add" />
+						
+					</form>
+				
+					<div style="padding-top:5px"></div>
+
+				</div>
+				
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+				
+</body></html>

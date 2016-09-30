@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+
+	<$include std_html_head_declarations$>
+
+</head>
+
+	<$include body_def$>
+
+  <$include std_page_begin$>
+  
+  <h1>User Listing</h1>
+  
+  <$HEADER_BG_COLOUR=999900$>
+
+	<$c="Setup for database search"$>
+  <$SF_UseDatabaseSearch=1$>
+  	
+	<$SF_UDNAME_caption="Login Name"$>
+	<$SF_UDNAME_type="input"$>
+	<$SF_UDNAME_shortname="udn"$>
+	<$SF_UDNAME_list="none"$>
+	<$SF_UDNAME_idcname="dName"$>
+	<$SF_UDNAME_search="substring"$>
+	<$c="Override first column so it doesn't appear as a doc link"$>
+	<$UDNAME_CustomIncludeScript="UDNAME_CustomIncludeScript"$>
+		
+	<$SF_UDFULLNAME_caption="User Name"$>
+	<$SF_UDFULLNAME_type="input"$>
+	<$SF_UDFULLNAME_shortname="udf"$>
+	<$SF_UDFULLNAME_list="none"$>
+	<$SF_UDFULLNAME_idcname="dFullName"$>
+	<$SF_UDFULLNAME_search="substring"$>
+	
+	<$SF_UDUSERARRIVEDATE_caption="Start Date"$>
+	<$SF_UDUSERARRIVEDATE_type="input"$>
+	<$SF_UDUSERARRIVEDATE_shortname="udu"$>
+	<$SF_UDUSERARRIVEDATE_list="none"$>
+	<$SF_UDUSERARRIVEDATE_idcname="dUserArriveDate"$>
+	<$SF_UDUSERARRIVEDATE_search="substring"$>
+	
+	<$SF_UDUSERAUTHTYPE_caption="Auth Type"$>
+	<$SF_UDUSERAUTHTYPE_type="input"$>
+	<$SF_UDUSERAUTHTYPE_shortname="uds"$>
+	<$SF_UDUSERAUTHTYPE_list="none"$>
+	<$SF_UDUSERAUTHTYPE_idcname="dUserAuthType"$>
+	<$SF_UDUSERAUTHTYPE_search="substring"$>
+	
+	<$SF_UDUSERLOCALE_caption="Locale"$>
+	<$SF_UDUSERLOCALE_type="input"$>
+	<$SF_UDUSERLOCALE_shortname="udl"$>
+	<$SF_UDUSERLOCALE_list="none"$>
+	<$SF_UDUSERLOCALE_idcname="dUserLocale"$>
+	<$SF_UDUSERLOCALE_search="substring"$>
+		
+	<$if not sf$>
+		<$sf="dName"$>
+	<$endif$>
+	
+
+	<$hideInfoLink=1$>
+	<$customInfoLinkInclude$>
+  <$SF_DISPLAYADVSEARCHLINK=N$>
+  	
+	<$PARAMETERSLIST=PARAMETERSLIST$>
+  
+  <$ssResultCount=5$>
+  
+  <$nodeFilterFieldNames="UDNAME,UDFULLNAME,UDUSERLOCALE,UDUSERAUTHTYPE,UDUSERARRIVEDATE"$>
+  	
+  <$QueryFieldList="UDNAME,UDFULLNAME,UDUSERLOCALE,UDUSERAUTHTYPE,UDUSERARRIVEDATE"$>	
+  	
+  <$SF_QueryTable="USERS"$>
+ 
+ 
+	<$include ecsSearchAndFilter$>
+	
+	<br/>	
+	<small>ECS_SearchAndFilter component. Copyright  &copy; Extended Content Solutions Ltd 2009.</small>
+</body>
+</html>
+

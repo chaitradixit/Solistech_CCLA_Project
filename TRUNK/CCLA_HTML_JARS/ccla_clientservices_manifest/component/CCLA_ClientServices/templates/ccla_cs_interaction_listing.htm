@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<title>
+		Interaction Listing
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+</head>
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+	<$exec rsMakeFromString("rsIncompleteOutcomes", #env.CCLA_CS_CompletedActivityOutcomes_Incomplete)$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' class='search_results_cont interactionSF' >
+
+			<$include orangeContainer_top$>
+				
+			<div class='ccla_cs_panel_header'>
+				Interaction Listing
+			</div>
+		
+			<div class='ccla_cs_panel_content'>
+				
+				<$executeService("CCLA_CS_GET_INTERACTION_CATEGORIES")$>
+				
+				<$if rsInteractionCategories$>
+					<table class="ccla-table"  cellspacing="0">
+						<tr>
+							<th>Category</th><th>Count</th>
+						</tr>
+
+						<$loop rsInteractionCategories$>
+							<tr>
+								<td><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_INTERACTION_LISTING<$include add_idc_token_to_url$>&interactionCat=<$#active.CATEGORY$>"><$#active.CATEGORY$></a></td>
+								<td><$#active.TOTAL$></td>
+							</tr>
+						<$endloop$>
+					</table>
+					
+					<br/>
+				<$endif$>
+				
+				<$SF_UseDatabaseSearch=1$>
+				<$SF_QueryProvider="CCLA_POOL1"$>
+				<$SF_QueryTable="V_INTERACTIONS_EXT"$>
+				<$SF_PreventRowIdOrdering=1$>
+				<$if personFullName$>
+					<$nodeSearchQuery = "(FULL_NAME <substring> `" & personFullName & "` <OR> LAST_NAME <substring> `" & personFullName & "`) "$>
+				<$endif$>
+				
+				<$if not sf$>
+					<$sf="INTERACTION_DATE"$>
+					<$so="Desc"$>
+				<$endif$>
+				
+					<$if #local.st like 'Completed'$>
+						<$showCompleted=1$>
+					<$endif$>
+					  <$if not #active.showCompleted$>
+						<$nodeSearchQuery = nodeSearchQuery & " <NOT> (OUTCOME <matches> `Completed`) "$>
+					  <$endif$>	
+				
+				<$include iris_sf_sort_images$>
+
+				<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+				<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+				<$calendarSelectFields="DOB_COL,DOB_ADV_COL"$>
+				<$include epoch_calendar_header$>
+				<$inlineHeaderInclude = "ccla_interaction_listings_inline_header"$>
+				
+				<$SF_DISPLAYADVSEARCHLINK="Y"$>
+				<$moreAdvSearchFieldList=""$>
+				
+				<$hideInfoLink="Y"$>
+					
+				<$displayResetButton="Y"$>	
+				<$displayPagingOptions="N"$>
+				<$displayPaginator="Y"$>
+				<$SF_CustomPaginator="iris_sf_paginator"$>
+				
+				<$SF_CaseInsensitive=1$>
+				<$SF_showResultCountSelector="1"$>
+				
+				<$advSearchBackgroundColour="#FFFFFF"$>
+				<$advSearchDisplay_pre='ccla_cs_advsearch_pre'$>
+				<$advSearchDisplay_after='ccla_cs_advsearch_after'$>
+				
+				<$c="Short captions to column width"$>
+				<$SF_COMPANY_COL_caption="Comp"$>
+				
+				<$if userHasRole("WF_COO") or userHasRole("WF_Scanning") or userHasRole("WF_Scanning Manager") or userHasRole("admin") or userHasRole("WF_Static Data") or userHasRole("WF_Static Data Team Leader") or userHasRole("WF_Static Data Review")$>
+					<$nodeFilterFieldNames	="PERSON_CODE_COL,ORG_CODE_COL,IS_QUERY_COL,JOB_ID_COL,PERSON_NAME_COL,INTERACTION_CATEGORY_COL,INTERACTION_SUBJECT_COL,INTERACTION_ASSIGNEE_COL,INTERACTION_OUTCOME_COL,INTERACTION_DATE_COL,USER_ID_COL,DEADLINE_DATE_COL,,UPDATED_DATE_COL,ACTIONS"$>
+					<$nodeFilterFieldWidth	="6,4,4,4,15,10,12,5,10,10,5,10,10,1"$>
+				<$else$>
+					<$nodeFilterFieldNames	="PERSON_CODE_COL,ORG_CODE_COL,IS_QUERY_COL,JOB_ID_COL,PERSON_NAME_COL,INTERACTION_CATEGORY_COL,INTERACTION_SUBJECT_COL,INTERACTION_ASSIGNEE_COL,INTERACTION_OUTCOME_COL,INTERACTION_DATE_COL,USER_ID_COL,DEADLINE_DATE_COL,,UPDATED_DATE_COL,ACTIONS"$>
+					<$nodeFilterFieldWidth	="6,4,4,4,15,10,12,5,10,10,5,10,10,1"$>
+				<$endif$>
+				
+				<$advSearchFieldList	="IS_QUERY_COL,PERSON_CODE_COL,ORG_CODE_COL,PERSON_NAME_COL,INTERACTION_CATEGORY_COL,INTERACTION_SUBJECT_COL,INTERACTION_ASSIGNEE_COL,INTERACTION_OUTCOME_COL,INTERACTION_DATE_COL,USER_ID_COL,DEADLINE_DATE_COL,UPDATED_DATE_COL"$>
+				
+				<$QueryFieldList		="IS_QUERY_COL,JOB_ID_COL,PERSON_CODE_COL,ORG_CODE_COL,INTERACTION_CATEGORY_COL,INTERACTION_SUBJECT_COL,INTERACTION_ASSIGNEE_COL,INTERACTION_OUTCOME_COL,INTERACTION_DATE_COL,USER_ID_COL,DEADLINE_DATE_COL,UPDATED_DATE_COL"$>	
+				
+				<$hideLineBreak=1$>
+				<$suppressSortLinks="CAMPAIGN_ACTIONS,ACTIONS"$>
+				
+				<$PARAMETERSLIST = #active.PARAMETERSLIST & ",campaignId,enrolled,showCompleted"$>
+			
+				<$SF_INTERACTION_ID_COL_caption="ID"$>
+				<$SF_INTERACTION_ID_COL_type="input"$>
+				<$SF_INTERACTION_ID_COL_shortname="interactionId"$>
+				<$SF_INTERACTION_ID_COL_list="none"$>
+				<$SF_INTERACTION_ID_COL_idcname="INTERACTION_ID"$>
+				<$SF_INTERACTION_ID_COL_search="numeric"$>
+				
+				<$SF_IS_QUERY_COL_caption="Is Q?"$>
+				<$SF_IS_QUERY_COL_type="custom"$>
+				<$SF_IS_QUERY_COL_shortname="isQuery"$>
+				<$SF_IS_QUERY_COL_list="none"$>
+				<$SF_IS_QUERY_COL_idcname="IS_QUERY"$>
+				<$SF_IS_QUERY_COL_search="matches"$>
+				
+				<$SF_INTERACTION_ASSIGNEE_COL_caption="Assignee"$>
+				<$SF_INTERACTION_ASSIGNEE_COL_type="custom"$>
+				<$SF_INTERACTION_ASSIGNEE_COL_shortname="assignee"$>
+				<$SF_INTERACTION_ASSIGNEE_COL_list="none"$>
+				<$SF_INTERACTION_ASSIGNEE_COL_idcname="ASSIGNEE"$>
+				<$SF_INTERACTION_ASSIGNEE_COL_search="substring"$>
+
+				<$SF_USER_ID_COL_caption="Created By"$>
+				<$SF_USER_ID_COL_type="input"$>
+				<$SF_USER_ID_COL_shortname="userid"$>
+				<$SF_USER_ID_COL_list="none"$>
+				<$SF_USER_ID_COL_idcname="USER_ID"$>
+				<$SF_USER_ID_COL_search="substring"$>
+				
+				<$SF_JOB_ID_COL_caption="WF ID"$>
+				<$SF_JOB_ID_COL_type="input"$>
+				<$SF_JOB_ID_COL_shortname="jobId"$>
+				<$SF_JOB_ID_COL_list="none"$>
+				<$SF_JOB_ID_COL_idcname="JOB_ID"$>
+				<$SF_JOB_ID_COL_search="substring"$>
+				
+
+				<$SF_PERSON_NAME_COL_shortname="personFullName"$>
+				<$SF_PERSON_NAME_COL_caption="Corr. name"$>
+				
+				<$SF_CHECKBOX_caption=""$>
+				<$SF_CHECKBOX_type="custom"$>
+				<$SF_CHECKBOX_shortname=""$>
+				<$SF_CHECKBOX_idcname="x"$>
+				<$SF_CHECKBOX_list="none"$>
+				
+				<$SF_INTERACTION_TYPE_COL_caption="Type"$>
+				<$SF_INTERACTION_TYPE_COL_type="input"$>
+				<$SF_INTERACTION_TYPE_COL_shortname="interactionType"$>
+				<$SF_INTERACTION_TYPE_COL_list="none"$>
+				<$SF_INTERACTION_TYPE_COL_idcname="INTERACTION_TYPE"$>
+				<$SF_INTERACTION_TYPE_COL_search="substring"$>
+				
+				<$SF_INTERACTION_SUBJECT_COL_caption="Subject"$>
+				<$SF_INTERACTION_SUBJECT_COL_type="input"$>
+				<$SF_INTERACTION_SUBJECT_COL_shortname="interactionSubject"$>
+				<$SF_INTERACTION_SUBJECT_COL_list="none"$>
+				<$SF_INTERACTION_SUBJECT_COL_idcname="SUBJECT"$>
+				<$SF_INTERACTION_SUBJECT_COL_search="substring"$>
+				
+				<$SF_INTERACTION_CATEGORY_COL_caption="Category"$>
+				<$SF_INTERACTION_CATEGORY_COL_type="custom"$>
+				<$SF_INTERACTION_CATEGORY_COL_shortname="interactionCat"$>
+				<$SF_INTERACTION_CATEGORY_COL_list="none"$>
+				<$SF_INTERACTION_CATEGORY_COL_idcname="CATEGORY"$>
+				<$SF_INTERACTION_CATEGORY_COL_search="substring"$>
+				
+				<$SF_INTERACTION_OUTCOME_COL_caption="Outcome"$>
+				<$SF_INTERACTION_OUTCOME_COL_type="dropdownlist"$>
+				<$SF_INTERACTION_OUTCOME_COL_shortname="interactionOutcome"$>
+				<$SF_INTERACTION_OUTCOME_COL_list="none"$>
+				<$SF_INTERACTION_OUTCOME_COL_listvalues=#env.CCLA_CS_CompletedActivityOutcomes$>
+				<$SF_INTERACTION_OUTCOME_COL_idcname="OUTCOME"$>
+				<$SF_INTERACTION_OUTCOME_COL_search="substring"$>
+				
+				<$SF_INTERACTION_DATE_COL_caption="Creation Date"$>
+				<$SF_INTERACTION_DATE_COL_type="input"$>
+				<$SF_INTERACTION_DATE_COL_shortname="interactionDate"$>
+				<$SF_INTERACTION_DATE_COL_list="none"$>
+				<$SF_INTERACTION_DATE_COL_idcname="INTERACTION_DATE"$>
+				<$SF_INTERACTION_DATE_COL_search="date"$>
+				
+				<$SF_DEADLINE_DATE_COL_caption="Deadline Date"$>
+				<$SF_DEADLINE_DATE_COL_type="input"$>
+				<$SF_DEADLINE_DATE_COL_shortname="deadlineDate"$>
+				<$SF_DEADLINE_DATE_COL_list="none"$>
+				<$SF_DEADLINE_DATE_COL_idcname="DEADLINE"$>
+				<$SF_DEADLINE_DATE_COL_search="date"$>	
+
+				<$SF_UPDATED_DATE_COL_caption="Updated Date"$>
+				<$SF_UPDATED_DATE_COL_type="input"$>
+				<$SF_UPDATED_DATE_COL_shortname="updateDate"$>
+				<$SF_UPDATED_DATE_COL_list="none"$>
+				<$SF_UPDATED_DATE_COL_idcname="LAST_UPDATED"$>
+				<$SF_UPDATED_DATE_COL_search="date"$>						
+				
+				<$SF_PERSON_CODE_COL_caption="Person Code"$>
+				<$SF_PERSON_CODE_COL_type="input"$>
+				<$SF_PERSON_CODE_COL_shortname="personCode"$>
+				<$SF_PERSON_CODE_COL_list="none"$>
+				<$SF_PERSON_CODE_COL_idcname="PERSON_ACCOUNT_CODE"$>
+				<$SF_PERSON_CODE_COL_search="substring"$>	
+	
+				<$SF_ORG_CODE_COL_caption="Org Code"$>
+				<$SF_ORG_CODE_COL_type="input"$>
+				<$SF_ORG_CODE_COL_shortname="porgCode"$>
+				<$SF_ORG_CODE_COL_list="none"$>
+				<$SF_ORG_CODE_COL_idcname="ORG_ACCOUNT_CODE"$>
+				<$SF_ORG_CODE_COL_search="substring"$>					
+
+				<$IS_QUERY_COL_CustomIncludeScript				= "ccla_cs_display_is_query_flag"$>
+				<$IS_QUERY_COL_CustomFilterScript 				= "ccla_cs_is_query_filter"$>
+				<$INTERACTION_CATEGORY_COL_CustomFilterScript	= "ccla_cs_category_filter"$>
+				<$INTERACTION_ASSIGNEE_COL_CustomFilterScript	= "ccla_cs_assignee_filter"$>
+				<$JOB_ID_COL_CustomIncludeScript 				= "ccla_cs_display_job_id"$>				
+				<$PERSON_CODE_COL_CustomIncludeScript				= "ccla_cs_display_person_account_code"$>
+				<$PERSON_NAME_COL_CustomIncludeScript			= "ccla_cs_person_name_display"$>
+				<$INTERACTION_ASSIGNEE_COL_CustomIncludeScript	= "ccla_cs_assignee_display"$>
+				<$USER_ID_COL_CustomIncludeScript	= "ccla_cs_user_id_display"$>
+				<$ACTIONS_CustomIncludeScript					= "ccla_cs_interaction_actions_menu"$>
+				<$INTERACTION_DATE_COL_CustomIncludeScript		= "ccla_cs_interaction_date"$>
+				<$DEADLINE_DATE_COL_CustomIncludeScript		= "ccla_cs_deadline_date"$>
+				<$UPDATED_DATE_COL_CustomIncludeScript 	= "ccla_cs_updated_date"$>
+				<$INTERACTION_OUTCOME_COL_CustomIncludeScript	= "ccla_cs_display_interaction_outcome"$>
+				<$ORG_CODE_COL_CustomIncludeScript="ccla_cs_display_org_account_code"$>
+				<$INTERACTION_CATEGORY_COL_CustomIncludeScript="ccla_cs_display_category_code"$>
+				
+				<$include ecsSearchAndFilter$>
+				
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+		
+</body>
+</html>

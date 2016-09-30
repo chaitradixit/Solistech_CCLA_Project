@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$processTarget = rsProcess.TARGET$>
+	
+	<title>
+		Search<$if #local.searchType$>: <$searchType$><$endif$>
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 800px'>
+
+			<$include orangeContainer_top$>
+				
+			<$if not searchType or (#local.searchType like "Clients")$>
+				
+				<div class='ccla_cs_panel_header'>
+					Search: Clients
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<br/>
+				
+					<form method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_SEARCH_CLIENT" /><$include add_idc_token_to_form$>
+						
+						<table width="100%" cellpadding=0 cellspacing=2>
+							<tr>
+								<td width="150">Client ID:</td>
+								<td>
+									<input type="text" name="clientId" value="" /> 
+								</td>
+							</tr>
+							<tr>
+								<td width="150">Company:</td>
+								<td>
+									<input type="text" name="company" value="" /> 
+								</td>
+							</tr>
+							<tr>
+								<td>Client name:</td>
+								<td>
+									<input type="text" name="clientname" value="" /> 
+								</td>
+							</tr>
+							<tr>
+								<td>Correspondent name:</td>
+								<td>
+									<input type="text" name="corrName" value="" /> 
+									
+								</td>
+							</tr>
+							<tr>
+								<td>Post code:</td>
+								<td>
+									<input type="text" name="postCode" value="" /> 
+									
+									<input type="submit" value="Go" />
+								</td>
+							</tr>
+						
+						</table>
+						
+					</form>
+				
+				</div>
+				
+			<$endif$>
+				
+			<$if not searchType$>
+				<br/>
+			<$endif$>
+			
+			<$if not searchType or (#local.searchType like "People")$>		
+				
+				<div class='ccla_cs_panel_header'>
+					Search: People
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<br/>
+					
+					<form method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_SEARCH_PERSON" /><$include add_idc_token_to_form$>
+						
+						<table width="100%" cellpadding=0 cellspacing=2>
+							<tr>
+								<td width="150">Correspondent code:</td>
+								<td>
+									<input type="text" name="personId" value="" /> 
+								</td>
+							</tr>
+							<tr>
+								<td>Name:</td>
+								<td>
+									<input type="text" name="personFullName" value="" /> 
+								</td>
+							</tr>
+							<tr>
+								<td>Post code:</td>
+								<td>
+									<input type="text" name="postCode" value="" /> 
+									
+									<input type="submit" value="Go" />
+								</td>
+							</tr>
+						
+						</table>
+						
+					</form>
+				
+				</div>
+			
+			<$endif$>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+		
+</body>
+</html>

@@ -1,0 +1,321 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IRIS_BatchDocuments service
+</title>
+</head>
+<body>
+
+<@table IRIS_BatchDocuments_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CHECKIN_NEW</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:createBatchItem:::null
+		3:doSubService:IRIS_COMPLETE_NEW_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:IdcService=CHECKIN_CONFIRM_FORM&dID=<$dID$>&dDocTitle=<$url(dDocTitle)$>&dDocName=<$url(dDocName)$>&dDocAuthor=<$url(dDocAuthor)$>:0:null</td>
+</tr>
+<tr>
+	<td>CHECKIN_UNIVERSAL</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		2
+		null
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:populateMissingDocumentValues:::null
+		3:checkSecurity::0:null
+		3:determineCheckin::12:null
+		3:createBatchItem:::null
+		3:doSubService:IRIS_COMPLETE_NEW_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null</td>
+</tr>
+<tr>
+	<td>IRIS_CREATE_BATCH_ITEM_SUB</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:createBatchItem:::null</td>
+</tr>
+<tr>
+	<td>IRIS_UPDATE_DOCINFO</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToUpdateInfo(dDocName)</td>
+	<td>3:checkForceLogin:::null
+		3:doSubService:UPDATE_DOCINFO_SUB:12:null
+		3:createBatchItem:::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:doSubService:IRIS_ADD_SECONDARY_AUDIT_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DOCS_THUMBS</td>
+	<td>Service
+		32
+		IRIS_BATCH_DOCS_THUMBS
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DOCS_PREVIEW</td>
+	<td>Service
+		32
+		IRIS_BATCH_DOCS_PREVIEW
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DOCS_LISTING</td>
+	<td>SearchService
+		32
+		IRIS_BATCH_DOCS_LISTING
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_GET_ITEMS</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBatchItems:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_GET_WIP_ITEMS</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getWIPBatchItems:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GEN_DOC_FROM_TEMPLATE</td>
+	<td>com.ecs.utils.stellent.DocGenerator
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateDocument:::null
+		3:doSubService:IRIS_COMPLETE_GEN_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null</td>
+</tr>
+<tr>
+	<td>IRIS_DOC_THUMBS</td>
+	<td>Service
+		0
+		IRIS_THUMB_PREVIEW
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>IRIS_SENDMAIL</td>
+	<td>Service
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:ECS_SENDMAIL_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_CLASSIFIED_ITEMS</td>
+	<td>Service
+		32
+		IRIS_CLASSIFIED_ITEMS
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>IRIS_CLASSIFY_ITEMS</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:batchUpdate:::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_ADD_SECONDARY_AUDIT_SUB</td>
+	<td>com.ecs.stellent.iris.batch.BatchAuditUtils
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:createSecondaryAuditEntry:::null</td>
+</tr>
+<tr>
+	<td>IRIS_COMPLETE_NEW_DOC_AUDIT_PARAMS_SUB</td>
+	<td>com.ecs.stellent.iris.batch.BatchAuditUtils
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:completeNewDocAuditParams:::null</td>
+</tr>
+<tr>
+	<td>IRIS_COMPLETE_GEN_DOC_AUDIT_PARAMS_SUB</td>
+	<td>com.ecs.stellent.iris.batch.BatchAuditUtils
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:completeGenDocAuditParams:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_GET_ITEM_COUNT</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBatchItemCount:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_GET_ITEM_COUNTS</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBatchItemCounts:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DOC_PANEL</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		IRIS_BATCH_DOC_PANEL
+		null
+		null<br>
+		!csUnableToGetLatestRevision</td>
+	<td>3:checkForceLogin:::null
+		3:mapResultSet:QlatestReleasedIDByName,dID,dID:2:!csItemHasNoLatestRevision
+		5:QdocInfo:DOC_INFO::!csUnableToGetLatestRevision
+		3:doSubService:IRIS_AMEND_DOCINFO_FOR_DUAL_INDEX_SUB::null
+		3:checkSecurity:DOC_INFO:0:null
+		3:loadDefinitionForBatchDocument:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_UPDATE</td>
+	<td>com.ecs.stellent.iris.batch.BatchDocumentServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:batchUpdateDocuments:::null</td>
+</tr>
+<tr>
+	<td>IRIS_AMEND_DOCINFO_FOR_DUAL_INDEX_SUB</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:amendDocInfoResultSet:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DUAL_INDEX_COMPARE_BUNDLE_DATA</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:compareBundleDualIndexData:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DUAL_INDEX_CONFIGURATION</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		35
+		IRIS_DUAL_INDEX_CONFIGURATION
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		5:qIris_GetDualIndexFields:rsFields::null
+		5:qIris_GetDualIndexRules:rsRules::null
+		5:qIris_GetAllDualIndexRuleFields:rsExisting::null
+		3:getDualIndexConfiguration:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DUAL_INDEX_RULE_UPDATE</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:updateDualIndexRules:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DUAL_INDEX_RESULTS</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		35
+		IRIS_BATCH_DUAL_INDEX_RESULTS
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>IRIS_BATCH_DUAL_INDEX_FORCE_PASS</td>
+	<td>com.ecs.stellent.iris.batch.dualindex.DualIndexServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:forcePassOutcome:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

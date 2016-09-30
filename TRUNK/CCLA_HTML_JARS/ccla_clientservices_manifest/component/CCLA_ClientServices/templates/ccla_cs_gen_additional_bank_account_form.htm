@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if updateFlags$>
+			Update Form Details
+		<$else$>
+			Form Info
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+		<$if updateFlags$>
+		
+			<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+				<b>Update Form Details</b>
+			</div>
+			
+			<div style="margin: 5px">
+				
+				<$if statusUpdated$>
+					
+					<p>
+						Form details updated.
+					</p>
+					
+					<br/>
+					
+					<input type="button" value="Close" onclick="if (window.opener) {window.close();} else { window.parent.closePopup();}" />
+				
+				<$else$>
+					
+					<form name="updateFormStatus" id="updateFormStatus" method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_FORM_DATA_FLAGS" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="formId" value="<$formId$>" />
+						<input 	type="hidden" name="RedirectUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CS_FORM_INFO_POPUP<$include add_idc_token_to_url$>&formId=<$formId$>&updateFlags=1&statusUpdated=1" />	
+								
+						<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+							<tr class="account-details-row">
+								<th class="first-col" width="15%">ID</th>
+								<th width="15%">Process</th>
+								<th width="20%">Type</th>
+								<th width="12%">Client ID</th>	
+								<th width="13%">Person ID</th>
+								<th width="20%">Form status</th>
+							</tr>
+							
+							<tr class="account-details-row">
+								<td class="first-col"><$#active.FORM_ID$></td>
+								<td>
+									<$openInNewWin=1$>
+									<$include ccla_cs_display_process_id$>
+									
+								</td>
+								<td>
+									<$#active.FORM_TYPE$>
+									
+									<$if #active.FORM_SUBTYPE$>
+										<br/>
+										<span style="color:#666; font-size: 0.8em;"><$#active.FORM_SUBTYPE$></span>
+									<$endif$>
+								</td>
+								<td><$strLeftFill(#active.CLIENT_ID,"0",5)$></td>
+								<td><$strLeftFill(#active.PERSON_ID,"0",6)$></td>
+									
+								<td>
+									<$#active.FORM_STATUS$>
+								</td>
+							
+							</tr>
+						</table>
+						
+						<br/>
+						
+						<table width="100%">
+							<tr>
+								<td width="220">
+									<$if rsFormAccounts$>
+										<$include ccla_cs_form_accounts_list$>
+									<$endif$>
+								</td>
+							
+								<td>
+									<script type="text/javascript">
+										
+										var firstLoad = true;
+										
+										$(document).ready( function() {
+											validityUpdated();
+											firstLoad = false;
+											
+											$("#valid").bind("change", function() { 
+												validityUpdated(); 
+											});
+											
+											$(".req-update").bind("click", function() {
+												reqUpdateCheckboxesUpdated(this);
+											});
+										});
+										
+										function validityUpdated() {
+											var validity = $("#valid").val();
+											
+											if (validity == "") {
+												$(".req-update").attr("disabled","disabled");
+												
+											} else {
+												$(".req-update").removeAttr("disabled");
+											}
+											
+											if (validity == "0") {
+												$("#isReturnedMail").removeAttr("disabled");
+											} else {
+												$("#isReturnedMail").attr("disabled","disabled").removeAttr("checked");
+											}
+											
+											/*
+											if (validity != "1") {
+												// User has selected Invalid or null option. Disable
+												// 'Required Updates' checkboxes
+												$(".req-update").attr("disabled","disabled");
+												
+												if (!firstLoad) {
+													$(".req-update").removeAttr("checked");
+												}
+													
+											} else {
+												// User has selected Valid option. Refresh checkboxes
+												$(".req-update").removeAttr("disabled");
+												reqUpdateCheckboxesUpdated();
+											}
+											*/
+										}
+										
+										// Triggered when the user clicks a 'Required Updates' checkbox.
+										// The first two boxes ('noChanges' and 'staticDataChange') are designed
+										// to be mutually exclusive.
+										function reqUpdateCheckboxesUpdated(chk) {
+											var noChangesCheckbox	= $("input[name='noChanges']");
+											var staticDataCheckbox 	= $("input[name='staticDataChange']");
+											var additionalDataCheckbox = $("input[name='additionalData']"); 
+										
+											var noChanges 			= $(noChangesCheckbox).is(":checked");
+											var staticDataChanges   = $(staticDataCheckbox).is(":checked");
+											var additionalData		= $(additionalDataCheckbox).is(":checked");
+											
+											if (chk.name == "noChanges")
+												$(staticDataCheckbox).removeAttr("checked");
+											else if (chk.name == "staticDataChange")
+												$(noChangesCheckbox).removeAttr("checked");	
+										}
+										
+										// Performs some basic validation before form submission.
+										function submitUpdateForm() {
+											var validity = $("#valid").val();
+											
+											if (("<$userHasRole('admin')$>") == "true" && validity == "") {
+												alert("Please mark the form as valid/invalid before continuing.");
+												$("#valid").focus();
+												return;
+											}
+											
+											/*
+											if (validity == "1" && $(".req-update:checked").size() == 0) {
+												alert("Please tick at least one 'Required Update' checkbox before continuing.");
+												return;
+											}
+											*/
+											
+											if (validity == "0") {
+												// Set the parent doc type to CSLETTERS, if the 'Returned Mail'
+												// tickbox was checked (disabled)
+												if (hasDocMetaForm()) {
+
+													var docMetaForm = getDocMetaForm();
+													
+													if (docMetaForm.elements['xDocumentClass']) {
+														
+														var isReturnedMail = $("#isReturnedMail").is(":checked");
+														//var c;
+														//
+														//if (isReturnedMail) {
+														//	c = confirm("You have marked the form as Returned Mail - " +
+														//	 "the document class will be changed to a CSLETTERS.\n\n" +
+														//	 "Continue?");
+															 
+														//	if (!c)
+														//		return;
+														//	else
+														//		docMetaForm.elements['xDocumentClass'].value = "CSLETTERS";
+														//}
+														
+														//} else {
+														//	c = confirm("You have marked the form as invalid - " +
+														//	 "the document class will be changed to a CONDINS.\n\n" +
+														//	 "Continue?");
+														//}
+														
+														//if (!c)
+														//	return;
+														//else {
+															//if (isReturnedMail)
+															//	docMetaForm.elements['xDocumentClass'].value = "RETMAIL";
+															//else
+														//		docMetaForm.elements['xDocumentClass'].value = "CONDINS";
+														//}
+													}
+												}
+											}
+											
+											var isReturnedMail = $("#isReturnedMail").is(":checked");
+											
+											if (isReturnedMail)
+												$("#invalidReason").val("Returned mail");
+											else 
+												$("#invalidReason").val("");
+											
+											document.forms['updateFormStatus'].submit();
+										}
+										
+										function getDocMetaForm() {
+
+											if (window.parent 
+												&& 
+												window.parent.document.forms['doc_fields']) {
+												return window.parent.document.forms['doc_fields'];
+											} else if (window.opener
+												&&
+												window.opener.document.forms['doc_fields']) {
+												return window.opener.document.forms['doc_fields'];
+											} else {
+												return false;
+											}
+										}
+										
+										function hasDocMetaForm() {
+											return (
+												(window.parent 
+												&& 
+												window.parent.document.forms['doc_fields'])
+												||
+												(window.opener
+												&&
+												window.opener.document.forms['doc_fields']));
+										}
+										
+									</script>
+								
+								
+									<h3 class="ccla_data_panel_header">Validity*</h3>
+								
+									<div class="ccla_data_panel">
+	
+										<table width="100%" cellpadding=0 cellspacing=0>
+											<tr>
+												<td width="30%">
+	
+													<select name="valid" id="valid">
+														<option value=""></option>
+														
+														<option value="1" <$if #active.VALID like "1"$>selected<$endif$>>Valid</option>
+														<option value="0"  <$if #active.VALID like "0"$>selected<$endif$>>Invalid</option>
+														
+													</select>
+												
+												</td>
+												<td>
+													<input type="checkbox" 	name="isReturnedMail" 	id="isReturnedMail" disabled="disabled" <$if #active.INVALID_REASON like "Returned mail"$>checked="checked"<$endif$> /> Returned mail
+													<input type="hidden" 	name="invalidReason" 	id="invalidReason" value="" />
+												</td>
+											</tr>
+										</table>
+										
+									</div>
+									
+									<h3 class="ccla_data_panel_header">Required updates</h3>
+									
+									<div class="ccla_data_panel">
+									
+										<input type="checkbox" name="noChanges" class="req-update" <$if #active.NO_CHANGES == 1$>checked<$endif$> />
+										No Aurora updates required
+										<br/>
+										
+										<input type="checkbox" name="staticDataChange" class="req-update" <$if #active.STATIC_DATA_CHANGE == 1$>checked<$endif$> />
+										Aurora updates required
+										<br/>
+										
+										<input type="checkbox" name="additionalData" class="req-update" <$if #active.ADDITIONAL_DATA == 1$>checked<$endif$> />
+										Master file update required
+										<br/>
+									
+									</div>
+								</td>
+							
+							</tr>
+						</table>	
+					
+						<br/>
+						
+						<div style="text-align: right">
+							<input type="button" value="Submit" onclick="submitUpdateForm()" />
+						</div>
+						
+					</form>
+				
+				<$endif$>
+				
+			</div>
+				
+		<$else$>
+		
+			<!-- Display standard form info view -->
+			
+			<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+				<b>Form Info: <$#local.formId$></b>
+			</div>
+		
+			<div style="margin: 5px">
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Status:</th><td width="30%"><$#active.FORM_STATUS$></td>
+						<th width="20%">Created:</th><td width="30%"><$#active.CREATE_DATE$></td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Printed:</th><td width="30%"><$#active.PRINTED$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.PRINT_DATE$></td>
+					</tr>
+				</table>
+				
+				<br/>
+
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Generated:</th><td width="30%"><$#active.GENERATED$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.GEN_DATE$></td>
+					</tr>
+					
+					<$if #active.GEN_DOCNAME$>
+						<tr>
+							<td colspan=2>
+								<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.GEN_DOCNAME$>"><$#active.GEN_DOCNAME$></a>
+							</td>
+						</tr>
+					<$endif$>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width="20%">Returned:</th><td width="30%"><$#active.RETURNED$></td>
+						<th width="20%">Date:</th><td width="30%"><$#active.RETURN_DATE$></td>
+					</tr>
+					
+					<$if #active.RETURNED_DOCNAME$>
+						<tr>
+							<td colspan=2>
+								<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.RETURNED_DOCNAME$>"><$#active.RETURNED_DOCNAME$></a>
+							</td>
+						</tr>
+					<$endif$>
+				</table>
+				
+				<br/>
+				
+				<table width="100%" class="cs-info-table">				
+					<tr>
+						<th width="20%">Additional data:</th><td width="30%"><$#active.ADDITIONAL_DATA$></td>
+						<th width="20%">Static data change:</th><td width="30%"><$#active.STATIC_DATA_CHANGE$></td>
+					</tr>
+				</table>
+				
+				<$if rsFormAccounts$>
+					
+					<br/>
+					
+					<$include ccla_cs_form_accounts_list$>
+					
+				<$endif$>
+				
+			</div>
+		
+		<$endif$>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

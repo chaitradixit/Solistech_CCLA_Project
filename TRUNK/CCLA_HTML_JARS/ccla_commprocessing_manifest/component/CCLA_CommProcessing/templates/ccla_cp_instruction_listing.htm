@@ -1,0 +1,228 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<title>
+		Instruction Listing
+	</title>
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="margin: 15px auto;" class="grey_bg instrSF">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Instruction Listing
+				</div>
+					
+				<$SF_UseDatabaseSearch=1$>
+				<$SF_QueryProvider="CCLA_POOL1"$>
+				<$SF_PreventPaging=""$>
+				<$SF_PreventRowIdOrdering=1$>
+				
+				<$displaySearchButton="N"$>
+				<$inlineHeaderInclude = "ccla_cp_instruction_listing_inline_header"$>
+				
+				<$if useExtendedDataView$>
+					<$SF_QueryTable="V_INSTRUCTIONS_EXTENDED_DATA"$>
+				<$else$>
+					<$SF_QueryTable="V_INSTRUCTIONS_LISTED"$>
+				<$endif$>
+				
+				<$if not #local.sf$>
+					<$sf="INSTRUCTION_ID"$>
+					<$so="Desc"$>
+				<$endif$>
+				
+				<$include iris_sf_sort_images$>
+		
+				<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+				<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+				
+				<$SF_DISPLAYADVSEARCHLINK=""$>
+				
+				<$hideLineBreak=1$>
+				<$hideInfoLink="Y"$>
+
+				<$displayPagingOptions="N"$>
+				<$displayPaginator="Y"$>
+				<$SF_CustomPaginator="iris_sf_paginator"$>
+
+				<$advSearchBackgroundColour="#FFFFFF"$>
+				<$advSearchDisplay_pre='orangeContainer_top'$>
+				<$advSearchDisplay_after='orangeContainer_bottom'$>
+				
+				<$customIncludeFieldScript = ""$>
+
+				<$if useExtendedDataView$>
+					<$nodeFilterFieldNames="INSTRUCTION_ID_COL,INSTRUCTION_DATE_ADDED_COL,PROCESS_DATE_COL,INSTRUCTION_TYPE_ID_COL,INSTRUCTION_STATUS_ID_COL,PADDED_CLIENT_NUMBER_COL,ORG_ACCOUNT_CODE_COL,ORGANISATION_NAME_COL,ACCNUM_COL,CASH_UNITS_COL,UCM_BATCH_REF_COL,SPP_BATCH_REF_COL,IS_SUSPENDED_COL"$>
+					<$nodeFilterFieldWidth="6,6,8,10,10,6,10,15,8,8,8,5"$>
+					
+					<$QueryFieldList="INSTRUCTION_ID_COL,INSTRUCTION_DATE_ADDED_COL,INSTRUCTION_TYPE_ID_COL,PROCESS_DATE_COL,INSTRUCTION_STATUS_ID_COL,PADDED_CLIENT_NUMBER_COL,ORG_ACCOUNT_CODE_COL,ORGANISATION_NAME_COL,ACCNUM_COL,CASH_UNITS_COL,UCM_BATCH_REF_COL,SPP_BATCH_REF_COL,IS_SUSPENDED_COL"$>	
+				
+				<$else$>
+					<$nodeFilterFieldNames="INSTRUCTION_ID_COL,INSTRUCTION_DATE_ADDED_COL,PROCESS_DATE_COL,INSTRUCTION_TYPE_ID_COL,INSTRUCTION_STATUS_ID_COL,PADDED_CLIENT_NUMBER_COL,ORG_ACCOUNT_CODE_COL,ORGANISATION_NAME_COL,ACCOUNTNUMBER_COL,FUND_CODE_COL,UCM_BATCH_REF_COL,SPP_BATCH_REF_COL,IS_SUSPENDED_COL"$>
+					<$nodeFilterFieldWidth="6,6,8,12,12,6,10,15,5,5,5,5,5"$>
+					
+					<$QueryFieldList="INSTRUCTION_ID_COL,INSTRUCTION_DATE_ADDED_COL,INSTRUCTION_TYPE_ID_COL,PROCESS_DATE_COL,INSTRUCTION_STATUS_ID_COL,PADDED_CLIENT_NUMBER_COL,ORG_ACCOUNT_CODE_COL,ORGANISATION_NAME_COL,ACCOUNTNUMBER_COL,FUND_CODE_COL,UCM_BATCH_REF_COL,SPP_BATCH_REF_COL,IS_SUSPENDED_COL"$>	
+
+				<$endif$>
+					
+				<$suppressSortLinks="SELECT_COL"$>
+				
+				<$PARAMETERSLIST=#env.PARAMETERSLIST & ",startDate,endDate"$>
+				
+				<!-- Custom filters -->
+				<$INSTRUCTION_TYPE_ID_COL_CustomFilterScript	="ccla_cp_instruction_type_id_filter"$>
+				<$COMM_SOURCE_ID_COL_CustomFilterScript			="ccla_cp_comm_source_filter"$>	
+				<$INSTRUCTION_STATUS_ID_COL_CustomFilterScript	="ccla_cp_instruction_status_id_filter"$>
+				<$IS_SUSPENDED_COL_CustomFilterScript			="ccla_cp_is_suspended_filter"$>
+				
+				<!-- Custom data cell displays -->
+				<$INSTRUCTION_ID_COL_CustomIncludeScript			="ccla_cp_instruction_id_display"$>
+				<$INSTRUCTION_DATE_ADDED_COL_CustomIncludeScript	="ccla_cp_instruction_date_added_display"$>
+				<$INSTRUCTION_TYPE_ID_COL_CustomIncludeScript		="ccla_cp_instruction_type_id_display"$>				
+				<$COMM_SOURCE_ID_COL_CustomIncludeScript			="ccla_cp_comm_source_id_display"$>
+				<$INSTRUCTION_STATUS_ID_COL_CustomIncludeScript		="ccla_cp_instruction_status_id_display"$>
+				<$PADDED_CLIENT_NUMBER_COL_CustomIncludeScript		="ccla_cp_padded_client_number_display"$>
+				<$ORG_ACCOUNT_CODE_COL_CustomIncludeScript			="ccla_cp_org_account_code_display"$>
+				<$ORGANISATION_NAME_COL_CustomIncludeScript			="ccla_cp_organisation_name_display"$>
+				<$ACCOUNTNUMBER_COL_CustomIncludeScript				="ccla_cp_accountnumber_display"$>
+				<$UCM_BATCH_REF_COL_CustomIncludeScript				="ccla_cp_ucm_batch_ref_display"$>
+				<$IS_SUSPENDED_COL_CustomIncludeScript				="ccla_cp_instruction_suspended_display"$>
+				
+				<$SF_SELECT_COL_caption="<input type='checkbox' name='chk_all' onclick='checkAll();'>"$>
+				
+				<$SF_INSTRUCTION_ID_COL_caption			="Instr ID"$>
+				<$SF_INSTRUCTION_ID_COL_type			="input"$>
+				<$SF_INSTRUCTION_ID_COL_shortname		="instructionId"$>
+				<$SF_INSTRUCTION_ID_COL_list			="none"$>
+				<$SF_INSTRUCTION_ID_COL_idcname			="INSTRUCTION_ID"$>
+				<$SF_INSTRUCTION_ID_COL_search			="numeric"$>
+				
+				<$SF_INSTRUCTION_DATE_ADDED_COL_caption		="Created"$>
+				<$SF_INSTRUCTION_DATE_ADDED_COL_type		="input"$>
+				<$SF_INSTRUCTION_DATE_ADDED_COL_shortname	="instructionDateAdded"$>
+				<$SF_INSTRUCTION_DATE_ADDED_COL_list		="none"$>
+				<$SF_INSTRUCTION_DATE_ADDED_COL_idcname		="DATE_ADDED"$>
+				<$SF_INSTRUCTION_DATE_ADDED_COL_search		="date"$>
+				
+				<$SF_PROCESS_DATE_COL_caption	="Process Date"$>
+				<$SF_PROCESS_DATE_COL_type		="input"$>
+				<$SF_PROCESS_DATE_COL_shortname	="processDate"$>
+				<$SF_PROCESS_DATE_COL_list		="none"$>
+				<$SF_PROCESS_DATE_COL_idcname	="PROCESS_DATE"$>
+				<$SF_PROCESS_DATE_COL_search	="date"$>
+				             
+				<$SF_INSTRUCTION_TYPE_ID_COL_caption		="Type"$>
+				<$SF_INSTRUCTION_TYPE_ID_COL_type			="custom"$>
+				<$SF_INSTRUCTION_TYPE_ID_COL_shortname		="instructionTypeId"$>
+				<$SF_INSTRUCTION_TYPE_ID_COL_list			="none"$>
+				<$SF_INSTRUCTION_TYPE_ID_COL_idcname		="INSTRUCTION_TYPE_ID"$>
+				<$SF_INSTRUCTION_TYPE_ID_COL_search			="numeric"$>
+				
+				<$SF_COMM_SOURCE_ID_COL_caption			="Source"$>
+				<$SF_COMM_SOURCE_ID_COL_type			="custom"$>
+				<$SF_COMM_SOURCE_ID_COL_shortname		="commSourceId"$>
+				<$SF_COMM_SOURCE_ID_COL_list			="none"$>
+				<$SF_COMM_SOURCE_ID_COL_idcname			="COMM_SOURCE_ID"$>
+				<$SF_COMM_SOURCE_ID_COL_search			="numeric"$>
+				
+				<$SF_INSTRUCTION_STATUS_ID_COL_caption		="Status"$>
+				<$SF_INSTRUCTION_STATUS_ID_COL_type			="custom"$>
+				<$SF_INSTRUCTION_STATUS_ID_COL_shortname	="instructionStatusId"$>
+				<$SF_INSTRUCTION_STATUS_ID_COL_list			="none"$>
+				<$SF_INSTRUCTION_STATUS_ID_COL_idcname		="INSTRUCTION_STATUS_ID"$>
+				<$SF_INSTRUCTION_STATUS_ID_COL_search		="numeric"$>
+				
+				<$SF_PADDED_CLIENT_NUMBER_COL_caption		="Client No"$>
+				<$SF_PADDED_CLIENT_NUMBER_COL_type			="input"$>
+				<$SF_PADDED_CLIENT_NUMBER_COL_shortname		="clientNumber"$>
+				<$SF_PADDED_CLIENT_NUMBER_COL_list			="none"$>
+				<$SF_PADDED_CLIENT_NUMBER_COL_idcname		="CLIENT_NUMBER"$>
+				<$SF_PADDED_CLIENT_NUMBER_COL_search		="numeric"$>
+						
+				<$SF_ORG_ACCOUNT_CODE_COL_caption	="Org Code"$>
+				<$SF_ORG_ACCOUNT_CODE_COL_type		="input"$>
+				<$SF_ORG_ACCOUNT_CODE_COL_shortname="orgCode"$>
+				<$SF_ORG_ACCOUNT_CODE_COL_list		="none"$>
+				<$SF_ORG_ACCOUNT_CODE_COL_idcname	="ORG_ACCOUNT_CODE"$>
+				<$SF_ORG_ACCOUNT_CODE_COL_search	="matches"$>
+				
+				<$SF_ORGANISATION_NAME_COL_caption		="Org Name"$>
+				<$SF_ORGANISATION_NAME_COL_type			="input"$>
+				<$SF_ORGANISATION_NAME_COL_shortname	="orgName"$>
+				<$SF_ORGANISATION_NAME_COL_list			="none"$>
+				<$SF_ORGANISATION_NAME_COL_idcname		="ORGANISATION_NAME"$>
+				<$SF_ORGANISATION_NAME_COL_search		="substring"$>
+				
+				<$SF_ACCOUNTNUMBER_COL_caption		="Acc No"$>
+				<$SF_ACCOUNTNUMBER_COL_type			="input"$>
+				<$SF_ACCOUNTNUMBER_COL_shortname	="accNo"$>
+				<$SF_ACCOUNTNUMBER_COL_list			="none"$>
+				<$SF_ACCOUNTNUMBER_COL_idcname		="ACCOUNTNUMBER"$>
+				<$SF_ACCOUNTNUMBER_COL_search		="numeric"$>
+				
+				<$SF_FUND_CODE_COL_caption		="Fund"$>
+				<$SF_FUND_CODE_COL_type			="input"$>
+				<$SF_FUND_CODE_COL_shortname	="fundCode"$>
+				<$SF_FUND_CODE_COL_list			="none"$>
+				<$SF_FUND_CODE_COL_idcname		="FUND_CODE"$>
+				<$SF_FUND_CODE_COL_search		="matches"$>
+				
+				<$SF_ACCNUM_COL_caption		="Account No"$>
+				<$SF_ACCNUM_COL_type		="input"$>
+				<$SF_ACCNUM_COL_shortname	="accountNo"$>
+				<$SF_ACCNUM_COL_list		="none"$>
+				<$SF_ACCNUM_COL_idcname		="SOURCE_ACCOUNTNUMBER_STRING"$>
+				<$SF_ACCNUM_COL_search		="matches"$>
+				
+				<$SF_CASH_UNITS_COL_caption		="Cash/Units"$>
+				<$SF_CASH_UNITS_COL_type		="input"$>
+				<$SF_CASH_UNITS_COL_shortname	="cashUnits"$>
+				<$SF_CASH_UNITS_COL_list		="none"$>
+				<$SF_CASH_UNITS_COL_idcname		="CASH"$>
+				<$SF_CASH_UNITS_COL_search		="numeric"$>
+				
+				<$SF_UCM_BATCH_REF_COL_caption		="Envelope ID"$>
+				<$SF_UCM_BATCH_REF_COL_type			="input"$>
+				<$SF_UCM_BATCH_REF_COL_shortname	="ucmBatchRef"$>
+				<$SF_UCM_BATCH_REF_COL_list			="none"$>
+				<$SF_UCM_BATCH_REF_COL_idcname		="UCM_BATCH_REF"$>
+				<$SF_UCM_BATCH_REF_COL_search		="matches"$>
+				
+				<$SF_SPP_BATCH_REF_COL_caption		="WF Batch No"$>
+				<$SF_SPP_BATCH_REF_COL_type			="input"$>
+				<$SF_SPP_BATCH_REF_COL_shortname	="sppBatchRef"$>
+				<$SF_SPP_BATCH_REF_COL_list			="none"$>
+				<$SF_SPP_BATCH_REF_COL_idcname		="SPP_BATCH_REF"$>
+				<$SF_SPP_BATCH_REF_COL_search		="numeric"$>
+				
+				<$SF_IS_SUSPENDED_COL_caption			="Suspended"$>
+				<$SF_IS_SUSPENDED_COL_type				="custom"$>
+				<$SF_IS_SUSPENDED_COL_shortname			="isSuspended"$>
+				<$SF_IS_SUSPENDED_COL_list				="none"$>
+				<$SF_IS_SUSPENDED_COL_idcname			="IS_SUSPENDED"$>
+				<$SF_IS_SUSPENDED_COL_search			="numeric"$>
+				
+				<$include ecsSearchAndFilter$>
+			
+			<$include orangeContainer_bottom$>
+	
+		</div>
+	</div>
+
+</body>
+</html>

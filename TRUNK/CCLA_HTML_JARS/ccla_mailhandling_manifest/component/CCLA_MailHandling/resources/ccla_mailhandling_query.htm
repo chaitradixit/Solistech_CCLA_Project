@@ -1,0 +1,622 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_MailHandling query
+</title>
+</head>
+<body>
+
+<@table CCLA_MailHandling_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>QCCLAChildDocCount</td>
+	<td>SELECT COUNT(*) AS NUMCHILDDOCS
+FROM Revisions, DocMeta
+WHERE Revisions.dID = DocMeta.dID
+AND Revisions.dRevRank=0
+AND Revisions.dDocType='ChildDocument'
+AND DocMeta.xParentDocName=?
+AND NOT Revisions.dStatus='DELETED'</td>
+	<td>parentId varchar</td>
+</tr>
+<tr>
+	<td>QWfActionCountsByUser</td>
+	<td>SELECT COUNT(*) AS ACTIONCOUNT, LUSER FROM TAUDITLOGS
+WHERE (LACTION = 'APPROVE'  OR LACTION = 'REJECT')
+AND LPARAM1 = ? AND LPARAM2 = ?
+AND LDATE > ? AND LDATE < ?
+GROUP BY LUSER
+ORDER BY LUSER</td>
+	<td>wfName varchar
+	    wfStepName varchar
+	    startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>QResponseSlips</td>
+	<td>SELECT DM.XCLIENTNUMBER, DM.XUNITS, REV.DDOCNAME, REV.DINDATE
+FROM DOCMETA DM INNER JOIN REVISIONS REV ON DM.DID = REV.DID
+WHERE REV.DDOCTYPE = 'Response'
+AND (NOT REV.DSTATUS = 'EXPIRED')
+AND (DM.XCLIENTNUMBER IS NOT NULL)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QSystemDocument</td>
+	<td>SELECT *  FROM DOCMETA DM 
+		INNER JOIN REVISIONS R ON (DM.DID = R.DID)
+		WHERE R.DDOCTYPE = 'System' AND R.DREVRANK=0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetDuplicates</td>
+	<td>SELECT * FROM DocMeta dm INNER JOIN Revisions r
+ON dm.dID = r.dID
+WHERE
+dm.xClientNumber = ? 
+AND dm.xAccountNumber = ? 
+AND NOT (dm.xAmount IS NULL AND dm.xUnits IS NULL) 
+AND ((dm.xAmount = ? OR dm.xAmount = ? OR dm.xAmount IS NULL) AND (dm.xUnits = ? OR dm.xUnits = ? OR dm.xUnits IS NULL))
+AND r.dInDate >= ? 
+AND r.dRevRank = 0 
+AND dm.xStatus <> 'Duplicate'
+AND r.dReleaseState = 'Y'
+AND NOT r.dDocName = ?</td>
+	<td>clientNumber varchar
+	    accountNumber varchar
+	    amount varchar
+		units varchar
+		units varchar
+		amount varchar
+	    startDate date
+	    docName varchar</td>
+</tr>
+<tr>
+	<td>QGetParkingLotBundles_OLD</td>
+	<td>SELECT * FROM
+
+		(SELECT dDocName, xBundleRef FROM Revisions r INNER JOIN DocMeta dm
+		ON (dm.dID = r.dID)
+
+		WHERE r.dDocType = 'Bundle'
+		AND dm.xStatus <> 'Deleted'
+		AND r.dRevRank = 0
+		AND dm.xBundleRef IN (
+		  SELECT dm.xbundleref FROM WORKFLOWDOCUMENTS wfd 
+		  
+		  INNER JOIN Revisions r ON (r.dDocName = wfd.dDocName)
+		  INNER JOIN DocMeta dm  ON (dm.dID     = r.dID)
+		  
+		  WHERE DWFID IN
+		  (SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate')
+		)
+
+		ORDER BY DDOCNAME ASC)
+
+		WHERE ROWNUM <= ?
+	</td>
+	<td>numBundles int</td>
+</tr>
+<tr>
+	<td>QGetParkingLotBundles</td>
+	<td>SELECT * FROM (
+
+	SELECT dDocName, xBundleRef, dInDate, COUNT(*) AS MANDATE_COUNT FROM
+
+		(
+      SELECT r.dDocName, dm.xBundleRef, r.dInDate FROM Revisions r INNER JOIN DocMeta dm
+      ON (dm.dID = r.dID)
+  
+		  INNER JOIN DocMeta dmDocs  ON (dm.xBundleRef     = dmDocs.xBundleRef)
+      INNER JOIN Revisions rDocs ON (rDocs.dID = dmDocs.dID)
+    	  
+		  INNER JOIN WORKFLOWDOCUMENTS wfd ON 
+        (wfd.ddocname = rDocs.dDocName AND wfd.dWfId IN
+          (SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate'))
+
+		WHERE r.dDocType = 'Bundle'
+		AND dm.xStatus = 'Completed'
+		AND r.dRevRank = 0
+    
+    AND rDocs.dRevRank = 0
+	AND dmDocs.xClientNumber LIKE ?
+	
+		ORDER BY r.dInDate ASC)
+    GROUP BY dInDate, dDocName, xBundleRef
+    ORDER BY dInDate
+    
+	) WHERE ROWNUM <= ?
+	</td>
+	<td>clientNumber varchar
+		numBundles int</td>
+</tr>
+<tr>
+	<td>QGetParkingLotDocumentCount</td>
+	<td>SELECT COUNT(*) AS NUM_PARKING_LOT_DOCS FROM WORKFLOWDOCUMENTS wfd 
+
+		WHERE DWFID IN
+		(SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate')
+	</td>
+</tr>
+<tr>
+	<td>QGetNextPendingBundle</td>
+	<td>SELECT * FROM (
+			SELECT dDocName, xBundleRef, dInDate, xPriority
+			FROM ActiveBundle
+			WHERE xScanUser <>'SCANUSER4'
+			AND dRevRank = 0
+			AND dStatus = 'RELEASED'
+			AND xIndexer <> ?
+			AND xDocumentAuthor <> ?
+			AND dInDate < ?
+			AND dDocName NOT IN (              
+				SELECT DOCNAME FROM IRIS_LOCKEDITEMS
+			)
+			ORDER BY xPriority DESC NULLS LAST, dInDate ASC
+        ) 
+		WHERE ROWNUM <= 1
+	</td>
+	<td>userId varchar
+		userId varchar
+		embargoDate date</td>
+</tr>
+<tr>
+	<td>QGetNextPendingBundleWithScanUser</td>
+	<td>SELECT * FROM (
+			SELECT dDocName, xBundleRef, dInDate, xPriority
+			FROM ActiveBundle
+			WHERE xScanUser = ?
+			AND dRevRank = 0
+			AND dStatus = 'RELEASED'
+			AND xIndexer <> ?
+			AND xDocumentAuthor <> ?
+			AND dInDate < ?
+			AND dDocName NOT IN (              
+			  SELECT DOCNAME FROM IRIS_LOCKEDITEMS
+			)
+			ORDER BY xPriority DESC NULLS LAST, dInDate ASC
+		) 
+		WHERE ROWNUM <= 1
+	</td>
+	<td>scanUser varchar
+		userId varchar
+		userId varchar
+		embargoDate date</td>
+</tr>
+<tr>
+	<td>QGetNextPendingMandateBundle</td>
+	<td>SELECT * FROM (
+                                                
+			SELECT * FROM (
+                                  
+				SELECT a.dDocName, a.xBundleRef, a.dInDate, a.xPriority, a.xStatus
+				FROM ActiveBundle a
+						  
+				INNER JOIN DocMeta   bundleItemDm  ON (a.xBundleRef = bundleItemDm.xBundleRef)
+				INNER JOIN Revisions bundleItemR ON (bundleItemDm.dID = BundleItemR.dID AND BundleItemR.dRevRank = 0 AND BundleItemR.dStatus = 'RELEASED')
+						
+				WHERE a.xScanUser <>'SCANUSER4'                    
+				AND a.dRevRank = 0
+				AND a.dStatus = 'RELEASED'
+				AND a.xIndexer <> ?
+				AND a.xDocumentAuthor <> ?
+				AND a.dInDate < ?
+				AND a.dDocName NOT IN (SELECT DOCNAME FROM IRIS_LOCKEDITEMS)
+				AND bundleItemDm.xDocumentClass IN ('MAND','AUTOMAND')
+                                  
+				UNION
+                                  
+				SELECT a.dDocName, a.xBundleRef, a.dInDate, a.xPriority, a.xStatus
+				FROM ActiveBundle a        
+				WHERE a.dRevRank = 0
+				AND a.dStatus = 'RELEASED'
+				AND a.xIndexer <> ?
+				AND a.xDocumentAuthor <> ?
+				AND a.dInDate < ?
+				AND a.dDocName NOT IN (SELECT DOCNAME FROM IRIS_LOCKEDITEMS)                          
+				AND (a.xScanUser = 'SCANUSER3')
+                                                
+			) joinedResults ORDER BY xPriority DESC NULLS LAST, dInDate ASC
+                                
+		) orderedResults
+		
+		WHERE ROWNUM <= 1
+	</td>
+	<td>userId varchar
+		userId varchar
+		embargoDate date
+		userId varchar
+		userId varchar
+		embargoDate date</td>
+</tr>
+<tr>
+	<td>QGetLockedItems</td>
+	<td>SELECT * FROM IRIS_LOCKEDITEMS li
+		LEFT JOIN Revisions r ON (r.dDocName = li.DOCNAME)
+		LEFT JOIN DocMeta dm ON (r.dID = dm.dID)
+		WHERE
+		(r.dRevRank IS NULL AND r.dStatus IS NULL) 
+		OR
+		(r.dRevRank = 0 AND r.dStatus = 'RELEASED')
+		ORDER BY LOCKDATE ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetBundleFlagReasons</td>
+	<td>SELECT * FROM CCLA_FLAG_REASONS
+ORDER BY FLAG_REASON_ID ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetFlagReason</td>
+	<td>SELECT FLAG_REASON FROM CCLA_FLAG_REASONS 
+WHERE FLAG_REASON_ID = ?</td>
+	<td>FLAG_REASON_ID int</td>
+</tr>
+<tr>
+	<td>QAddDocMetaAudit</td>
+	<td>INSERT INTO DOCMETA_AUDIT
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>DOCMETA_AUDIT_ID 	int
+		ACTION 				varchar
+		dID 				int
+		dDocName 			varchar
+		dDocTitle 			varchar
+		dDocType 			varchar
+		xComments           varchar
+		xDocumentAuthor     varchar
+		xClientNumber       varchar
+		xCompany            varchar
+		xDocumentDate       date
+		xAccountNumber      varchar
+		xSource             varchar
+		xBatchNumber       	int
+		xFund              varchar
+		xDocumentClass      varchar
+		xAmount             varchar
+		xSortCode           varchar
+		xScanDate           date
+		xScanBatch          varchar
+		xWorkflowDate       date
+		xClientName         varchar
+		xIndexer            varchar
+		xUnits              varchar
+		xParentDocName      varchar
+		xWithInstruction    varchar
+		xAMLDocument        varchar
+		xParentId           varchar
+		xStatus             varchar
+		xBundleRef          varchar
+		xMultiDoc           varchar
+		xScanBatchDocument  varchar
+		xScanUser           varchar
+		xSupportingDoc      varchar
+		xBankAccountNumber  varchar
+		xDestinationAccount varchar
+		xDestinationFund    varchar
+		xFormId             varchar
+		xJobId              varchar
+		xDependantDocName   varchar
+		xClientServicesRef  varchar
+		xPdfDocName         varchar
+		xProcessDate        date</td>
+</tr>
+<tr>
+	<td>QGetNextDocMetaAuditId</td>
+	<td>SELECT SEQ_DOCMETA_AUDIT.NEXTVAL FROM DUAL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetDocMetaAudit</td>
+	<td>SELECT * FROM DOCMETA_AUDIT WHERE DOCMETA_AUDIT_ID = ?</td>
+	<td>DOCMETA_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>QGetBasicParkingLotBundles</td>
+	<td>SELECT * FROM (
+
+	SELECT dDocName, xBundleRef, dInDate, COUNT(*) AS MANDATE_COUNT FROM
+
+		(
+      SELECT r.dDocName, dm.xBundleRef, r.dInDate FROM Revisions r INNER JOIN DocMeta dm
+      ON (dm.dID = r.dID)
+  
+		  INNER JOIN DocMeta dmDocs  ON (dm.xBundleRef     = dmDocs.xBundleRef)
+      INNER JOIN Revisions rDocs ON (rDocs.dID = dmDocs.dID)
+    	  
+		  INNER JOIN WORKFLOWDOCUMENTS wfd ON 
+        (wfd.ddocname = rDocs.dDocName AND wfd.dWfId IN
+          (SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate'))
+
+		WHERE r.dDocType = 'Bundle'
+		AND dm.xStatus = 'Completed'
+		AND r.dRevRank = 0
+    
+    AND rDocs.dRevRank = 0
+	AND dmDocs.xClientNumber LIKE ?
+		ORDER BY r.dInDate ASC)
+    
+    GROUP BY dInDate, dDocName, xBundleRef
+    ORDER BY dInDate ASC
+    
+	) WHERE ROWNUM <= ? AND MANDATE_COUNT = 1</td>
+	<td>clientNumber varchar
+		numBundles int</td>
+</tr>
+<tr>
+	<td>QGetAllPendingDocsForClientCompany</td>
+	<td>SELECT DM.*,R.DDOCNAME, R.DINDATE
+		FROM DOCMETA DM 
+		INNER JOIN REVISIONS R ON (DM.DID=R.DID AND r.dRevRank=0)
+		
+		WHERE DM.XWORKFLOWDATE IS NULL
+		AND DM.XDOCUMENTCLASS IN ('MAND','AUTOMAND','APP')
+		AND R.DSTATUS='RELEASED'
+		AND XBUNDLEREF <> ?
+		
+		AND DM.XCLIENTNUMBER = ?
+		AND DM.XCOMPANY = ?	
+	</td>
+	<td>bundleRef varchar
+		clientNum varchar
+		company varchar</td>
+</tr>
+<tr>
+	<td>QGetAllPendingDocsForClientCompanyForBundle</td>
+	<td>SELECT DM.*,R.DDOCNAME, R.DINDATE 
+		FROM 
+		  DOCMETA DM
+		INNER JOIN 
+		  REVISIONS R ON (DM.DID = R.DID AND r.dRevRank = 0)
+		WHERE 
+		   DM.XWORKFLOWDATE IS NULL AND DM.XDOCUMENTCLASS IN ('MAND','APP','AUTOMAND')
+		   AND R.DSTATUS='RELEASED'
+		   AND XBUNDLEREF <> ?
+		   AND ((DM.XCLIENTNUMBER || '|' || DM.XCOMPANY) IN (
+			  SELECT 
+				  DM2.XCLIENTNUMBER || '|' || DM2.XCOMPANY AS UNIQUE_VALUE
+				  FROM 
+					DOCMETA DM2 
+				  LEFT JOIN 
+					REVISIONS R2 ON (DM2.DID = R2.DID)
+				  WHERE 
+					DM2.XBUNDLEREF = ? AND DM2.XWORKFLOWDATE IS NULL  
+					AND DM2.XDOCUMENTCLASS IN (
+						SELECT DOC_CLASS 
+						FROM DOCUMENT_CLASSES 
+						WHERE (IS_TRANSACTION='Y' OR DOC_CLASS='MAND' OR DOC_CLASS='AUTOMAND' OR DOC_CLASS='APP')
+					)
+					AND R2.DSTATUS='RELEASED'
+          AND DM2.XCLIENTNUMBER IS NOT NULL 
+          AND DM2.XCOMPANY IS NOT NULL
+			  GROUP BY DM2.XCLIENTNUMBER, DM2.XCOMPANY
+		   )
+      ) 
+      AND DM.XCLIENTNUMBER IS NOT NULL 
+      AND DM.XCOMPANY IS NOT NULL</td>
+	<td>bundleRef varchar
+		bundleRef varchar</td>
+</tr>
+<tr>
+	<td>QGetActiveBundleTotalsByStatus</td>
+	<td>SELECT dm.xStatus AS BUNDLE_STATUS, COUNT(*) AS NUM_BUNDLES FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		AND r.dDocType = 'Bundle'
+		AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xStatus
+		ORDER BY dm.xStatus NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetActiveBundleTotalsByPriority</td>
+	<td>SELECT dm.xPriority AS BUNDLE_PRIORITY, COUNT(*) AS NUM_BUNDLES FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		AND r.dDocType = 'Bundle'
+		AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xPriority
+		ORDER BY dm.xPriority DESC NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetActiveBundleTotalsByScanUser</td>
+	<td>SELECT dm.xScanUser AS BUNDLE_SCANUSER, COUNT(*) AS NUM_BUNDLES FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		AND r.dDocType = 'Bundle'
+		AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xScanUser
+		ORDER BY dm.xScanUser DESC NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetActiveBundleTotalsBySource</td>
+	<td>SELECT dm.xSource AS BUNDLE_SOURCE, COUNT(*) AS NUM_BUNDLES FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		AND r.dDocType = 'Bundle'
+		AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xSource
+		ORDER BY dm.xSource ASC NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetBundleTotalsByStatus</td>
+	<td> SELECT  DECODE(BUNDLE_STATUS_ACTIVE, NULL,   
+          DECODE(BUNDLE_STATUS_COMPLETED, NULL, NULL, BUNDLE_STATUS_COMPLETED),
+          BUNDLE_STATUS_ACTIVE) AS BUNDLE_STATUS, 
+          
+          NUM_BUNDLES_ACTIVE, NUM_BUNDLES_COMPLETED
+
+		FROM  (
+
+      SELECT dm.xStatus AS BUNDLE_STATUS_ACTIVE, COUNT(*) AS NUM_BUNDLES_ACTIVE FROM Revisions r 
+      INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+  
+      WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+      AND r.dDocType = 'Bundle'
+      AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xStatus
+			
+		) activeBundles 
+
+		FULL JOIN (
+		  
+      SELECT dm.xStatus AS BUNDLE_STATUS_COMPLETED, COUNT(*) AS NUM_BUNDLES_COMPLETED FROM Revisions r 
+      INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			
+			INNER JOIN WORKFLOWHISTORY wfh ON (r.dDocName = wfh.dDocName AND wfh.dAction = 'Approve' AND wfh.dWfStepName = 'Validation')
+
+      WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND wfh.dActionDate >= TO_DATE(TO_CHAR(SYSDATE, 'dd/mm/yyyy'),'dd/mm/yyyy')
+				AND r.dDocType = 'Bundle'
+				AND dm.xStatus IN ('Completed') GROUP BY dm.xStatus
+
+		) completedBundles ON ((activeBundles.BUNDLE_STATUS_ACTIVE = completedBundles.BUNDLE_STATUS_COMPLETED)
+                           OR (activeBundles.BUNDLE_STATUS_ACTIVE IS NULL AND completedBundles.BUNDLE_STATUS_COMPLETED IS NULL))
+    
+    ORDER BY BUNDLE_STATUS NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetBundleTotalsByPriority</td>
+	<td>SELECT  TO_NUMBER(DECODE(BUNDLE_PRIORITY_ACTIVE, NULL,   
+          DECODE(BUNDLE_PRIORITY_COMPLETED, NULL, NULL, BUNDLE_PRIORITY_COMPLETED),
+          BUNDLE_PRIORITY_ACTIVE)) AS BUNDLE_PRIORITY, 
+          
+          NUM_BUNDLES_ACTIVE, NUM_BUNDLES_COMPLETED
+
+		FROM  (
+
+    SELECT dm.xPriority AS BUNDLE_PRIORITY_ACTIVE, COUNT(*) AS NUM_BUNDLES_ACTIVE FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		AND r.dDocType = 'Bundle'
+		AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xPriority
+			
+		) activeBundles 
+
+		FULL JOIN (
+		  
+      SELECT dm.xPriority AS BUNDLE_PRIORITY_COMPLETED, COUNT(*) AS NUM_BUNDLES_COMPLETED FROM Revisions r 
+      INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			
+			INNER JOIN WORKFLOWHISTORY wfh ON (r.dDocName = wfh.dDocName AND wfh.dAction = 'Approve' AND wfh.dWfStepName = 'Validation')
+
+      WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND wfh.dActionDate >= TO_DATE(TO_CHAR(SYSDATE, 'dd/mm/yyyy'),'dd/mm/yyyy')
+				AND r.dDocType = 'Bundle'
+				AND dm.xStatus IN ('Completed') GROUP BY dm.xPriority
+
+		) completedBundles ON ((activeBundles.BUNDLE_PRIORITY_ACTIVE = completedBundles.BUNDLE_PRIORITY_COMPLETED)
+                           OR (activeBundles.BUNDLE_PRIORITY_ACTIVE IS NULL AND completedBundles.BUNDLE_PRIORITY_COMPLETED IS NULL))
+    
+    ORDER BY BUNDLE_PRIORITY DESC NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetBundleTotalsByScanUser</td>
+	<td>SELECT  DECODE(BUNDLE_SCANUSER_ACTIVE, NULL,   
+          DECODE(BUNDLE_SCANUSER_COMPLETED, NULL, NULL, BUNDLE_SCANUSER_COMPLETED),
+          BUNDLE_SCANUSER_ACTIVE) AS BUNDLE_SCANUSER, 
+          
+          NUM_BUNDLES_ACTIVE, NUM_BUNDLES_COMPLETED
+
+		FROM  (
+
+		  SELECT dm.xScanUser AS BUNDLE_SCANUSER_ACTIVE, COUNT(*) AS NUM_BUNDLES_ACTIVE FROM Revisions r 
+				INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+				WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+				AND r.dDocType = 'Bundle'
+				AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xScanUser
+			
+		) activeBundles 
+
+		FULL JOIN (
+		  
+		   SELECT dm.xScanUser AS BUNDLE_SCANUSER_COMPLETED, COUNT(*) AS NUM_BUNDLES_COMPLETED FROM Revisions r 
+				INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			
+			INNER JOIN WORKFLOWHISTORY wfh ON (r.dDocName = wfh.dDocName AND wfh.dAction = 'Approve' AND wfh.dWfStepName = 'Validation')
+
+				WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND wfh.dActionDate >= TO_DATE(TO_CHAR(SYSDATE, 'dd/mm/yyyy'),'dd/mm/yyyy')
+				AND r.dDocType = 'Bundle'
+				AND dm.xStatus IN ('Completed') GROUP BY dm.xScanUser
+
+		) completedBundles ON ((activeBundles.BUNDLE_SCANUSER_ACTIVE = completedBundles.BUNDLE_SCANUSER_COMPLETED)
+                           OR (activeBundles.BUNDLE_SCANUSER_ACTIVE IS NULL AND completedBundles.BUNDLE_SCANUSER_COMPLETED IS NULL))
+                           
+    ORDER BY BUNDLE_SCANUSER DESC NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetBundleTotalsBySource</td>
+	<td>SELECT  DECODE(BUNDLE_SOURCE_ACTIVE, NULL,   
+          DECODE(BUNDLE_SOURCE_COMPLETED, NULL, NULL, BUNDLE_SOURCE_COMPLETED),
+          BUNDLE_SOURCE_ACTIVE) AS BUNDLE_SOURCE, 
+          
+          NUM_BUNDLES_ACTIVE, NUM_BUNDLES_COMPLETED
+
+		FROM  (
+
+		  SELECT dm.xSource AS BUNDLE_SOURCE_ACTIVE, COUNT(*) AS NUM_BUNDLES_ACTIVE FROM Revisions r 
+      INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+  
+      WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+      AND r.dDocType = 'Bundle'
+      AND dm.xStatus IN ('EnterDetails','Validation','Flagged') GROUP BY dm.xSource
+			
+		) activeBundles 
+
+		FULL JOIN (
+		  
+      SELECT dm.xSource AS BUNDLE_SOURCE_COMPLETED, COUNT(*) AS NUM_BUNDLES_COMPLETED FROM Revisions r 
+      INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			
+			INNER JOIN WORKFLOWHISTORY wfh ON (r.dDocName = wfh.dDocName AND wfh.dAction = 'Approve' AND wfh.dWfStepName = 'Validation')
+
+      WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND wfh.dActionDate >= TO_DATE(TO_CHAR(SYSDATE, 'dd/mm/yyyy'),'dd/mm/yyyy')
+				AND r.dDocType = 'Bundle'
+				AND dm.xStatus IN ('Completed') GROUP BY dm.xSource
+
+		) completedBundles ON ((activeBundles.BUNDLE_SOURCE_ACTIVE = completedBundles.BUNDLE_SOURCE_COMPLETED)
+                           OR (activeBundles.BUNDLE_SOURCE_ACTIVE IS NULL AND completedBundles.BUNDLE_SOURCE_COMPLETED IS NULL))
+    
+    ORDER BY BUNDLE_SOURCE NULLS LAST</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetWFActionTotals</td>
+	<td>SELECT COUNT(*) AS NUM_WF_ACTIONS FROM WORKFLOWHISTORY wfh
+
+		WHERE wfh.dAction = ? 
+		AND wfh.dWfStepName = ?
+		AND wfh.dWfName = ?
+		AND wfh.dActionDate >= ?</td>
+	<td>wfAction varchar
+		wfStepName varchar
+		wfName varchar
+		wfActionDate date</td>
+</tr>
+<tr>
+        <td>gMailHandling_getLatestDocInfoByName</td>
+        <td>SELECT Revisions.*, DocMeta.*
+		FROM Revisions
+		INNER JOIN DocMeta ON (Revisions.dID = DocMeta.dID)
+		WHERE Revisions.dDocName=?
+		AND Revisions.dRevRank=0 
+		AND Revisions.dStatus='RELEASED'
+        </td>
+        <td>docNameToQuery varchar</td>
+</tr>
+</table>
+<@end@>
+</body></html>

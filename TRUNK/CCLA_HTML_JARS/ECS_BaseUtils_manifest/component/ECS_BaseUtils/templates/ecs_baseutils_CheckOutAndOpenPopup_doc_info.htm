@@ -1,0 +1,43 @@
+<$include std_doctype_html_decl$>
+
+<head>
+	<title>Edit document</title>
+  <$include std_info_html_head_declarations$>
+</head>
+
+<$include info_body_def$>
+
+<$dDocName=#active.d$>
+<$executeService("DOC_INFO_LATESTRELEASE")$>
+
+<$include checkoutandopen_javascript$>	
+	
+<$loop DOC_INFO$>
+	<script>
+		checkOutAndOpen8('<$dDocName$>','<$dDocTitle$>','<$dExtension$>','<$dOriginalName$>');
+	</script>	
+<$endloop$>
+	
+<script language="javascript">
+
+	var applet =  document["CheckoutAndOpenApplet_idc1"];
+	var cgiurl = "<$HttpBrowserFullCgiPath$>";
+	var appletNotInstalled = true;
+
+	try	
+	{ 
+		appletNotInstalled = applet.canOpenOdma(cgiurl);
+	} 
+	catch(e) 
+	{
+		document.write('<h5>You need to install an applet to use this feature.</h5>');
+		document.write('<p>If you have not been prompted to install an applet, please check your security settings or contact your Admnistrator.</p>');
+	}
+	
+	if(appletNotInstalled == false){
+		window.close();
+	}
+</script>	
+	
+</body>
+</html>

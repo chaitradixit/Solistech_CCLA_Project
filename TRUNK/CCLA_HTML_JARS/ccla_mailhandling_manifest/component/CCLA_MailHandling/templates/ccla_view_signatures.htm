@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	
+	<$include iris_styles$>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>
+	Signatures for '<$#local.company$>'
+</title>		
+		
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<script type="text/javascript">
+					
+			function cancel()
+			{
+				<$if isPopup$>
+					window.parent.closePopup();
+				<$else$>
+					window.close();
+				<$endif$>
+			}
+				
+	</script>
+
+	<$include orangeContainer_top$>
+		
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+			<b>
+				Signatures for Client no: <$#local.clientNum$><$if clientAccNum$>, Account no: <$clientAccNum$><$endif$> 
+			</b>
+		</div>
+		
+		<div>
+			
+			<!-- Display confirmation of new note -->
+			<table width="100%" cellpadding=0 cellspacing=2>
+			
+				<tr>
+					<td>
+						<br/>
+						
+						<$QueryText = "(dDocType <MATCHES> `Signature`) <AND> (xClientNumber <MATCHES> `" & #local.clientNum & "`)"$>
+						<$if clientAccNum$>
+							<$QueryText = QueryText & " <AND> (xAccountNumber <MATCHES> `" & clientAccNum & "`)"$>
+						<$endif$>	
+							
+						<$executeService("GET_SEARCH_RESULTS")$>
+						<$ResultCount = 50$>		
+							
+						<$if not SearchResults$>
+							<br/>
+							No matching signatures found.
+							
+						<$else$>
+							<$SearchResults.#numRows$> signatures found.
+							<br/>
+							<br/>
+							
+							<!-- Display list of available signatures in scrollable box -->
+							<div style="overflow-y: scroll; height: 340px; border: 1px inset; padding: 5px; margin-right: 3px;">
+								<$loop SearchResults$>
+									<div style="border: 1px solid #BBB; padding: 2px; overflow: auto; margin-bottom: 5px;">
+										<img src="<$URL$>" />
+									</div>
+								<$endloop$>
+							</div>
+						<$endif$>
+						
+						<br/>
+						<br/>
+					</td>
+				</tr>
+				<tr align="center">
+					<td>
+						<input type=button value="Close" style="width: 120; display: block; margin: 2px;" onClick="cancel();">
+					</td>
+				</tr>
+				
+			</table>
+				
+		</div>
+		
+	<$include orangeContainer_bottom$>	
+	
+	</div>
+
+</body>
+</html>

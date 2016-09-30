@@ -1,0 +1,99 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		Locked Items
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+
+	<$include float_menu_header$>
+	
+	<script type="text/javascript">
+		
+		function removeLock(docName) {
+			var frm = document.forms['removeLockForm'];
+			frm.elements['dDocName'].value = docName;
+			
+			frm.submit();
+		}
+		
+	</script>
+	
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 600px' class="grey_bg white_border">
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Locked Items
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+						
+				<$if lockRemoved$>
+					<div class="message_panel info_icon">
+						Item lock removed successfully.
+					</div>
+				<$endif$>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Content ID</th>
+						<th>Type</th>
+						<th>User</th>
+						<th>Lock date</th>
+						<th>&nbsp;</th>
+					</tr>
+					
+					<$loop rsLockedItems$>
+						<tr>
+							<td>
+								<$if #active.dDocType like "Bundle"$>
+									<a href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.DOCNAME$>&bundleRef=<$#active.xBundleRef$>&view=bundle"><$#active.DOCNAME$></a>
+								<$else$>
+									<a href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.DOCNAME$>"><$#active.DOCNAME$></a>
+								<$endif$>
+							</td>
+							<td><$#active.dDocType$>&nbsp;</td>
+							<td><$#active.LOCKUSER$></td>
+							<td><$#active.LOCKDATE$></td>
+							<td><a href="javascript:removeLock('<$#active.DOCNAME$>');">Remove</a></td>
+						</tr>
+					<$endloop$>
+				
+				</table>
+				
+				<br/>
+
+				<form method="POST" id="removeLockForm" name="removeLockForm">
+					<input type="hidden" name="IdcService" value="IRIS_REMOVE_ITEM_LOCK" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_LOCKED_ITEMS<$include add_idc_token_to_url$>&lockRemoved=1" />
+					
+					<input type="hidden" name="dDocName" value="" />
+				</form>
+				
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+	
+</body></html>

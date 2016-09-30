@@ -1,0 +1,408 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<$if not editType$>
+	<$editType = "person"$>
+<$endif$>
+
+<$if editType like "person"$>
+	<$bulkEditLabel = "Person relation"$>
+	<$bulkEditTitle = "Person-Account Relations"$>
+	
+<$elseif editType like "bankAccount"$>
+	<$bulkEditLabel = "Bank Account relation"$>
+	<$bulkEditTitle = "Account-Bank Account Relations"$>
+
+<$elseif editType like "nominatedBankAccount"$>
+	<$bulkEditLabel = "Nominated Bank Account"$>
+	<$bulkEditTitle = "Nominated Bank Accounts"$>
+	
+<$elseif editType like "accountFlag"$>
+	<$bulkEditLabel = "Account Flag"$>
+	<$bulkEditTitle = "Account Flags"$>
+
+<$elseif editType like "nominatedCorrespondent"$>
+	<$bulkEditLabel = "Nominated Correspondent"$>
+	<$bulkEditTitle = "Nominated Correspondents"$>
+
+<$elseif editType like "numRequiredSignatures"$>
+	<$bulkEditLabel = "Num required signatures"$>
+	<$bulkEditTitle = "Num required signatures"$>
+
+<$endif$>
+
+<title>
+	<$#active.ORGANISATION_NAME$> | Bulk Update <$bulkEditTitle$>
+</title>
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_address_js$>
+	<$include ccla_cs_contact_details_js$>
+	<$include ccla_cs_element_relations_js$>
+	<$include ccla_cs_relation_ajax_update_js$>
+	
+	<$if #active.createAssociation OR #active.PERSON_ID$>
+		<$include create_entity_add_association_js$>
+	<$endif$>
+	<$include ccla_cs_entity_create_error_handling_js$>
+	
+	<$include ccla_cs_account_selection_js$>
+	
+	<script type="text/javascript">
+	
+		var editType		= "<$#local.editType$>";
+		var bulkEditLabel 	= "<$#local.bulkEditLabel$>";
+		
+		// Flag set after form submission. If the user attempts to submit another
+		// form, they are presented with a message indicating that processing is
+		// still ongoing.
+		var isProcessing	= false;
+		
+		$(document).ready( function() {
+			// Apply onclick event to all checkboxes while in single-select mode
+			$(".single_select_relation").bind("click", function() {
+				deselectOtherRelationChecks(this);
+			});
+		});
+		
+		// Displays a message indicating that processing is still ongoing.
+		function displayWaitMessage() {
+			alert("A previous update is still processing - please wait for it to finish.");
+			return false;
+		}
+		
+		// If the passed checkbox element is checked/ticked:
+		// - untick all checkboxes with the same ID attribute
+		function deselectOtherRelationChecks(checkElem) {
+			if (!$(checkElem).is(":checked"))
+				return;
+			
+			var checkElemId = $(checkElem).attr("id");
+			var thisRelationId = checkElemId.substring("relationNameId_".length);
+
+			$("." + checkElemId).not(checkElem).attr("checked", false);
+		}
+		
+		// Selects all checkboxes for the current bulk update view.
+		function selectAllChecks() {
+			if (isProcessing)
+				return displayWaitMessage();
+		
+			$(".bulk_update_check").attr("checked","checked");
+		}
+		
+		// Unticks all checkboxes for the current bulk update view.
+		function deselectAllChecks() {
+			if (isProcessing)
+				return displayWaitMessage();
+		
+			$(".bulk_update_check").removeAttr("checked");
+		}
+		
+		function setMultipleAccountsData() {
+			if (isProcessing)
+				return displayWaitMessage();
+		
+			var hasChecked = false;
+			
+			var selAccountIds = updateSelectedAccountIds();
+			
+			if (selAccountIds.length == 0) {
+				alert('Please make sure you select at least one account first!');
+				return;
+			}
+			
+			// Final confirm before submitting form
+			if (confirm('Are you sure you want to set this data across the selected accounts?')) {
+				
+				// Disable ALL buttons on the page.
+				//$("input [type='button'], input [type='submit']").attr("disabled", "disabled");
+				
+				isProcessing = true;
+				
+				// Display message indicating that an update is occurring.
+				$("#relationsSavingMsg").show();
+				
+				document.frmBulkUpdate.submit();
+			}
+		}
+		
+		function addOrRemoveRelations(actionType) {
+			if (isProcessing)
+				return displayWaitMessage();
+		
+			var hasChecked = false;
+			var hasPersonChecked = false;
+			
+			var selAccountIds = updateSelectedAccountIds();
+			
+			if (selAccountIds.length == 0) {
+				alert('Please make sure you select at least one account first!');
+				return;
+			}
+			
+			// Ensure user has selected at least one relationship/flag to add/remove.
+			numRelationsChecked = 0;
+			
+			$("input.bulk_update_check").each( function() {
+				if ($(this).is(":checked")) {
+					numRelationsChecked++;
+				}
+			});
+			
+			if (numRelationsChecked == 0) {
+				alert('Please make sure you select at least one ' 
+				 + bulkEditLabel + ' first!');
+				return;
+			}
+			
+			// Set action type ('add' or 'remove')
+			document.frmBulkUpdate.relationUpdateType.value = actionType;
+			
+			// Final confirm before submitting form
+			if (confirm('Are you sure you want to ' + actionType.toLowerCase() 
+				+ ' the selected ' + bulkEditLabel + '(s)?')) {
+				
+				// Disable ALL buttons on the page.
+				//$("input [type='button'], input [type='submit']").attr("disabled", "disabled");
+				
+				isProcessing = true;
+				
+				// Display message indicating that an update is occurring.
+				$("#relationsSavingMsg").show();
+				
+				document.frmBulkUpdate.submit();
+			}
+		}
+		
+		// Refreshes the list of Person relations for the given elementId.
+		function refreshPersonRelations(elementId, newRelationId) {
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_related_persons_display_refresh",
+				{
+					"ts": new Date().getTime(),
+					"ORGANISATION_ID": elementId,
+					"isEdit": "true",
+					"allowSelectRelation": allowSelectRelation,
+					"newRelationId": newRelationId,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#divAccountPeople").html(data);
+				}
+			);
+		}
+		
+		function addPersonToSelectedAccounts() {
+			var selAccounts = updateSelectedAccountIds();
+			
+			if(selAccounts.length > 0){
+				openPopup('?IdcService=CCLA_CS_ADD_PERSON_RELATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&includeAssociation=yes&isParentCallBack=1&isBulkAssociation=1&searchScope=person',800);
+			 }else{
+				alert('Please make sure you check at least one account and one relationship in order to proceed');
+			 }
+		}
+		
+		function addBankAccountToSelectedAccounts() {
+			var selAccounts = updateSelectedAccountIds();
+			
+			if(selAccounts.length > 0){
+				openPopup('?IdcService=CCLA_CS_BANK_ACCOUNT_RELATION_ADD<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&isBulk=true',800);
+			 }else{
+				alert('Please make sure you check at least one account in order to proceed');
+			 }
+		}	
+			
+		function quickAddPersonToSelectedAccounts() {
+			var selAccounts = updateSelectedAccountIds();
+			
+			if(selAccounts.length > 0){
+				openPopup('?IdcService=CCLA_CS_ADD_QUICK_PERSON<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=yes&isParentCallback=1&isBulkAssociation=1&isPopup&createNew=Yes&isUltraCompact=1&TITLE=',800); 
+			 }else{
+				alert('Please make sure you check at least one account and one relationship in order to proceed');
+			 }
+		}	
+
+		
+		// Event bound to entries in the Account listing.
+		// Loads basic account information for the selected account, plus specific
+		// details relating to the current bulk-edit type.
+		function viewAccountDetail(accountId, rowToHighlight) 
+		{
+		
+			$("#divAccountDetail").html("Loading...");
+			$("#divAccountMoreDetail").html("");
+			
+			// Highlight selected account
+			$('.accounts-highlighted').removeClass('accounts-highlighted');
+			$(rowToHighlight).addClass('accounts-highlighted');
+			
+			if (editType == "person" || editType == "nominatedCorrespondent" || editType == "numRequiredSignatures") {
+				$.get("?<$include add_idc_token_to_url$>",
+					{
+						"IdcService": "CCLA_CS_GET_INCLUDE",
+						"incName": "ccla_cs_related_account_persons_display",
+						"isCompact": 1,
+						"ACCOUNT_ID": accountId,
+						"ELEMENT_TYPE_ID_1": "2",
+						"ELEMENT_TYPE_ID_2": "3",
+						"ajaxRefresh": 1,
+						"suppressSigApplet": 1,
+						"ts": new Date().getTime()
+					},
+					function(data) {
+						viewAccountDetailCompleted(data, rowToHighlight);
+					}
+				);
+			}
+			
+			if (editType == "bankAccount" || editType == "nominatedBankAccount") {
+				$.get("?<$include add_idc_token_to_url$>",
+					{
+						"IdcService": "CCLA_CS_GET_INCLUDE",
+						"incName": "ccla_cs_related_bank_accounts_display_compact",
+						"ACCOUNT_ID": accountId,
+						"ELEMENT_TYPE_ID_1": "3",
+						"ELEMENT_TYPE_ID_2": "4",
+						"ajaxRefresh": 1,
+						"ts": new Date().getTime()
+					},
+					function(data) {
+						viewAccountDetailCompleted(data, rowToHighlight);
+					}
+				);	
+			}
+			
+			if (editType == "accountFlag") {
+				$.get("?<$include add_idc_token_to_url$>",
+					{
+						"IdcService": "CCLA_CS_GET_INCLUDE",
+						"incName": "ccla_cs_account_flags_display",
+						"ACCOUNT_ID": accountId,
+						"ajaxRefresh": 1,
+						"ts": new Date().getTime()
+					},
+					function(data) {
+						viewAccountDetailCompleted(data, rowToHighlight);
+					}
+				);	
+			}
+		}
+		
+		// Callback function after a user selects an account. Displays a list of
+		// related elements in one div, and basic account information in another.
+		function viewAccountDetailCompleted(data, rowToHighlight) {
+			
+			$("#divAccountDetail").html($(data).filter(".relation_list").html());
+			$("#divAccountMoreDetail").html($(data).filter(".more_detail").html());
+		}
+		
+		// Triggered after adding a new person/bank account.
+		function doSelectCallback(elementId, relationshipIds) {
+			
+			$('#frmBulkUpdate #relatedElementIds').val(elementId);
+			if (relationshipIds)
+				$('#frmBulkUpdate #RELATIONSHIP').val(relationshipIds);
+
+			$('#frmBulkUpdate #relationUpdateType').val('add');
+			$('#frmBulkUpdate #singleAdd').val('true');
+		 
+			$('#frmBulkUpdate').submit();
+			closePopup();
+		}
+		
+	</script>
+	
+</head>
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+		
+	<div id="cs_page_container" class="cs-page-container bulkUpdatePageContainer">
+		
+		<$if not hideActionButtons$>
+			<$buttonContext = "entity"$>
+			<$include ccla_cs_include_tab_parameters$>
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container bulkUpdateContainer">
+			
+			<div id='ccla_cs_content' class="cs-content-container bulkUpdateContainer" >
+			
+				<$include ccla_cs_toggle_info_edit_display$>
+
+				<$include orangeContainer_top$>
+			
+				<div class='ccla_cs_panel_header'>
+					<$#active.ORGANISATION_NAME$> | Bulk Update <$bulkEditTitle$>
+				</div>
+				
+				<$hideClientInfo="true"$>
+				<$suppressSigApplet=1$>
+				<$hideName="true"$>
+				<$accountLinkShowDetail="true"$>
+				
+				<$include ccla_cs_entity_bulk_update_context_selector$>
+				
+				<$if added$>
+					<div class="message_panel info_icon">
+						<$bulkEditLabel$>s updated.	
+					</div>
+				<$endif$>
+
+				<div class='ccla_cs_panel_header'>
+					Account selector
+				</div>
+		
+				<p>
+					To see all existing <$bulkEditLabel$>s for a single account, click on the account name below.
+				</p>
+				
+				<div class="bulk_accounts_panel_container">
+					<div class='ccla_cs_panel_content bulk_accounts_panel_left'>
+						<$if rsAccounts$>	
+							<$include ccla_cs_display_accounts_bulk_update$>
+						<$else$>
+							<p class="no-info">
+								No registered accounts for this client
+							</p>
+						<$endif$>
+						
+					</div>
+					
+					<div class="ccla_cs_panel_content bulk_accounts_panel_right_top">
+						<div id="divAccountDetail">
+						
+						</div>
+					</div>
+					
+					<div class="ccla_cs_panel_content bulk_accounts_panel_right_bottom" id="divAccountMoreDetail">
+						
+					</div>
+				</div>
+				
+				<$include orangeContainer_bottom$>		
+				
+				<$inc("ccla_cs_entity_bulk_update_" & editType & "_selector")$>
+			
+			</div>
+			
+			<br/>
+			
+		</div>
+	</div>
+		
+</body></html>

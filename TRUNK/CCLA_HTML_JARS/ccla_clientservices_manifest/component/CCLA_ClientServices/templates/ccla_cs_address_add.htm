@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Add New Address
+	</title>
+	
+	<$searchScope="address"$>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_contact_lookup_mini_styles$>
+	
+	<$hideExisting=1$>
+	
+	<$include ccla_cs_contact_lookup_js$>
+	
+	<script type="text/javascript">
+		
+		// Fetch list of contact search results using AJAX request.	
+		/*		
+		function searchContacts() {
+			
+			var searchForm		= document.forms['contactLookupForm'];
+			var addrFlatHouse 	= searchForm.elements['HOUSE_NAMENUMBER'].value;
+			var addrPostCode	= searchForm.elements['POSTCODE'].value;
+			var searchScope  	= '<$#local.searchScope$>';
+
+			var doQASTreeSearch	= '<$#env.CCLA_CS_QASTreeSearch$>';
+			
+			if (addrPostCode.length < 3 && addrFlatHouse.length < 3) {
+				// Clear the search results if the specified postcode is less than
+				// 3 characters
+				$("#contactSearchResults").html("");
+				return;
+			}
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_qas_lookup",
+				  {
+					"hideExisting":			1,
+					"HOUSE_NAMENUMBER": 	addrFlatHouse,
+					"POSTCODE": 			addrPostCode,
+					"QASTreeSearch":		doQASTreeSearch,
+					"searchScope":			searchScope,
+					"searched":				1,
+					"ts": 					new Date().getTime()
+				  },
+				  function(data) { displayContactResults(data); }
+			);
+		}
+		*/
+		
+		// Fetches QAS address data for a given moniker. The requested include will return
+		// a list of hidden form forms containing the address data. The call-back function
+		// is used to copy the new address data back to the parent form.
+		function getAddress(moniker){
+		
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_qas_address_fields",
+				  {
+					"moniker": 	moniker,
+					"ts": 		new Date().getTime()
+				  },
+				  function(data) { populateHiddenResults(data); }
+			);
+		
+		}
+		
+		// Callback function used in AJAX request for QAS address data. The
+		// returned HTML is a list of hidden form form fields, these are
+		// dumped to the page before being read to corresponding fields on
+		// the parent page.
+		//
+		// If person naming data is returned along with the address, the
+		// user will be prompted to confirm the updates to the Person
+		// Name fields.
+		function populateHiddenResults(data) {
+			$("#hiddenFields").html(data);
+			
+			var addressFields = new Array(
+			 "FLAT", "HOUSENUMBER", "HOUSENAME", 
+			 "STREET", "DISTRICT", "CITY", "POSTCODE", "COUNTY"
+			);
+			
+			var nameFields = new Array(
+			 "TITLE", "FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"
+			);
+			
+			if (window.parent.document) {
+				// Obtain reference to hidden form containing QAS data
+				var qasDataForm = document.forms['hiddenForm'];
+			
+				// Obtain reference to parent page
+				var parentDoc = window.parent.document;
+				
+				for (var i=0; i<addressFields.length; i++) {
+					var fieldName = addressFields[i];
+					var value = qasDataForm.elements[fieldName].value;
+					
+					parentDoc.getElementById(fieldName).value = value;
+				}
+				
+				parentDoc.getElementById('COUNTRY').value = 'UK';
+				parentDoc.getElementById('QAS_VALID').checked = true;
+				parentDoc.getElementById('QAS_VALID').disabled = false;
+				
+				parentDoc.getElementById('QAS_VALID').value = '1';
+				parentDoc.getElementById('addressChanged').value = 'true';
+				
+				window.parent.disableAddress();
+				
+				// Now check for name data (could be empty), providing this
+				// is an Edit Person page.
+				if (parentDoc.getElementById("LAST_NAME")
+					&&
+					qasDataForm.elements["LAST_NAME"].value != "") {
+					
+					var personName = "";
+					
+					for (var i=0; i<nameFields.length; i++) {
+						var fieldName = nameFields[i];
+						var value = qasDataForm.elements[fieldName].value;
+						
+						if (personName != "")
+							personName += " ";
+							
+						personName += value;
+					}
+					
+					var c = confirm("You selected an address with the name:\n\n" +
+					 personName + "\n\n" + "Click OK to apply this name data to " +
+					 "the person record. Click Cancel to preserve the current name.");
+					 
+					 if (c) {
+						for (var i=0; i<nameFields.length; i++) {
+							var fieldName = nameFields[i];
+							var value = qasDataForm.elements[fieldName].value;
+							
+							if (fieldName == "TITLE") {
+								var titleOptList = parentDoc.getElementById("TITLE_ID");
+								
+								if (titleOptList) {
+									titleOptList.value = "";
+								
+									for (var j=0; j<titleOptList.options.length; j++) {
+										var thisOpt = titleOptList.options[j];
+										
+										if (thisOpt.text == value) {
+											titleOptList.value = thisOpt.value;
+										}
+									}
+								}
+								
+							} else
+								parentDoc.getElementById(fieldName).value = value;
+						}
+					 }
+				}
+				
+			} else {
+				alert("No parent window to add address data!");
+			}
+			
+			window.parent.closePopup();
+		}
+		
+
+	
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+
+
+		<div class='ccla_cs_panel_content'>
+	
+			<$include ccla_cs_contact_lookup_form$>
+		
+		</div>
+
+		
+	</div>
+		<div id="hiddenFields">
+				
+		</div>
+</body>
+</html>

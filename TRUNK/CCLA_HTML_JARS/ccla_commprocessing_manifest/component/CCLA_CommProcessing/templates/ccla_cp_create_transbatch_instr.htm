@@ -1,0 +1,82 @@
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	<$include iris_styles$>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Create Transaction Batch And Instructions
+	</title>
+
+	<$include iris_common_js$>
+	
+	<script type="text/javascript">	
+		$(document).ready( function() {
+			checkTransBatchInstructions();
+		});
+		
+		// Ensures the bundle is locked to the current user.
+		function checkTransBatchInstructions() {
+			
+			//clear any messages.
+			$("#errorBox").html("");
+			
+			$.get('?IdcService=CCLA_CP_CREATE_TRANSBATCH<$include add_idc_token_to_url$>',
+						{dID: '<$#local.dID$>',
+						 persist: "0",
+						 ts: new Date().getTime(), // forces server request in IE
+						 IsJava: "1"},
+						function(data) { checkTransBatchInstructionsResult(data);});
+		}
+		
+		function checkTransBatchInstructionsResult(data) {
+			var values = getLocalDataFromResponse(data);
+			
+			//General Exception, Cannot even generate the instructions without amendments to the csv file.	
+			if (values["StatusCode"]<0) {
+				var errorHtml = "<h3 class='ccla_data_panel_header'>Transaction Batch Error</h3>"+
+							"<table class='ccla-table'>" +
+							"<tr><td>Cannot process the Transaction Batch file. Please review and correct the csv file.</td></tr>" +
+							"<tr><td>"+values["StatusMessage"]+"</td></tr>" +
+							"</table>";		
+				$("#errorBox").html(errorHtml);
+			} else {
+				
+				if (values["SUCCESS"] && values["SUCCESS"]=='1') {
+					//Values is successful, callback function to parent and create the transaction batch
+					window.parent.closePopup();
+					window.parent.createTransactionBatch('<$#local.dID$>');
+				} else {
+					//Error with instruction creation, use ajax to call service and display message
+					$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+						{ 
+							"incName"	: "ccla_cp_transbatch_instruction_error",
+							"dID"		: "<$#local.dID$>",
+							"ts"		: new Date().getTime()
+						},
+						function(data) {
+							$("#errorBox").removeAttr("disabled");
+							$("#errorBox").html(data);
+						}
+					);
+				}
+			}
+		}		
+	</script>	
+</head>
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class='ccla_cs_panel_content'>
+			<$include orangeContainer_top$>
+			<div id="errorBox" name="erroBox" style="width: 650px; height: 400px; margin: 15px auto;">		
+				&nbsp;
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+</body>
+</html>

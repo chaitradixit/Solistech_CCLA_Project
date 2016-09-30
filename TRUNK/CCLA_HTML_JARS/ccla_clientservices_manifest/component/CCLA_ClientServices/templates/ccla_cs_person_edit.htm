@@ -1,0 +1,742 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		
+		<$if strIndexOf(IdcService,"CCLA_CS_PERSON_NEW") > -1$>
+			<$createNew=1$>
+			<$isNew=1$>
+		<$else$>
+			<$ELEMENT_ID = #local.PERSON_ID$>			
+			<$isEdit=1$>
+		<$endif$>
+		
+		<title>
+			<$if isNew$>
+				 Add New Person 
+			<$else$>
+				<$#active.FULL_NAME$> | Edit Person Information
+			<$endif$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+		<$include ccla_cs_address_js$>
+		<$include ccla_cs_contact_details_js$>
+		<$include ccla_cs_element_relations_js$>
+		<$include ccla_cs_relation_ajax_update_js$>
+		
+			<!-- Prep organisation auto-complete -->
+		<$autoCompleteFieldId 	= "entity_autoComplete"$>
+		<$hiddenFieldId			= "relatedEntityId"$>
+	
+		<$include ccla_cs_entity_autocomplete_js$>
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		
+		<script type="text/javascript">
+	
+			var expandWin;
+			var blanketStatus = 0;
+			
+			$(document).ready( function() {
+			
+				<$if isNew$>
+					// Attempt to auto-set salutation and gender fields
+					// from pre-filled title.
+					setSalutation();setGender();
+				<$endif$>
+				
+				<$if #local.added and #local.isCompact$>
+					<$if #local.isBulkAssociation$>
+						window.opener.parent.doSelectCallback('<$#active.PERSON_ID$>');
+					<$endif$>
+					openPopup('?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_DIALOG&isPerson=1');
+				<$endif$>
+				<$if #active.isFromExpanded and #active.added$>
+					var parentWin = window.opener;
+					if (parentWin) {
+						var urlStr = '?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=<$#active.PERSON_ID$>&isCompact=1&added=1&isUltraCompact=1';
+						var targetIframe = 'iframePerson';
+						//var otherIframe = 'iframeOrg';
+						//var otherFieldName = 'relatedPersonId';
+						//var otherFieldValue = '<$#active.PERSON_ID$>';
+						//parentWin.UpdateIframeValue(otherIframe, otherFieldName, otherFieldValue); 
+						parentWin.loadURLInParentIframe(urlStr,targetIframe);
+						parentWin.disableBlanket();
+					}
+				<$endif$>
+				
+				$('#expand').click(function() {
+					//BlanketOut Screen to prevent data entry
+					var myWidth=0;
+					var myHeight=0;
+					
+					if( typeof( window.innerWidth ) == 'number' ) {
+						//Non-IE
+						myWidth = window.innerWidth;
+						myHeight = window.innerHeight;
+					} else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+						//IE 6+ in 'standards compliant mode'
+						myWidth = document.documentElement.clientWidth;
+						myHeight = document.documentElement.clientHeight;
+					} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+						//IE 4 compatible
+						myWidth = document.body.clientWidth;
+						myHeight = document.body.clientHeight;
+					}	
+					
+					$("#blanket").css({  
+						"height": myHeight,  
+						"width": myWidth  
+					});
+							
+					loadBlanket();
+							
+					//Need to blank out some data fields
+					document.personDetails.IdcService.value='CCLA_CS_PERSON_NEW';
+					document.personDetails.RedirectUrl.value='';
+					
+					var params = ($("form#personDetails").serialize());
+					expandWin = window.open("<$HttpCgiPath$>?isFromExpanded=1&"+params, "Person", "top=100, left=100, width=832px, height=850px, toolbar=no, location=no, status=no, menubar=no, directories=no, resizable=no, scrollbars=yes");
+					return false;
+
+				});		
+									
+
+				$('#closeExpand').click(function() {
+					var parentWin = window.opener;
+					if (parentWin)
+						parentWin.disableBlanket();
+					window.close();
+				});				
+			});
+			
+					//loading popup with jQuery magic!  
+			function loadBlanket(){  
+				//loads popup only if it is disabled  
+				if(blanketStatus==0){  
+					$("#blanket").css({"opacity": "0.7"});  
+					$("#blanket").slideDown("slow");  
+					blanketStatus = 1;  
+				}  
+			}
+		
+			//disabling popup with jQuery magic!  
+			function disableBlanket(){  
+				//disables popup only if it is enabled  
+				if(blanketStatus==1){  
+					$("#blanket").fadeOut("slow");  
+					blanketStatus = 0;  
+				}  
+			}  
+							
+			//load html in required parent window if exist
+			function loadURLInParentIframe(urlStr, iframeID) {
+				var parentIframe = window.parent.document.getElementById(iframeID);
+				if (parentIframe) {
+					parentIframe.src=urlStr;
+				}
+			}
+			
+			//set form variable in another iframe in the parent widow
+
+			
+			function switchAuthenticate() {
+								
+				if (unsavedAddressUpdates()) {
+					if (!confirm("You have unsaved changes to the currently-selected address.\n\n" +
+									"Click OK to discard these changes and continue."))
+						return false;
+				}
+			
+				document.personDetails.IdcService.value = "CCLA_CS_AUTHENTICATE_PERSON";
+				return validateAuthenticate();						
+			}
+			
+			function switchSave() {
+				
+				if (unsavedAddressUpdates()) {
+					if (!confirm("You have unsaved changes to the currently-selected address.\n\n" +
+									"Click OK to discard these changes and continue."))
+						return false;
+				}
+			
+				document.personDetails.IdcService.value = "CCLA_CS_UPDATE_PERSON";
+				return validateDocFields();	
+			}
+			
+			function validate() {
+				re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+				var mailsortdate = document.validatePerson.UTILITY_MAILSORT_DATE.value;
+
+			if((mailsortdate == '' || mailsortdate.match(re))) {						
+				document.personDetails.DRIVING_LICENCE.value = document.validatePerson.DRIVING_LICENCE.value;
+				//document.personDetails.DRIVING_LICENCE_NAME.value = document.validatePerson.DRIVING_LICENCE_NAME.value;
+				document.personDetails.PASSPORT_NUMBER.value = document.validatePerson.PASSPORT_NUMBER.value;
+				document.personDetails.UTILITY_MAILSORT.value = document.validatePerson.UTILITY_MAILSORT.value;
+				document.personDetails.UTILITY_MAILSORT_DATE.value = document.validatePerson.UTILITY_MAILSORT_DATE.value;
+				document.personDetails.CROCKFORDS_ID.value = document.validatePerson.CROCKFORDS_ID[document.validatePerson.CROCKFORDS_ID.selectedIndex].value;
+				document.personDetails.CROCKFORDS_VALUE.value = document.validatePerson.CROCKFORDS_VALUE.value;				
+				document.personDetails.IdcService.value = "CCLA_CS_PERSON_VALIDATE";
+				document.personDetails.submit();
+				return true;	
+				} else {
+				alert('Please ensure that the mailsort date is formatted as dd/mm/yyyy');
+				return false;
+				}
+			}		
+			
+			function saveValidation() {
+				document.validatePerson.SAVE_VALIDATION.value="Yes";
+			}
+					
+			function changeValidate() {
+				document.personDetails.invalidate.value="Yes";
+			}
+		
+
+		
+			// Sets the salutation using the title and last name if it is blank.
+			// Triggered by blur events on title/last name fields.
+			function setSalutation()
+			{
+				var salutation 		= document.personDetails.SALUTATION.value;
+				var title = document.getElementById('TITLE_SALUTATION')[document.getElementById('TITLE_ID').selectedIndex].innerHTML;
+				 
+				var secondName 		= document.personDetails.LAST_NAME.value;
+				
+				if ((salutation.length==0) && (title.length>0) && (secondName.length>0)) {
+					document.personDetails.SALUTATION.value = title + ' ' + secondName;
+				}
+			}
+			<$loop rsAllTitles$>
+				<$if strEquals(#active.GENDER_ID,"1")$>
+					<$maleList = maleList & strMComma & "'" & #active.TITLE_ID & "'"$>
+					<$strMComma=","$>
+				<$elseif strEquals(#active.GENDER_ID,"2")$>
+					<$femaleList = femaleList & strFComma & "'" & #active.TITLE_ID & "'"$>
+					<$strFComma=","$>
+				<$endif$>
+			<$endloop$>
+			
+			var maleTitles 		= new Array(<$maleList$>);
+			var femaleTitles 	= new Array(<$femaleList$>); 
+			
+			// Sets the gender, based on the selected title. If the selected title
+			// doesn't appear in the male/femaleTitles arrays, the gender is left
+			// alone (e.g. Dr)
+			//
+			// Triggered by blur event on title field
+			function setGender() {
+				
+				var title = document.getElementById('TITLE_ID')[document.getElementById('TITLE_ID').selectedIndex].value;
+				var gender = document.getElementById('GENDER_ID')[document.getElementById('GENDER_ID').selectedIndex].value;
+				
+				if (title.length > 0) {	
+					for (var i=0; i<maleTitles.length; i++) {
+						if (title == maleTitles[i]) {
+							document.personDetails.GENDER_ID.value = "1";
+							return;
+						}
+					}
+					
+					for (var i=0; i<femaleTitles.length; i++) {
+						if (title == femaleTitles[i]) {
+							document.personDetails.GENDER_ID.value = "2";
+							return;
+						}
+					}
+				}
+			}
+			
+			function validateGender() {
+				var title = document.getElementById('TITLE_ID')[document.getElementById('TITLE_ID').selectedIndex].value;
+				var gender = document.getElementById('GENDER_ID')[document.getElementById('GENDER_ID').selectedIndex].value;
+				
+				if (title && gender) {
+					if (gender=="2") {
+						for (var i=0; i<maleTitles.length; i++) {
+							if (title == maleTitles[i]) {
+								alert('Cannot set a female gender for this title');	
+								document.personDetails.GENDER_ID.value = "1";
+							}
+						}
+					} else if (gender=="1") {
+						for (var i=0; i<femaleTitles.length; i++) {
+							if (title == femaleTitles[i]) {
+								alert('Cannot set a male gender for this title');
+								document.personDetails.GENDER_ID.value = "2";
+							}
+						}
+					}
+				}
+			}
+			
+			
+			function refreshAuroraPersonLinkDetails() {
+				var elementId = "<$#active.PERSON_ID$>";
+
+				$.get("?<$include add_idc_token_to_url$>",
+					{
+						"IdcService": 		"CCLA_CS_GET_INCLUDE",
+						"incName": 			"ccla_cs_person_aurora_links_display",
+						"PERSON_ID": 		elementId,
+						"isAjaxRefresh": 	1,
+						"ts":				new Date().getTime()
+					},
+					function(data) {
+						$("#personAuroraLinks").html(data);
+					}
+				);
+			}
+
+			function deleteLinkDetail(linkId) {
+				if (confirm("Are you sure you want to delete this Company link?")) {
+					
+					$.getJSON("?<$include add_idc_token_to_url$>",
+						{
+							"IdcService": "CCLA_CS_REMOVE_PERSON_AURORA_MAP",
+							"PERSON_AURORA_MAP_ID": linkId,
+							"ts": new Date().getTime(),
+							"IsJson": 1
+						},
+						function(jsonData) {
+							var errMsg = getJsonErrorMsg(jsonData);
+							
+							if (errMsg)
+								alert("Failed to remove link!\n\n" + errMsg);
+							else {
+								refreshAuroraPersonLinkDetails();
+							}
+						}
+					);
+				}
+				
+			}
+
+			function validateDate(dobField){
+				var splitDate = dobField.value.split('/');
+				
+				$('#DOB_DAY').val(splitDate[0]);
+				$('#DOB_MONTH').val(splitDate[1]);
+				$('#DOB_YEAR').val(splitDate[2]);					
+			}
+			
+		function submitAddPerson() {
+			if (validateDocFields()) {
+			// Disable the form submit button and submit the form.
+			
+				//checks for address fields
+				if (checkNewAddressFields()) {
+					document.forms["personDetails"].submit();
+				}
+			}		
+		}
+
+		function checkNewAddressFields() {
+			
+			if (document.personDetails.FLAT.value.length!=0 ||
+					document.personDetails.HOUSENAME.value.length!=0 ||
+						document.personDetails.HOUSENUMBER.value.length!=0 ||
+							document.personDetails.STREET.value.length!=0 ||
+								document.personDetails.DISTRICT.value.length!=0 ||
+									document.personDetails.CITY.value.length!=0 ||
+										document.personDetails.COUNTY.value.length!=0 ||
+											document.personDetails.POSTCODE.value.length!=0 ||
+												document.personDetails.COUNTRY.value.length!=0) {
+				//address fields contain some data, check the main fields are populated.
+				if ((document.personDetails.FLAT.value.length!=0 ||
+						document.personDetails.HOUSENAME.value.length!=0 ||
+							document.personDetails.HOUSENUMBER.value.length!=0) &&
+								document.personDetails.POSTCODE.value.length!=0) {
+					return true;
+				} else {
+					alert("Mandatory Address fields not populated. \n\nPlease ensure that Flat, Building/House Name, Build Number and Postcode are populated.");
+					return false;
+				}
+			} else {
+				return true;
+			}
+		}
+		
+		<$include person_error_handling_js$> 
+	</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+	
+		<$include ecs_popup_div_header$>
+		
+		<$if not #active.includeAssociation and not #active.isCompact$>
+			<$include iris_header$>
+		<$else$>			
+			<$include ccla_cs_compact_styles$>
+		<$endif$>
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+		<$if #active.isFromExpanded$>
+			<center><p id="closeExpand">Click Here to Return Back</p><center>
+		<$endif$>	
+		
+		<$if NOT hideActionButtons$>
+			<$buttonContext = "person"$>
+			<$include ccla_cs_include_tab_parameters$>			
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+				<$include ccla_cs_toggle_info_edit_display$>
+				
+				<$include ccla_cs_person_override_pep_check$>
+				
+				<form name="personDetails" id="personDetails" method="POST">
+
+				<$isForm=1$>
+				<$include ccla_cs_common_params$>
+
+				<$if PERSON_ID$>
+					<!-- Update Person form. -->
+					<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_PERSON"/><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&updated=1&PERSON_ID=<$#local.PERSON_ID$><$commonParams$>"/>
+					
+					<input type="hidden" value="<$PERSON_ID$>" name="PERSON_ID" />
+					<input type="hidden" value="<$PERSON_ACCOUNT_CODE$>" name="PERSON_ACCOUNT_CODE" />
+					
+					<input type="hidden" name="SOURCE_ID" value="<$#active.SOURCE_ID$>" />
+					
+					<input type="hidden" value="<$#active.DRIVING_LICENCE$>" name="DRIVING_LICENCE">
+					<input type="hidden" value="<$#active.DRIVING_LICENCE_NAME$>" name="DRIVING_LICENCE_NAME">
+					<input type="hidden" value="<$#active.PASSPORT_NUMBER$>" name="PASSPORT_NUMBER">
+					<input type="hidden" value="<$#active.UTILITY_MAILSORT$>" name="UTILITY_MAILSORT">
+					<input type="hidden" value="<$#active.UTILITY_MAILSORT_DATE$>" name="UTILITY_MAILSORT_DATE">
+					<input type="hidden" value="<$#active.CROCKFORDS_ID$>" name="CROCKFORDS_ID">
+					<input type="hidden" value="<$#active.CROCKFORDS_VALUE$>" name="CROCKFORDS_VALUE">					
+				<$else$>
+					<!-- New Person form. -->
+					<input type="hidden" name="IdcService" value="CCLA_CS_ADD_PERSON"/><$include add_idc_token_to_form$>
+					
+					<input type="hidden" name="SOURCE_ID" value="2" /> <!-- Source = 'User' -->
+					
+					<$if (#active.isUltraCompact)$>
+						<input  type="hidden" name="RedirectUrl" 
+							value="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&isBulkAssociation=<$#active.isBulkAssociation$>&isCompact=1&isUltraCompact=1&added=1&PERSON_ID=" />				
+					<$else$>
+						<$if #active.isFromExpanded$>
+							
+							<input  type="hidden" name="RedirectUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&isBulkAssociation=<$#active.isBulkAssociation$>&isCompact=1&added=1&isFromExpanded=<$#active.isFromExpanded$>&PERSON_ID=" />										
+						<$else$>
+							<input  type="hidden" name="RedirectUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&isBulkAssociation=<$#active.isBulkAssociation$>&isCompact=<$#active.includeAssociation$>&added=1&isFromExpanded=<$#active.isFromExpanded$>&PERSON_ID=" />																
+						<$endif$>
+					<$endif$>
+				<$endif$>
+				
+				<$if added$>
+					<div class="message_panel info_icon">
+						New person record created.
+						<$if NOT #active.DATE_OF_BIRTH OR NOT strEquals(#active.CONSENT_TO_AUTH,"1")$>
+						<ul>
+						<$if NOT #active.DATE_OF_BIRTH$>
+						<li>Ask the person for their date of birth.</li>
+						<$endif$>
+						<$if NOT strEquals(#active.CONSENT_TO_AUTH,"1")$>
+						<li>Does the person consent to having their identity checked?</li>
+						<$endif$>
+						</ul>
+						<$endif$>
+					</div>
+				<$elseif updated and not #active.validationFailed$>
+					<div class="message_panel info_icon">
+						Person record updated.
+					</div>
+				<$endif$>
+
+				<$if #active.ErrorMessage$>
+					<div class="message_panel error_icon">
+						<strong><$ErrorMessage$></strong>
+						<$if ErrorDetail$>
+							<br>
+							<strong>Detail:</strong> <$ErrorDetail$>
+						<$endif$>
+					</div>
+				<$endif$>
+				
+				<div id="errorMessage">
+				</div>
+				
+			
+				
+			<$if #local.includeAssociation AND #local.ORGANISATION_ID AND NOT #active.isUltraCompact$>
+			
+				<!-- Used to create an immediate relation to an existing organisation.
+					 The designated ORGANISATION_ID will be present in the calling URL. -->
+				<$executeService("CCLA_CS_GET_ENTITY_BASIC")$>
+				
+				<span style="display:none">
+					<input type="hidden" name="relatedEntityId" value="<$#local.ORGANISATION_ID$>" />
+					<input type="hidden" name="RELATION_NAME_ID" value="<$#env.CCLA_CS_DefaultOrgPersonRelationNameId$>"/>
+						
+					<$if rsContactDetails$>
+						<$exec rsRemove("rsContactDetails")$>
+					<$endif$>
+				</span>
+				
+			<$elseif #local.includeAssociation AND #local.ACCOUNT_ID AND NOT #active.isUltraCompact$>
+			
+				<!-- Used to create an immediate relation to an existing account.
+					 The designated ACCOUNT_ID will be present in the calling URL. -->				
+				<span style="display:none;">
+					
+					<input type="hidden" name="relatedAccountId" value="<$#local.ACCOUNT_ID$>" />
+					<input type="hidden" name="RELATION_NAME_ID" value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>"/>
+					
+					<$if rsContactDetails$>
+						<$exec rsRemove("rsContactDetails")$>
+					<$endif$>
+					
+					<$if false$>
+						<$executeService("CCLA_CS_GET_ACCOUNT_ONLY_BASIC")$>
+					
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Relationship Details
+							</div>
+													
+							<div class='ccla_cs_panel_content'>
+								
+								<div id="contactDetailsDisplay">
+									<input type="hidden" name="relatedAccountId" value="<$#local.ACCOUNT_ID$>" />
+									
+									<$loop rsAccount$>
+									
+										Select relationship with account <span class="mono-type"><$#active.ACCNUMEXT$></span>:
+										<input type="hidden" name="RELATIONSHIP" value="<$#env.CCLA_CS_DefaultPersonAccountRelationship$>"/>
+										
+									<$endloop$>
+								
+								</div>
+							</div>
+						
+						<$include orangeContainer_bottom$>
+					<$endif$>
+				</span>
+			<$elseif #active.isUltraCompact$>	
+				<span style="display:none;">	
+					<input type="hidden" id="relatedEntityId" name="relatedEntityId" value="" />
+					<input type="hidden" name="RELATION_NAME_ID" value="<$#env.CCLA_CS_DefaultOrgPersonRelationNameId$>"/>
+				</span>		
+			<$endif$>
+				
+			<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					<$if PERSON_ID$>
+						Basic Details
+					<$else$>
+						Add New Person
+					<$endif$>
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+
+					<$if isEdit$>
+						<$personTitle = #active.TITLE$>
+						
+						<$include ccla_cs_edit_person_form$>						
+
+					<$elseif rsQASData$>
+						<!-- QAS data is present, the Person/Address form can be prefilled
+							 with selected name/address data. -->
+						<$loop rsQASData$>	
+							<$personTitle = #active.TITLE$>
+							<$include ccla_cs_create_person_form$>						
+						<$endloop$>
+						
+					<$else$>
+						<$include ccla_cs_create_person_form$>						
+					<$endif$>
+					
+				</div>
+					
+			<$include orangeContainer_bottom$>
+			
+			<$if isNew and not includeAssociation and not #active.isUltraCompact$>
+			
+				<!-- Used to create a custom Organisation relation when the new Person is created. -->
+				<$include orangeContainer_top$>
+			
+				<div class='ccla_cs_panel_header'>
+					Relationship Details
+				</div>	
+				
+				<div class='ccla_cs_panel_content'>
+					<table width="100%">
+						<tr>
+							<td width="20%">
+								Link to organisation:
+							</td>
+							<td>
+								<input type="text" name="entity_autoComplete" id="entity_autoComplete" style="width: 90%" value="" tabindex=35/> 			
+								<img src="<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif" id="entity_autoComplete_loading" style="visibility:hidden" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								With role: 
+							</td>
+							<td>
+								<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Org$>
+								<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Person$>
+								
+								<$include association_select_dropdown$>
+							</td>
+						</tr>
+					</table>
+					
+					<input type="hidden" name="relatedEntityId" id="relatedEntityId">
+					
+					<div style="padding-top:5px"></div>
+				</div>
+				
+				<$include orangeContainer_bottom$>	
+			<$endif$>	
+
+			<$if #local.ELEMENT_ID$>
+				</form>
+			<$endif$>
+			
+			<$if not #active.isUltraCompact$>
+				<$include ccla_cs_person_aurora_link_panel$>
+			<$endif$>
+				
+				<$include orangeContainer_top$>
+				
+					<div class='ccla_cs_panel_header'>
+						Person Contact Details
+					</div>
+				
+					<div class='ccla_cs_panel_content'>
+						
+						<div id="contactDetailsDisplay">
+							<$if #local.ELEMENT_ID$>
+								<$include ccla_cs_contact_details_display$>
+							<$else$>
+								<$include ccla_cs_new_person_contact_fields$>
+							<$endif$>
+						</div>
+						
+					</div>
+
+				<$include orangeContainer_bottom$>
+				
+				<$if not #active.isUltraCompact$>	
+					<$include orangeContainer_top$>
+						
+						<a name="addresses"></a>
+						<div class='ccla_cs_panel_header'>
+							<$if #local.ELEMENT_ID$>
+								Person Addresses
+							<$else$>
+								Person Address
+							<$endif$>
+						</div>
+					
+						<div class='ccla_cs_panel_content'>
+							
+							<$if #local.ELEMENT_ID$>
+								<!-- Display selectable list of addresses for existing records. -->
+								<$include ccla_cs_address_selector$>
+								<br/>
+								
+							<$endif$>
+							
+							<!-- Switchable address data region -->
+							<div id="selAddressDisplay">
+								<$include ccla_cs_address_fields$>
+							</div>
+							
+						</div>
+					
+					
+					<$include orangeContainer_bottom$>
+				<$endif$>
+				
+				<$if createNew$>
+					</form>
+				<$endif$>
+				
+				<$if PERSON_ID$>
+					<div id="associationsDisplay">
+						<$includeRelationshipUpdate = "true"$>
+						<$includeAssociationAddButton = "true"$>					
+						<$include ccla_cs_person_relations$>
+					</div>
+					
+					<$if false$>
+						<div id="auroraLinkDiv">	
+							<$include ccla_cs_person_aurora_link$>	
+						</div>
+					<$endif$>
+					
+				<$endif$>
+				
+				
+				<$if not createNew$>
+					<$include ccla_cs_validation_fields$>
+				<$endif$>
+				
+				<$if createNew$>
+					<div style="text-align: right;padding:10px;" class="white_border grey_bg">
+						<$if #active.isUltraCompact$>
+							<input tabindex="160"  id="expand" name="expand" type="button" value="Expand"/>				
+							&nbsp;
+						<$endif$>
+						<input tabindex="160"  type="button" value="Create Person Record" onClick="submitAddPerson()"/>			
+					</div>
+				<$endif$>
+				
+				<$if #active.PERSON_ID$>
+					
+					<$include ccla_cs_person_identity_check_attributes$>
+					
+				<$endif$>
+				
+				<$if isTrue(#env.CCLA_SC_ShowSignaturePanels) and #active.PERSON_ID$>
+					<$include ccla_sc_sig_person_update_panel$>
+					<$include orangeContainer_top$>
+					<$sigEdit=1$>
+						<$include ccla_sc_sig_person_panel$>
+					<$include orangeContainer_bottom$>
+				<$endif$>
+				
+				<br/>				
+			</div>
+		</div>
+		
+	</div>	
+	
+	</body>
+</html>

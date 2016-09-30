@@ -1,0 +1,143 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Transaction Batch Listing
+	</title>
+	
+	<script type="text/javascript">
+	
+		function checkTransactionBatch(docId) {
+			openPopup("?IdcService=CCLA_CP_CREATE_TRANSBATCH_INSTR<$include add_idc_token_to_url$>" 
+			 + "&dID=" + docId + "&persist=0");
+		}
+		
+		
+		function createTransactionBatch(docId) {
+			document.form.createBatch.dID.value=docId;
+			document.form.createBatch.submit();
+		}
+		
+		
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 900px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Transaction Batch Listings
+				</div>
+				
+				
+				<form name="createBatch" id="createBatch" method="POST">
+					<input type="hidden" name="IdcService" 	value="CCLA_CP_CREATE_TRANSBATCH" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_TRANSBATCH_INFO<$include add_idc_token_to_url$>" />
+					<input type="hidden" name="dID" id="dID" value=""/>
+					<input type="hidden" name="persist" id="persist" value="1"/>
+				</form>
+									
+				
+				
+				
+				<div class='ccla_cs_panel_content'>
+				
+					<br/>
+					<input type="button" name="eodMatching" id="eodMatching" value="Outstanding Bank Transactions" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_OUTSTANDING_DICONDIN<$include add_idc_token_to_url$>'"/>
+					<input type="button" name="iatSweep" id="iatSweep" value="IAT Sweep" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_IAT_SWEEP<$include add_idc_token_to_url$>'"/>
+					<br/>
+				<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Incomplete Transaction Batches</h3>
+						<p>These are transaction batches that haven't been processed.<br/> 
+						Click 'View' to view and process the transaction batch.</p>
+					<$if rsTransBatch$>	
+						<table class="transbatch-table" cellspacing="0" cellpadding="0" width="85%">
+							<tr>
+								<th width="15%">Transaction Batch ID</th>
+								<th width="10%">Bank Acc No.</th>
+								<th width="10%">Sort Code</th>
+								<th width="15%">Opening Balance</th>
+								<th width="15%">Closing Balance</th>
+								<th width="10%">Sequence</th>
+								<th width="15%">Transaction Date</th>								
+								<th width="10%">&nbsp;</th>
+							</tr>
+							<$loop rsTransBatch$>
+							<tr>
+								<td><$#active.TRANSACTION_BATCH_ID$></td>
+								<td><$#active.ACCOUNT_NO$></td>
+								<td><$#active.SORT_CODE$></td>
+								<td><$formatNumber(#active.OPENING_BALANCE,2)$></td>
+								<td><$formatNumber(#active.CLOSING_BALANCE,2)$></td>
+								<td><$#active.TRANS_BATCH_SEQUENCE$></td>	
+								<td><$formatDateOnly(#active.TRANSACTION_DATE)$></td>	
+								<td>
+									<form name="<$#active.TRANSACTION_BATCH_ID$>" id="<$#active.TRANSACTION_BATCH_ID$>">
+										<input type="hidden" name="IdcService" 	value="CCLA_CP_TRANSBATCH_INFO" /><$include add_idc_token_to_form$>
+										<input type="hidden" name="RedirectUrl" value="" />
+										<input type="hidden" name="TRANSACTION_BATCH_ID" id="TRANSACTION_BATCH_ID" value="<$#active.TRANSACTION_BATCH_ID$>"/>
+										<input type="submit" name="submit" id="submit" value="View"/>
+									</form>
+								</td>
+							</tr>
+							<$endloop$>				
+						</table>
+					<$else$>
+						<span class="no-info">None found</span>
+					<$endif$>
+					
+					<br />
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Pending Transaction Batches</h3>
+					<p>These are Bankline batch files that haven't been imported to the Instruction Register. <br/>
+					Click 'Import' to convert the batch file into a set of instructions.</p>
+					<$if rsUnprocessed$>
+						<table class="transbatch-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th width="20%">Document Name</th>
+								<th>Bank Acc No.</th>
+								<th>Sort Code</th>
+								<th>Sequence</th>
+								<th>Transaction Date</th>
+								<th>&nbsp;</th>
+							</tr>
+							
+						<$loop rsUnprocessed$>
+							<tr>
+								<td><a class="newWindow" target="_blank" href="?IdcService=DOC_APPROVAL&dDocName=<$#active.dDocName$>"><$#active.dDocName$></a> (Iris)</td>
+								<td><$#active.xBankAccountNumber$></td>
+								<td><$#active.xSortCode$></td>
+								<td><$#active.xAmount$></td>
+								<td><$formatDateOnly(#active.xProcessDate)$></td>
+								<td>
+										<input type="button" 
+											name="Import<$#active.dID$>" id="Import<$#active.dID$>" 
+											onclick="checkTransactionBatch('<$#active.dID$>');" value="Import"/>
+									
+								</td>
+							</tr>
+							
+						<$endloop$>		
+						</table>
+					<$else$>
+						<span class="no-info">None found</span>
+					<$endif$>
+
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

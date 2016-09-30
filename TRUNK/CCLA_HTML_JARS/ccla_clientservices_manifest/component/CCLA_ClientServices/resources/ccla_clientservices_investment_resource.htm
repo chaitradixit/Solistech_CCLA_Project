@@ -1,0 +1,1886 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Displays fields for a single Subscription record, including hidden fields.
+
+	 If a SUBSCRIPTION_ID is present, it is assumed that an update form is being displayed,
+	 otherwise an add form is displayed.
+	-->
+<@dynamichtml ccla_cs_subscription_fields_display@>
+	
+	<$if #local.SUBSCRIPTION_ID$>
+		<input type="hidden" name="IdcService"		value="CCLA_CS_UPDATE_SUBSCRIPTION"/>
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+		<input type="hidden" name="ACCOUNT_ID"		value="<$#active.ACCOUNT_ID$>" />
+		<input type="hidden" name="RedirectUrl"			value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&updated=1&xFormId=<$#local.xFormId$>" />
+		
+		<input type="hidden" name="START_DATE"		value="<$#active.START_DATE$>" />
+		<input type="hidden" name="END_DATE"		value="<$#active.END_DATE$>" />
+		
+		<input type="hidden" name="DATE_FORM_RECEIVED" value="<$rsSubscription.DATE_FORM_RECEIVED$>">
+		<input type="hidden" name="DATE_CASH_PROCESSED" value="<$rsSubscription.DATE_CASH_PROCESSED$>">
+		
+		<input type="hidden" name="CLIENT_CONFIRMED"		value="<$#active.CLIENT_CONFIRMED$>" />
+		
+	<$else$>
+		<input type="hidden" name="IdcService"		value="CCLA_CS_ADD_SUBSCRIPTION"/>
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="ACCOUNT_ID"		value="<$#local.ACCOUNT_ID$>" />
+		<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&added=1&xFormId=<$#local.xFormId$>" />
+								
+	<$endif$>
+
+	<table width="100%">
+		<tr>
+			<td>Product:</td>
+			<td>
+				<select name="PRODUCT_ID">
+					<$loop rsProducts$>
+						<option value="<$#active.PRODUCT_ID$>" 
+								<$if rsSubscription.PRODUCT_ID like #active.PRODUCT_ID$>selected<$endif$>><$#active.PRODUCT_NAME$></option>
+					<$endloop$>
+				</select>
+			</td>
+			
+			<$if false$>
+				<td>Subscription Type:</td>
+				<td>
+					<select name="SUBSCRIPTION_TYPE_ID">
+						<$loop rsSubscriptionTypes$>
+							<option value="<$#active.SUBSCRIPTION_TYPE_ID$>" 
+									<$if rsSubscription.SUBSCRIPTION_TYPE_ID like #active.SUBSCRIPTION_TYPE_ID$>selected<$endif$>><$#active.SUBSCRIPTION_NAME$></option>
+						<$endloop$>
+					</select>
+				</td>
+			<$endif$>
+			
+			<$if #local.SUBSCRIPTION_ID$>
+				<td>Payment Ref:</td>
+				<td>
+					<span style="font-family: Courier;"><$#active.SUBSCRIPTION_PAYMENT_REF$></span>
+					
+					<input type="hidden" name="SUBSCRIPTION_PAYMENT_REF" value="<$#active.SUBSCRIPTION_PAYMENT_REF$>" />
+				</td>
+			<$endif$>
+			
+			
+		</tr>
+		
+		<$if #local.SUBSCRIPTION_ID$>
+			<tr>
+				<td colspan=3></td>
+				<td>
+					<a 	target="_BLANK"
+						href="?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&adv=true&paymentRef=<$#active.SUBSCRIPTION_PAYMENT_REF$>">View items with this reference</a>	
+				</td>
+			</tr>
+			
+			<tr>
+				<td>Status:</td>
+				<td>
+	
+					<select name="SUBSCRIPTION_STATUS_ID">
+						<$loop rsSubscriptionStatuses$>
+							
+							<$if rsSubscription.SUBSCRIPTION_STATUS_ID like #active.SUBSCRIPTION_STATUS_ID$>
+								[[% Always show the currently-selected status. %]]
+								<option value="<$#active.SUBSCRIPTION_STATUS_ID$>" 
+										selected><$#active.SUBSCRIPTION_STATUS_NAME$></option>
+										
+							[[% Always allow Cancelled to be selected. %]]
+							<$elseif SUBSCRIPTION_STATUS_NAME like "Cancelled"$>
+								<option value="<$#active.SUBSCRIPTION_STATUS_ID$>"><$#active.SUBSCRIPTION_STATUS_NAME$></option>
+								
+							[[% Allow user to set 'Form Dispatched' status if the current status is 'Form Generated' %]]
+							<$elseif (rsSubscription.SUBSCRIPTION_STATUS_ID like #env.CCLA_CS_SubscriptionStatusId_FormGenerated)
+								and 
+								(#active.SUBSCRIPTION_STATUS_ID like #env.CCLA_CS_SubscriptionStatusId_FormDispatched)$>
+								<option value="<$#active.SUBSCRIPTION_STATUS_ID$>"><$#active.SUBSCRIPTION_STATUS_NAME$></option>
+							
+							<$endif$>
+							
+						<$endloop$>
+					</select>
+					
+					<input type="hidden" name="PREV_SUBSCRIPTION_STATUS_ID" value="<$#active.SUBSCRIPTION_STATUS_ID$>" />
+				</td>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<td width="20%">Subscription Amount:</td>
+			<td width="30%">
+				<$if #local.SUBSCRIPTION_ID$>
+					<input 	type="hidden" 
+							value="<$#active.SUBSCRIPTION_AMOUNT$>"
+							name="SUBSCRIPTION_AMOUNT"
+							id="SUBSCRIPTION_AMOUNT" />
+							
+					<$if #active.SUBSCRIPTION_AMOUNT$>
+						<span style="font-family: Courier;"><$formatCurrency(#active.SUBSCRIPTION_AMOUNT)$></span>
+					<$endif$>
+				<$else$>
+					
+					<input 	type="text" 
+							value="<$#active.SUBSCRIPTION_AMOUNT$>"
+							name="SUBSCRIPTION_AMOUNT"
+							id="SUBSCRIPTION_AMOUNT" />
+					
+				<$endif$>
+				
+			</td>
+		</tr>
+
+		<$if #local.SUBSCRIPTION_ID$>
+			
+			<tr>
+				<td>Date Form Received:</td>
+				<td>
+					<$#active.DATE_FORM_RECEIVED$>
+					<input type="hidden" name="DATE_FORM_RECEIVED" value="<$#active.DATE_FORM_RECEIVED$>" />
+				</td>
+				
+				<td>Date Latest Cash Processed:</td>
+				<td>
+					<$formatDateOnly(#active.DATE_LATEST_CASH_PROCESSED)$>
+					<input type="hidden" name="DATE_LATEST_CASH_PROCESSED" value="<$#active.DATE_LATEST_CASH_PROCESSED$>" />
+				</td>
+			</tr>
+			
+			<tr>
+				<td>Client Confirmed:</td>
+				<td>
+					<$if #active.CLIENT_CONFIRMED like "1"$>
+						Yes
+					<$else$>
+						No
+					<$endif$>
+				</td>
+				
+				<td>Date Completed:</td>
+				<td>
+					<$formatDateOnly(#active.DATE_COMPLETED)$>
+					<input type="hidden" name="DATE_COMPLETED" value="<$#active.DATE_COMPLETED$>" />
+				</td>
+			
+			<tr>
+				<td><br/></td>
+			</tr>
+			
+			<tr>
+				<td>Date Created:</td>
+				<td>
+					<$#active.DATE_ADDED$>
+					<input type="hidden" name="DATE_ADDED" value="<$#active.DATE_ADDED$>" />
+				</td>
+				
+				<td>Last Updated By:</td>
+				<td>
+					<$#active.LAST_UPDATED_BY$>
+					<input type="hidden" name="LAST_UPDATED_BY" value="<$#active.LAST_UPDATED_BY$>" />
+				</td>
+			</tr>
+		<$endif$>
+	
+	</table>
+
+<@end@>
+
+<!-- Displays a list of subscriptions from the rsSubscriptions ResultSet. -->
+<@dynamichtml ccla_cs_account_subscriptions_display@>
+	
+	<$if not rsSubscriptions$>
+		<span class="no-info">None</span>
+	<$else$>
+	
+		<table cellspacing="0" cellpadding="0" width="100%" class="accounts-table">			
+			<tr>
+				<th width="20%" class="first-col">
+					Payment Ref
+				</th>
+				<th width="20%">
+					Status
+				</th>
+				<th>
+					Amount
+				</th>
+				<th width="15%">
+					Date Added
+				</th>
+				<th width="15%">
+					Last Updated
+				</th>
+				
+			</tr>
+			
+			<$loop rsSubscriptions$>
+			
+				<tr class="account-details-row">
+
+					<td class="first-col">
+						<a href="?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#active.SUBSCRIPTION_ID$>"><$#active.SUBSCRIPTION_PAYMENT_REF$></a>
+					</td>
+					<td>
+						<$#active.SUBSCRIPTION_STATUS_NAME$>
+					</td>
+					<td>
+						<$if not #active.SUBSCRIPTION_AMOUNT$>
+							<span class="no-info">Unknown</span>
+						<$else$>
+							<$formatCurrency(#active.SUBSCRIPTION_AMOUNT)$>
+						<$endif$>
+					</td>
+					<td>
+						<$#active.DATE_ADDED$>
+					</td>
+					<td>
+						<$#active.LAST_UPDATED$>
+					</td>
+					
+				</tr>
+				
+			<$endloop$>
+			
+		</table>
+	
+	<$endif$>
+	
+<@end@>
+
+<!-- JavaScript used to supplement display of donors and their donations.
+		
+	Should be used in conjunction with the ccla_cs_donor_contribution_row_display 
+	include.
+	-->
+<@dynamichtml ccla_cs_donor_display_js@>
+	
+	<script type="text/javascript">
+		
+		var subscriptionId = "<$#local.SUBSCRIPTION_ID$>";
+		var formId = "<$#local.xFormId$>";
+		
+		// Use this as a basic blocker to stop users hammering requests at the server.
+		var isLoading = false;
+		
+		/** Sets the page load state. If true, a loading icon is shown
+		    and several form submission methods are effectively disabled.
+			Used to prevent the user mashing buttons if the request
+			is taking a while.
+		*/
+		function setPageLoadingState(loading) {
+			if (loading) {
+				isLoading = true;
+				$("#loading_icon").css("display","");
+			} else {
+				isLoading = false;
+				$("#loading_icon").css("display","none");
+			}
+		}
+		
+		function isPageLoading() {
+			return isLoading;
+		}
+		
+		// Page load function
+		$(document).ready( function() {
+			
+			bindContributorEventListeners();
+			
+			<$if showSignatureCapture and allowEditPage$>
+				checkSignatureApproved();
+			<$endif$>
+			
+			disableOrEnableButtons();
+		});
+		
+		// Must be called when the contributor list is displayed or reloaded
+		// via AJAX
+		bindContributorEventListeners = function() {
+			// Bind click events to all the 'donor selection' checkboxes. 
+			// Toggles the disabled state of the associated donation 
+			// input fields
+			$(".donor_toggle_check").bind("click", function() {
+				var thisContributorId = $(this).attr("id").substring("CONTRIBUTOR_ID_".length);
+				
+				setContributorRowState(thisContributorId, $(this).attr("checked"));
+			});
+		}
+		
+		// Disables/enables the given contributor/donor row fields.
+		setContributorRowState = function(contributorId, enabled) {
+			var donorFieldsClassName = "contributorId_" + contributorId + "_field";
+				
+			// Toggle disabled state of donation fields, based on checkbox state
+			if (enabled) {
+				$("." + donorFieldsClassName).removeAttr("disabled");
+			} else {
+				$("." + donorFieldsClassName).attr("disabled","disabled");
+			}
+			
+			// Toggle row style, based on checkbox state
+			if (enabled) {
+				$("#contributorId_" + contributorId + "_row").addClass("account-row-open");
+			} else {
+				$("#contributorId_" + contributorId + "_row").removeClass("account-row-open");
+			}
+		}
+		
+		checkSignatureApproved = function() {
+		
+			var requiredSig = <$REQ_SIGS$>;
+			$.getJSON("?<$include add_idc_token_to_url$>", {
+				"IdcService":		"CCLA_SC_GET_APPROVED_SIGS",			
+				"DOC_GUID":			"<$DOC_GUID$>",
+				"ts":						new Date().getTime(),
+				"IsJson":			1
+			}, function(jsonData) {
+					var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+					
+					if (jsonErrorMsg){
+						alert(jsonErrorMsg);
+					} else {
+						if (jsonData.ResultSets.rsApprovedSigs) {
+							var actualSigs = jsonData.ResultSets.rsApprovedSigs.rows.length;
+
+							if (actualSigs>=requiredSig) {
+								hideShowSignaturePanels(true)	
+							} else {
+								hideShowSignaturePanels(false);
+							}
+						} else {
+								hideShowSignaturePanels(false);						
+						}
+					}
+				}
+			);
+		}
+		
+		hideShowSignaturePanels = function(isShow) {
+
+			if (isShow) {
+				$('#fundAllocationsDiv').css("display","");
+				$('#donorContributionsDiv').css("display","");
+				$('#subscriptionFormDiv').css("display","");
+			} else {
+				$('#fundAllocationsDiv').css("display","none");
+				$('#donorContributionsDiv').css("display","none");
+				$('#subscriptionFormDiv').css("display","none");			
+			}
+		}
+		
+		function allowEdit() {
+
+			var allowedEdit = false;
+			<$if allowEditPage$>
+				allowedEdit = true; 
+			<$endif$>
+			//alert("Allowed Edit :"+allowedEdit);
+			return allowedEdit;
+		}
+		
+		function disableOrEnableButtons() {
+			if (allowEdit()) {
+				//alert("enabling buttons");
+				$('input[type="submit"]').removeAttr('disabled');
+				$('input[type="button"]').removeAttr('disabled');
+				$('.subscription-fund-amount-field').removeAttr('disabled');
+				$('select').removeAttr('disabled');
+				$('input[type="radio"]').removeAttr('disabled');
+			} else {
+				$('input[type="submit"]').attr('disabled','disabled');
+				$('input[type="button"]').attr('disabled','disabled');
+				$('.subscription-fund-amount-field').attr('disabled','disabled');
+				$('select').attr('disabled','disabled');
+				$('input[type="checkbox"]').attr('disabled','disabled');
+				$('input[type="text"]').attr('disabled','disabled');
+				$('input[type="radio"]').attr('disabled','disabled');
+			}
+			
+			// Always ensure cancel button is enabled.
+			$('#cancelAndCreateNew').removeAttr('disabled');
+		}
+		
+		// Updates the donation details for a given subscription
+		function updateDonations() {
+			if (isPageLoading())
+				return;
+			else
+				setPageLoadingState(true);
+			
+			$("#subscriptionDonationsForm").submit();
+		}
+		
+		// Opens a pop-up allowing the user to edit the TTLA Allocations for this
+		// donation. Available when the legacyMode flag is switched on.
+		function viewSubscriptionTTLAAllocations(contributorId, contributionId) {
+			
+			if (isPageLoading())
+				return;
+			
+			var extraParam = "";
+			if (!allowEdit()) {
+				extraParam+="&disableTTLA=1";
+			}
+			
+			// Check that an amount is saved against this contribution.
+			var contribAmount = $("#PREV_CONTRIBUTION_AMOUNT_" + contributionId).val();
+
+			if (contribAmount && contribAmount > 0) {
+			
+			} else {
+				alert("No contribution amount has been saved against this " +
+				 "contribution yet. You must enter and store an amount before TTLA " +
+				 "allocations can be edited.");
+				
+				$("#CONTRIBUTION_AMOUNT_" + contributorId).focus();
+				return;
+			}
+			
+			openPopup("?IdcService=CCLA_CS_CONTRIBUTION_TTLA_ALLOCATION_EDIT<$include add_idc_token_to_url$>" +
+			 "&CONTRIBUTION_ID=" + contributionId+extraParam + "&ts=" + new Date().getTime(), 800);
+		}
+		
+		// Opens a pop-up allowing the user to edit the Fund/Asset Allocations for this
+		// contribution.
+		function viewSubscriptionAssetAllocations(contributorId, contributionId) {
+			
+			if (isPageLoading())
+				return;
+			
+			var extraParams = "";
+			if (!allowEdit()) {
+				extraParams+="&disabledEdit=1";
+			}
+			
+			// Check that an amount is saved against this contribution.
+			var contribAmount = $("#PREV_CONTRIBUTION_AMOUNT_" + contributionId).val();
+
+			if (contribAmount && contribAmount > 0) {
+			
+			} else {
+				alert("No contribution amount has been saved against this " +
+				 "contribution yet. You must enter and store an amount before asset " +
+				 "allocations can be edited.");
+				
+				$("#CONTRIBUTION_AMOUNT_" + contributorId).focus();
+				return;
+			}
+			
+			openPopup("?IdcService=CCLA_CS_CONTRIBUTION_ASSET_ALLOCATION_EDIT<$include add_idc_token_to_url$>" +
+			 "&CONTRIBUTION_ID=" + contributionId+extraParams + "&ts=" + new Date().getTime(), 950);
+		}
+		
+		// Adds a new Anonymous Donor to the Subscription's Account's owning 
+		// Organisation.
+		function addAnonymousDonor(elementTypeId) {
+			if (isPageLoading())
+				return;
+		
+			var elemType;
+			
+			if (elementTypeId == '<$#env.CCLA_ElementType_Person$>')
+				elemType = 'Person';
+			else
+				elemType = 'Organisation';
+			
+			if (!confirm("Are you sure you want to create a new Anonymous " 
+				+ elemType + " Donor?"))
+				return;
+	
+			$("#anonymousDonorElementTypeId").val(elementTypeId);
+			
+			// Submit the form
+			$("#addAnonymousDonorForm").submit();
+		}
+		
+		// Adds a new Anonymous Donor to the Subscription's Account's owning 
+		// Organisation.
+		function createDonorSubscription() {
+			
+			if (isPageLoading())
+				return;
+
+			if (confirm("Are you sure you want to generate the Donor Subscription form?\n\n"
+					+ "Missing Donor Accounts and CREATE_ACCOUNT instructions will be generated where necessary.\n\n"
+					+ "Depending on how many accounts there are, this may take a while.")) {
+				// Submit the form
+				
+				setPageLoadingState(true);
+				$("#createDonorSubscriptionForm").submit();
+			}
+		}
+		
+		function generateDonorAccounts() {
+		
+			if (isPageLoading())
+				return;
+				
+			if (confirm("Are you sure you want to create any missing Donor Accounts now?\n\n"
+				+ "CREATE_ACCOUNT Instructions will be generated for Donor "
+				+ "Accounts where necessary.\n\n"
+				+ "Depending on how many accounts there are, this may take a while.")) {
+				// Submit the form
+				
+				setPageLoadingState(true);
+				$("#createDonorAccountsForm").submit();
+			}
+		}
+		
+		// Updates the Donor contribution display via AJAX
+		function refreshSubscriptionDonorsDisplay() {
+			
+			$.get("?<$include add_idc_token_to_url$>",
+				{
+					"IdcService":		"CCLA_CS_GET_INCLUDE",
+					"incName":			"ccla_cs_subscription_donors_display",
+					"ajaxRefresh":		1,
+					"SUBSCRIPTION_ID": 	subscriptionId,
+					"ts":				new Date().getTime()
+				}, function(data) {
+					$("#subscriptionDonorsDisplay").html(data);
+					bindContributorEventListeners();
+				}
+			);
+		}
+		
+		// Updates the total Fund Allocation display via AJAX
+		function refreshSubscriptionFundAllocationDisplay() {
+			$.get("?<$include add_idc_token_to_url$>",
+				{
+					"IdcService":		"CCLA_CS_GET_INCLUDE",
+					"incName":			"ccla_cs_subscription_fund_allocation_display",
+					"ajaxRefresh":		1,
+					"SUBSCRIPTION_ID": 	subscriptionId,
+					"legacyMode":		"<$#local.legacyMode$>",
+					"ts":				new Date().getTime()
+				}, function(data) {
+					$("#subscriptionFundAllocationDisplay").html(data);
+				}
+			);
+		}
+		
+		// Cancels the current subscription and generates a new one, with the same
+		// donations, TTLA allocations and Fund allocations.
+		function cancelAndCreateNewSubscription() {
+			if (confirm("Are you sure you wish to cancel this subscription? Any forms linked " +
+			 "to this subscription will no longer be valid.\n\nTODO: implement")) {
+				$("#cancelAndCreateNewForm").submit();
+			}
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- Displays the table of Fund Allocations for the whole subscription. -->
+<@dynamichtml ccla_cs_subscription_fund_allocation_display@>
+	
+	<$if ajaxRefresh$>
+		<$executeService("CCLA_CS_GET_SUBSCRIPTION_INFO")$>
+	<$endif$>
+	
+	<$include ccla_cs_subscription_fund_display_js$>
+	
+	<table cellspacing="0" cellpadding="0" width="100%" class="accounts-table">			
+		<tr>
+			<th class="first-col" width="40">
+				Code
+			</th>
+			<th>
+				Name
+			</th>
+			<th width="110">
+				Amount
+			</th>
+		</tr>
+		
+		<$isFirst=1$>
+		<$loop rsFunds$>
+		
+			<tr class="account-details-row">
+
+				<td class="first-col">
+					<$#active.FUND_CODE$>
+				</td>
+				<td>
+					<$if isFirst==1$>
+						<b><$strReplace(#active.DISPLAYNAME,"|","<br/>")$></b>
+						<$isFirst=0$>
+					<$else$>
+						<$strReplace(#active.DISPLAYNAME,"|","<br/>")$>
+					<$endif$>
+				</td>
+				<td>
+					<$exec rsFirst("rsSubscriptionFundAllocations")$>
+					
+					<$thisFund = #active.FUND_CODE$>
+					<$thisSubscriptionAmount = ""$>
+					
+					<$loop rsSubscriptionFundAllocations$>
+						<$if #active.FUND_CODE like thisFund$>
+							<$thisSubscriptionAmount = #active.ASSET_AMOUNT$>
+						<$endif$>
+					<$endloop$>
+					
+					<input 	type="text" 
+							style="width:8em; text-align: right;"
+							class="subscription-fund-amount-field"
+							
+							<$if not legacyMode$>readonly="readonly"<$endif$>
+							
+							name="ASSET_AMOUNT_<$thisFund$>"
+							id="ASSET_AMOUNT_<$thisFund$>"
+							value="<$#local.thisSubscriptionAmount$>" />
+					
+				</td>
+			</tr>
+		
+		<$endloop$>
+		
+		<tr class="account-details-row">
+			<td class="first-col" colspan="2" align="right">Total</td>
+			
+			<td align="right">
+				&nbsp;
+				<span id="fundAllocationTotal" style="font-family:Courier; font-weight: bold">0.00</span>
+			</td>
+			
+		</tr>
+		
+		<tr class="account-details-row">
+			<td class="first-col" colspan="2" align="right">Target</td>
+			
+			<td align="right">
+				&nbsp;
+				<$if rsSubscription.SUBSCRIPTION_AMOUNT$>
+					<span style="font-family:Courier"><$formatCurrency(rsSubscription.SUBSCRIPTION_AMOUNT)$></span>
+				<$endif$>
+			</td>
+			
+		</tr>
+		
+	</table>
+	
+<@end@>
+
+<!-- JavaScript used to supplement display of TTLA Donation Allocations.
+		
+	Should be used in conjunction with the ccla_cs_donation_ttla_allocation_display 
+	include.
+	-->
+<@dynamichtml ccla_cs_donation_ttla_allocation_js@>
+	
+	<script type="text/javascript">
+		
+		// Mapping of Gov Match Rate IDs -> Percentages
+		var govMatchRates = new Object();
+		
+		// Build hashmap of Gov Match Rates.
+		<$loop rsGovMatchRates$>
+			govMatchRates["<$#active.GOV_MATCH_RATE_ID$>"] = Number("<$#active.GOV_MATCH_PERCENTAGE$>");
+		<$endloop$>
+		
+		// Determines whether page is editable.
+		var allowedEdit = <$if #local.disableTTLA$>false<$else$>true<$endif$>;
+
+		function allowEditTTLA() {
+			return allowedEdit;
+		}
+		
+		// Disables/enables form controls based on whether or not the screen
+		// is editable.
+		function disableOrEnableTTLAButtons() {
+			if (allowEditTTLA()) {
+				$('input[type="submit"]').removeAttr('disabled');
+				$('input[type="button"]').removeAttr('disabled');
+				$('.subscription-fund-amount-field').removeAttr('disabled');
+				$('input[type="select"]').removeAttr('disabled');
+				$('input[type="radio"]').removeAttr('disabled');
+				
+			} else {
+				$('input[type="submit"]').attr('disabled','disabled');
+				$('input[type="button"]').attr('disabled','disabled');
+				$('.subscription-fund-amount-field').attr('disabled','disabled');
+				$('input[type="select"]').attr('disabled','disabled');
+				$('input[type="checkbox"]').attr('disabled','disabled');
+				$('input[type="text"]').attr('disabled','disabled');
+				$('input[type="radio"]').attr('disabled','disabled');
+			}
+		}	
+		
+		// Returns the value of the selected allocation radio button
+		// (will be either percent or amount)
+		function getSelectedAllocationMethod() {
+			return $("input:radio[name=valueType]:checked").val();
+		}
+		
+		// Page load function
+		$(document).ready( function() {
+		
+			// Bind click events to Amount/Percentage allocation method radio buttons.
+			$("input:radio[name=valueType]").bind("click", function() {
+				setAllocationFieldsState();
+				refreshTotalAllocValueLabel();	
+			});
+			
+			disableOrEnableTTLAButtons();
+			
+			// Bind click events to all the 'TTLA selection' checkboxes. 
+			// Toggles the disabled state of the associated donation 
+			// input fields
+			$("#ttlaAllocationsForm .ttla_toggle_check").bind("click", function() {
+				var thisOrgId = $(this).attr("id").substring("TTLA_ORG_ID_".length);
+				
+				var enableLine = $(this).attr("checked");
+				setTTLAFieldsState(thisOrgId, enableLine);
+
+				refreshNumSelectedTTLAsLabel();
+				refreshTotalAllocValueLabel();
+			});
+			
+			// Bind keyup events to all the 'Allocation Percentage' input fields. 
+			// Updates the 'Total allocated' label to reflect the total allocated
+			// amount.
+			$("#ttlaAllocationsForm .alloc_percentage_field").bind("keyup", function() {
+				refreshTotalAllocValueLabel();
+			});
+
+			// Bind keyup events to all the 'Allocation Amount' input fields. 
+			// Updates the 'Total allocated' label to reflect the total allocated
+			// amount.
+			$("#ttlaAllocationsForm .alloc_amount_field").bind("keyup", function() {
+				refreshTotalAllocValueLabel();
+
+			});
+			
+			// Bind blur events to all the 'Allocation Amount' input fields. 
+			// Updates the value in the 'Exp. Gov Match' field as a percentage
+			// of the allocation amount.
+			$("#ttlaAllocationsForm .alloc_amount_field").bind("blur", function() {
+				
+				// Allocation Amount for this TTLA Org
+				var thisAmount = $(this).val();
+				
+				// Cast to Number and set format to 2 decimal places.
+				if (thisAmount != "") {
+					var thisAmount = Number(thisAmount);
+					
+					if (isNaN(thisAmount)) // Stop if invalid amount
+						return;
+					
+					thisAmount = thisAmount.toFixed(2);
+					$(this).val(thisAmount);
+				}
+				
+				// Determine the TTLA Org ID that this Amount field is linked to.
+				var thisTTLAOrgId = $(this).attr("id").substring
+				 ("INCOME_ALLOCATION_AMOUNT_".length);
+
+				// Current Gov Recovery Expected value
+				var currentGovRecoveryExpected = 
+				 $("#GOV_RECOVERY_AMT_EXPECTED_" + thisTTLAOrgId).val();
+				var newGovRecoveryExpected = "";
+				
+				if (currentGovRecoveryExpected != "") {
+					// Already a recovery amount set - leave it as-is.
+					return;
+				}
+				
+				if (thisAmount != "") {
+					// Determine the selected Match Rate ID.
+					var selGovMatchRateId = $("#GOV_MATCH_RATE_ID").val(); 
+					// Lookup associated percentage from hash table.
+					var govMatchPercentage = govMatchRates[selGovMatchRateId];
+					
+					// Calculate fractional amount value.
+					newGovRecoveryExpected = thisAmount * (govMatchPercentage/100);
+					newGovRecoveryExpected = newGovRecoveryExpected.toFixed(2);
+				}
+				
+				// Set the expected recovery amount.
+				$("#GOV_RECOVERY_AMT_EXPECTED_" + thisTTLAOrgId).val(newGovRecoveryExpected);
+			});
+			
+			// Force first refresh of allocation fields/labels on page load.
+			setAllocationFieldsState();
+			refreshNumSelectedTTLAsLabel();
+			refreshTotalAllocValueLabel();
+		});
+		
+		// Updates all the TTLA allocations for a given contribution
+		function updateTTLAAllocations(contributionAmount) {
+			
+			if (getSelectedAllocationMethod()=="percentage") {
+				// Percentage allocation validation.
+				var totalAlloc = getTotalAllocPercentage();
+			
+				if (isNaN(totalAlloc)) { 
+					alert("One on the allocation percentages is invalid. Ensure they are " +
+					 "either blank, or contain decimal numbers (without % signs!)");
+					return;
+				} else if (totalAlloc && totalAlloc < 100) {
+					alert("The total allocation is less than 100%. Ensure allocation percentages " +
+					 "are blank, or add up to 100%");
+					return;
+				} else if (totalAlloc && totalAlloc > 100) {
+					alert("The total allocation is more than 100%. Ensure allocation percentages " +
+					 "are blank, or add up to 100%");
+					return;
+				} else if (!contributionAmount && totalAlloc) {
+					alert("Donor Amount is not specifed, please enter a donor amount before updating the TTLA Allocations.");
+					return;	
+				} 
+			} else {
+				// Amount allocation validation.
+				var totalAllocAmount = getTotalAllocAmount();
+
+				if (isNaN(totalAllocAmount)) {
+					alert("One on the allocation amount is invalid. Ensure they are " +
+					 "either blank, or contain decimal numbers (without £ signs!)");
+					return;
+				} else if (!contributionAmount && totalAllocAmount) {
+					alert("Donor Amount is not specifed, please enter a donor amount before updating the TTLA Allocations.");
+					return;	
+				} else if (totalAllocAmount && contributionAmount && totalAllocAmount != contributionAmount) {
+					alert("The total allocation is not equal to £"+contributionAmount+". Ensure allocation amounts " +
+					 "are blank, or add up to £"+contributionAmount);
+					return;			
+				}
+			}
+			$("#ttlaAllocationsForm").submit();
+		}
+		
+		// Determines the number of selected TTLAs and updates the span label.
+		function refreshNumSelectedTTLAsLabel() {
+			var label = "None selected";
+			var numSelected = 0;
+				
+			$("#ttlaAllocationsForm .ttla_toggle_check").each( function() {
+				if ($(this).attr("checked"))
+					numSelected++;
+			});
+			
+			if (numSelected > 0)
+				label = numSelected + " selected";
+			
+			$("#numSelectedTTLAs").html(label);
+		}
+		
+		// Determines the total allocated percentage and updates the span label in the footer.
+		function refreshTotalAllocValueLabel() {
+			var label = "";
+			var totalAllocPercentage = getTotalAllocPercentage();
+			var totalAllocAmount = getTotalAllocAmount();
+			
+			if (getSelectedAllocationMethod()=="percentage") {
+				if (isNaN(totalAllocPercentage))
+					label = "Invalid percentage value!";
+				else if (totalAllocPercentage === 0 || totalAllocPercentage)
+					label = totalAllocPercentage + "% allocated";			
+				else
+					label = "No allocations";			
+			} else {
+				if (totalAllocAmount === 0 || totalAllocAmount)
+					label = "£" + totalAllocAmount + " allocated";						
+				else if (isNaN(totalAllocAmount))
+					label = "Invalid amount value!";
+				else
+					label = "No allocations";
+			}
+			
+			$("#totalAllocPercentage").html(label);
+		}
+				
+		function getTotalAllocPercentage() {
+			var totalAlloc = 0;
+			var numSelected = 0;
+			var err = false;
+		
+			$("#ttlaAllocationsForm .alloc_percentage_field").each( function() {
+				
+				if ($(this).val()!="" && !$(this).attr("disabled")) {
+				
+					var thisAlloc = Number($(this).val());
+
+					numSelected++;
+					totalAlloc += thisAlloc;
+				}
+				
+			});
+			
+			if (numSelected > 0) {
+				return Number(totalAlloc).toFixed(2);
+			} else {
+				return false;
+			}
+		}
+		
+		
+		function getTotalAllocAmount() {
+			var totalAlloc = 0;
+			var numSelected = 0;
+			var err = false;
+		
+			$("#ttlaAllocationsForm .alloc_amount_field").each( function() {
+				if ($(this).val() != "" && !$(this).attr("disabled")) {
+					var thisAlloc = Number($(this).val());
+
+					numSelected++;
+					totalAlloc += thisAlloc;
+				}
+			});
+			
+			if (numSelected > 0) {
+				return Number(totalAlloc).toFixed(2);
+			} else {
+				return false;
+			}
+		}
+		
+		// Sets the disabled state of all allocation fields against selected TTLAs,
+		// based on the selected allocation method (percent/amount)
+		function setAllocationFieldsState() {
+			$("#ttlaAllocationsForm .ttla_toggle_check:checked").each(function() {
+				var thisOrgId = $(this).attr("id").substring("TTLA_ORG_ID_".length);
+				
+				setTTLAFieldsState(thisOrgId, true);
+				
+				/*
+				var orgFieldsClassName = "orgId_" + thisOrgId + "_field";
+
+				if (getSelectedAllocationMethod() == "percentage") {
+					$(".alloc_percentage_field" + "." + orgFieldsClassName).removeAttr("disabled");
+					$(".alloc_amount_field" +"." + orgFieldsClassName).attr("disabled","disabled");
+				} else {
+					$(".alloc_percentage_field" + "." + orgFieldsClassName).attr("disabled","disabled");
+					$(".alloc_amount_field" +"." + orgFieldsClassName).removeAttr("disabled");
+				}
+				*/
+			});
+		}
+		
+		// Sets the enabled/disabled state for all input fields for the given TTLA Org ID.
+		function setTTLAFieldsState(orgId, enabled) {
+			var orgFieldsClassName = "orgId_" + orgId + "_field";
+			
+			if (enabled)
+				$("#orgId_" + orgId + "_row").addClass("account-row-open");
+			else
+				$("#orgId_" + orgId + "_row").removeClass("account-row-open");
+			
+			if (!enabled) {
+				// Disable all fields, and we're done.
+				$("." + orgFieldsClassName).attr("disabled","disabled");
+				return;
+			} else {
+				// Enable all fields.
+				$("." + orgFieldsClassName).removeAttr("disabled");
+				
+				// Now just disable either the percentage/amount field, depending on the selected
+				// allocation method.
+				if (getSelectedAllocationMethod() == "percentage") {
+					//$(".alloc_percentage_field" + "." + orgFieldsClassName).removeAttr("disabled");
+					$(".alloc_amount_field" +"." + orgFieldsClassName).attr("disabled","disabled");
+				} else {
+					$(".alloc_percentage_field" + "." + orgFieldsClassName).attr("disabled","disabled");
+					//$(".alloc_amount_field" +"." + orgFieldsClassName).removeAttr("disabled");
+				}
+			}
+			
+			
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- JavaScript used to supplement display of Contribution Asset Allocations.
+		
+	Should be used in conjunction with the ccla_cs_contribution_asset_allocation_edit
+	template.
+	-->
+<@dynamichtml ccla_cs_contribution_asset_allocation_js@>
+	
+	<script type="text/javascript">
+		
+		// Mapping of Gov Match Rate IDs -> Percentages
+		var govMatchRates = new Object();
+		
+		// Build hashmap of Gov Match Rates.
+		<$loop rsGovMatchRates$>
+			govMatchRates["<$#active.GOV_MATCH_RATE_ID$>"] = Number("<$#active.GOV_MATCH_PERCENTAGE$>");
+		<$endloop$>
+		
+		// Determines whether page is editable.
+		var allowEdit = <$if #local.disableEdit$>false<$else$>true<$endif$>;
+
+		var contributionAmount = Number(<$rsContribution.CONTRIBUTION_AMOUNT$>).toFixed(2);
+		
+		// Disables/enables form controls based on whether or not the screen
+		// is editable.
+		function disableOrEnableButtons() {
+			if (allowEdit) {
+				$('input[type="submit"]').removeAttr('disabled');
+				$('input[type="button"]').removeAttr('disabled');
+				$('.subscription-fund-amount-field').removeAttr('disabled');
+				$('input[type="select"]').removeAttr('disabled');
+				$('input[type="radio"]').removeAttr('disabled');
+				
+			} else {
+				$('input[type="submit"]').attr('disabled','disabled');
+				$('input[type="button"]').attr('disabled','disabled');
+				$('.subscription-fund-amount-field').attr('disabled','disabled');
+				$('input[type="select"]').attr('disabled','disabled');
+				$('input[type="checkbox"]').attr('disabled','disabled');
+				$('input[type="text"]').attr('disabled','disabled');
+				$('input[type="radio"]').attr('disabled','disabled');
+			}
+		}	
+		
+		// Returns the value of the selected allocation radio button
+		// (will be either percent or amount)
+		function getSelectedAllocationMethod() {
+			return $("input:radio[name=valueType]:checked").val();
+		}
+		
+		// Page load function
+		$(document).ready( function() {
+			
+			// Format all non-null cash amounts to 2 d.p.
+			$(".alloc_amount_field, .alloc_gov_match_expected_field, .alloc_gov_match_actual_field").each(function() {
+				// Allocation Amount for this asset.
+				var thisAmount = $(this).val();
+				
+				// Cast to Number and set format to 2 decimal places.
+				if (thisAmount != "") {
+					var thisAmount = Number(thisAmount);
+					
+					if (isNaN(thisAmount)) {
+						// Not a number. Can't format
+					} else {
+						thisAmount = thisAmount.toFixed(2);
+						$(this).val(thisAmount);
+					}
+				}
+			});
+			
+			// Bind click events to Amount/Percentage allocation method radio buttons.
+			$("input:radio[name=valueType]").bind("click", function() {
+				setAllocationFieldsState();
+				refreshTotalAllocValueLabel();	
+			});
+			
+			disableOrEnableButtons();
+			
+			// Bind keyup events to all the 'Allocation Percentage' input fields. 
+			// Updates the 'Total allocated' label to reflect the total allocated
+			// amount.
+			$(".alloc_percentage_field").bind("keyup", function() {
+				refreshTotalAllocValueLabel();
+			});
+
+			// Bind keyup events to all the 'Allocation Amount' input fields. 
+			// Updates the 'Total allocated' label to reflect the total allocated
+			// amount.
+			$(".alloc_amount_field").bind("keyup", function() {
+				refreshTotalAllocValueLabel();
+
+			});
+			
+			// Bind blur events to all the 'Allocation Amount' input fields. 
+			// Updates the value in the 'Exp. Gov Match' field as a percentage
+			// of the allocation amount.
+			$(".alloc_amount_field").bind("blur", function() {
+				
+				// Allocation Amount for this asset.
+				var thisAmount = $(this).val();
+				
+				// Cast to Number and set format to 2 decimal places.
+				if (thisAmount != "") {
+					var thisAmount = Number(thisAmount);
+					
+					if (isNaN(thisAmount)) // Stop if invalid amount
+						return;
+					
+					thisAmount = thisAmount.toFixed(2);
+					$(this).val(thisAmount);
+				}
+				
+				// Determine the Fund Code that this Amount field is linked to.
+				var thisFundCode = $(this).attr("id").substring
+				 ("CONTRIBUTION_AMOUNT_".length);
+
+				// Current Gov Recovery Expected value
+				var currentGovRecoveryExpected = 
+				 $("#GOV_RECOVERY_AMT_EXPECTED_" + thisFundCode).val();
+				var newGovRecoveryExpected = "";
+				
+				//if (currentGovRecoveryExpected != "") {
+					// Already a recovery amount set - leave it as-is.
+					//return;
+				//}
+				
+				if (thisAmount != "") {
+					// Determine the selected Match Rate ID.
+					var selGovMatchRateId = $("#GOV_MATCH_RATE_ID").val(); 
+					// Lookup associated percentage from hash table.
+					var govMatchPercentage = govMatchRates[selGovMatchRateId];
+					
+					// Calculate fractional amount value.
+					newGovRecoveryExpected = thisAmount * (govMatchPercentage/100);
+					newGovRecoveryExpected = newGovRecoveryExpected.toFixed(2);
+				}
+				
+				// Set the expected recovery amount.
+				$("#GOV_RECOVERY_AMT_EXPECTED_" + thisFundCode).val(newGovRecoveryExpected);
+			});
+			
+			// Force first refresh of allocation fields/labels on page load.
+			setAllocationFieldsState();
+			//refreshNumSelectedTTLAsLabel();
+			refreshTotalAllocValueLabel();
+		});
+		
+		// Runs some basic validation checks on the user's input before submitting the updates
+		// to the server.
+		function updateAssetAllocations() {
+			
+			if (getSelectedAllocationMethod()=="percentage") {
+				// Percentage allocation validation.
+				var totalAlloc = getTotalAllocPercentage();
+			
+				if (isNaN(totalAlloc)) { 
+					alert("One on the allocation percentages is invalid. Ensure they are " +
+					 "either blank, or contain decimal numbers (without % signs!)");
+					return;
+				} else if (totalAlloc && totalAlloc < 100) {
+					alert("The total allocation is less than 100%. Ensure allocation percentages " +
+					 "are blank, or add up to 100%");
+					return;
+				} else if (totalAlloc && totalAlloc > 100) {
+					alert("The total allocation is more than 100%. Ensure allocation percentages " +
+					 "are blank, or add up to 100%");
+					return;
+				} else if (!contributionAmount && totalAlloc) {
+					alert("Donor Amount is not specifed, please enter a donor amount before updating the TTLA Allocations.");
+					return;	
+				} 
+			} else {
+				// Amount allocation validation.
+				var totalAllocAmount = getTotalAllocAmount();
+
+				if (isNaN(totalAllocAmount)) {
+					alert("One on the allocation amount is invalid. Ensure they are " +
+					 "either blank, or contain decimal numbers (without £ signs!)");
+					return;
+				} else if (!contributionAmount && totalAllocAmount) {
+					alert("Donor Amount is not specifed, please enter a donor amount before updating the TTLA Allocations.");
+					return;	
+				} else if (totalAllocAmount && contributionAmount && totalAllocAmount != contributionAmount) {
+					alert("The total allocation is not equal to £"+contributionAmount+". Ensure allocation amounts " +
+					 "are blank, or add up to £"+contributionAmount);
+					return;			
+				}
+			}
+			$("#assetAllocationsForm").submit();
+		}
+		
+		// Determines the total allocated percentage and updates the span label.
+		function refreshTotalAllocValueLabel() {
+			var label = "";
+			var totalAllocPercentage = getTotalAllocPercentage();
+			var totalAllocAmount = getTotalAllocAmount();
+	
+			var allocationStatus = "none";
+			
+			if (getSelectedAllocationMethod()=="percentage") {
+				if (isNaN(totalAllocPercentage)) {
+					label = "Invalid percentage value!";
+					allocationStatus = "invalid";
+				} else if (totalAllocPercentage === 0 || totalAllocPercentage) {
+					label = totalAllocPercentage + "% allocated";	
+
+					if (totalAllocPercentage == 100)
+						allocationStatus = "valid";
+					else
+						allocationStatus = "invalid";
+						
+				} else {
+					label = "No allocations";
+					allocationStatus = "none";
+				}
+			} else {				
+				 if (isNaN(totalAllocAmount)) {
+					label = "Invalid amount value!";
+					allocationStatus = "invalid";
+				} else if (totalAllocAmount === 0 || totalAllocAmount) {
+					label = "£" + addCommas(totalAllocAmount) + " allocated";	
+					
+					if (contributionAmount && (contributionAmount === totalAllocAmount))
+						allocationStatus = "valid";
+					else
+						allocationStatus = "invalid";
+					
+				} else {
+					label = "No allocations";
+					allocationStatus = "none";
+				}
+			}
+			
+			$("#totalAllocPercentage").html(label);
+			
+			// Colour the total text to reflect its validity.
+			if (allocationStatus == "invalid") {
+				$("#totalAllocPercentage").css("color", "red");
+			} else if (allocationStatus == "valid") {
+				$("#totalAllocPercentage").css("color", "green");
+			} else {
+				$("#totalAllocPercentage").css("color", "");
+			}
+		}
+				
+		function getTotalAllocPercentage() {
+			var totalAlloc = 0;
+			var numSelected = 0;
+			var err = false;
+		
+			$(".alloc_percentage_field").each( function() {
+				
+				if ($(this).val()!="" && !$(this).attr("disabled")) {
+				
+					var thisAlloc = Number($(this).val());
+
+					numSelected++;
+					totalAlloc += thisAlloc;
+				}
+				
+			});
+			
+			if (numSelected > 0) {
+				return Number(totalAlloc).toFixed(2);
+			} else {
+				return false;
+			}
+		}
+		
+		
+		function getTotalAllocAmount() {
+			var totalAlloc = 0;
+			var numSelected = 0;
+			var err = false;
+		
+			$(".alloc_amount_field").each( function() {
+				if ($(this).val() != "" && !$(this).attr("disabled")) {
+					var thisAlloc = Number($(this).val());
+
+					numSelected++;
+					totalAlloc += thisAlloc;
+				}
+			});
+			
+			if (numSelected > 0) {
+				return Number(totalAlloc).toFixed(2);
+			} else {
+				return false;
+			}
+		}
+		
+		// Sets the disabled state of amount/percentage allocation fields,
+		// based on the chosen allocation method (percent/amount)
+		function setAllocationFieldsState() {
+			if (getSelectedAllocationMethod() == "percentage") {
+				$(".alloc_amount_field").attr("disabled","disabled");
+				$(".alloc_percentage_field").removeAttr("disabled");
+			} else {
+				$(".alloc_percentage_field").attr("disabled","disabled");
+				$(".alloc_amount_field").removeAttr("disabled");
+			}
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- Handles validation/form submission for Subscription Fund Allocations 
+	for a given Subscription. -->
+<@dynamichtml ccla_cs_subscription_fund_display_js@>
+	
+	<script type="text/javascript">
+		
+		// Total Subscription Amount. Ensure it is cast to Number with 2 d.p.
+		var targetAllocationAmount = <$if rsSubscription.SUBSCRIPTION_AMOUNT$>Number(<$rsSubscription.SUBSCRIPTION_AMOUNT$>).toFixed(2);<$else$>0.00;<$endif$>
+		
+		// Bind change events to Fund Subscription Amount fields to update the
+		// total subscription label.
+		$(document).ready( function() {
+			$(".subscription-fund-amount-field").bind("keyup", function() {
+				updateTotalFundSubscriptionAmountLabel();
+			});
+			
+			// If a total subscription amount is already set, cast it as a number
+			if (targetAllocationAmount) {
+				targetAllocationAmount = Number(targetAllocationAmount).toFixed(2);
+			}
+			
+			updateTotalFundSubscriptionAmountLabel();
+		});
+		
+		function updateSubscriptionFundAllocations() {
+			// Check that the total fund allocation is zero, or matches
+			// the total contribution amount.
+			var totalAmount = getTotalFundSubscriptionAmount();
+		
+			if (totalAmount == 0
+				||
+				(targetAllocationAmount &&
+				(totalAmount == targetAllocationAmount))) {
+				$("#subscriptionFundAllocationForm").submit();
+			
+			} else {
+				alert("Ensure that the total fund allocation amount is either zero, " +
+				"or matches the total subscription amount (" + 
+				addCommas(Number(targetAllocationAmount).toFixed(2)) + ")");
+			}
+		}
+		
+		function generateChildDocs() {
+			if (!confirm("Are you sure you want to create/update transactions for the returned form?"))
+				return;
+		
+			$("#createChildDocsForm").submit();
+		}
+		
+		function getTotalFundSubscriptionAmount() {
+			var totalAmount = 0;
+				
+			$(".subscription-fund-amount-field").each( function() {
+
+				if ($(this).val()) {
+					totalAmount += Number($(this).val());
+				}
+			});
+			
+			return totalAmount.toFixed(2);
+		}
+		
+		function updateTotalFundSubscriptionAmountLabel() {
+			var totalAmount = getTotalFundSubscriptionAmount();
+	
+			$("#fundAllocationTotal").html(addCommas(totalAmount));
+			
+			// Compare fund allocation total against target.
+			// Colour the total text to reflect its validity.
+			if (targetAllocationAmount) {
+				if (totalAmount == targetAllocationAmount)
+					$("#fundAllocationTotal").css("color", "green");
+				else
+					$("#fundAllocationTotal").css("color", "red");
+			} else {
+				$("#fundAllocationTotal").css("color", "");
+			}
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- Displays a single row in a 'Contributions' table. Displays the Donor Code,
+     Donor Name, a selector checkbox and a series of input fields for storing
+	 contribution and government match amounts.
+	 
+	 The following fields should be present in the binder:
+	 -thisContributorId
+	 -thisContributorCode
+	 -thisContributorName
+	 
+	 Requires an rsContributions ResultSet present, which contains any stored
+	 Donations for a particular Subscription.
+	 -->
+<@dynamichtml ccla_cs_donor_contribution_row_display@>
+	
+	[[% Determine whether there is an existing donation for this donor. %]]
+									
+	<$thisContributorSelected=""$>
+	<$thisContributionId=""$>
+	<$thisContributionAmount=""$>
+	<$thisGovExpected=""$>
+	<$thisGovActual=""$>
+	<$thisAllocationTotal=""$>
+	<$thisNumAllocations=""$>
+	<$thisMatchedContributionId=""$>
+	<$thisDateCashProcessed=""$>
+	
+	<$exec rsFirst("rsContributions")$>
+
+	<$loop rsContributions$>
+		<$if #active.CONTRIBUTOR_ID like thisContributorId$>
+			<$thisContributorSelected = 1$>
+			
+			<$thisContributionId = #active.CONTRIBUTION_ID$>
+			<$thisContributionAmount = #active.CONTRIBUTION_AMOUNT$>
+			
+			<$if legacyMode$>
+				<$thisGovExpected = #active.SUM_TTLA_GOV_AMT_EXPECTED$>
+				<$thisGovActual = #active.SUM_TTLA_GOV_AMT_ACTUAL$>
+				<$thisAllocationTotal = #active.SUM_TTLA_ALLOCS$>
+				<$thisNumAllocations = #active.NUM_TTLA_ALLOCS$>
+			<$else$>
+				<$thisGovExpected = #active.SUM_ASSET_GOV_AMT_EXPECTED$>
+				<$thisGovActual = #active.SUM_ASSET_GOV_AMT_ACTUAL$>
+				<$thisAllocationTotal = #active.SUM_ASSET_AMOUNTS$>
+				<$thisNumAllocations = #active.NUM_ASSET_ALLOCS$>
+			<$endif$>
+			
+			<$thisDateCashProcessed = #active.DATE_CASH_PROCESSED$>
+		<$endif$>
+		
+	<$endloop$>
+	
+	<tr class="account-details-row<$if thisContributorSelected$> account-row-open<$endif$>" 
+		id="contributorId_<$#local.thisContributorId$>_row">
+
+		<td class="first-col">
+		
+			<input 	type="checkbox" 
+					class="donor_toggle_check"
+					
+					name="CONTRIBUTOR_ID_<$#local.thisContributorId$>"
+					id="CONTRIBUTOR_ID_<$#local.thisContributorId$>"
+					
+					<$if thisContributorSelected$>checked<$endif$>
+					/>
+					
+			<input 	type="hidden" 
+					name="MATCHED_CONTRIBUTION_ID_<$#local.thisContributorId$>" 
+					id="MATCHED_CONTRIBUTION_ID_<$#local.thisContributorId$>"
+					value="<$thisMatchedContributionId$>" 
+					/>
+			
+			<input 	type="hidden" 
+					name="DATE_CASH_PROCESSED_<$#local.thisContributorId$>" 
+					id="DATE_CASH_PROCESSED_<$#local.thisContributorId$>"
+					value="<$thisDateCashProcessed$>" 
+					/>
+		</td>
+		<td>
+			<$if thisDonorType like "person"$>
+				<a href="?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=<$#local.thisContributorId$>"><$#local.thisContributorCode$></a>
+			<$else$>
+				<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.thisContributorId$>"><$#local.thisContributorCode$></a>
+			<$endif$>
+		</td>
+		<td>
+			<$#local.thisContributorName$>
+		</td>
+		
+		<td>
+			<input 	type="text"
+					class="contributorId_<$#local.thisContributorId$>_field"
+					style="width:7em;"
+					
+					name="CONTRIBUTION_AMOUNT_<$#local.thisContributorId$>"
+					id="CONTRIBUTION_AMOUNT_<$#local.thisContributorId$>"
+					
+					<$if not thisContributorSelected$>disabled<$endif$>
+					value="<$#local.thisContributionAmount$>"
+					/>
+					
+			[[% Store the currently-saved contribution amount in a hidden field. %]]
+			<input 	type="hidden"
+					id="PREV_CONTRIBUTION_AMOUNT_<$#local.thisContributionId$>"
+					name="PREV_CONTRIBUTION_AMOUNT_<$#local.thisContributionId$>"
+					value="<$#local.thisContributionAmount$>" />
+		</td>
+
+		<td align="right">
+			<span style="font-family: Courier;"><$formatCurrency(#local.thisGovExpected)$></span>
+			
+			<$if false$>
+				<input 	type="text"
+						class="contributorId_<$#local.thisContributorId$>_field"
+						style="width:7em"
+						
+						name="GOV_RECOVERY_AMT_EXPECTED_<$#local.thisContributorId$>"
+						id="GOV_RECOVERY_AMT_EXPECTED_<$#local.thisContributorId$>"
+						
+						<$if not thisContributorSelected$>disabled<$endif$>
+						value="<$#local.thisGovExpected$>"
+						/>
+			<$endif$>
+			
+		</td>	
+		
+		<td  align="right">
+			<span style="font-family: Courier;"><$formatCurrency(#local.thisGovActual)$></span>
+			
+			<$if false$>
+				<input 	type="text"
+						class="contributorId_<$#local.thisContributorId$>_field"
+						style="width:7em"
+						
+						name="GOV_RECOVERY_AMT_ACTUAL_<$#local.thisContributorId$>"
+						id="GOV_RECOVERY_AMT_ACTUAL_<$#local.thisContributorId$>"
+						
+						<$if not thisContributorSelected$>disabled<$endif$>
+						value="<$#local.thisGovActual$>"
+						/>
+			<$endif$>
+		</td>
+		
+		<td align=center>
+			<$if thisNumAllocations$>
+				<$thisNumAllocations$>
+			<$elseif thisContributionId$>
+				0
+			<$else$>
+				&nbsp;
+			<$endif$>
+		</td>
+		
+		<td align=center>
+			<$if thisContributionId$>
+				<$if legacyMode$>
+					[[% Display link to TTLA Allocations pop-up. %]]
+					<$if thisAllocationTotal$>
+						<a 	href="javascript:viewSubscriptionTTLAAllocations(<$thisContributorId$>,<$thisContributionId$>);"
+							title="TTLA Allocations are completed. Click to edit Allocations"><img src="<$HttpImagesRoot$>/ccla/index-green.png" /></a>
+					<$else$>
+						<a 	href="javascript:viewSubscriptionTTLAAllocations(<$thisContributorId$>,<$thisContributionId$>);"
+							title="TTLA Allocations are incomplete. Click to edit Allocations"><img src="<$HttpImagesRoot$>/ccla/index-red.png" /></a>
+					<$endif$>
+					
+				<$else$>
+					[[% Display link to Asset/Fund Allocation pop-up. %]]
+					<$if thisAllocationTotal and (thisAllocationTotal == thisContributionAmount)$>
+						<a 	href="javascript:viewSubscriptionAssetAllocations(<$thisContributorId$>,<$thisContributionId$>);"
+							title="Asset Allocations are completed. Click to edit Allocations"><img src="<$HttpImagesRoot$>/ccla/index-green.png" /></a>
+					<$else$>
+						<a 	href="javascript:viewSubscriptionAssetAllocations(<$thisContributorId$>,<$thisContributionId$>);"
+							title="Asset Allocations are incomplete, or do not match the donation amount. Click to edit Allocations"><img src="<$HttpImagesRoot$>/ccla/index-red.png" /></a>
+					<$endif$>
+					
+				<$endif$>
+			<$else$>
+				&nbsp;
+			<$endif$>
+		</td>
+	</tr>
+	
+<@end@>
+
+<!-- Displays a single row in a 'Donation TTLA Allocations' table. Displays 
+	 a selection checkbox, TTLA Org Name and a text box for entering the
+	 allocation percentage.
+	 
+	 The following fields should be present in the binder:
+	 -thisOrgId
+	 -thisOrgName
+	 
+	 Requires an rsTTLAAllocations ResultSet present, which contains any stored
+	 allocations for a particular Donation.
+	 -->
+<@dynamichtml ccla_cs_donation_ttla_allocation_display@>
+	
+	<$thisOrgSelected = ""$>
+	<$thisAllocationPercent = ""$>
+	<$thisAllocationAmount = ""$>
+	<$thisAllocationExpGovMatch = ""$>
+	<$thisAllocationActualGovMatch = ""$>
+	
+	<$loop rsTTLAAllocations$>
+		<$if rsTTLAAllocations.TTLA_ORG_ID like thisOrgId$>
+			<$thisOrgSelected = 1$>
+			<$thisAllocationPercent = #active.INCOME_ALLOCATION_PERCENT$>
+			<$thisAllocationAmount = #active.INCOME_ALLOCATION_AMOUNT$>
+			<$thisAllocationExpGovMatch = #active.GOV_RECOVERY_AMT_EXPECTED$>
+			<$thisAllocationActualGovMatch = #active.GOV_RECOVERY_AMT_ACTUAL$>
+			
+			<$break$>
+		<$endif$>
+	<$endloop$>
+	
+	<tr class="account-details-row" id="orgId_<$#local.thisOrgId$>_row">
+
+		<td class="first-col">
+			<input 	type="checkbox" 
+					class="ttla_toggle_check"
+					
+					name="TTLA_ORG_ID_<$#local.thisOrgId$>"
+					id="TTLA_ORG_ID_<$#local.thisOrgId$>"
+					
+					<$if thisOrgSelected$>checked<$endif$>
+					/>
+		</td>
+		
+		<td>
+			<$#local.thisOrgName$>
+		</td>
+	
+		<td>
+			<input 	type="text"
+					class="alloc_percentage_field orgId_<$#local.thisOrgId$>_field"
+					style="width:75px"
+					
+					name="INCOME_ALLOCATION_PERCENT_<$#local.thisOrgId$>"
+					id="INCOME_ALLOCATION_PERCENT_<$#local.thisOrgId$>"
+					
+					<$if not thisOrgSelected$>disabled<$endif$>
+					value="<$#local.thisAllocationPercent$>"
+					/>
+		</td>
+		<td>
+			<input 	type="text"
+					class="alloc_amount_field orgId_<$#local.thisOrgId$>_field"
+					style="width:95px"
+					
+					name="INCOME_ALLOCATION_AMOUNT_<$#local.thisOrgId$>"
+					id="INCOME_ALLOCATION_AMOUNT_<$#local.thisOrgId$>"
+					
+					<$if not thisOrgSelected$>disabled<$endif$>
+					value="<$#local.thisAllocationAmount$>"
+					/>
+		</td>
+		
+		<td>
+			<input 	type="text"
+					class="expected_gov_match_field orgId_<$#local.thisOrgId$>_field"
+					style="width:95px"
+					
+					name="GOV_RECOVERY_AMT_EXPECTED_<$#local.thisOrgId$>"
+					id="GOV_RECOVERY_AMT_EXPECTED_<$#local.thisOrgId$>"
+					
+					<$if not thisOrgSelected$>disabled<$endif$>
+					value="<$#local.thisAllocationExpGovMatch$>"
+					/>
+		</td>
+		
+		<td>
+			<input 	type="text"
+					class="actual_gov_match_field orgId_<$#local.thisOrgId$>_field"
+					style="width:95px"
+					
+					name="GOV_RECOVERY_AMT_ACTUAL_<$#local.thisOrgId$>"
+					id="GOV_RECOVERY_AMT_ACTUAL_<$#local.thisOrgId$>"
+					
+					<$if not thisOrgSelected$>disabled<$endif$>
+					value="<$#local.thisAllocationActualGovMatch$>"
+					/>
+		</td>
+		
+	</tr>
+	
+<@end@>
+
+<!-- 	Displays the available Organisation and Person Donors for the given 
+		Organisation.
+		
+		Their contribution amounts and expected/actual Government Matches
+		can be updated.
+		
+		A button on the far right will open a pop-up allowing the TTLA
+		Allocation to be updated.
+-->	
+<@dynamichtml ccla_cs_subscription_donors_display@>
+	
+	<$if ajaxRefresh$>
+		<$executeService("CCLA_CS_GET_SUBSCRIPTION_INFO")$>
+	<$endif$>
+	
+	<script type="text/javascript">
+		
+	</script>
+	
+	<form name="subscriptionDonationsForm" id="subscriptionDonationsForm" method="POST">
+		<input type="hidden" name="IdcService"		value="CCLA_CS_UPDATE_SUBSCRIPTION_CONTRIBUTIONS"/>
+		<input type="hidden" name="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&xFormId=<$#local.xFormId$>&contributionsUpdated=1#donorContributions" />
+
+		<!-- Fields common to all contribution records. 
+			=============================== -->
+			<$exec rsFirst("rsSubscription")$>
+			<$exec rsFirst("rsEntity")$>
+			<$exec rsFirst("rsForm")$>
+			
+			<!-- Always hard-code to Community First campaign for now. -->
+			<$subscriptionCampaignId = 13$>
+			
+			<input type="hidden" name="PRODUCT_ID" value="<$rsSubscription.PRODUCT_ID$>" />
+			<input type="hidden" name="CAMPAIGN_ID" value="<$#local.subscriptionCampaignId$>" />
+			<input type="hidden" name="FORM_ID" value="<$rsForm.FORM_ID$>" />
+			<input type="hidden" name="BENEFACTOR_ID" value="<$rsEntity.ORGANISATION_ID$>" />
+			
+			<h3 class="ccla_data_panel_header">
+				Contribution Details
+			</h3>
+			
+			<!-- Determine first selected Contribution Type ID /RPI ID if applicable.
+				 These will all be set to the same value against all contributions. -->
+			<$selContributionTypeId = ""$>
+			<$selRetailPriceIndexId = ""$>
+			
+			<$loop rsContributions$>
+				<$selContributionTypeId = #active.CONTRIBUTION_TYPE_ID$>
+				<$selRetailPriceIndexId = #active.RPI_ID$>
+				<$break$>
+			<$endloop$>
+			
+			<table width="100%">
+				<tr>
+					<td width="20%">Type:</td>
+					<td width="30%">
+				
+						<select name="CONTRIBUTION_TYPE_ID">
+							<$loop rsContributionTypes$>
+								<option value="<$#active.CONTRIBUTION_TYPE_ID$>" 
+										<$if selContributionTypeId like #active.CONTRIBUTION_TYPE_ID$>selected<$endif$>><$#active.CONTRIBUTION_TYPE_NAME$></option>
+							<$endloop$>
+							
+							<$exec rsFirst("rsContributionTypes")$>
+						</select>
+					
+					</td>
+					
+					<td width="20%"></td>
+					<td width="30%"></td>
+				</tr>
+				
+				<tr>
+					<td width="20%">RPI:</td>
+					<td width="30%">
+					
+						<select name="RPI_ID">
+							<option value=""></option>
+							
+							<$loop rsRetailPriceIndexes$>
+								<option value="<$#active.RPI_ID$>" 
+										<$if selRetailPriceIndexId like #active.RPI_ID$>selected<$endif$>><$#active.RPI_AMOUNT$> (<$formatDateWithPattern(#active.RPI_START_DATE, 'MMM yyyy')$>)</option>
+							<$endloop$>
+						</select>
+						
+					</td>
+				</tr>
+			</table>
+
+		<!-- End contribution header fields 
+			=============================== -->
+		
+		<br/>
+		
+		<h3 class="ccla_data_panel_header">
+			Available Organisation Donors
+		</h3>
+
+		<$if not rsRelatedOrgs$>	
+			<span class="no-info">None</span>
+		<$else$>
+		
+			<table cellspacing="0" cellpadding="0" width="100%" class="accounts-table">			
+				<tr>
+					<th class="first-col" width="30">
+						Sel.
+					</th>
+					<th width="100">
+						Org Code
+					</th>
+					<th>
+						Name
+					</th>
+
+					<th width="100">£ Amount</th>
+					<th width="100">£ Exp. Gov. Match</th>
+					<th width="100">£ Act. Gov. Match</th>
+					
+					<th width="25">
+						&nbsp;
+					</th>
+					<th width="25">
+						&nbsp;
+					</th>
+				</tr>
+				
+				<$thisDonorType = "org"$>
+				
+				<$loop rsRelatedOrgs$>
+					
+					<$thisContributorId = rsRelatedOrgs.ORGANISATION_ID$> 
+					<$thisContributorCode = rsRelatedOrgs.ORG_ACCOUNT_CODE$>
+					<$thisContributorName = rsRelatedOrgs.ORGANISATION_NAME$>
+					
+					<$include ccla_cs_donor_contribution_row_display$>
+				
+				<$endloop$>
+			
+			</table>
+		
+		<$endif$>
+
+		<br/>
+
+		<h3 class="ccla_data_panel_header">
+			Available Person Donors
+		</h3>
+		
+		<$if not rsRelatedPersons$>	
+			<span class="no-info">None</span>
+		<$else$>
+			
+			<table cellspacing="0" cellpadding="0" width="100%" class="accounts-table">			
+				<tr>
+					<th class="first-col" width="30">
+						Sel.
+					</th>
+					<th width="100">
+						Person Code
+					</th>
+					<th>
+						Name
+					</th>
+
+					<th width="100">£ Amount</th>
+					<th width="100">£ Exp. Gov. Match</th>
+					<th width="100">£ Act. Gov. Match</th>
+					
+					<th width="25">
+						&nbsp;
+					</th>
+					
+					<th width="25">
+						&nbsp;
+					</th>
+				</tr>
+				
+				<$thisDonorType = "person"$>
+				
+				<$loop rsRelatedPersons$>
+					
+					<$thisContributorId = rsRelatedPersons.PERSON_ID$> 
+					<$thisContributorCode = rsRelatedPersons.PERSON_ACCOUNT_CODE$>
+					<$thisContributorName = rsRelatedPersons.FULL_NAME$>
+
+					<$include ccla_cs_donor_contribution_row_display$>
+				
+				<$endloop$>
+			
+			</table>
+		
+		<$endif$>
+		
+		<br/>
+
+		<div align="right">
+			<input type="button" value="Update" onclick="updateDonations()" />
+		</div>
+		
+	</form>
+				
+<@end@>
+
+</body></html>

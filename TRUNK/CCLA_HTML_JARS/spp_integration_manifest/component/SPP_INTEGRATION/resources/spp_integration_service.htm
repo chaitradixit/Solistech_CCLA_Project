@@ -1,0 +1,895 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SPP_INTEGRATION service
+</title>
+</head>
+<body>
+
+<@table SPP_INTEGRATION_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CHECKIN_NEW</td>
+	<td>DocService
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:prepareRedirect:IdcService=CHECKIN_CONFIRM_FORM<$include add_idc_token_to_url$>&dID=<$dID$>&dDocTitle=<$url(dDocTitle)$>&dDocName=<$url(dDocName)$>&dDocAuthor=<$url(dDocAuthor)$>:0:null</td>
+</tr>
+<tr>
+	<td>CHECKIN_SEL</td>
+	<td>DocService
+		34
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_SEL_SUB:12:null
+		3:prepareRedirect:IdcService=CHECKIN_CONFIRM_FORM<$include add_idc_token_to_url$>&dID=<$dID$>&dDocTitle=<$url(dDocTitle)$>&dDocName=<$url(dDocName)$>&dDocAuthor=<$url(dDocAuthor)$>:0:null</td>
+</tr>
+<tr>
+	<td>CHECKIN_UNIVERSAL</td>
+	<td>DocService
+		2
+		null
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:populateMissingDocumentValues:::null
+		3:checkSecurity::0:null
+		3:determineCheckin::12:null</td>
+</tr>
+<tr>
+	<td>UPDATE_DOCINFO_BYFORM_OLD</td>
+	<td>DocService
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToUpdateInfo(dDocName)</td>
+	<td>3:doSubService:UPDATE_DOCINFO_SUB:12:null
+		3:doSubService:SPP_INT_PROPAGATE_META_UPDATES_SUB::null
+		3:prepareRedirect:IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$url(dDocName)$><$if IsWorkflowInfo$>&IsWorkflowInfo=<$IsWorkflowInfo$><$endif$>:0:null</td>
+</tr>
+<tr>
+	<td>UPDATE_DOCINFO_OLD</td>
+	<td>DocService
+		2
+		null
+		null
+		documents<br>
+		!csUnableToUpdateInfo(dDocName)</td>
+	<td>3:doSubService:UPDATE_DOCINFO_SUB:12:null
+		3:doSubService:SPP_INT_PROPAGATE_META_UPDATES_SUB::null</td>
+</tr>
+<tr>
+	<td>ECS_CREATE_NEW_CASE_DOCUMENT</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createNewCaseDocument:::null</td>
+</tr>
+<tr>
+	<td>ECS_GET_CASE_DOCUMENT_LIST</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getCaseDocumentList:::null</td>
+</tr>
+<tr>
+	<td>ECS_MANUAL_TRIGGER_SPP_WORKFLOW</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkItemWorkflowId:::null
+		3:triggerSppWorkflow:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_GET_NEW_ENVELOPE_ID</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qGetNextEnvelopeId,rsEnvelopeId::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_GET_NEW_WORKFLOW_ID</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qGetNextEnvelopeId,rsWorkflowId::null</td>
+</tr>
+<tr>
+	<td>ECS_Q_CREATE_ENVELOPE_SEQUENCE</td>
+	<td>Service
+		0
+		CCLA_ENVELOPE_ID_SEQ
+		null
+		null<br>
+		null</td>
+	<td>2:qCreateEnvelopeSeq:::null
+		3:prepareRedirect:IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_ENVELOPE_ID_SEQ::null</td>
+</tr>
+<tr>
+	<td>ECS_IRIS_TRIGGER_SPP_WORKFLOW</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:ECS_IRIS_TRIGGER_SPP_WORKFLOW_SUB::null</td>
+</tr>
+<tr>
+	<td>ECS_IRIS_TRIGGER_SPP_WORKFLOW_SUB</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:irisBatchTriggerSppWorkflow:::null</td>
+</tr>
+<tr>
+	<td>ECS_IRIS_APPLY_POST_WORKFLOW_ACTION_SUB</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:applyPostWorkflowAction:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_INSERT_WITHINSTRUCTION_ROWS</td>
+	<td>com.ecs.stellent.spp.service.InstructionDocServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:writeInstructionDocs:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_GET_WITHINSTRUCTION_ROWS</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qGetPendingChildDocs:rsWithInstructionDocs::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_SPLIT_WITHINSTRUCTION_DOC</td>
+	<td>com.ecs.stellent.spp.service.InstructionDocServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkinWithInstructionDocs:::null
+		3:prepareRedirect:IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_WITHINSTRUCTION_POPUP&docName=<$#active.docName$>&isCheckIn=1::null</td>
+</tr>
+
+<tr>
+	<td>SPP_INT_Q_GET_NOTES_BY_ENVELOPE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qGetNotesByEnvelope:rsNotes::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_GET_NOTES_BY_DOCNAME</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qGetNotesByDocName:rsNotes::null</td>
+</tr>
+
+<tr>
+	<td>SPP_INT_PROPAGATE_META_UPDATES_SUB</td>
+	<td>com.ecs.stellent.spp.service.InstructionDocServices
+		2
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:propagateChildDocInfo:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_INSERT_AURORA_CACHE</td>
+	<td>Service
+		36
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qInsertAuroraCache:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_DELETE_AURORA_CACHE</td>
+	<td>Service
+		36
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qDeleteAuroraCache:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_REFRESH_AURORA_CACHE</td>
+	<td>com.ecs.stellent.spp.CacheDataFromAuroraSow6
+		36
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshAuroraCache:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_GET_AURORA_CACHE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qGetAuroraCache:rsAuroraCache::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_GET_NEXT_BUNDLEREF_SUB</td>
+	<td>Service
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>53:createResultSetFromPooledConnection:qGetNextEnvelopeId,rsNextBundleRef::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_Q_GET_NEXT_BUNDLEREF</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qGetNextEnvelopeId,rsNextBundleRef::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_CREATE_BUNDLEREF_SEQ</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qCreateBundleRefSeq:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CHECK_FOR_ENVELOPE_ID_SUB</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:checkForEnvelopeId:::null</td>
+</tr>
+<tr>
+	<td>CCLA_Q_GET_NEXT_JOB_ID</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qGetNextJobId,rsNextJobId::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_INCLUDE</td>
+	<td>Service
+		32
+		CCLA_GET_INCLUDE
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_GET_DEPENDANT_DOCS_FOR_ROOT_DOC</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qDependantDocs_GetDependantDocsForRootDoc:rsDependantDocs::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_GET_ROOT_DOCS_FOR_DEPENDANT_DOC</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qDependantDocs_GetRootDocsForDependantDoc:rsRootDocs::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_GET_DEPENDANT_DOCS_FOR_ROOT_DOC_WITH_DOC_INFO</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qDependantDocs_GetDependantDocsForRootDoc_WithDocInfo:rsDependantDocs::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_GET_ROOT_DOCS_FOR_DEPENDANT_DOC_WITH_DOC_INFO</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qDependantDocs_GetRootDocsForDependantDoc_WithDocInfo:rsRootDocs::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_DELETE_DEPENDANT_DOCS_FOR_ROOT_DOC</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteDependantDocForRootDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_SET_DEPENDANT_DOCS_FOR_ROOT_DOC</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:setDependantDocsForRootDoc:::null
+		2:qDependantDocs_UpdateDependantDocForRootDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_SET_DEPENDANT_DOC_FOR_ROOT_DOCS</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:setDependantDocForRootDocs:::null</td>
+</tr>
+
+<tr>
+	<td>CCLA_DEP_DOCS_GET_DEPENDANT_DOCS_FOR_ROOT_DOC_WS</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getDependantDocsForRootDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_INIT_DEPENDANT_DOCS_FOR_ENVELOPE</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:initDependantDocsForEnvelope:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_CREATE_DEPENDANT_DOCS_FOR_ROOT_DOCS_WS</td>
+	<td>com.ecs.stellent.spp.dependantdocs.DependantDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createDependantDocsForRootDocs:::null</td>
+</tr>
+<tr>
+	<td>SPP_INT_CHECKIN_CHILDDOCS_BY_ENVELOPE</td>
+	<td>com.ecs.stellent.spp.service.InstructionDocServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QDocClasses:rsDocClasses::null
+		3:checkInChildDocsForEnvelope:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DEP_DOCS_UPDATE_DEPENDENT_DOC_FOR_ROOT_DOC</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>2:qDependantDocs_UpdateDependantDocForRootDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_IMPORT_PARKING_LOT_ITEMS_TO_QUEUE</td>
+	<td>com.ecs.stellent.spp.gateway.ParkingLotImporter
+		8
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:importParkingLotItemsToQueue:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SET_WORKFLOW_ITEM_STATUS</td>
+	<td>com.ecs.stellent.spp.gateway.ParkingLotImporter
+		8
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:setWorkflowItemStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CHECK_BUNDLE_FOR_DUPLICATES</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForDuplicateItems:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TEST_SEARCH_RESULTS_TIMING</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testSearchResultsTiming:::null</td>
+</tr>
+<tr>
+	<td>SPP_CHECKOUT_CHECKIN</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkoutCheckin:::null</td>
+</tr>
+<tr>
+	<td>SPP_CREATE_NEW_ITEM_AND_JOB</td>
+	<td>com.ecs.stellent.spp.service.InstructionDocServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createNewJob:::null</td>
+</tr>
+<tr>
+	<td>SPP_ADD_JOB_NOTE</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addJobNote:::null</td>
+</tr>
+<tr>
+	<td>CCLA_PROCESS_DATE_ADMIN</td>
+	<td>com.ecs.stellent.spp.service.ProcessDateService
+		3
+		CCLA_PROCESS_DATE_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getProcessDateCacheDetails:::null
+		5:qProcessDates:rsProcessDates::null
+		5:qGetAllNextDealingDates:rsNextDealingDates::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_PROCESS_DATE</td>
+	<td>com.ecs.stellent.spp.service.ProcessDateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateProcessDate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CLEAR_PROCESS_DATE</td>
+	<td>com.ecs.stellent.spp.service.ProcessDateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:clearProcessDate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_ALL_PROCESS_DATE_TIMES</td>
+	<td>com.ecs.stellent.spp.service.ProcessDateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateAllProcessDateTimes:::null</td>
+</tr>
+<tr>
+	<td>CCLA_JOB_PRIORITY_ADMIN</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		CCLA_JOB_PRIORITY_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>5:QGetJobPriorityRules:rsJobPriorityRules::null
+		5:QGetAllJobPriorityRuleValues:rsJobPriorityRuleValues::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_JOB_PRIORITY_RULE</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_JOB_PRIORITY_RULE</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_JOB_PRIORITY_RULE_VALUES</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateRuleValues:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_JOB_PRIORITY_RULE_VALUE</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addRuleValue:::null</td>
+</tr>
+<tr>
+	<td>CCLA_REMOVE_JOB_PRIORITY_RULE_VALUE</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeRuleValue:::null</td>
+</tr>
+<tr>
+	<td>CCLA_REFRESH_JOB_PRIORITY_RULE_CACHE</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshCache:::null</td>
+</tr>
+<tr>
+	<td>CCLA_REFRESH_PROCESS_DATE_CACHE</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshCache:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_NEXT_DEALING_DATE</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getNextDealingDate:::null</td>
+</tr>
+<tr>
+	<td>SPP_TRIGGER_BATCH_JOBS</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		15
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:triggerBatchSppWorkflow:::null</td>
+</tr>
+<tr>
+	<td>SPP_GET_LOOKUP_DATA</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getLookupData:::null</td>
+</tr>
+<tr>
+	<td>SPP_TEST_JOB_SERVICES</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testWorkflowJobServices:::null</td>
+</tr>
+<tr>
+	<td>SPP_GET_COMPLAINT_CATEGORIES</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getComplaintCategories:::null</td>
+</tr>
+<tr>
+	<td>SPP_GET_COMPLAINT_SUBCATEGORIES</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getComplaintSubCategories:::null</td>
+</tr>
+<tr>
+	<td>CCLA_REFRESH_BUNDLE_PRIORITIES</td>
+	<td>com.ecs.stellent.spp.service.BundlePriorityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshAllBundlePriorities:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CLEAR_SYSTEM_CONFIG_SETTING</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:clearSystemConfigSetting:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_SYSTEM_CONFIG_SETTING</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateSystemConfigSetting:::null</td>
+</tr>
+<tr>
+	<td>CCLA_PROCESS_DETAILS_ADMIN</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		CCLA_PROCESS_DETAILS_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getProcessDetailsCacheDetails:::null
+        3:createResultSetFromPooledConnection:QGetSystemConfigProcessDates,rsSystemConfig::null
+		3:createResultSetFromPooledConnection:QGetAllFundProcessDatesWithSplitUnitised,rsNextDealingDates::null</td>
+</tr>
+<tr>
+	<td>CCLA_CLONE_AND_SUBMIT_DOC_TO_SPP</td>
+	<td>com.ecs.stellent.spp.service.SppIntegrationServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:cloneAndSubmitDocumentToSpp:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DELETE_PUBLIC_HOLIDAY</td>
+	<td>com.ecs.stellent.spp.service.HolidayService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteHoliday:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_PUBLIC_HOLIDAY</td>
+	<td>com.ecs.stellent.spp.service.HolidayService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addHoliday:::null</td>
+</tr>
+<tr>
+	<td>CCLA_PUBLIC_HOLIDAY_ADMIN</td>
+	<td>com.ecs.stellent.spp.service.HolidayService
+		3
+		CCLA_PUBLIC_HOLIDAY_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getHolidays:::null</td>
+</tr>
+<tr>
+	<td>CCLA_AUTOGENERATE_PUBLIC_HOLIDAY</td>
+	<td>com.ecs.stellent.spp.service.HolidayService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAutoGeneratedHoliday:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SYSTEM_CONFIG_VAR_ADMIN</td>
+	<td>Service
+		3
+		CCLA_SYSTEM_CONFIG_VAR_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetSystemConfigVars,rsSystemConfigVar::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_SYSTEM_CONFIG_VAR</td>
+	<td>com.ecs.stellent.spp.service.SystemConfigVarService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateSystemConfigVar:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_SYSTEM_CONFIG_VAR</td>
+	<td>com.ecs.stellent.spp.service.SystemConfigVarService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addSystemConfigVar:::null</td>
+</tr>
+<tr>
+	<td>CCLA_PROCESS_DATE_CALCULATOR</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		CCLA_PROCESS_DATE_CALCULATOR
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetFunds,rsFunds::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_NEXT_PROCESS_DATE</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getNextDealingDate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_PANEL_VALIDATION_EXTRA</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:panelValidationExtra:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_NEXT_PROCESS_DATE_BY_JOB_ID</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getProcessDateFromJobId:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_MISMATCH_PROCESS_DATE_FOR_BUNDLE</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getMismatchProcessDatesForBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_PROCESS_DATE_FOR_BUNDLE</td>
+	<td>com.ecs.stellent.spp.fundprocessdetails.FundProcessDetailsService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateProcessDatesForBundle:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

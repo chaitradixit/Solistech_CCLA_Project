@@ -1,0 +1,109 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>
+	Document thumbnails
+	</title>
+
+	<$include iris_styles$>
+	<$include iris_paginator_header$>
+
+	<$include iris_linked_docs_js$>
+
+	<script type="text/javascript">
+
+		function previewThumb(docName) {
+
+			var link = '<$HttpCgiPath$>?IdcService=IRIS_THUMB_PREVIEW&dDocName=' + docName + '&sel=<$sel$>';
+			if ('<$SR$>' != '')
+				link = link + '&StartRow=<$SR$>';
+
+			window.location.assign(link);
+		}
+
+	</script>
+
+	<style type="text/css">
+
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+
+		.iris_thumb_container {
+		   	float: left;
+			width: 120px;
+			margin: 5px;
+			text-align: center;
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		.iris_thumb_select {
+			background-color:#DEDBDE;
+		}
+
+		.iris_thumb {
+			border: 1px solid #CCCCCC;
+			width: 166px;
+			height: 167px;
+			cursor: pointer;
+			overflow: hidden;
+		}
+
+		.landscape img {
+			margin-top: 20px;
+		}
+
+		.iris_thumb_details {
+			clear: both;
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+	</style>
+
+</head>
+<body>
+
+<$c="for upload doc form"$>
+
+<$if not sel$>
+	No thumbnails to display!
+<$else$>
+
+	<$Iris_thumbWidth=90$>
+	<$Iris_thumbHeight=90$>
+
+	<$QueryText=selQuery$>
+
+	<$include iris_batchdocuments_searchoverride$>
+
+	<$ResultCount=10$>
+
+	<$if not StartRow$>
+		<$SR=1$>
+	<$else$>
+		<$SR = StartRow$>
+	<$endif$>
+
+	<$executeService("GET_SEARCH_RESULTS")$>
+
+	<$if SearchResults$>
+		<table width=100%><tr><td align=center>
+			<$include displayThumbnailPaginator$>
+		</td></tr></table>
+	<$endif$>
+
+	<$loop SearchResults$>
+		<$include iris_thumbnail_std$>
+	<$endloop$>
+
+	<div style="clear: both">
+	</div>
+
+<$endif$>
+
+</body></html>

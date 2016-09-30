@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle = "Daily Income"$>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		var updated = <$if updated$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			
+			if (updated){
+				// window.parent.updateSelContactAddress();
+				window.parent.closePopup();
+			}
+		});
+		
+	</script>
+	
+	
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Add Daily Income for TODO add date
+			</div>			
+			<div class='ccla_cs_panel_content'>				
+				
+				<form name="editIncomeForm" id="editIncomeForm" method="POST">
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="PROCESS_DATE" 	value="" />	
+					<input type="hidden" name="" value="" />
+					<input type="hidden" name="INCOME_EXPENSE_TYPE_ID" value="3">
+						<$if isNew$>
+							<input type="hidden" name="IdcService" 	value="CCLA_TRANS_INCOME_EXPENSE_ADD" />
+						<$else$>
+							<input type="hidden" name="IdcService" 	value="CCLA_TRANS_INCOME_EXPENSE_UPDATE" />
+						<$endif$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ACCOUNT_INTENTION_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&PERSON_ID=<$#local.PERSON_ID$>&added=1&PROCESS_ID=<$#local.PROCESS_ID$>" />						
+						
+						<table width="100%">
+							<th width="20%"></th><th width="20%"></th><th width="20%"></th><th width="40%"></th>
+								<tr>
+									<td><label for="contactValue">Amount:</label></td>
+									<td>
+										<input type="text" size="12" name="UNITS" id="UNITS" value="<$#active.UNITS$>" onchange="showNiceNumberFormat();" autocomplete="off" />
+									</td>
+									<td><div class="red" id="unitsFormatted"></div></td>
+								</tr>
+								
+
+								
+								<tr>
+									<td><br/></td>
+								</tr>
+								
+
+									<tr>
+										<td align="right" colspan=2><input type="button" value="Edit" onclick="" /></td>
+									</tr>
+
+						</table>					
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

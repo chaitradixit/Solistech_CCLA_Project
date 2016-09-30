@@ -1,0 +1,30 @@
+﻿<?hda version="11gR1-11.1.1.6.0-idcprod1-111219T111403" jcharset="UTF8" encoding="utf-8"?>
+@Properties LocalData
+ComponentName=CCLA_ClientServices
+CreateDate=29/05/2012 12:08
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+blFieldTypes=CreateDate date
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+CCLA_ClientServices/CCLA_ClientServices.hda
+componentExtra
+CCLA_ClientServices/readme.txt
+componentClasses
+CCLA_ClientServices/classes/
+componentExtra
+CCLA_ClientServices/scripts/
+resources
+ccla/
+componentExtra
+CCLA_ClientServices/providers/
+images
+ccla/
+componentLib
+CCLA_ClientServices/lib/
+componentExtra
+CCLA_ClientServices/docs/
+@end

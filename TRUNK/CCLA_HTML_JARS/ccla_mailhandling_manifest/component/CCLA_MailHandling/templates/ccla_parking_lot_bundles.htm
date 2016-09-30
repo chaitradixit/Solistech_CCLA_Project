@@ -1,0 +1,164 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Parking Lot Bundles
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 600px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Parking Lot Bundles
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<style>
+					th {
+						text-align: left;
+					}
+				</style>
+				
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th width="20%">Total Clients</th> 
+						<td width="10%"><$#local.parkingLotClientCount$></td>
+						
+						<td width="70%">
+							Total number of unique clients who have mandates in the
+							Parking Lot queue. If a client has more than 1 envelope/bundle
+							in the queue they will be counted more than once.
+						</td>
+					</tr>
+					
+					<tr>
+						<th>Total Accounts</th> 
+						<td><$#local.parkingLotAccountCount$></td>
+						
+						<td>
+							Total number of unique accounts in the
+							Parking Lot queue. If the same account appears in more than 1 envelope/bundle
+							in the queue, it will be counted more than once.
+						</td>
+					</tr>
+					
+					<tr>
+						<th>Total Docs</th> 
+						<td><$#local.parkingLotDocumentCount$></td>
+						
+						<td>
+							Total number of mandate instructions in the Parking Lot queue.
+						</td>
+					
+					</tr>
+					
+					</tr>
+						<th>Total Bundles</th> 
+						<td><$#local.parkingLotBundleCount$></td>
+						
+						<td>
+							Total number of envelopes/bundles containing mandate instructions 
+							in the Parking Lot queue.
+						</td>
+						
+					</tr>
+					
+					<tr>
+						<th>Total Bundles (complex)</th>
+						<td><$#local.parkingLotBundleCount - #local.basicParkingLotBundleCount$></td>
+						
+						<td>
+							Total number of envelopes/bundles containing more than 1 mandate instruction 
+							in the Parking Lot queue.
+						</td>
+						
+					</tr>
+					
+					<tr>
+						<th>Total Bundles (basic)</th> 
+						<td><$#local.basicParkingLotBundleCount$></td>
+						
+						<td>
+							Total number of envelopes/bundles containing exactly 1 mandate instruction 
+							in the Parking Lot queue.
+						</td>
+						
+					</tr>
+					
+				</table>
+				
+				<br/>
+				
+				<h3 class="ccla_data_panel_header">Move items back to Scanned Envelopes</h3>
+				
+				<$if moved$>
+					<div class="message_panel info_icon">
+						<$if not resetCount$>
+							<$resetCount = 0$>
+						<$endif$>
+						
+						<$resetCount$> bundle(s) moved back to queue successfully.
+					</div>
+				<$endif$>
+				
+				<br/>
+				
+				<form method="POST">
+					<input type="hidden" name="IdcService" value="CCLA_RESET_PARKING_LOT_BUNDLES" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PARKING_LOT_BUNDLES<$include add_idc_token_to_url$>&moved=1" />
+					
+					No. of bundles to move: 
+					<select name="numBundles">
+						<option value="1">1</option>
+						<option value="5">5</option>
+						<option value="10">10</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="500">500</option>
+					</select>
+					
+					Client number prefix (optional): <input type="text" name="clientNumberPrefix" />
+					
+					<br/>
+					<input type="checkbox" name="basicMandatesOnly" checked="checked" /> Single-account mandates only
+					<br/>
+					<br/>
+					
+					<input type="submit" value="Go" id="submitBtn" />
+				
+				</form>
+				
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+	
+</body></html>

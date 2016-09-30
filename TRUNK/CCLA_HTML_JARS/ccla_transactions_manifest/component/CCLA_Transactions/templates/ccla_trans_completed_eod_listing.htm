@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Completed End of Days for PSDF
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+
+			<script type="text/javascript">
+	function viewEODOld(eodId)
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_EOD_GET_DETAIL<$include add_idc_token_to_url$>&EOD_ID=" + eodId;
+	}	
+
+	function viewEOD(eodId)
+	{
+		window.location.href = "?IdcService=CCLA_TRANS_EOD_GET_DETAIL_NEW<$include add_idc_token_to_url$>&EOD_ID=" + eodId;
+	}
+
+	function rerunEOD(eodId)
+	{
+		var ok = confirm("This will revert all the PSDF calculations for this EOD and delete the record. \r\n"+
+						"Please may sure that the Kainos PSDF SQL has not been ran, otherwise the account values will be incorrect.\r\n\n"+
+						"Are you sure you want to proceed?");
+						
+		if (ok==true) {				
+			window.location.href = "?IdcService=CCLA_TRANS_RERUN_EOD<$include add_idc_token_to_url$>&EOD_ID=" + eodId;
+		}
+	}	
+	</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' class='search_results_cont eodListingSF'>
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Completed End of Days for PSDF
+				</div>
+			
+				<div class='ccla_cs_panel_content' >
+					
+
+					<$SF_PreventPaging=""$>
+					<$SF_UseDatabaseSearch=1$>
+					<$SF_QueryProvider="CCLA_POOL1"$>
+					
+					<$SF_QueryTable="V_FUND_COMPLETED_END_OF_DAY"$>
+					
+					<$include iris_sf_sort_images$>
+			
+					<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+					<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+					<$calendarSelectFields="RUN_DATE"$>
+					<$include epoch_calendar_header$>
+					
+					<$displaySearchButton="N"$>
+					
+					<$SF_DISPLAYADVSEARCHLINK=""$>
+					
+					<$hideLineBreak=1$>
+					<$hideInfoLink="Y"$>
+
+					<$displayPagingOptions="N"$>
+					<$displayPaginator="Y"$>
+					<$SF_CustomPaginator="iris_sf_paginator"$>
+					
+					<$advSearchBackgroundColour="#FFFFFF"$>
+					<$advSearchDisplay_pre='orangeContainer_top'$>
+					<$advSearchDisplay_after='orangeContainer_bottom'$>
+					
+					<$if not sf$>
+						<$sf="RUN_DATE"$>
+						<$so="DESC"$>
+					<$endif$>
+
+					
+					<$SF_DISPLAYADVSEARCHLINK=""$>
+					<$moreAdvSearchFieldList=""$>
+	
+					<$SF_CaseInsensitive=1$>
+
+					<$nodeFilterFieldNames="EOD_ID_COL,RUN_BY_COL,RUN_DATE_COL,DATE_OF_RUN_COL,VIEW_DETAILS_COL"$>
+					<$advSearchFieldList="EOD_ID_COL,RUN_BY_COL,RUN_DATE_COL,DATE_OF_RUN_COL"$>
+					<$nodeFilterFieldWidth="17,28,15,15,35"$>
+					
+					<$QueryFieldList="EOD_ID_COL,RUN_BY_COL,RUN_DATE_COL,DATE_OF_RUN_COL"$>	
+					
+					<!-- Custom filters -->
+					<$RUN_BY_COL_CustomFilterScript	="ccla_trans_run_by_filter"$>
+					
+					<!-- Custom display -->
+					<$EOD_ID_COL_CustomIncludeScript ="ccla_trans_eod_id_display"$>
+					
+					<$SF_EOD_ID_COL_caption="End of Day Identifier"$>					
+					<$SF_EOD_ID_COL_type="input"$>
+					<$SF_EOD_ID_COL_list="none"$>
+					<$SF_EOD_ID_COL_shortname="eodId"$>
+					<$SF_EOD_ID_COL_idcname="EOD_ID"$>
+					<$SF_EOD_ID_COL_search="substring"$>
+					
+					<$SF_RUN_BY_COL_caption="Run By"$>					
+					<$SF_RUN_BY_COL_type="custom"$>
+					<$SF_RUN_BY_COL_list="none"$>
+					<$SF_RUN_BY_COL_shortname="runBy"$>
+					<$SF_RUN_BY_COL_idcname="RUN_BY"$>
+					<$SF_RUN_BY_COL_search="substring"$>
+					
+					<$SF_RUN_DATE_COL_caption="End of Day Date"$>					
+					<$SF_RUN_DATE_COL_type="input"$>
+					<$SF_RUN_DATE_COL_list="none"$>
+					<$SF_RUN_DATE_COL_shortname="endOfDayDate"$>
+					<$SF_RUN_DATE_COL_idcname="RUN_DATE"$>
+					<$SF_RUN_DATE_COL_search="date"$>
+
+					<$SF_DATE_OF_RUN_COL_caption="Date of Run"$>					
+					<$SF_DATE_OF_RUN_COL_type="input"$>
+					<$SF_DATE_OF_RUN_COL_list="none"$>
+					<$SF_DATE_OF_RUN_COL_shortname="dateOfRun"$>
+					<$SF_DATE_OF_RUN_COL_idcname="CALC_RUN_DATE"$>
+					<$SF_DATE_OF_RUN_COL_search="date"$>
+					
+					<$VIEW_DETAILS_COL_CustomIncludeScript ="ccla_trans_eod_view_details_display"$>
+
+					<$SF_VIEW_DETAILS_COL_caption="Actions"$>					
+					<$SF_VIEW_DETAILS_COL_type="none"$>
+					<$SF_VIEW_DETAILS_COL_list="none"$>
+					<$SF_VIEW_DETAILS_COL_shortname="ViewDetails"$>
+					<$SF_VIEW_DETAILS_COL_idcname="EOD_ID"$>
+					<$SF_VIEW_DETAILS_COL_search="none"$>
+					
+					<$include ecsSearchAndFilter$>
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

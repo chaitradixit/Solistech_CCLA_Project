@@ -1,0 +1,282 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IrisCore htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- 	Overrides include in SearchAndFilter component. Designed to
+			handle Verity and SQL queries -->
+<@dynamichtml performSearch_@>
+
+  <$include arrangeDefaults$>
+	<$include buildParameterList$>
+
+  <$QueryText=""$>
+  
+  <$if nodeSearchQuery$>
+	  <$QueryText = nodeSearchQuery$>
+	<$endif$>
+
+	<$if not excludeInitialQueryText$>
+		<$if INITIALQUERYTEXT$>
+		
+			<$if QueryText$>
+					<$if useSQLIndexing$>
+						<$QueryText = "(" & QueryText & ") AND " & INITIALQUERYTEXT$>
+					<$else$>
+			   		<$QueryText= '(' & QueryText & ') <and> ' & INITIALQUERYTEXT$>
+			   	<$endif$>
+			
+			<$else$>
+			   <$QueryText= INITIALQUERYTEXT$>
+			<$endif$>
+	  
+	  <$endif$>
+	<$endif$>
+	
+	<$if useSQLIndexing$>
+		<$include buildSearchQuerySQL$>
+	<$else$>
+		<$include buildSearchQuery$>
+	<$endif$>
+
+	<$ResultCount=#active.ssResultCount$>
+
+	<$ssStartRow=#active.SR$>
+
+	<$if strEquals(#active.SR, '')$>
+	  <$ssStartRow=1$>
+	<$endif$>
+
+	<$StartRow=ssStartRow$>
+
+	<$if not ResultCount$>
+	  <$ResultCount=25$>
+	<$endif$>
+
+	<$if strEquals(ssDebug,'true')$>
+
+		QueryText 	= [*<$QueryText$>*]  <br>
+		parameters 	= [<$parameters$>] <br>
+		ResultCount = [<$ResultCount$>]<br>
+		SortOrder   = [<$SortOrder$>]  <br>
+		SortField   = [<$SortField$>]  <br>
+		StartRow    = [<$StartRow$>]   <br>
+
+	<$endif$>
+
+  <$trace(QueryText)$>
+	<$executeService("GET_SEARCH_RESULTS")$>
+
+<@end@>
+
+<@dynamichtml buildSearchQuerySQL@>
+
+	<$if QueryFieldList$>
+    <$rsMakeFromString("rsParameters",QueryFieldList,"param")$>
+
+    <$if rsParameters$>
+
+      <$loop rsParameters$>
+
+        <$shortName = eval("<$SF_" & param & "_shortname$>")$>
+        <$value = getValue("#active",shortName)$>
+
+        <$if value$>
+
+           <$idcName = eval("<$SF_" & param & "_idcname$>")$>
+
+           <$include excludeMoreOptionsFields$>
+
+           <$if moreOptionsExcludeField == 0$>
+
+             <$searchType = eval("<$SF_" & param & "_search$>")$>
+
+						<$trace("param = " & param & ", searchType = " & searchType)$>
+
+             <$if strEqualsIgnoreCase(searchType,"DATE")$>
+                <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") AND "$>
+               <$endif$>
+               <$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(value) & " 00:00) AND ( " & idcName & "<=" & formatDateDatabase(value) & " 23:59)"$>
+               
+             
+             <$elseif strEqualsIgnoreCase(searchType,"FROMTODATE")$>
+	           		<$from_date = getValue("#active",shortName & "_from")$>
+	           		<$to_date = getValue("#active",shortName & "_to")$>
+	           		
+	           		<$if #active.from_date or #active.to_date$>
+	           		
+		           		<$if QueryText$>
+		              	<$QueryText= "(" & QueryText & ") AND "$>
+		           		<$endif$>
+	             		
+		           		<$if #active.from_date and not #active.to_date$>
+		           			
+		           			<$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(from_date) & " 00:00)"$>
+	             		
+	             		<$elseif not #active.from_date and #active.to_date$>
+	             		
+	             			<$QueryText= QueryText & " ( " & idcName & " <=" & formatDateDatabase(to_date) & " 23:59)"$>
+	             			
+	             		<$elseif #active.from_date and #active.to_date$>
+	             		
+	             			<$QueryText= QueryText & " ( " & idcName & " >=" & formatDateDatabase(from_date) & " 00:00) AND ( " & idcName & "<=" & formatDateDatabase(to_date) & " 23:59)"$>
+	             		
+	             		<$endif$>
+	             		
+	             	<$endif$>
+               
+             <$elseif strEqualsIgnoreCase(searchType,"QUICKDATE")$>
+               <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") AND "$>
+               <$endif$>
+               
+               <$if strEquals(value,'over a year')$>
+               	
+               	 <$endDate=dateCurrent(-365)$>
+               	 <$QueryText= QueryText & " ( " & idcName & " <=" & formatDateDatabase(endDate) & " 23:59)"$>
+	               
+               <$else$>
+               
+	               <$if strEquals(value,'last week')$>
+	               	 <$endDate=dateCurrent(-7)$>
+	               <$elseif strEquals(value,'last month')$>
+	               	 <$endDate=dateCurrent(-31)$>
+	               <$elseif strEquals(value,'last year')$>
+	               	 <$endDate=dateCurrent(-365)$>
+	               <$elseif strEquals(value,'next year')$>
+	               	 <$endDate=dateCurrent(+365)$>
+	               <$elseif strEquals(value,'next month')$>
+	               	 <$endDate=dateCurrent(+31)$>
+	               <$elseif strEquals(value,'next week')$>
+	               	 <$endDate=dateCurrent(+7)$>
+	                 <$elseif strEquals(value,'overdue')$>
+	               	 <$endDate=dateCurrent()$>
+	               <$endif$>
+	               	 
+	               <$QueryText= QueryText & " ( " & idcName & " > " & formatDateDatabase(formatDateOnly(endDate)) & ") AND ( " & idcName & "<= " & formatDateDatabase(formatDateOnly(dateCurrent())) & ")"$>
+	               
+               <$endif$>
+               
+             <$else$>
+               <$if QueryText$>
+                 <$QueryText= "(" & QueryText & ") AND "$>
+               <$endif$>
+               <$QueryText= QueryText & " (" & idcName & " LIKE '%" & value  & "%')" $>
+             <$endif$>
+
+           <$endif$>
+
+        <$endif$>
+
+
+      <$endloop$>
+    <$else$>
+<$trace("No Parameters")$>
+    <$endif$>
+
+
+    <$quickSearch = getValue("#active","qs")$>
+
+    <$if quickSearch$>
+
+
+      <$ftx=1$>
+
+      <$if QueryText$>
+        <$QueryText=  "(" & QueryText & ")" & " AND "$>
+      <$endif$>
+      	
+      <$if false$>
+      	<$QueryText= QueryText & " ((<ftx>" & quickSearch  & "</ftx>)"$>
+			<$endif$>
+
+		<$quickSearchPlain=""$>
+	  <$include quickSearchSpecific$>
+
+
+      <$quickSearchFields= QUICKSEARCHMETADATA$>
+      <$rsMakeFromString("rsQuickSearchFields",quickSearchFields,"field")$>
+
+      <$newQuickSearch=strReplace(quickSearch," ",",")$>
+      <$rsMakeFromString("rsQuickSearchWords",newQuickSearch,"word")$>
+
+      <$loop rsQuickSearchFields$>
+
+        <$addToQueryText=""$>
+        <$include makeQuickSearchFieldQuery$>
+        <$QueryText=  QueryText & " <or> " & addToQueryText$>
+
+      <$endloop$>
+
+		<$QueryText= QueryText & ")"$>
+		<$if #active.quickSearchPlain and strLength(quickSearchPlain) > 0$>
+			<$quickSearch=quickSearchPlain$>
+		<$endif$>
+<$trace(QueryText)$>
+    <$endif$>
+
+
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml performSQLSearch@>
+
+  <$include arrangeDefaults$>
+	<$include buildParameterList$>
+
+  <$QueryText=""$>
+  
+  <$if nodeSearchQuery$>
+	  <$QueryText = nodeSearchQuery$>
+	<$endif$>
+
+	<$if not excludeInitialQueryText$>
+		<$if INITIALQUERYTEXT$>
+			<$if QueryText$>
+			   <$QueryText= QueryText & ' AND ' & INITIALQUERYTEXT$>
+			 <$else$>
+			   <$QueryText= INITIALQUERYTEXT$>
+			<$endif$>
+	  <$endif$>
+	<$endif$>
+
+
+	<!--include buildSearchQuery-->
+
+	<$ResultCount=#active.ssResultCount$>
+
+	<$ssStartRow=#active.SR$>
+
+	<$if strEquals(#active.SR, '')$>
+	  <$ssStartRow=1$>
+	<$endif$>
+
+	<$StartRow=ssStartRow$>
+
+	<$if not ResultCount$>
+	  <$ResultCount=25$>
+	<$endif$>
+
+	<$if strEquals(ssDebug,'true')$>
+
+		QueryText 	= [*<$QueryText$>*]  <br>
+		parameters 	= [<$parameters$>] <br>
+		ResultCount = [<$ResultCount$>]<br>
+		SortOrder   = [<$SortOrder$>]  <br>
+		SortField   = [<$SortField$>]  <br>
+		StartRow    = [<$StartRow$>]   <br>
+
+	<$endif$>
+
+  <$trace(QueryText)$>
+	<$executeService("GET_SEARCH_RESULTS_SQL")$>
+
+<@end@>
+
+</body></html>

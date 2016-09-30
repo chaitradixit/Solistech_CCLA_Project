@@ -1,0 +1,25 @@
+﻿<html>
+<head>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Confirm Process Dates
+	</title>
+	
+	<$include iris_styles$>
+	
+	<$include iris_common_js$> 
+		
+</head>
+
+<body class="popupBody">
+	
+	<$executeService("CCLA_GET_MISMATCH_PROCESS_DATE_FOR_BUNDLE")$>
+
+	<$include ccla_confirm_process_date_html$>
+
+</body>
+</html>

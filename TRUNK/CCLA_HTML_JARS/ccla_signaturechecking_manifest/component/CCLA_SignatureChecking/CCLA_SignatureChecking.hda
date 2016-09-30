@@ -1,0 +1,60 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2014_02_08 v1.1.9 (Build 21203)
+classpath=$COMPONENT_DIR/classes/CCLA_SignatureChecking.jar
+blFieldTypes=
+ComponentName=CCLA_SignatureChecking
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/ccla_signaturechecking_resource.htm
+null
+10
+query
+resources/ccla_signaturechecking_query.htm
+CCLA_SignatureChecking_Queries
+10
+service
+resources/ccla_signaturechecking_service.htm
+CCLA_SignatureChecking_Services
+10
+environment
+ccla_signaturechecking_environment.cfg
+null
+10
+template
+templates/ccla_signaturechecking_template.hda
+null
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+CCLA_SignatureChecking_Templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end

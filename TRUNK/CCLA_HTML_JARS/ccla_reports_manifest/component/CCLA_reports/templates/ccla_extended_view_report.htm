@@ -1,0 +1,209 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>
+			Extended Content Report
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include ccla_reports_styles$>
+		<$include ccla_date_masking_js$>
+		
+	</head>
+	
+
+<body>
+
+	<$include iris_header$>
+
+	<br/>
+
+	<div class="grey_bg" style="margin: 10px; padding: 5px">
+		<$include ccla_extended_view_report_search_form$>
+	</div>
+
+	<!-- Build status totals list -->
+	<$if isSubmit$>
+		<$counterStarted=0$>
+		<$counterNotStarted=0$>
+		<$counterNotStartedUpload=0$>
+		<$counterNotStartedError=0$>
+		<$counterParkingLot=0$>
+		<$counterSharepointMigration=0$>
+		<$counterInScanParkingLot=0$>
+		<$counterMissingBundle=0$>
+		<$counterMissingIndexValues=0$>
+		<$counterPendingInIris=0$>
+		<$counterArchived=0$>
+		<$counterDuplicate=0$>
+		<$counterValidation=0$>
+		<$counterNotStartedLeft=0$>
+		<$counterFlagged=0$>
+		<$counterMismatch=0$>
+		
+		<$loop rsQueryDocs$>
+			<$include ccla_reports_resolve_view_item_status$>
+		<$endloop$>
+		
+		<table class="search totals" cellpadding="5" cellspacing="0">
+			<tr <$if counterStarted == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobStarted">Job Started</th>
+				<td><$counterStarted$></td>
+			</tr>
+			<tr <$if counterNotStarted == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobNotStarted">Job Not Started</th>
+				<td><$counterNotStarted$></td>
+			</tr>
+			<tr <$if counterNotStartedUpload == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobNotStartedUpload">Job Not Started (User Uploaded)</th>
+				<td><$counterNotStartedUpload$></td>
+			</tr>
+			<tr <$if counterNotStartedError == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobNotStartedError">Job Not Started (ERROR)</th>
+				<td><$counterNotStartedError$></td>
+			</tr>
+			<tr <$if counterSharepointMigration == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobNotStartedSharepoint">Migrated From Sharepoint</th>
+				<td><$counterSharepointMigration$></td>
+			</tr>
+			<tr <$if counterMissingBundle == 0$>style="display:none;"<$endif$>>
+				<th class="job_missingBundle">Missing Bundle (ERROR)</th>
+				<td><$counterMissingBundle$></td>
+			</tr>
+			<tr <$if counterMissingIndexValues == 0$>style="display:none;"<$endif$>>
+				<th class="job_missingIndexValues">Missing Index Values (ERROR)</th>
+				<td><$counterMissingIndexValues$></td>
+			</tr>
+			<tr <$if counterPendingInIris == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobPendingInIris">Pending In Iris</th>
+				<td><$counterPendingInIris$></td>
+			</tr>
+			<tr <$if counterParkingLot == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobInLot">In Parking Lot</th>
+				<td><$counterParkingLot$></td>
+			</tr>
+			<tr <$if counterInScanParkingLot == 0$>style="display:none;"<$endif$>>
+				<th class="job_inScanParkingLot">In 05/03/2009 Parking Lot</th>
+				<td><$counterInScanParkingLot$></td>
+			</tr>
+			<tr <$if counterArchived == 0$>style="display:none;"<$endif$>>
+				<th class="job_archived">Archived</th>
+				<td><$counterArchived$></td>
+			</tr>
+			<tr <$if counterDuplicate == 0$>style="display:none;"<$endif$>>
+				<th class="job_duplicate">Duplicate</th>
+				<td><$counterDuplicate$></td>
+			</tr>
+			<tr <$if counterValidation == 0$>style="display:none;"<$endif$>>
+				<th class="job_validation">Validation</th>
+				<td><$counterValidation$></td>
+			</tr>
+			<tr <$if counterNotStartedLeft == 0$>style="display:none;"<$endif$>>
+				<th class="job_jobNotStartedLeft">Job Not Started (Left Behind)</th>
+				<td><$counterNotStartedLeft$></td>
+			</tr>
+			<tr <$if counterFlagged == 0$>style="display:none;"<$endif$>>
+				<th class="job_flagged">Flagged</th>
+				<td><$counterFlagged$></td>
+			</tr>
+			<tr <$if counterMismatch == 0$>style="display:none;"<$endif$>>
+				<th class="job_mismatch">Bundle/Document Mismatch</th>
+				<td><$counterMismatch$></td>
+			</tr>
+			<tr>
+				<th>TOTAL:</th>
+				<td><strong><$rsQueryDocs.#numRows$></strong></td>
+			</tr>
+		</table>
+		
+		<!-- Display item listing -->
+		<table cellpadding="3" cellspacing="0" class="results" id="resultsTable" name="resultsTable">
+			<thead>
+				<tr>
+					<th class="first-col">&nbsp;</th>
+					<th>Env ID</th>
+					<th>WF ID</th>
+					<th>Source</th>
+					<th>Doc Class</th>
+					<th>Client</th>
+					<th>Account</th>
+					<th>Fund</th>
+					<th>Amount</th>
+					<th>Units</th>
+					<th>Creation Date</th>
+					<th>Process Date</th>
+					<th>Workflow Date</th>
+					
+					<$if includeWorkflowData$>
+						<th>EnterDetails Date</th>
+						<th>EnterDetails User</th>
+						<th>Validation Date</th>
+						<th>Validation User</th>
+					<$endif$>
+					
+					<th>Status</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<$loop rsQueryDocs$>
+					<tr style="display:table-row;">
+						<td class="first-col"><$(rsQueryDocs.#row)+1$></td>
+						<td>
+							<$if rsQueryDocs.xBundleRef$>
+								<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$rsQueryDocs.xBundleRef$>" target="_blank"><$rsQueryDocs.xBundleRef$></a>
+							<$else$>
+								&nbsp;
+							<$endif$>
+						</td>
+						<td><$rsQueryDocs.xBatchNumber$>&nbsp;</td>
+						<td><$rsQueryDocs.xSource$>&nbsp;</td>
+						<td><$rsQueryDocs.xDocumentClass$>&nbsp;</td>
+						<td>
+							<$if rsQueryDocs.xClientNumber$>
+								<a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&clientno=<$rsQueryDocs.xClientNumber$>" target="_blank"><$rsQueryDocs.xClientNumber$></a>
+							<$else$>
+								&nbsp;
+							<$endif$>	
+						</td>
+						<td><$rsQueryDocs.xAccountNumber$>&nbsp;</td>
+						<td><$rsQueryDocs.xFund$>&nbsp;</td>
+						<td><$rsQueryDocs.xAmount$>&nbsp;</td>
+						<td><$rsQueryDocs.xUnits$>&nbsp;</td>
+						<td><$dInDate$>&nbsp;</td>
+						<td><$formatDateOnly(rsQueryDocs.xProcessDate)$>&nbsp;</td>
+						<td><$rsQueryDocs.xWorkflowDate$>&nbsp;</td>
+						
+						<$if includeWorkflowData$>
+							<td><$#active.ENTERDETAILS_APPROVE_DATE$>&nbsp;</td>
+							<td><$#active.ENTERDETAILS_APPROVE_USER$>&nbsp;</td>
+							<td><$#active.VALIDATION_APPROVE_DATE$>&nbsp;</td>
+							<td><$#active.VALIDATION_APPROVE_USER$>&nbsp;</td>
+						<$endif$>
+						
+						<$include ccla_reports_display_view_item_status$>
+							
+						<td>
+							<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$dDocName$>" title="Open info for <$dDocName$>">
+								<$if useImageInfoLink$>
+									<img 	src="/ucm/resources/layouts/Top Menus/Oracle/InfoIcon_sm.gif" 
+											alt="<$dDocName$>"
+											title="<$dDocName$>" height="16" width="16" border="0"/>
+								<$else$>
+									<$dDocName$>
+								<$endif$>
+							</a>
+						</td>
+					</tr>
+				<$endloop$>
+				
+				</tbody>
+			</table>
+			
+		<$endif$>
+		
+	</body>
+</html>

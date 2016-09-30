@@ -1,0 +1,115 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		IAT Sweep
+	</title>
+	
+	<script type="text/javascript">
+
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 680px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					IAT Sweep
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div style="padding-top:5px"></div>
+						
+						
+						<h3 class="ccla_data_panel_header">Generate IAT Sweep</h3>
+						<p>
+							Below are all the funds with unswept DEPBNK/BUYBNK.<br/>
+							Select "Generate IAT" against the fund code to generate the IAT Sweep.
+						</p>
+						<$if rsPossibleIATSweep$>
+											
+						<table class="transbatch-table" cellspacing="0" cellpadding="0" width="50%">
+							<tr>
+								<th width="20%">Fund Code</th>
+								<th width="40%">Amount</th>
+								<th width="40%">&nbsp;</th>
+							</tr>
+							<$loop rsPossibleIATSweep$>
+							<tr>
+
+								<td><$#active.DEST_FUND_CODE$>&nbsp;</td>
+								<td>£<$formatCurrency(#active.TOTAL)$></td>
+								<td>
+									<form name="IATForm<$#active.DEST_FUND_CODE$>" id="IATForm<$#active.DEST_FUND_CODE$>" method="POST">
+									<input type="hidden" name="IdcService" 	value="CCLA_CP_PERFORM_IAT_SWEEP" /><$include add_idc_token_to_form$>
+									<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_IAT_SWEEP<$include add_idc_token_to_url$>" />
+									<input type="hidden" name="persist" id="persist" value="1"/>
+									<input type="hidden" id="FUND_CODE" name="FUND_CODE" value="<$#active.DEST_FUND_CODE$>"/>
+									<input type="submit" name="submit" id="submit" value="Generate IAT"/>
+									</form>
+								</td>
+							</tr>
+							<$endloop$>
+						</table>
+							
+						<$endif$>
+					<br />
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Previous IAT Sweep</h3>
+					<p>List of previous IAT that has been done. Select "View" for more info about the IAT Sweep</p>
+					<$if rsPreviousIATSweep$>
+						<table class="transbatch-table" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<th width="20%">IAT ID</th>
+								<th>Fund Code</th>
+								<th>Total Amount</th>
+								<th>Date Performed</th>
+								<th>User</th>
+								<th>&nbsp;</th>
+							</tr>
+							
+						<$loop rsPreviousIATSweep$>
+							<tr>
+								<td><$#active.INSTRUCTION_ID$></td>
+								<td><$#active.FUND_CODE$></td>
+								<td><$#active.CASH_AMOUNT$></td>
+								<td><$#active.DATE_ADDED$></td>
+								<td><$#active.LAST_UPDATED_BY$></td>
+								<td>
+									<form name="<$#active.INSTRUCTION_ID$>" id="<$#active.INSTRUCTION_ID$>" method="POST">
+										<input type="hidden" name="IdcService" 	value="CCLA_CP_IAT_SWEEP_INFO" /><$include add_idc_token_to_form$>
+										<input type="hidden" name="RedirectUrl" value="" />
+										<input type="hidden" name="IAT_ID" id="IAT_ID" value="<$#active.INSTRUCTION_ID$>"/>
+										<input type="hidden" name="persist" id="persist" value="1"/>
+										<input type="submit" name="submit" id="submit" value="View Info"/>
+									</form>
+								</td>
+								
+						<$endloop$>		
+						</table>
+					<$else$>
+						N/A
+					<$endif$>
+					
+					<div style="padding-top:5px"></div>
+					<br/>
+					<input type="button" name="goTransBatch" id="goTransBatch" value="Back To Transaction Batch Listings" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_TRANSBATCH_LISTING<$include add_idc_token_to_url$>'"/>
+
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

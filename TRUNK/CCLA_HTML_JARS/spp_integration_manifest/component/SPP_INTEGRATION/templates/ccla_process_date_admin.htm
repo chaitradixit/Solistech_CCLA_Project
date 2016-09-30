@@ -1,0 +1,254 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Process Date/Time Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+	<script type="text/javascript">
+		function setIdcService(formValue, formName) {
+		
+			if (formName!=null && formName!='') {
+				
+				var formToUse = document.getElementById(formName);
+				if (formToUse) {
+					if (formValue!=null && formValue!='') {
+						if (formValue=='Clear') {
+							formToUse.IdcService.value='CCLA_CLEAR_PROCESS_DATE';
+						} else {
+							//Default process
+							formToUse.IdcService.value='CCLA_UPDATE_PROCESS_DATE';							
+						}
+					}  
+				}
+			} 			
+		}
+		
+	</script>
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Process Date/Time Administration
+			</div>
+			
+			<p><b>Use one of the following formats when changing a process date/time:</b></p>
+	
+			<ul>
+				<li>Date format: dd/mm/yyyy</li>
+				<li>Time format: hh:mm (24 hour clock)</li>
+			</ul>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Name</th>
+						<th width="35%">Date/Time</th>
+						<th>Description</th>
+					</tr>
+					
+					<$loop rsProcessDates$>
+						<tr>
+							<td><$#active.NAME$></td>
+							<td>
+								<form method="POST" id="form<$#active.NAME$>" name="form<$#active.NAME$>">
+									<input type="hidden" name="IdcService" value="CCLA_UPDATE_PROCESS_DATE" />
+									<$include add_idc_token_to_form$>
+									<input type="hidden" name="name" value="<$#active.NAME$>" />
+									
+									<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PROCESS_DATE_ADMIN<$include add_idc_token_to_url$>" />
+									
+									<$if #active.DATE_TYPE like "Time"$>
+										<input type="text" name="processDate" value="<$formatDateWithPattern(#active.PROCESS_DATE, 'HH:mm')$>" />
+									<$else$>
+										<input type="text" name="processDate" value="<$formatDateOnly(#active.PROCESS_DATE)$>" />
+									<$endif$>
+										
+									<input type="submit" value="Update" onclick="setIdcService(this.value, 'form<$#active.NAME$>')"/>&nbsp;
+									<$if strEquals(#active.NAME,'RollbackTime') or strEquals(#active.NAME,'RollbackDate')$> 
+									<input type="submit" value="Clear" onclick="setIdcService(this.value, 'form<$#active.NAME$>')"/>
+									<$endif$>
+								</form>
+							</td>
+							<td>
+								<$#active.DESCRIPTION$>
+							</td>
+						</tr>
+					<$endloop$>
+				
+				</table>
+				<br/>
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+					<td>Update All Process Times</td>
+					
+					<td>
+					<form method="POST">
+							<input type="hidden" name="IdcService" value="CCLA_UPDATE_ALL_PROCESS_DATE_TIMES" />
+							<$include add_idc_token_to_form$>
+							<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PROCESS_DATE_ADMIN<$include add_idc_token_to_url$>" />
+									
+							<input type="text" name="processDate" value="" />
+										
+							<input type="submit" value="Update All" />
+						</form>
+					</td>
+					<td>
+						Sets all the process times to the current value. 
+					</td>
+					</tr>
+				</table>
+
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Process Date Cache
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<td><b>Rollover Date/Time<b></td>
+						<td><$#local.RolloverTime$>
+					</tr>
+					<tr>
+						<td><b>PSDF Date/Time<b></td>
+						<td><$#local.PSDFTime$>
+					</tr>
+					<tr>
+						<td><b>Deposit Date/Time<b></td>
+						<td><$#local.DepositTime$>
+					</tr>
+					<tr>
+						<td><b>Unitised Date/Time<b></td>
+						<td><$#local.UnitisedTime$>
+					</tr>
+				
+					<tr>
+						<td><b>Base Process Date<b></td>
+						<td><$formatDateOnly(#local.PreRolloverDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Post-Base Process Date<b></td>
+						<td><$formatDateOnly(#local.PostRolloverDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Next General Process Date (relative to current time)<b></td>
+						<td><$formatDateOnly(#local.baseProcessDate)$>
+					</tr>
+
+					<tr>
+						<td><b>Next Deposit Process Date (relative to current time)<b></td>
+						<td><$formatDateOnly(#local.baseDepositProcessDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Next PSDF Process Date (relative to current time)<b></td>
+						<td><$formatDateOnly(#local.basePSDFProcessDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Next Unitised Process Date (relative to current time)<b></td>
+						<td><$formatDateOnly(#local.baseUnitisedProcessDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Last refreshed</b></td>
+						<td><$#active.CacheLastUpdated$></td>
+					</tr>
+				
+				</table>
+			
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Next Dealing Dates
+			</div>
+			
+			<p><b>This table shows the next scheduled dealing date for each Fund, in relation to the base processing date.</b></p>
+
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Company</th>
+						<th>Fund Code</th>
+						<th>Description</th>
+						<th>Date</th>
+					</tr>
+					
+					<$loop rsNextDealingDates$>
+						<tr>
+							<td><$#active.COMPANY_CODE$></td>
+							<td>
+								<$#active.FUND_CODE$>
+							</td>
+							<td>
+								<$#active.DISPLAYNAME$>
+							</td>
+							<td>
+								<$formatDateOnly(#active.NEXT_DEALING_DATE)$>
+							</td>
+						</tr>
+					<$endloop$>
+				
+				</table>
+			
+			</div>
+			
+			<$include orangeContainer_bottom$>
+	
+		</div>
+	</div>
+	
+</body></html>

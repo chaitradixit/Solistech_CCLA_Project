@@ -1,0 +1,309 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	
+	<style type="text/css">
+		.count-mismatch {
+			background-color:red;
+			color: #FFF !important;
+		}
+		
+		.count-match {
+			background-color:green;
+			color: #FFF !important;
+		}
+		
+		.count-warning {
+			background-color: orange;
+		}
+		
+		.count-error {
+			background-color: red;
+			color: #FFF !important;
+		}
+		
+	</style>
+	
+	<title>ODC-UCM Reconcilliation Report</title>
+
+	<$include iris_jquery_js$>
+	
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_expandable_region_js$>
+	
+</head>
+
+
+<body <$include iris_body_def_internal$> style="text-align:center">
+
+	<$include iris_header$>
+
+	<div style="text-align: center">
+		<div class="grey_bg" style="margin: 15px auto;width: 900px;">
+		
+		<$include orangeContainer_top$>
+		
+		<div class="ccla_cs_panel_header">
+			Outstanding ODC batches
+		</div>
+		
+		<p>
+			Lists batches remaining in ODC, grouped by File Cabinet and Status.
+		</p>
+		
+		<p>
+			<span class="count-warning">Amber cells</span> should tend to 
+				zero within a few minutes, once they are picked up and dispatched successfully to UCM.
+				If these counts keep increasing or never go back to zero, please contact an administrator.
+		</p>
+		
+		<p>
+			<span class="count-error">Red cells</span> are batches in an error state. Contact an
+				administrator if you spot any of these.
+		</p>
+		
+		<$exec rsMakeFromString("rsODCFileCabinetStatuses", 
+		 "Needs Review,On Hold,Reviewed,Deleted,Ready For Upload,Committed", "BATCH_STATUS")$>
+		
+		<table class="accounts-table" width="95%" cellspacing="0" cellpadding="0">
+			<tr>
+				<th rowspan=2 class="first-col">
+					File Cabinet
+				</th>
+				<th colspan="<$rsODCFileCabinetStatuses.#numRows$>">
+					Batch Status
+				</th>
+			</tr>
+			<tr>
+				
+				<$loop rsODCFileCabinetStatuses$>
+					<th>
+						<$#active.BATCH_STATUS$>
+					</th>
+				<$endloop$>
+				
+			</tr>
+			
+			<$loop rsODCFileCabinetNames$>
+				<tr class="account-details-row">	
+		
+					<td class="first-col">
+						<$#active.FILE_CABINET_NAME$>
+					</td>
+					
+					<!-- Bundle counts -->
+					<$loop rsODCFileCabinetStatuses$>
+						
+						<$numBatches = 0$>
+						<$resultCellClass = ""$>
+						
+						<$if rsFindRowPrimary("rsODCBatchesByFilingCabinetAndStatus", 
+						 rsODCFileCabinetNames.FILE_CABINET_NAME & "_" & rsODCFileCabinetStatuses.BATCH_STATUS)$>
+							<$numBatches = rsODCBatchesByFilingCabinetAndStatus.NUM_BATCHES$>
+						<$endif$>
+
+						<$if numBatches > 0$>
+							<$if (rsODCFileCabinetStatuses.BATCH_STATUS like "Reviewed")
+								or (rsODCFileCabinetStatuses.BATCH_STATUS like "Ready For Upload")$>
+								<$resultCellClass = "count-warning"$>
+							<$elseif rsODCFileCabinetStatuses.BATCH_STATUS like "Committed"$>
+								<$resultCellClass = "count-error"$>
+							<$endif$>
+						<$endif$>
+						
+						<td align="right" class="<$#local.resultCellClass$>">
+							<$if numBatches == 0$>
+								<span class="no-info"><$#local.numBatches$></span>
+							<$else$>
+								<$#local.numBatches$>
+							<$endif$>
+						</td>
+					
+					<$endloop$>
+				</tr>
+			<$endloop$>
+
+		</table>
+
+		<br/>
+		
+		<$include orangeContainer_bottom$>
+		
+		<$include orangeContainer_top$>
+			
+		<div class="ccla_cs_panel_header">
+			ODC-UCM Reconcilliation Report
+		</div>
+		
+		<p>The ODC numbers indicate total bundles/documents that ODC has reported 
+		   as complete and on their way to UCM.</p>
+		<p>The UCM numbers indicate total bundles/documents present in UCM, including
+		   deleted content.</p>
+		<p>Discrepancies are shown in red.</p>
+		
+		<form action="<$HttpCgiPath$>">
+			
+			<input type="hidden" name="IdcService" value="CCLA_ODC_REC_REPORT"/>
+			<$include add_idc_token_to_form$>
+			
+			<table>
+				<tr>
+					<td>Report Date:</td>
+					<td>
+					  <input type="text" name="reportDate" value="<$formatDateOnly(#local.reportDate)$>" />
+					  <input type="Submit" value="Go"/>
+					</td>
+				</tr>
+			</table>
+				
+		</form>
+		
+		<br/>
+		
+		<table class="accounts-table" width="95%" cellspacing="0" cellpadding="0">
+			<tr>
+				<th rowspan=2 class="first-col">
+					Source
+				</th>
+				<th rowspan=2>
+					Scan User
+				</th>
+				<th colspan=2>
+					No. of Bundles
+				</th>
+				<th colspan=2>
+					No. of Docs
+				</th>
+			</tr>
+			<tr>
+				<th width=60>
+					ODC
+				</th>
+				<th width=60>
+					UCM
+				</th>
+				<th width=60>
+					ODC
+				</th>
+				<th width=60>
+					UCM
+				</th>
+			</tr>
+			
+			<$loop rsODCBundleDocCounts$>
+				<tr class="account-details-row">	
+		
+					<td class="first-col">
+						<$if not #active.ODC_SOURCE$>
+							<span class="no-info">None</span>
+						<$else$>
+							<$#active.ODC_SOURCE$>
+						<$endif$>
+					</td>
+					<td>
+						<$if not #active.ODC_SCAN_USER$>
+							<span class="no-info">None</span>
+						<$else$>
+							<$#active.ODC_SCAN_USER$>
+						<$endif$>
+					</td>
+					
+					<!-- Bundle counts -->
+						<$numODCBundles = 0$>
+						<$numUCMBundles = 0$>
+						
+						<$resultCellClass = ""$>
+						
+						<$if #active.NUM_BUNDLES$>
+							<$numODCBundles = #active.NUM_BUNDLES$>
+						<$endif$>
+						
+						<!-- Find the corresponding report row in the UCM ResultSet, if one exists. -->
+						<$if rsFindRowPrimary("rsUCMBundleDocCounts",#active.ROW_KEY)$>
+							<$numUCMBundles = rsUCMBundleDocCounts.NUM_BUNDLES$>
+						<$endif$>
+						
+						<$if numODCBundles != numUCMBundles$>
+							<$resultCellClass = "count-mismatch"$>
+						<$else$>
+							<$resultCellClass = "count-match"$>
+						<$endif$>
+						
+						<!-- ODC -->
+						<td align="right" class="<$#local.resultCellClass$>" >
+							<$numODCBundles$>
+						</td>
+						
+						<!-- UCM -->
+						<td align="right" class="<$#local.resultCellClass$>">
+							<$numUCMBundles$>
+						</td>
+					
+					<!-- Doc counts -->
+						<$numODCDocs = 0$>
+						<$numUCMDocs = 0$>
+						
+						<$resultCellClass = ""$>
+						
+						<$if #active.NUM_DOCS$>
+							<$numODCDocs = #active.NUM_DOCS$>
+						<$endif$>
+						
+						<!-- Find the corresponding report row in the UCM ResultSet, if one exists. -->
+						<$if rsFindRowPrimary("rsUCMBundleDocCounts",#active.ROW_KEY)$>
+							<$numUCMDocs = rsUCMBundleDocCounts.NUM_DOCS$>
+						<$endif$>
+						
+						<$if numODCDocs != numUCMDocs$>
+							<$resultCellClass = "count-mismatch"$>
+						<$else$>
+							<$resultCellClass = "count-match"$>
+						<$endif$>
+						
+						<!-- ODC -->
+						<td align="right" class="<$#local.resultCellClass$>">
+							<$numODCDocs$>
+						</td>
+						
+						<!-- UCM -->
+						<td align="right" class="<$#local.resultCellClass$>">
+							<$numUCMDocs$>
+						</td>
+				</tr>
+			<$endloop$>
+
+		</table>
+	
+		<$include orangeContainer_bottom$>
+		
+		<$include orangeContainer_top$>
+		
+		<div class="ccla_cs_panel_header">
+			ODC Document Commit Audit
+		</div>
+		
+		<p>
+			Lists all completed/committed Documents from ODC, that should have reached UCM.
+		</p>
+		
+		<$panelIncName="ccla_odc_doc_commit_audit_table"$>
+		
+		<$openByDefault=0$>
+		<$notAjaxData=1$>
+		<$panelId="benificiaryDetails"$>
+		<$panelToggleLabel="Show/hide"$>
+		
+		<$include ccla_cs_ajax_panel_display$>
+
+		<br/>
+		
+		<$include orangeContainer_bottom$>
+		
+	</div>
+	</div>
+
+</body>
+</html>
+

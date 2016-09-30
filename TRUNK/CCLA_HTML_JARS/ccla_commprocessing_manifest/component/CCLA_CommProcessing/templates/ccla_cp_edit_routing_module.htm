@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Edit Routing Module
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>	
+	
+	<$if #active.moduleUpdated$>
+		<script type="text/javascript">
+			parent.window.location.href = window.parent.location.href;
+		</script>
+	<$endif$>
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+
+		<div class='ccla_cs_panel_content editModuleDiv'>
+		<h3 class="ccla_data_panel_header">Edit Module</h3>
+		
+		<$if #active.moduleUpdated$>
+			<br/>
+			Module Details Updated
+		<$else$>
+		
+		<form name="routingModuleDetails" id="routingModuleDetails" method="POST">
+			<input  type="hidden" name="IdcService" value="CCLA_CP_UPDATE_ROUTING_MODULE_DETAILS"><$include add_idc_token_to_form$>
+			<input 	type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>&moduleUpdated=1&MODULE_ID=<$#active.MODULE_ID$>"/>
+			
+			<$loop rsModuleInfo$>
+							
+				<div class="moduleValue">
+					<label for="MODULE_ID_INPUT">Module ID:</label>
+					<input name="MODULE_ID_INPUT" disabled value="<$rsModuleInfo.MODULE_ID$>"/>
+					<!--hidden input needed as disabled inputs not submitted in form-->
+					<input type="hidden" name="MODULE_ID" value="<$rsModuleInfo.MODULE_ID$>"/>
+				</div>
+				<div class="cs-clear-both"></div>
+				
+				<div class="moduleValue">
+					<label for="MODULE_NAME">Module Name:</label>
+					<input name="MODULE_NAME" value="<$rsModuleInfo.MODULE_NAME$>"/>
+				</div>
+				<div class="cs-clear-both"></div>
+
+				<$optionName = "LISTEN_STATUS_ID"$>
+				<$labelText = "Listen Status"$>
+				<$include ccla_cp_instruction_status_select$>
+				
+				<$optionName = "SKIP_STATUS_ID"$>
+				<$labelText = "Skip Status"$>
+				<$include ccla_cp_instruction_status_select$>
+				
+				<$optionName = "ENTRY_STATUS_ID"$>
+				<$labelText = "Entry Status"$>
+				<$include ccla_cp_instruction_status_select$>
+
+				<$optionName = "PASS_STATUS_ID"$>
+				<$labelText = "Pass Status"$>
+				<$include ccla_cp_instruction_status_select$>
+				
+				<$optionName = "FAIL_STATUS_ID"$>
+				<$labelText = "Fail Status"$>
+				<$include ccla_cp_instruction_status_select$>
+
+								
+				<div class="moduleValue">
+				<label for="IS_ENABLED">Is Enabled:</label>
+				<select name="IS_ENABLED" >
+					<option <$if rsModuleInfo.IS_ENABLED==1$>selected=selected<$endif$> value="1"/>Enabled</option>
+					<option <$if rsModuleInfo.IS_ENABLED==0$>selected=selected<$endif$> value="0"/>Disabled</option>
+				</select>
+				</div>
+				<div class="cs-clear-both"></div>
+
+				
+				<div class="moduleValue">
+					<label for="HANDLER_CLASS">Handler Class Name:</label>
+					<input name="HANDLER_CLASS" value="<$rsModuleInfo.HANDLER_CLASS$>"/>
+				</div>
+				<div class="cs-clear-both"></div>
+				
+				<div class="moduleValue">
+					<label for="EXECUTION_ORDER">Execution Order:</label>
+					<input name="EXECUTION_ORDER" value="<$rsModuleInfo.EXECUTION_ORDER$>"/>
+				</div>
+				<div class="cs-clear-both"></div>
+				
+			<$endloop$>
+			<br/>
+			<div class="cs-float-right">
+				<input type="submit" value="Save changes">
+			</div>
+			<div class="cs-clear-both"></div>
+
+			</form>
+		<$endif$>
+		
+		</div>
+			
+	</div>
+</body>
+</html>

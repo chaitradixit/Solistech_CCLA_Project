@@ -1,0 +1,21 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+CreateDate=23/04/2012 12:12
+blFieldTypes=CreateDate date
+ComponentName=ECS_PopupMenus
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+ECS_PopupMenus/ecs_popupmenus.hda
+componentExtra
+ECS_PopupMenus/readme.txt
+resources
+jquery/
+resources
+ECS_PopupMenus/
+@end
+

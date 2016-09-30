@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Record Interaction
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$calendarSelectFields="deadline"$>
+		<$SF_deadline_type="input"$>
+		<$SF_deadline_shortname="deadline"$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include ccla_cs_ajax_panel_js$>
+		
+		<script type="text/javascript">
+			
+			// IDOC includes for dynamically loaded info panels
+			var infoPanel		= "ccla_cs_interaction_info_panel";
+			var accPanel		= "ccla_cs_accounts_panel";
+			var clientPanel 	= "ccla_cs_client_info_panel";
+			var personPanel		= "ccla_cs_person_info_panel";
+			var docsPanel		= "ccla_cs_client_docs_panel";
+			var commLogPanel	= "ccla_cs_comms_log_panel";
+			
+			var panelMapping	= {
+				"info":		infoPanel,
+				"acc":		accPanel,
+				"client": 	clientPanel,
+				"corr": 	personPanel,
+				"docs": 	docsPanel,
+				"log": 		commLogPanel
+			};
+			
+					
+			$("document").ready( function() {
+				prepareCalendars();
+			
+				loadPanelContent(infoPanel, getBaseParams());
+			});
+			
+			function submitCommDetailsForm() {
+				
+				var frm = document.forms['commDetailsForm'];
+				
+				// Check that a subject was selected
+				var subject = frm.elements['subject'].value;
+				
+				if (subject == "") {
+					alert("Please select a subject before continuing.");
+					frm.elements['subject'].focus();
+					return;
+				}
+				
+				// Check if a note/category was entered
+				var note		= frm.elements['note'].value;
+				var category	= frm.elements['category'].value;
+				
+				if (category == "") {
+					alert("Please select a category before continuing.");
+					frm.elements['category'].focus();
+					return;
+				}
+				
+				// Check that an outcome was selected
+				var outcome = frm.elements['outcome'].value;
+				
+				if (outcome == "") {
+					alert("Please select an outcome before continuing.");
+					frm.elements['outcome'].focus();
+					return;
+				}
+				
+				// Check for follow-up info
+				/*
+				var followUp = frm.elements['followUp'].checked;
+				
+				if (followUp) {
+					var assignee = frm.elements['assignee'].value; 
+					if (assignee == "") {
+						alert(	"You have flagged this communication for follow-up, but not " +
+								"specified an assignee. Please select one before continuing.");
+						return;
+					}
+					
+					var deadline = frm.elements['deadline'].value;
+				}
+				
+				// Resolve the selected client campaign.
+				var selCampaign = getSelectedRadioValue(frm, "clientCampaign");
+				frm.elements['campaignId'].value = selCampaign;
+				*/
+				
+				frm.submit();
+			}
+			
+			function updateFollowUpFields() {
+				var frm = document.forms['commDetailsForm'];
+				var followUp = frm.elements['followUp'].checked;
+				
+				if (followUp) {
+					frm.elements['assignee'].disabled = false;
+					frm.elements['deadline'].disabled = false;
+					
+					$("#deadline_picker").css("display","");
+				} else {
+					frm.elements['assignee'].value = "";
+					frm.elements['assignee'].disabled = true;
+					
+					frm.elements['deadline'].value = "";
+					frm.elements['deadline'].disabled = true;
+					
+					$("#deadline_picker").css("display","none");
+				
+				}
+			}
+			
+		</script>
+	
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+			<form name="commDetailsForm" id="commDetailsForm" method="POST">
+							
+				<input type="hidden" name="IdcService" value="CCLA_CS_ADD_INTERACTION" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="clientId" value="<$#local.clientId$>" />
+				<input type="hidden" name="company" value="<$#local.company$>" />
+				
+				<input type="hidden" name="personId" value="<$#local.personId$>" />
+				
+				<input type="hidden" name="interactionType" value="<$#local.interactionType$>" />
+				<input type="hidden" name="campaignId" value="<$#local.campaignId$>" />
+				
+				<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_SEARCH_CLIENT<$include add_idc_token_to_url$>&interactionCompleted=1" />
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Record Interaction
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$if completed$>
+						
+						<p>The interaction has been completed.</p>
+						
+						<ul>
+							<li><a href="?IdcService=CCLA_CS_RECORD_COMM<$include add_idc_token_to_url$>&clientId=<$#local.clientId$>&company=<$#local.company$>">Add new interaction for client</a></li>
+							<li><a href="?IdcService=CCLA_CS_INTERACTION_LISTING<$include add_idc_token_to_url$>">View interaction listing</a></li>
+							<li><a href="?IdcService=CCLA_CS_SEARCH<$include add_idc_token_to_url$>">Search database</a></li>
+						</ul>
+						
+					<$else$>
+					
+						<table class="cs-info-table" width="100%">
+							<tr>
+								<th width="20%">Type:</th><td width="30%"><$#local.interactionType$></td>
+								<th width="20%"></th><td></td>
+							</tr>
+						</table>
+						
+						<br/>
+						
+						<div style="overflow: auto">
+						
+							<div style="float: left; width: 49%;">						
+								<h3 class="ccla_data_panel_header">Subject*</h3>
+
+								<div class="ccla_data_panel" id="confirmChecks">		
+									<table width="100%" cellpadding=0 cellspacing=2>
+										<tr>
+											<td>
+												
+												<select name="subject" id="subject">
+													<option value=""></option>
+													
+													<$if not #local.subject$>
+														<$subject_XX = "General Enquiry"$>
+													<$endif$>
+													
+													<$exec rsMakeFromString("rsCommSubjects",#env.CCLA_CS_CommSubjects,"subject")$>
+													
+													<$loop rsCommSubjects$>
+														<option value="<$#active.subject$>" <$if #local.subject like #active.subject$>selected<$endif$>><$#active.subject$></option>
+													<$endloop$>
+												</select>
+											</td>
+									</table>
+								</div>
+								
+							</div>
+								
+							<div style="float: left; width: 2%;">&nbsp;</div>
+							
+							<div style="float: left; width: 49%;">
+								<h3 class="ccla_data_panel_header">Category*</h3>
+
+								<div class="ccla_data_panel">		
+									<table width="100%" cellpadding=0 cellspacing=2>
+										<tr>
+											<td>
+												<select name="category" id="category">
+													<option value=""></option>
+													
+													<$exec rsMakeFromString("rsCommCategories",#env.CCLA_CS_CommCategories,"category")$>
+													
+													<$loop rsCommCategories$>
+														<option value="<$#active.category$>"><$#active.category$></option>
+													<$endloop$>
+												</select>
+											</td>
+									</table>
+								</div>
+							
+							</div>
+						
+						</div>
+						
+						<div style="overflow: auto">
+						
+							<div style="float: left; width: 49%;">
+						
+								<h3 class="ccla_data_panel_header">Notes</h3>
+								
+								<div class="ccla_data_panel">		
+									<textarea name="note" style="width: 350px; height: 5em; padding: 3px;"></textarea>
+								</div>
+								
+							</div>
+							<div style="float: left; width: 2%;">&nbsp;</div>
+							
+							<div style="float: left; width: 49%;">
+							
+								<h3 class="ccla_data_panel_header">Start workflow job</h3>
+								
+								<div class="ccla_data_panel" id="confirmChecks">		
+									<div class="float: left">
+									
+										<input type="checkbox" name="isQuery" /> Query
+										<br/>
+										<input type="checkbox" name="isComplaint" disabled="disabled" /> Complaint
+										<br/>
+										<input type="checkbox" name="isBreach" disabled="disabled" /> Breach
+										<br/>
+										<input type="checkbox" name="isError" disabled="disabled" /> Error
+										
+									</div>
+								</div>
+							
+							</div>
+						</div>
+						
+						<h3 class="ccla_data_panel_header">Outcome*</h3>
+						
+						<div class="ccla_data_panel">
+							<table cellpadding=0 cellspacing=2>
+								<tr>
+									<td colspan=2>
+										
+										<$if not outcome$>
+											<$outcome = "Completed"$>
+										<$endif$>
+										
+										<$exec rsMakeFromString("rsOutcomes",#env.CCLA_CS_CompletedActivityOutcomes,"outcome")$>
+									
+										<select name="outcome">
+											<option value=""></option>
+											
+											<$loop rsOutcomes$>
+												<option value="<$#active.outcome$>" <$if #active.outcome like #local.outcome$>selected<$endif$>><$#active.outcome$></option>
+											<$endloop$>
+										</select>
+
+									</td>
+								</tr>
+
+							</table>
+						</div>
+						
+								
+						<div style="text-align: right">
+							<input type="button" name="submitType" value="Submit" onclick="submitCommDetailsForm()" />
+						</div>
+						
+					<$endif$>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+			<$if not completed$>
+			
+				<$include orangeContainer_top$>
+					
+				<div class='ccla_cs_panel_content'>
+				
+					<div id="doc_tabs_container">
+						<table cellspacing="0" cellpadding="0">
+							<tr height="25">
+								<td id="tab_info" class="cs-info-tab cs-tabOn" width="100" align="center" onclick="openTab(this)">
+									<span id="tab_text_caption" class="tab_text">Info</span>
+								</td>
+								<td id="tab_acc" class="cs-info-tab cs-tabOff" width="100" align="center" onclick="openTab(this)">
+									<span id="tab_text_caption" class="tab_text">Accounts</span>
+								</td>
+								<td id="tab_docs" class="cs-info-tab cs-tabOff" width="100" align="center" onclick="openTab(this)">
+									<span id="tab_text_caption" class="tab_text">Documents</span>
+								</td>
+								<td id="tab_log" class="cs-info-tab cs-tabOff" width="100" align="center" onclick="openTab(this)">
+									<span id="tab_text_caption" class="tab_text">Comm. Log</span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<!-- Replaceable region for AJAX-loaded content -->
+					<div id="info-container" class="cs-info-container container-loading">
+					
+					</div>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+			<$endif$>
+									
+			</form>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

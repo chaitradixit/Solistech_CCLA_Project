@@ -1,0 +1,184 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_AuditLog query
+</title>
+</head>
+<body>
+
+<@table ECS_AuditLog_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qLogAddEntry</td>
+	<td>INSERT INTO tAuditLog VALUES (?,?,?,?,?)</td>
+	<td>lService varchar
+	    lRef varchar
+	    lUser varchar
+	    lMessage varchar
+	    lDate date</td>
+</tr>
+<tr>
+	<td>qLogAddEntryExt</td>
+	<td>INSERT INTO tAuditLog VALUES (?,?,?,?,?,?,?,?)</td>
+	<td>lService varchar
+	    lRef varchar
+	    lUser varchar
+	    lMessage varchar
+	    lDate date
+	    lType varchar
+	    dDocTitle varchar
+	    lCaseStatus varchar</td>
+</tr>
+<tr>
+	<td>qLogGetEntries</td>
+	<td>SELECT * FROM tAuditLog WHERE ALSERVICE=? AND ALREFERENCE=? 
+ORDER BY ALLOGDATE ASC</td>
+	<td>lService varchar
+	    lRef varchar</td>
+</tr>
+<tr>
+	<td>qAddAuditEntry</td>
+	<td>INSERT INTO tAuditLogs VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>lApp varchar
+	    lAction varchar
+	    lRef varchar
+	    lTitle varchar
+	    lUser varchar
+	    lDate date
+	    lMessage varchar
+	    lParam1 varchar
+	    lParam2 varchar
+	    lParam3 varchar
+	    lParam4 varchar
+	    lParam5 varchar
+	    lParam6 varchar</td>
+</tr>
+<tr>
+	<td>qCreateAuditLogTable</td>
+	<td>CREATE TABLE tAuditLogs
+(LAPP nvarchar(50), 
+LACTION nvarchar(50), 
+LREF nvarchar(50), 
+LTITLE nvarchar(90), 
+LUSER nvarchar(60), 
+LDATE datetime, 
+LMESSAGE nvarchar(500),
+LPARAM1 nvarchar(100),
+LPARAM2 nvarchar(100),
+LPARAM3 nvarchar(100),
+LPARAM4 nvarchar(100),
+LPARAM5 nvarchar(100),
+LPARAM6 nvarchar(100))</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qAuditEntriesByRef</td>
+	<td>SELECT * FROM tAuditLogs WHERE LREF=? AND LAPP=?
+ORDER BY LDATE DESC</td>
+	<td>auditRef varchar
+	    auditApp varchar</td>
+</tr>
+
+<tr>
+	<td>qCreateAuditTable</td>
+	<td>CREATE TABLE tAudit
+(AAPP nvarchar(50), 
+AREPOSITORY nvarchar(50), 
+AUSER nvarchar(60), 
+AACTION nvarchar(50), 
+ATIME datetime, 
+AMESSAGE nvarchar(500), 
+AREF_ID nvarchar(50), 
+AREF_ID2 nvarchar(50), 
+AREF_TITLE nvarchar(90), 
+AREF_TYPE nvarchar(50), 
+APARENT_ID nvarchar(50), 
+APARENT_TYPE nvarchar(50), 
+AFIELD1 nvarchar(100), 
+AFIELD2 nvarchar(100), 
+AFIELD3 nvarchar(100), 
+AFIELD4 nvarchar(100), 
+AFIELD5 nvarchar(100), 
+AFIELD6 nvarchar(100),
+AFIELD7 datetime,
+AFIELD8 datetime)</td>
+	<td></td>
+</tr>
+
+
+<tr>
+	<td>qAddAudit</td>
+	<td>INSERT INTO tAudit VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>AAPP varchar
+	    AREPOSITORY varchar
+	    AUSER varchar
+	    AACTION varchar
+	    ATIME date
+	    AMESSAGE varchar
+	    AREF_ID varchar
+	    AREF_ID2 varchar
+	    AREF_TITLE varchar
+	    AREF_TYPE varchar
+	    APARENT_ID varchar
+	    APARENT_TYPE varchar
+	    AFIELD1 varchar
+	    AFIELD2 varchar
+	    AFIELD3 varchar
+	    AFIELD4 varchar
+	    AFIELD5 varchar
+	    AFIELD6 varchar
+	    AFIELD7 date
+	    AFIELD8 date</td>
+</tr>
+<tr>
+	<td>qServiceMappings</td>
+	<td>SELECT *
+FROM tServiceMappings
+WHERE mServiceName = ?</td>
+	<td>service varchar</td>
+</tr>
+<tr>
+	<td>qMetadataMappings</td>
+	<td>SELECT *
+FROM tMetadataMappings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qAuditLogEntries</td>
+	<td>SELECT * FROM tAudit 
+ORDER BY ATIME DESC</td>
+	<td>aParentRef varchar
+	    aRef varchar</td>
+</tr>
+<tr>
+	<td>qAuditLogEntriesByRef</td>
+	<td>SELECT * FROM tAudit WHERE AREF_ID=? 
+ORDER BY ATIME DESC</td>
+	<td>aRef varchar</td>
+</tr>
+<tr>
+	<td>qAuditLogEntriesByParent</td>
+	<td>SELECT * FROM tAudit WHERE AUSER LIKE ? AND AACTION LIKE ? AND APARENT_ID=? AND AREF_TYPE LIKE ? AND AREF_TITLE LIKE ?
+ORDER BY ATIME DESC</td>
+	<td>aUser varchar
+	    aAction varchar
+	    aParent varchar
+	    aType varchar
+	    aTitle varchar</td>
+</tr>
+<tr>
+	<td>qAuditLogSummaryByParent</td>
+	<td>SELECT * FROM 
+(SELECT * FROM tAudit WHERE APARENT_ID=? ORDER BY ATIME DESC)
+WHERE ROWNUM <= 10
+</td>
+	<td>aParent varchar</td>
+</tr>
+
+</table>
+<@end@>
+</body></html>

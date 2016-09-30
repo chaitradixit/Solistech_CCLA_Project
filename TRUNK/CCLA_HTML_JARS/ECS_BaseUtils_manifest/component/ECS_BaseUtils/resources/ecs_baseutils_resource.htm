@@ -1,0 +1,153 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_BaseUtils htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml std_page_begin@>
+	<$include super.std_page_begin$>
+	<$if UserIsAdmin$>
+		<$outputNodeInfo=getValue("#env","OUTPUT_NODE_INFORMATION")$>
+		<$if strEquals(outputNodeInfo,"1")$>
+			<$clusterNodeName=getValue("#env","ClusterNodeName")$>
+			<$if strLength(clusterNodeName) > 0$>
+				<small><$InstanceDescription$> request handled by cluster node <$clusterNodeName$></small>
+			<$endif$>
+		<$endif$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml dnd_applet@>
+
+	<$if MSIE$>
+
+    <!-- Call embed.js to force applet to load enabled - note embed.js includes path to dndplus.jar
+    		 which is set to /stellent/common/dndplus.jar.  If the HttpRelativeWebRoot is not stellent
+    		 then embed.js will have to be modified directly to reflect your new web root value. -->
+
+    <script type="text/javascript" src="<$HttpRelativeWebRoot$>common/ECS_BaseUtils/embed.js"></script>
+
+    <$include dnd_applet_config$>
+
+		</object>
+
+
+	<$elseif IsMac$>
+
+
+		<!-- mac and linux -->
+    <applet archive="<$HttpRelativeWebRoot$>common/ECS_BaseUtils/dndplus.jar" code="com.radinks.dnd.DNDAppletPlus" name="ECS Uploader Plus" hspace="0" vspace="0" MAYSCRIPT="yes" width="400" height="60" align="left" valign="top">
+
+    <$include dnd_applet_config$>
+
+		</applet>
+
+
+	<$else$>
+
+   	<!-- Mozilla -->
+
+    <object type="application/x-java-applet;version=1.4.1" width="250" height="60" valign="top">;
+    <param name="archive" value="<$HttpRelativeWebRoot$>common/ECS_BaseUtils/dndplus.jar">
+    <param name="code" value="com.radinks.dnd.DNDAppletPlus">
+    <param name="monitor.type" value="compact">
+    <param name="monitor.embed" value="yes">
+    <param name="external_redir" value="http://lille/stellent/idcplg?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=UPLOAD_SUCCESS">
+    <param name="redirect_delay" value="1">
+    <param name="browse" value="yes">
+    <param name="name" value="ECS Uploader Plus">
+
+    <$include dnd_applet_config$>
+
+     </object>
+
+   <$endif$>
+
+<@end@>
+
+<@dynamichtml dnd_applet_config@>
+	 BEGIN APPLET CONFIGURATION PARAMETERS
+	<param name="max_upload" value="100000">
+	 size in kilobytes (takes effect only in Rad Upload Plus)
+	<param name = "url" value = "http://<$HttpServerAddress$><$HttpRelativeWebRoot$>jsp/ECS_BaseUtils/file_uploader.jsp?type=com.ecs.stellent.nccplanning.StorePlanningDoc">
+	 you can pass additional parameters by adding them to the url
+	 to upload to an ftp server instead of a web server, please specify a url
+			 in the following format:
+			 ftp://username:password@ftp.myserver.com
+			 replacing username, password and ftp.myserver.com with corresponding entries for
+			 your site
+
+	<param name = "message" value="Drop your files here.<br>They will be uploaded into Stellent.">
+	 edit the above line to customize your applet's display
+	 END APPLET CONFIGURATION PARAMETERS
+<@end@>
+
+<@dynamichtml ecs_view_content_header_info@>
+
+	<$executeService("DOC_INFO")$>
+
+	<div style="margin: 10px; font-family: Verdana, sans-serif">
+		<$if dDocName$>
+			Document Title: <$dDocTitle$>
+			<br/>
+
+			<$if not (dRevRank like '0')$>
+
+				<!-- Figure out revision label for the older revision. -->
+				<$loop REVISION_HISTORY$>
+					<$if REVISION_HISTORY.dID like #local.dID$>
+						<$thisRevLabel = REVISION_HISTORY.dRevLabel$>
+					<$endif$>
+				<$endloop$>
+
+				Revision: <$thisRevLabel$>
+
+				<br/>
+				This is not the latest revision of this document. <a href="<$HttpCgiPath$>?IdcService=ECS_VIEW_CONTENT_FRAMED&dDocName=<$dDocName$>">View latest revision</a>
+				<br/>
+			<$else$>
+				Revision: <$dRevLabel$>
+				(Latest)
+				<br/>
+			<$endif$>
+		<$else$>
+			Failed to load document! [dDocName=<$dDocName$>, dID=<$dID$>]
+		<$endif$>
+	</div>
+
+<@end@>
+
+<!-- The ecsCheckOutAndOpen function should always be used when you require
+		 COAO functionality. This will call 1 of 2 functions, depending on the
+		 version of the content server.
+
+		 The following 3 includes must already be referenced on the page you
+		 intend to call COAO from:
+
+		 checkoutandopen_calc_this_cgiurl
+		 checkoutandopen_applet
+		 checkoutandopen_javascript
+
+		  -->
+<@dynamichtml ecs_checkoutandopen_js@>
+
+<script type="text/javascript">
+
+	function ecsCheckoutAndOpen(docName,title,extension,fileName) {
+		<$if isOracleUCM$>
+			// Call Oracle UCM check-out function
+			checkOutAndOpen8(docName,title,extension,fileName);
+		<$else$>
+			// Call Stellent 7.x check-out function
+			postCheckoutAndOpen(docName,title,extension);
+		<$endif$>
+	}
+
+</script>
+
+<@end@>
+
+</body></html>

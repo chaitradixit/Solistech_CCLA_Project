@@ -1,0 +1,120 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		CCLA Cache Administration
+	</title>
+	
+	<script type="text/javascript">
+
+		function debugCache(cacheName) {
+			/*
+			$.get("?<$include add_idc_token_to_url$>",
+				{
+					"IdcService" 	: "CCLA_CS_DEBUG_CACHE",
+					"cacheName" 	: cacheName,
+					"ts"			: new Date().getTime(),
+					"IsJson"		: 1
+				}
+			);
+			*/
+			
+			$("#debugCacheName").val(cacheName);
+			document.forms['debugCacheForm'].submit();
+		}
+		
+		function refreshCache(cacheName) {
+			$("#refreshCacheName").val(cacheName);
+			document.forms['refreshCacheForm'].submit();
+		}
+		
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 900px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					CCLA Cache Administration
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+						
+					<form id="refreshCacheForm" name="refreshCacheForm">
+						<input type="hidden" name="IdcService" value="CCLA_CS_REFRESH_CACHE" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CACHABLES_ADMIN<$include add_idc_token_to_url$>" />
+						
+						<input type="hidden" name="cacheName" id="refreshCacheName" value="" />
+						
+					</form>
+					
+					<form id="debugCacheForm" name="debugCacheForm">
+						<input type="hidden" name="IdcService" value="CCLA_CS_DEBUG_CACHE" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CACHABLES_ADMIN<$include add_idc_token_to_url$>" />
+						
+						<input type="hidden" name="cacheName" id="debugCacheName" value="" />
+						
+					</form>
+						
+					<div style="padding-top:5px"></div>
+
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="90%">
+							<tr>
+								<th class="first-col" width="35%">
+									Cache name
+								</th>
+								<th>
+									No. items
+								</th>
+								<th>
+									Size (bytes)
+								</th>
+								<th>
+									Initialized
+								</th>
+								<th>
+									Last refresh
+								</th>
+								<th width="20%">Actions</th>
+							</tr>	
+							
+						
+							<$loop rsCachables$>
+								<tr class="account-details-row">
+									<td class="first-col" width="35%"><$#active.NAME$></td>
+									<td><$#active.ITEM_COUNT$>&nbsp;</td>
+									<td><$#active.SIZE$>&nbsp;</td>
+									<td><$#active.IS_INITIALIZED$>&nbsp;</td>
+									<td><$#active.LAST_REFRESHED$>&nbsp;</td>
+									<td>
+										<input type="button" value="Refresh" onclick='refreshCache("<$#active.NAME$>")' />
+										<input type="button" value="Debug"   onclick='debugCache("<$#active.NAME$>")' />
+									</td>
+								</tr>
+							<$endloop$>
+						
+						</table>
+					
+
+					<div style="padding-top:5px"></div>
+
+				</div>
+				
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+				
+</body></html>

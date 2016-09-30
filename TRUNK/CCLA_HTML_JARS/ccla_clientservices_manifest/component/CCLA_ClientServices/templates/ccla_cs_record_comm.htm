@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Record Interaction
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include ccla_cs_ajax_panel_js$>
+		
+		<script type="text/javascript">
+			
+			$(document).ready( function() {
+				updateConfirmCheckboxes($("input[name='confirmNotApplicable']").eq(0));
+			});
+			
+			function submitCommForm() {
+				var frm = document.forms['commForm'];
+				
+				var personId = getSelectedRadioValue(frm, "sel_personId"); //getSelectedPersonId();
+				
+				if (personId == "") {
+					alert("Please select who you are speaking to before continuing.");
+					return;
+				}
+				
+				if (personId == "custom") {
+					// Check that custom person name/role fields have been completed.
+					
+					var personName 	= frm.elements['personName'].value;
+					var personRole	= frm.elements['personRole'].value;
+					
+					if (personName == "" || personRole == "") {
+						alert("You have selected 'Other' correspondent.\n\n" +
+						 "Please enter their name and role before continuing.");
+						return;
+					}
+					
+					frm.elements["personId"].value ="";
+					
+				} else {
+					frm.elements["personId"].value = personId;
+				}
+				
+				// Check that an interaction type was selected
+				var interactionType = frm.elements['interactionType'].value;
+				
+				if (interactionType == "") {
+					alert("Please select an interaction type before continuing.");
+					return;
+				}
+				
+				// Gather the selected confirmation types
+				var confirmTypes = "";
+				var validConfirm = false;
+				
+				if (frm.elements['confirmNotApplicable'].checked) {
+					confirmTypes = "N/A";
+					validConfirm = true;
+				} else {
+					var numConfirms = 0;
+					
+					$(".confirm-type").each( function(i, chk) {
+						if ($(chk).attr("checked")) {
+							
+							if ($(chk).attr("name") == "otherChecked") {
+								if (frm.elements['confirmOther'].value == "") {
+									alert(	"You have selected 'Other' confirmation, but " +
+											"not entered the confirmation method.\n\n"  +
+											"Please complete this before continuing.");
+									return;
+								}
+							}
+							
+							numConfirms++;
+							
+							if (confirmTypes != "")
+								confirmTypes += ",";
+								
+							confirmTypes += $(chk).attr("name");
+						}
+					});
+					
+					if (numConfirms >= 2)
+						validConfirm = true;
+				}
+				
+				if (!validConfirm) {
+					alert(	"Please select at least 2 confirmation methods, or select the '" +
+							"Unable to confirm' checkbox before continuing.");
+					return;
+				}
+
+				frm.elements['confirmTypes'].value = confirmTypes;
+				frm.submit();
+			}
+			
+			function interactionTypeUpdated() {
+				var frm = document.forms['commForm'];
+				var interactionType = frm.elements['interactionType'].value;
+				
+				if (interactionType == "Outgoing call") {
+					var chk = frm.elements['confirmNotApplicable'];
+					chk.checked = true;
+					
+					updateConfirmCheckboxes(chk);
+				} else {
+					var chk = frm.elements['confirmNotApplicable'];
+					
+					if (chk.checked) {
+						chk.checked = false;
+						updateConfirmCheckboxes(chk);
+					}
+				}
+			}
+			
+			function updateConfirmCheckboxes(chk) {
+				var frm = document.forms['commForm'];
+			
+				var otherCheck 			= $("input[name='otherChecked']");
+				var notApplicableCheck	= $("input[name='confirmNotApplicable']");
+			
+				if ($(notApplicableCheck).is(":checked")) {
+					// If 'not applicable' checkbox is ticked, disable/untick all other checkboxes
+					$(".confirm-type").attr("disabled", "disabled").removeAttr("checked");
+
+				} else {
+					$(".confirm-type").removeAttr("disabled");
+				}
+			
+				if ($(otherCheck).is(":checked")) {
+					$("#confirmOther").removeAttr("disabled");
+				} else {
+					$("#confirmOther").attr("disabled","disabled").val("");
+				}
+			}
+			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 700px'>
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Record Interaction
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+	
+				<div class='ccla_cs_panel_header'>
+					Client Info
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+				
+					<$if clientId and company$>
+						
+						<$loop rsClient$>
+							<$include ccla_cs_display_client_info$>
+						<$endloop$>
+					
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+					
+					<div class='ccla_cs_panel_header'>
+						Interaction Details
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<form name="commForm" id="commForm" method="POST">
+							<input type="hidden" name="IdcService" value="CCLA_CS_RECORD_COMM_DETAILS" /><$include add_idc_token_to_form$>
+							
+							<input type="hidden" name="clientId" value="<$#local.clientId$>" />
+							<input type="hidden" name="company" value="<$#local.company$>" />
+							
+							<input type="hidden" name="personId" value="<$#local.personId$>" />
+						
+							<h3 class="ccla_data_panel_header">Who are you speaking to?</h3>
+							
+							<div id="corr-panel" class="switch-panel">
+								<$include ccla_cs_client_persons_list$>
+							</div>
+
+							<br/>
+							
+							<table class="accounts-table" width="100%" cellpadding="0" cellspacing="0">
+								<!-- Display 'other' row, allowing custom correspondent entry -->
+								<tr class="account-details-row first-row">
+									<td class="first-col" width="40" align="center"> 
+										<input type="radio" name="sel_personId" value="custom" />
+									</td>
+									<td class="first-row">
+										Other (please specify)
+										<br/>
+										<br/>
+										<b>Name:</b>&nbsp;<input type="text" name="personName" value="<$#local.personName$>" style="width: 180px" /> 
+										&nbsp;
+										<b>Role:</b>&nbsp;<input type="text" name="personRole" value="<$#local.personRole$>" style="width: 250px" /> 
+									</td>
+								</tr>
+								
+							</table>
+							
+							<br/>
+							
+							<h3 class="ccla_data_panel_header">Interaction type*</h3>
+								
+							<div class="ccla_data_panel">
+								
+								<table width="100%" cellpadding=0 cellspacing=2>
+									<tr>
+										<td>
+											<$if not #local.interactionType$>
+												<$interactionType = "Incoming call"$>
+											<$endif$>
+										
+											<$if rsActivity$>
+												<$exec rsFirst("rsActivity")$>
+											<$endif$>
+											
+											<select name="interactionType" id="interactionType" onchange="interactionTypeUpdated()">
+												<option value=""></option>
+												
+												<$exec rsMakeFromString("rsActivityTypes",#env.CCLA_CS_CommActivityTypes,"type")$>
+												
+												<$loop rsActivityTypes$>
+													<option value="<$#active.type$>" <$if #active.type like #local.interactionType$>selected="selected"<$endif$> ><$#active.type$></option>
+												<$endloop$>
+											</select>
+										</td>
+								</table>
+								
+							</div>
+							
+							<h3 class="ccla_data_panel_header">I have checked the following (select 2)</h3>
+										
+							<div class="ccla_data_panel" id="confirmChecks">
+								
+								<table width="100%" cellpadding=0 cellspacing=2>
+									
+									<tr>
+										<td width=20><input type="checkbox" name="addressChecked" class="confirm-type"
+															<$if strIndexOf(#local.confirmTypes,"addressChecked") > -1$>checked="checked"<$endif$> 
+															onclick="updateConfirmCheckboxes(this)" /></td>
+										<td width=140>
+											Telephone number
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="postCodeChecked" class="confirm-type"
+													<$if strIndexOf(#local.confirmTypes,"postCodeChecked") > -1$>checked="checked"<$endif$> 
+													onclick="updateConfirmCheckboxes(this)"/></td>
+										<td>
+											Postcode
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="emailChecked" class="confirm-type"
+													<$if strIndexOf(#local.confirmTypes,"emailChecked") > -1$>checked="checked"<$endif$> 
+													onclick="updateConfirmCheckboxes(this)"/></td>
+										<td>
+											Email
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="dobChecked" class="confirm-type"
+													<$if strIndexOf(#local.confirmTypes,"dobChecked") > -1$>checked="checked"<$endif$> 
+													onclick="updateConfirmCheckboxes(this)"/></td>
+										<td>
+											Date of Birth
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="otherChecked" class="confirm-type"
+													<$if strIndexOf(#local.confirmTypes,"otherChecked") > -1$>checked="checked"<$endif$> 
+													onclick="updateConfirmCheckboxes(this)" /></td>
+										<td>
+											Other
+										</td>
+										<td>
+											<!-- Completed via JavaScript -->
+											<input type="hidden" name="confirmTypes" id="confirmTypes" value="<$#local.confirmTypes$>" />
+											<input type="text" name="confirmOther" id="confirmOther" value="<$#local.confirmOther$>" 
+													<$if strIndexOf(#local.confirmTypes,"otherChecked") > -1$><$else$>disabled="disabled"<$endif$> 
+													onclick="updateConfirmCheckboxes(this)" />
+										</td>
+									</tr>
+									
+									<tr>
+										<td colspan=3>
+											<hr/>
+										</td>
+									</tr>
+									
+									<$if not confirmTypes$>
+										<$confirmTypes = "notApplicable"$>
+									<$endif$>
+									
+									<tr>
+										<td width=20><input type="checkbox" name="confirmNotApplicable" 
+															<$if strIndexOf(#local.confirmTypes,"notApplicable") > -1$>checked="checked"<$endif$> 
+															onclick="updateConfirmCheckboxes(this)" /></td>
+										<td colspan=2>
+											Unable to confirm identity/not applicable
+										</td>
+									</tr>
+									
+								</table>
+							</div>
+							
+							<div style="text-align: right">
+								<input type="button" name="submitType" value="Next" onclick="submitCommForm()" />
+							</div>
+						
+						</form>
+						
+					</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

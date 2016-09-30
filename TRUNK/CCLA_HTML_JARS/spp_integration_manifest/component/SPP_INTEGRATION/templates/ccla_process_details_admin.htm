@@ -1,0 +1,220 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Process Date/Time Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+	<script type="text/javascript">
+		
+		function setIdcService(formValue, formName) 
+		{
+			if (formValue=='Clear') {
+				var formToUse = document.getElementById(formName);
+				var field = formToUse.CONFIG_VAR_DATA_TYPE.value+'_VALUE';
+				formToUse[field].value=''	 			
+			}
+		}
+	</script>
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Process Date/Time Administration
+			</div>
+			
+			<p><b>Use one of the following formats when changing a process date/time:</b></p>
+	
+			<ul>
+				<li>Time format: hh:mm (24 hour clock)</li>
+			</ul>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Name</th>
+						<th width="35%">Date/Time</th>
+						<th>Description</th>
+					</tr>
+					
+					<$loop rsSystemConfig$>
+						<form method="POST" id="form<$#active.CONFIG_VAR_NAME$>" name="form<$#active.CONFIG_VAR_NAME$>">
+						<input type="hidden" name="IdcService" value="CCLA_UPDATE_SYSTEM_CONFIG_VAR" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PROCESS_DETAILS_ADMIN<$include add_idc_token_to_url$>" />
+						<input type="hidden" id="CONFIG_VAR_NAME" name="CONFIG_VAR_NAME" value="<$#active.CONFIG_VAR_NAME$>"/>
+						<input type="hidden" id="CONFIG_VAR_DATA_TYPE" name="CONFIG_VAR_DATA_TYPE" value="<$#active.CONFIG_VAR_DATA_TYPE$>" />
+						<input type="hidden" id="CONFIG_VAR_DESCRIPTION" name="CONFIG_VAR_DESCRIPTION" value="<$#active.CONFIG_VAR_DESCRIPTION$>" />
+						<input type="hidden" id="CONFIG_VAR_TYPE" name="CONFIG_VAR_TYPE" value="<$#active.CONFIG_VAR_TYPE$>" />
+							
+						<tr>
+							<td><$#active.CONFIG_VAR_NAME$></td>
+							<td>
+								<input type="text" id="STRING_VALUE" name="STRING_VALUE" value="<$#active.STRING_VALUE$>" />
+									
+								<input type="submit" value="Update" onclick="setIdcService(this.value, 'form<$#active.CONFIG_VAR_NAME$>')"/>&nbsp;
+								<$if (strEquals(#active.CONFIG_VAR_NAME,'RolloverTime') 
+									or strEquals(#active.CONFIG_VAR_NAME,'UnitisedTime')
+									or strEquals(#active.CONFIG_VAR_NAME,'PSDFTime')
+									or strEquals(#active.CONFIG_VAR_NAME,'DepositTime'))$>
+									&nbsp;
+								<$else$>
+									<input type="submit" value="Clear" onclick="setIdcService(this.value, 'form<$#active.CONFIG_VAR_NAME$>')"/>
+								<$endif$>
+							</td>
+							<td>
+								<$#active.CONFIG_VAR_DESCRIPTION$>
+							</td>
+						</tr>
+						</form>
+					<$endloop$>
+				
+				</table>
+				
+			</div>
+			<$include orangeContainer_bottom$>
+			<br/>
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Process Date Cache
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<td><b>Rollover Date/Time<b></td>
+						<td><$#local.RolloverTime$>
+					</tr>
+					<tr>
+						<td><b>PSDF Date/Time<b></td>
+						<td><$#local.PSDFTime$>
+					</tr>
+					<tr>
+						<td><b>Deposit Date/Time<b></td>
+						<td><$#local.DepositTime$>
+					</tr>
+					<tr>
+						<td><b>Unitised Date/Time<b></td>
+						<td><$#local.UnitisedTime$>
+					</tr>
+					
+					<tr>
+						<td><b>Next General Process Date<b></td>
+						<td><$formatDateOnly(#local.baseProcessDate)$>
+					</tr>
+
+					<tr>
+						<td><b>Next Deposit Process Date<b></td>
+						<td><$formatDateOnly(#local.baseDepositDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Next PSDF Process Date<b></td>
+						<td><$formatDateOnly(#local.basePsdfDate)$>
+					</tr>
+					<tr>
+						<td><b>Next CBF Unitised Process Date<b></td>
+						<td><$formatDateOnly(#local.baseUnitisedDateCbf)$>
+					</tr>
+					<tr>
+						<td><b>Next COIF Unitised Process Date<b></td>
+						<td><$formatDateOnly(#local.baseUnitisedDateCoif)$>
+					</tr>					
+					<tr>
+						<td><b>Next Generic Unitised Process Date<b></td>
+						<td><$formatDateOnly(#local.baseUnitisedDate)$>
+					</tr>
+					
+					<tr>
+						<td><b>Last refreshed</b></td>
+						<td><$#local.CacheLastUpdated$></td>
+					</tr>
+				
+				</table>
+			
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Next Dealing Dates
+			</div>
+			
+			<p><b>This table shows the next scheduled dealing date for each Fund, in relation to the base processing date.</b></p>
+
+			<div class='ccla_cs_panel_content'>
+			
+				<table border=1 cellpadding=3 cellspacing=0>
+					<tr>
+						<th>Company</th>
+						<th>Fund Code</th>
+						<th>Description</th>
+						<th>Date</th>
+					</tr>
+					
+					<$loop rsNextDealingDates$>
+						<tr>
+							<td><$#active.COMPANY_CODE$></td>
+							<td>
+								<$#active.FUND_CODE$>
+							</td>
+							<td>
+								<$#active.DISPLAYNAME$>
+							</td>
+							<td>
+								<$formatDateOnly(#active.NEXT_DEALING_DATE)$>
+							</td>
+						</tr>
+					<$endloop$>
+				
+				</table>
+			
+			</div>
+			
+			<$include orangeContainer_bottom$>
+	
+		</div>
+	</div>
+	
+</body></html>

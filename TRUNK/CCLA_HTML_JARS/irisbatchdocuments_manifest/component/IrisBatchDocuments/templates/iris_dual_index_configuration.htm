@@ -1,0 +1,155 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		Dual Index Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+
+		<script type="text/javascript">
+		
+		function enableAll(chkBoxName,pattern)
+		{
+			var checkAll = $("#" + chkBoxName).is(":checked");
+			if (checkAll)
+			$("." + pattern).attr("checked","checked");
+			else
+			$("." + pattern).removeAttr("checked");
+			
+		
+		}
+		
+		</script>
+
+</head>
+
+<body <$include iris_body_def_internal$>">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	<div style="margin: 15px 5px;">	
+		<div id='ccla_cs_content' style='float: left; width: 1100px'>
+			
+			<$include orangeContainer_top$>
+			<form name="frmDualIndexRules" id="frmDualIndexRules" method="POST">
+			<div class='ccla_cs_panel_header'>
+				Dual Index Administration 
+			</div>
+				<$if isUpdated$>	
+					<div class="message_panel info_icon">
+						Dual Index rules updated.
+					</div>
+				<$endif$>
+			
+			<p>To turn on dual indexing for a particular field for a document class, check the box for the document class/field and click 'Save Changes'.  Rules 
+			that have 'Enable Rule' checked are turned on - if the checkbox in this column is unchecked then the document class will not enforce dual indexing in any of
+			the fields. To check all fields for a document class then check the box in the first column.</p>
+			<div style="float:right;margin-bottom:10px;">
+				<input type="submit" value="Save Changes">
+			</div>
+			
+			<input type="hidden" name="IdcService" value="IRIS_DUAL_INDEX_RULE_UPDATE">
+			<input type="hidden" name="RedirectUrl" value="?IdcService=IRIS_DUAL_INDEX_CONFIGURATION&isUpdated=true">
+			
+			<div class='ccla_cs_panel_content iris_dual_index_grid'>
+				<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0  >			
+					<tr>
+						<th class="first-col" width="145">	 
+						</th>
+						<th class="first-col" width="80">
+						Enable Rule	<input type="checkbox" name="enableRule" id="enableRule" onclick="enableAll('enableRule','enable')">
+						</th>
+						<$exec rsFirst("rsFields")$>
+						<$loop rsFields$>	
+								<th width="80" style="font-size: 7pt" ><$#active.CAPTION$> </th>
+						<$endloop$>
+						<th width="145">	 
+						</th>					
+					</tr>
+					
+					<$exec rsFirst("rsRules")$>
+					<$loopCount=1$>
+					<$loop rsRules$>
+						<$if loopCount%2 == 0$>
+							<$rowClass = "dark-grey"$>
+						<$else$> 
+							<$rowClass = " "$>
+						<$endif$>
+					
+						<tr class="account-details-row <$rowClass$>" style="text-align:center" >
+							<td style="text-align:right">
+								<strong><$rsRules.DOCUMENT_CLASS$></strong> 
+								<input 	type="checkbox" 
+										name="enableDocClass<$rsRules.DUAL_INDEX_RULE_ID$>" 
+										id="enableDocClass<$rsRules.DUAL_INDEX_RULE_ID$>" 
+										onclick="enableAll('enableDocClass<$rsRules.DUAL_INDEX_RULE_ID$>','chk_<$rsRules.DUAL_INDEX_RULE_ID$>')">
+							</td>
+							
+							<td>
+								<input 	type="checkbox" name="enable_<$rsRules.DUAL_INDEX_RULE_ID$>" 
+										class="enable" <$if strEquals(rsRules.IS_ENABLED,"1")$>checked<$endif$>></td>
+										
+								<$exec rsFirst("rsFields")$>
+								<$rsRuleFieldsName = "rsRuleFields_" & #active.DUAL_INDEX_RULE_ID$>
+								
+								<$loop rsFields$>	
+									<$ruleExists = ""$>
+									
+									<$if rsRuleFieldsName$>
+										<$exec rsFirst(rsRuleFieldsName)$>
+										<$if rsFindRowPrimary(rsRuleFieldsName, rsFields.FIELD_ID)$>
+											<$ruleExists=1$>
+										<$endif$>
+									<$endif$>
+
+									<$if false$>
+										<$exec rsFirst("rsExisting")$>
+										
+										<$loop rsExisting$>
+											<$if strEquals(rsExisting.FIELD_ID,rsFields.FIELD_ID)$>
+												<$if strEquals(rsExisting.DUAL_INDEX_RULE_ID,rsRules.DUAL_INDEX_RULE_ID)$>
+													<$ruleExists = 1$>
+													<$break$>
+												<$else$>
+													<$ruleExists = ""$>
+												<$endif$>
+											<$endif$>
+										<$endloop$>
+									<$endif$>
+							
+									<td title="<$rsFields.CAPTION$>">
+										<input 	type="checkbox" 
+												name="chk_<$rsRules.DUAL_INDEX_RULE_ID$>_<$rsFields.FIELD_ID$>" 
+												class="chk_<$rsRules.DUAL_INDEX_RULE_ID$>" 
+												<$if ruleExists$>checked<$endif$>>
+									</td>
+								<$endloop$>
+								
+								<td style="text-align:left"><strong><$rsRules.DOCUMENT_CLASS$></strong></td>
+						</tr>
+						<$loopCount = loopCount + 1$>
+					<$endloop$>
+				</table>
+			<div>
+			</form>
+			<$include orangeContainer_bottom$>
+	
+		</div>
+	</div>
+	
+</body></html>

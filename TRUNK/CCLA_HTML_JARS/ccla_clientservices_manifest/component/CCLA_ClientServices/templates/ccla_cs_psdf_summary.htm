@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			PSDF Summary Report
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<$FUND_CODE = "PC"$>
+		<$CAMPAIGN_ID = "10"$>
+		
+		<$executeService("CCLA_CS_CAMPAIGN_SUMMARY_REPORT")$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 900px'>
+				
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					PSDF Campaign Clients - Summary
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+				<table width="100%">
+					<tr>
+						<td width="50%" valign="top">
+					
+							<h3 class="ccla_data_panel_header">Enrolments By Client Status</h3>
+							
+							<table class="ccla-table" width="30%">
+								<tr>
+									<th>Client status</th><th>Client Count</th>
+								</tr>
+								
+								<$total = 0$>
+								
+								<$loop rsEnrolmentTotalsBySubjectStatus$>
+									<tr>
+										<td>
+											<a href="?IdcService=CCLA_CS_ENROLMENT_LISTING<$include add_idc_token_to_url$>&clientStatus=<$#active.CAMPSUBJECTSTATUS_NAME$>&showExcluded=1&adv=true&campaignId=<$#active.CAMPAIGN_ID$>"><$#active.CAMPSUBJECTSTATUS_NAME$></a>
+										</td>
+										<td align="right">
+											<$#active.TOTAL_SUBJECTS$>
+											<$total = total + #active.TOTAL_SUBJECTS$>
+										</td>
+									</tr>
+								<$endloop$>
+								
+								<tr>
+									<td align="right"><strong>Total</strong></td><td align="right"><strong><$total$></strong></td>
+								</tr>
+							</table>
+						
+						</td>
+					</tr>
+					<tr>
+						<td>
+							
+							<$interestedInvestmentStatusIds = "4,5,6,7,8"$>
+							<$undecidedInvestmentStatusIds	= "1,2"$>
+							
+							<$exec rsMakeFromString("rsInterestedIds", interestedInvestmentStatusIds, "id")$>
+							<$exec rsMakeFromString("rsUndecidedIds", undecidedInvestmentStatusIds, "id")$>
+							
+							<h3 class="ccla_data_panel_header">Account balance/intentions</h3>
+							
+							<table class="ccla-table" width="100%">
+								<tr>
+									<th>&nbsp;</th>
+									
+									<th>
+										<b>In</b>
+									</th>
+									
+									<th colspan="<$rsInterestedIds.#numRows$>" >
+										<b>Interested</b>
+									</th>
+									
+									<th colspan="<$rsUndecidedIds.#numRows$>">
+										<b>Unconfirmed/Undecided</b>
+									</th>
+								</tr>
+								
+								<tr>
+									<td>
+										&nbsp;
+									</td>
+									
+									<td>
+										Active <$FUND_CODE$> accounts
+									</td>
+									
+									<td colspan="<$rsInterestedIds.#numRows$>">
+										Pending intentions with set confidence									
+									</td>
+									
+									<td colspan="<$rsUndecidedIds.#numRows$>">							
+										Pending intentions with undecided confidence									
+									</td>
+									
+								</tr>
+								
+								<tr>
+									<th>
+										&nbsp;
+									</th>
+									
+									<th>
+										&nbsp;
+									</th>
+									
+									<$loop rsInterestedIds$>
+										<th>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$invStatusName = rsPendingAccountIntentionsByFund.INVINTENTSTATUS_NAME$>
+												<a href="?IdcService=CCLA_CS_ENROLMENT_LISTING<$include add_idc_token_to_url$>&showExcluded=1&adv=true&campaignId=<$#active.CAMPAIGN_ID$>&invStatus=<$invStatusName$>"><$invStatusName$></a>
+											<$endif$>
+										</th>
+									<$endloop$>
+									
+									<$loop rsUndecidedIds$>
+										<th>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$invStatusName = rsPendingAccountIntentionsByFund.INVINTENTSTATUS_NAME$>
+												<a href="?IdcService=CCLA_CS_ENROLMENT_LISTING<$include add_idc_token_to_url$>&showExcluded=1&adv=true&campaignId=<$#active.CAMPAIGN_ID$>&invStatus=<$invStatusName$>"><$invStatusName$></a>
+											<$endif$>
+										</th>
+									<$endloop$>
+									
+								</tr>
+								
+								<tr>
+									<td>
+										<b>Total accounts</b>
+									</td>
+									
+									<td>
+										<$rsAccountCapitalByFund.NUM_ACCOUNTS$>
+									</td>
+									
+									<$loop rsInterestedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.NUM_ACCOUNTS$>
+											<$endif$>
+										</td>
+									<$endloop$>
+
+									<$loop rsUndecidedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.NUM_ACCOUNTS$>
+											<$endif$>
+										</td>
+									<$endloop$>
+								</tr>
+								
+								<tr>
+									<td>
+										<b>Total units</b>
+									</td>
+									
+									<td>
+										<$rsAccountCapitalByFund.TOTAL_UNITS$>
+									</td>
+									
+									<$loop rsInterestedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.TOTAL_UNITS$>
+											<$endif$>
+										</td>
+									<$endloop$>
+
+									<$loop rsUndecidedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.TOTAL_UNITS$>
+											<$endif$>
+										</td>
+									<$endloop$>
+									
+								</tr>
+								
+								
+								<tr>
+									<td>
+										<b>Total cash</b>
+									</td>
+								
+									<td>
+										<$rsAccountCapitalByFund.TOTAL_CASH$>
+									</td>
+								
+									<$loop rsInterestedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.TOTAL_CASH$>
+											<$endif$>
+										</td>
+									<$endloop$>
+
+									<$loop rsUndecidedIds$>
+										<td>
+											<$if rsFindRowPrimary("rsPendingAccountIntentionsByFund", #active.id)$>
+												<$rsPendingAccountIntentionsByFund.TOTAL_CASH$>
+											<$endif$>
+										</td>
+									<$endloop$>
+								
+								</tr>
+								
+							</table>
+							
+							<$if false$>
+						
+								<h3 class="ccla_data_panel_header">Account intentions for PSDF by status</h3>
+								
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th width="20%">Client Status</th>
+										<th width="20%">Process status</th>
+										<th width="20%">Confidence</th>
+										<th width="13%">Number</th>
+										<th width="27%">Total Intented Units</th>
+										<th width="27%">Total Actual Units</th>
+									</tr>
+									<$totalNumber = 0$>
+									<$totalOverallUnits=0$>
+									<$loop rsAccountIntentions$>
+										<tr>
+											<td>
+												<a href="?IdcService=CCLA_CS_ENROLMENT_LISTING<$include add_idc_token_to_url$>&clientStatus=<$#active.CAMPSUBJECTSTATUS_NAME$>&processStatus=<$#active.ENROLMENT_STATUS_NAME$>&showExcluded=1&adv=true&campaignId=<$#active.CAMPAIGN_ID$>"><$#active.CAMPSUBJECTSTATUS_NAME$></a>
+											</td>
+											<td align="right"><$#active.ENROLMENT_STATUS_NAME$></td>
+											<td align="right"><$if not #active.INVINTENTSTATUS_NAME$>N/A<$else$><$#active.INVINTENTSTATUS_NAME$><$endif$></td>
+											<td align="right"><$#active.COUNT$></td>
+											<$totalNumber = totalNumber + #active.COUNT$>
+											<td align="right"><$if not #active.INVINTENTSTATUS_NAME$>N/A<$else$><$#active.TOTAL$><$endif$></td>
+											<td align="right"><$if not #active.INVINTENTSTATUS_NAME$>N/A<$else$><$#active.ACTUAL_TOTAL$><$endif$></td>
+										</tr>
+									<$endloop$>
+									<tr>
+										<td></td><td></td><td align="right"><strong>Total</strong></td><td align="right"><strong><$totalNumber$></strong></td><td align="right"><strong><$#active.rsAccountIntentions_TOTAL$></strong></td><td align="right"><strong><$#active.rsAccountIntentions_ACTUAL_TOTAL$></strong></td>
+									</tr>
+								</table>
+								
+							<$endif$>
+						
+						</td>
+					</tr>
+				
+					<$if false$>
+						<tr>
+							<td>
+						
+								<h3 class="ccla_data_panel_header">Total pledged units for PSDF</h3>
+								<p>(Does not include any 'Not interested', 'Excluded' or 'Undecided' totals)</p>
+								
+								<table class="ccla-table" width="50%">
+									<tr>
+										<th>Process status</th><th>Number</th><th>Total Units</th>
+									</tr>
+									
+
+									<$total = 0$>
+									
+									<$loop rsAccountIntentionsFiltered$>
+										<tr>
+											<td>
+												<a href="?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&processStatus=<$#active.PROCESS_STATUS$>&showExcluded=1&adv=true&campaignId=<$#active.CAMPAIGN_ID$>"><$#active.PROCESS_STATUS$></a>
+											</td>
+											<td>
+												<$#active.COUNT$>
+											</td>										
+											<td align="right">
+												<$#active.TOTAL$>
+											</td>
+										</tr>
+									<$endloop$>
+									
+									<tr>
+										<td></td><td align="right"><strong>Total</strong></td><td align="right"><strong><$#active.rsAccountIntentionsFiltered_TOTAL$></strong></td>
+									</tr>
+									
+								</table>
+							
+							</td>
+						</tr>	
+					<$endif$>	
+					
+				</table>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+	
+			</div>
+		</div>
+		
+	</body>
+</html>

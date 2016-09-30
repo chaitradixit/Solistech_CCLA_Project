@@ -1,0 +1,58 @@
+The audit component uses configuration settings in the database to determine whether a
+successfully executed service should be audited.
+
+The database configuration consists of 3 tables, the exact configuration will depend on
+the application being audited and the environment it is running in (for example if two
+separate applications are being audited extra configuration will probably be required
+to ensure that audit entries can be determined for each application).
+
+The configuration tables are:
+
+tAudit_ServiceMapConfig
+tAudit_FixedMapConfig
+tAudit_BinderMapConfig
+
+tAudit_ServiceMapConfig- maps services to audit actions
+=================================================
+This table consists of 4 columns:
+AC_SERVICE - the Oracle UCM service to be audited
+AC_ACTION - the audit action (AACTION) that corresponds to the AC_SERVICE
+AC_BINDER_FIELD/AC_BINDER_VALUE - (optional)
+
+Use the AC_BINDER_FIELD/AC_BINDER_VALUE fields if you want to check the binder for specific
+information before deciding on whether to audit or the type of audit action.  For example
+if AC_BINDER_FIELD is set to xComment and and AC_BINDER_VALUE is set to 'Audit me please'
+the audit component will only audit the AC_SERVICE if the binder contains the xComment 
+field with the data 'Audit me please'.
+
+Note: You can match to multiple field values by using the special token '*' in the
+AC_BINDER_VALUE field.  In the example above setting AC_BINDER_VALUE to '*' would ensure
+that the AC_SERVICE will be audited if the xComment field contains any data (i.e. it isn't
+null or zero-length).
+
+tAudit_FixedMapConfig- maps audit fields to fixed values
+==================================================
+This table consists of 3 columns
+AC_FIELD - the audit field (e.g. AAPP)
+AC_VALUE - the value to apply to the audit field
+AC_ACTION - (optional) if not set the AC_FIELD/AC_VALUE combination is assumed to be a
+default and will be applied to all audit actions.  If set to an audit action then this
+field/value combination is applied just to that action.
+
+Note: You can override a default field/value setting for a specific action by adding a new
+line with the action and its particular field/value settings.
+
+tAudit_BinderMapConfig- maps audit fields to values in the binder
+===========================================================
+This field consists of 3 columns
+AC_FIELD - the audit field (e.g. AAPP)
+AC_BINDERFIELD - the field in the binder whose value should be applied to the audit field
+AC_ACTION - (optional) If set then the configuration is applied to the action otherwise the
+configuration is assumed to be a default and applies to all actions.  (This works just like
+the AC_ACTION field on the AUDIT_FIXEDMAP table).
+
+Note: A binder map configuration will override a fixed value map configuration. (e.g. if a
+fixed map of AAPP->MyApp is created this will set the AAPP audit field on all audit actions
+to MyApp.  If a binder map entry AAPP->AppFieldValueInBinder is added this will then
+override the fixed map setting and AAPP will now be set to the binder value of the
+AppFieldValueInBinder field.

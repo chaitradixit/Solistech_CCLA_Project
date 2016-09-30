@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<$fundCode = #env.PSDF_FUND_CODE$>
+		
+		<title>
+			Specify Start and End Date for <$fundCode$>  STEP 1
+		</title>
+		
+		<$include ccla_cs_styles$>
+
+		<$include iris_jquery_js$>
+
+		<$include epoch_calendar_header$>
+		<$include ecs_javascript_datepicker_include$>
+		<script type="text/javascript">
+
+		$("document").ready( function() {
+			prepareCalendars();
+						
+			$(".jquery_date").datepicker({
+				dateFormat: 'dd/mm/yy',
+				showOn: 'button', 
+				buttonImage: 'epoch/images/epoch_calendar.gif', 
+				buttonImageOnly: true
+			});		
+		});
+			
+		function handleChange(cb) {
+			
+			if (cb.checked) {
+				$("#FORCE_PROCESS").val("1");
+				
+			} else {
+				$("#FORCE_PROCESS").val("0");	
+			}
+		}
+		
+		function checkForm() {
+		
+			
+			if ($("#PSDF_RUN_START_DATE").val()) {
+				if ($("#PSDF_RUN_START_DATE").val().length!=10) {
+					alert("Enter a date in the format dd/mm/yyyy");
+					return false;	
+				}
+			} 
+
+			if ($("#PSDF_RUN_DATE").val()) {
+				if ($("#PSDF_RUN_DATE").val().length!=10) {
+					alert("Enter a date in the format dd/mm/yyyy");
+					return false;						
+				}
+			} 
+			return true;
+		}
+		</script>
+		
+	</head>
+	<body>
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container">
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+			<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>
+				
+				<$include orangeContainer_top$>
+					<div class='ccla_cs_panel_header'>
+						Date Range To Run PSDF
+					</div>
+							
+					<p>Please enter the start date and end date for the EndOfDay Period.</p>
+						
+						<form name="frmEOD" method="POST" onsubmit="return checkForm();">
+							<div class='ccla_cs_panel_header'>
+							<table cellpadding="0" cellspacing="0"  class="accounts-table">
+								<tr class="account-details-row" >
+									<td>Start Date (DD/MM/YYYY): </td>
+									<td><input value="<$#active.PSDF_RUN_START_DATE$>" name="PSDF_RUN_START_DATE" id="PSDF_RUN_START_DATE" class="jquery_date">
+									</td>
+								</tr>
+								<tr class="account-details-row" >
+									<td>End Date (DD/MM/YYYY): </td>
+									<td><input value="<$#active.PSDF_RUN_DATE$>" name="PSDF_RUN_DATE" id="PSDF_RUN_DATE" class="jquery_date">
+									</td>
+								</tr>
+								<tr class="account-details-row" >
+									<td>Force Processing of instructions: </td>
+									<td><input type="checkbox" value="" name="doProcessing" id="doProcessing" onchange='handleChange(this);'>
+									<input type="hidden" value="<$#active.FORCE_PROCESS$>" name="FORCE_PROCESS" id="FORCE_PROCESS">
+								</tr>
+							</table>
+							<br>
+								<input type="submit" value="Continue" >
+							</div>
+						<input type="hidden" name="FUND_CODE" value="<$fundCode$>">
+						
+						<input type="hidden" name="IdcService" value="CCLA_TRANS_START_EOD_PRECHECKS">
+						<$include add_idc_token_to_form$>
+						<!--<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_ENTER_PRICES">-->
+						</form>
+						<$include orangeContainer_bottom$>
+						  			
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html>

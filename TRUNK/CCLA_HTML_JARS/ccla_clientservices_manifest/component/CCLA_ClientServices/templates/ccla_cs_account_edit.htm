@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$if IdcService like "CCLA_CS_ACCOUNT_EDIT"$>
+		<$isEdit=1$>
+		<$ELEMENT_ID = #active.ACCOUNT_ID$>
+		
+	<$elseif IdcService like "CCLA_CS_ACCOUNT_NEW"$>
+		<$isNew=1$>
+	<$endif$>
+
+	<title>
+		<$if rsAccount$>
+			<$loop rsAccount$>
+				<$ACCOUNT_ID 	= #active.ACCOUNT_ID$>
+				<$ACCNUMEXT 	= #active.ACCNUMEXT$>
+				
+				<$if not strEquals(rsAccount.ACCOUNT_STATUS_ID,"5")$>
+					<$pageTitle = #active.ACCNUMEXT & " | Update Account"$>
+				<$else$>
+					<$pageTitle = #active.ACCNUMEXT & " | Update Account Template"$>
+				<$endif$>
+			<$endloop$>
+		<$else$>
+			[[%Check if we're adding a Donor Account %]]
+			<$if #local.isDonorAccount$>
+				<$pageTitle = "Add New Donor Account"$>
+			<$else$>
+				<$pageTitle = "Add New Account"$>
+			<$endif$>
+		<$endif$>
+		
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	<$include iris_common_js$>
+	<$include epoch_calendar_header$>
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_element_relations_js$>
+	<$include ccla_cs_relation_ajax_update_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	<$include ccla_cs_account_create_error_handling_js$>
+
+	<script type="text/javascript">
+	function doAuroraUpdate()
+	{
+	var accountForm		= document.forms['accountForm'];
+	if (accountForm.elements['AuroraUpdate'].checked)
+		accountForm.elements['UPDATE_TYPE'].disabled = false;
+	else
+		accountForm.elements['UPDATE_TYPE'].disabled=true;
+	
+	}
+		// Refreshes the list of Person relations for the given elementId.
+		function refreshAccountRelations(elementId, newRelationId) {
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_account_relations_div",
+				{
+					"ts": new Date().getTime(),
+					"ACCOUNT_ID": elementId,
+					"isEdit": 1,
+					"ELEMENT_TYPE_ID_1": "<$#env.CCLA_ElementType_Account$>",
+					"ELEMENT_TYPE_ID_2": "<$#env.CCLA_ElementType_BankAccount$>",
+					"newRelationId": newRelationId,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#bankAccountRelationsDisplay").html(data);
+				}
+			);
+		}
+
+		// Refreshes the list of Person relations for the given elementId.
+		function updateShareClass(elementId) {
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_display_share_class_div",
+				{
+					"ts": new Date().getTime(),
+					"ACCOUNT_ID": elementId,
+					"isEdit": 1,
+					"includeShareClassOverride": 1,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#shareClassDiv").html(data);
+				}
+			);
+		}
+		
+		// Clears mandate account fields
+		function clearMandateAccountFields() {
+			var accountForm		= document.forms['accountForm'];
+			accountForm.elements['MANDATED_ACCOUNT_ID_DISPLAY'].value = "";
+			accountForm.elements['MANDATED_ACCOUNT_ID'].value = "";
+		}			
+	</script>
+	
+</head>
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div id="cs_page_container" class="cs-page-container">	
+		
+		<$buttonContext = "account"$>
+		<$include ccla_cs_include_tab_parameters$>
+		<$if NOT hideActionButtons$>
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<$include ccla_cs_account_set_aml_check_override_user_form$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<$include ccla_cs_toggle_info_edit_display$>
+			
+			<div id='ccla_cs_content' class="cs-content-container" >
+					
+				<$if updated$>	
+					<div class="message_panel info_icon">
+						Account details updated.
+					</div>
+				<$elseif added$>
+					<div class="message_panel info_icon">
+						New account added.
+					</div>
+				<$endif$>
+				
+				<$if isDonorAccount$>	
+					<div class="message_panel info_icon">
+						You are opening a new account under an LCF Organisation. It must be linked to a specific Donor. 
+						The Subtitle and Account Number will be assigned automatically.
+					</div>
+				<$endif$>
+				
+				<div id="errorMessage">
+				</div>				
+				
+				<$include orangeContainer_top$>
+					<form id="accountForm" name="accountForm" method="POST" onsubmit="return validateAccount();">
+					<$include add_idc_token_to_form$>		
+					<div class='ccla_cs_panel_header'>
+						<$pageTitle$>
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+
+						<$if not rsAccount$>
+							<!-- New Account form fields -->
+							<input type="hidden" name="IdcService" value="CCLA_CS_ADD_ACCOUNT" />
+							<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&added=1&ACCOUNT_ID=" />
+							<$if NOT #local.ORGANISATION_ID$>
+							<div class="">Cannot add a new account without selecting organisation</div>
+							<$else$>
+							<$include ccla_cs_display_account_fields$>
+							<$endif$>
+						<$else$>
+							<!-- Update Account form fields -->
+							<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_ACCOUNT" />
+								
+							<$loop rsAccount$>
+								<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&updated=1&ACCOUNT_ID=<$#active.ACCOUNT_ID$>" />		
+							
+								<input type="hidden" name="ACCOUNT_ID" 	value="<$#active.ACCOUNT_ID$>" />
+								
+								<$include ccla_cs_display_account_fields$>
+
+							<$endloop$>
+											
+
+						<$endif$>
+											
+					</div>
+			</form>					
+				
+			<$include orangeContainer_bottom$>
+				
+			<$if rsAccount$>
+				<$if #env.CCLA_CS_EnableAccountIVSCheckOverride$>
+					<$include ccla_cs_account_ivs_checking_fields$>
+				<$endif$>
+
+				<$include ccla_cs_account_relations$>
+			<$endif$>
+			
+			<br/>
+				
+			</div>
+		</div>
+
+	</div>
+		
+</body>
+</html>

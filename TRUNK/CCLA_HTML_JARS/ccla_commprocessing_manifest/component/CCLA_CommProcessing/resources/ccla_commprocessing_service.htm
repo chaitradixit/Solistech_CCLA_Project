@@ -1,0 +1,747 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_CommProcessing service
+</title>
+</head>
+<body>
+
+<@table CCLA_CommProcessing_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_DOC_BUNDLE</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addDocumentBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_MANAGER_STATE</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getRoutingModuleManagerState:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_RESUBMIT_INSTRUCTION_DOCS</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:resubmitInstructionDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_SET_MANAGER_STATE</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:setRoutingModuleManagerState:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_APPLY_PROCESS_ACTION</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:applyProcessAction:::null</td>
+</tr>
+<tr>
+	<td>ECS_IRIS_APPLY_POST_WORKFLOW_ACTION_SUB</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:applyPostWorkflowAction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_INSTRUCTION_LISTING</td>
+	<td>Service
+		32
+		CCLA_CP_INSTRUCTION_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInstructionStatuses,rsInstructionStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionTypes,rsInstructionTypes::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCommSources,rsCommSources::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_INSTRUCTION_INFO</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		32
+		CCLA_CP_INSTRUCTION_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInstructionStatuses,rsInstructionStatuses::null
+		3:checkForceLogin:::null
+		3:getInstructionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_INSTRUCTION_EDIT</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		32
+		CCLA_CP_EDIT_INSTRUCTION
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllCommTypes,rsCommType::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCommSources,rsCommSource::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionTypes,rsInstructionType::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionStatuses,rsInstructionStatus::null
+		3:getInstructionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_INSTRUCTION</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		3
+		CCLA_CP_EDIT_INSTRUCTION
+		null
+		null<br>
+		null</td>
+	<td>3:updateInstruction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ROUTING_MODULE_ADMIN</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		32
+		CCLA_CP_ROUTING_MODULE_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getRoutingModuleManagerState:::null
+		3:createResultSetFromPooledConnection:qCommProc_GetAllModuleInfo,rsAllModulesInfo::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_ROUTING_MODULE_DETAILS</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateModuleDetails:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_EDIT_ROUTING_MODULE</td>
+	<td>Service
+		0
+		CCLA_CP_EDIT_ROUTING_MODULE
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCommProc_GetModuleInfo,rsModuleInfo::null
+		3:createResultSetFromPooledConnection:qCommProc_GetAllInstructionStatuses,rsInstructionStatuses::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_INSTRUCTION_ERRORS</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionErrorService
+		0
+		CCLA_CP_GET_INSTRUCTION_ERRORS
+		null
+		null<br>
+		null</td>
+	<td>3:getInstructionErrorSpool:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CLEAR_ERROR_SPOOL</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionErrorService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:clearErrorSpool:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_INSTRUCTION_STATUS</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateInstructionStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_INSTRUCTION_AUDIT</td>
+	<td>Service
+		3
+		CCLA_CP_INSTRUCTION_AUDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInstructionStatuses,rsInstructionStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionTypes,rsInstructionTypes::null
+		3:createResultSetFromPooledConnection:qCommProc_GetAllRoutingModules,rsModules::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionAuditAction,rsInstrAuditActions::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CLONE_DOCUMENT_AND_RESET_BUNDLE</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:cloneDocumentAndResetBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_WORKGROUPS_ADMIN</td>
+	<td>com.ecs.ucm.ccla.commproc.WorkGroupService
+		3
+		CCLA_CP_WORKGROUPS_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllWorkGroups,rsWorkGroups::null
+		3:createResultSetFromPooledConnection:qCore_GetAllUserWorkGroups,rsUserWorkGroups::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_USER_WORK_GROUP</td>
+	<td>com.ecs.ucm.ccla.commproc.WorkGroupService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addUserWorkGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_USER_WORK_GROUPS</td>
+	<td>com.ecs.ucm.ccla.commproc.WorkGroupService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateUserWorkGroups:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_TRANSACTION_REF</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateTransactionReference:::null</td>S
+</tr>
+<tr>
+	<td>CCLA_CP_TRANSBATCH_LISTING</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_TRANSBATCH_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:doTransactionBatchLanding:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TRANSBATCH_INFO</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_TRANSBATCH_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getTransactionBatchInformation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CREATE_TRANSBATCH</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createTransactionBatch:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_PROCESS_TRANSBATCH</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:processTransactionBatch:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_OUTSTANDING_DICONDIN</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_OUTSTANDING_DICONDIN
+		null
+		null<br>
+		null</td>
+	<td>3:getPendingDicondinInfo:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetFunds,rsFunds::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_PROCESS_PENDING_DICONDIN</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:processPendingDicondin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_PERFORM_IAT_SWEEP</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:performIATSweep:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_IAT_SWEEP_INFO</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_IAT_SWEEP_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getIATSweepInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_IAT_SWEEP</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_IAT_SWEEP
+		null
+		null<br>
+		null</td>
+	<td>3:doIATSweepLanding:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ARCHIVE_DOCS</td>
+	<td>Service
+		3
+		CCLA_CP_ARCHIVE_DOCS
+		null
+		null<br>
+		null</td>
+	<td>5:QdocTypes:rsDocTypes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_DO_ARCHIVE_DOCS</td>
+	<td>com.ecs.ucm.ccla.commproc.ArchiveService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doArchiveDocs:::null</td>
+<tr>
+	<td>CCLA_CP_DO_GENERATE_RETFUNDS</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateRETFUNDS:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_DO_GENERATE_RETFUNDS_FROM_LIST</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateRETFUNDSFromList:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GENERATE_RETFUNDS</td>
+	<td>com.ecs.ucm.ccla.commproc.TransactionBatchService
+		32
+		CCLA_CP_GENERATE_RETFUNDS
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CP_NEW_INSTRUCTION</td>
+	<td>Service
+		32
+		CCLA_CP_NEW_INSTRUCTION
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllCommTypes,rsCommType::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCommSources,rsCommSource::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionTypes,rsInstructionType::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionStatuses,rsInstructionStatus::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CREATE_INSTRUCTION</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createInstruction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_APPLICABLE_INSTR_DATA_BY_TYPE</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getApplicableInstructionDataByType:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_SDU_INSTRUCTION</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateSDUInstruction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_RESUBMIT_SDU_INSTRUCTION_FOR_AUTH</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:resubmitSDUInstructionForAuthorisation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_PENDING_SDU_INSTRUCTIONS</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getPendingSDUInstructions:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_SDU_INSTRUCTION_INFO</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getSDUInstructionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraCorrespondent:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraCorrespondent:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraCorrespondent:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraCorrespondent:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_STATIC_DATA_EQUAL</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		32
+		CCLA_CP_STATIC_DATA_EQUAL
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanies,rsCompany::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CHECK_AURORA_ACCOUNT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testAccountEquality:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CHECK_AURORA_CLIENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testClientEquality:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CHECK_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testCorrespondentEquality:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_AURORA_CORRESPONDENT</td>
+	<td>com.ecs.ucm.ccla.commproc.StaticDataUpdateService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testGetCorrespondent:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TEST_TRANSACTION</td>
+	<td>com.ecs.ucm.ccla.commproc.InstructionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testTransactions:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_FILE</td>
+	<td>FileService
+		33
+		null
+		null
+		null<br>
+		!csUnableToDownloadFile</td>
+	<td>3:doSubService:CCLA_CP_RESOLVE_GETFILE_PARAMS_SUB::null
+		3:computeDocID:file,QdocInfo,FILE_DOC_INFO:0:!csUnableToDownload(dDocName)
+		3:checkSecurity:FILE_DOC_INFO:0:null
+		3:createFileName:FILE_DOC_INFO:0:null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_RESOLVE_GETFILE_PARAMS_SUB</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:resolveGetFileParams:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CREATE_TRANSBATCH_INSTR</td>
+	<td>Service
+		32
+		CCLA_CP_CREATE_TRANSBATCH_INSTR
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CP_RESUBMIT_INSTRUCTION_DOCS_ADMIN</td>
+	<td>Service
+		32
+		CCLA_CP_RESUBMIT_INSTRUCTION_DOCS_ADMIN
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CP_RESUBMIT_INSTRUCTION_DOCS</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:resubmitInstructionDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_GET_INVOICE_REF_DATA</td>
+	<td>com.ecs.ucm.ccla.commproc.InvoiceService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addInvoiceReferenceDataToBinder:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_POPULATE_MISSING_ORG_ACCOUNT_CODES</td>
+	<td>com.ecs.ucm.ccla.commproc.InvoiceService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:populateMissingOrgAccountCodes:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CHECKOUT_CHECKIN_DOCS</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkOutCheckinDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TEST_DOC_UPDATES</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testDocUpdates:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_APPLY_BULK_INSTRUCTION_PROCESS_ACTION</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		2
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:applyBulkProcessAction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TEST_THREADED_DB_CONNECTIONS</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testThreadedDBConnections:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TEST_DATE_HANDLING</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testDateHandling:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_CDB_USER_ADMIN</td>
+	<td>Service
+		3
+		CCLA_CP_CDB_USER_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCommProc_GetAllCDBUsers,rsUsers::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_ADD_CDB_USER</td>
+	<td>com.ecs.ucm.ccla.commproc.UserService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addNewUser:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_REMOVE_CDB_USER</td>
+	<td>com.ecs.ucm.ccla.commproc.UserService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteUser:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_VERIFY_NOMINATED_CONTACT_POINTS</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:verifyNominatedContactPoints:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_TAP_DOCS</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:tapDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CP_UPDATE_STATEMENT_MONTHS</td>
+	<td>com.ecs.ucm.ccla.commproc.DataFixService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateAuroraStatementMonths:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

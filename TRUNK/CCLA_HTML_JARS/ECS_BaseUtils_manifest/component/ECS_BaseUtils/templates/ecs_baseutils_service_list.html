@@ -1,0 +1,33 @@
+﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+	<$defaultPageTitle="Service List"$>
+	<$include std_html_head_declarations$>
+</head>
+
+	<$include body_def$>
+
+	<$include std_page_begin$>
+	
+	<h1>Service List</h1>
+
+<table border=1>
+	<tr>
+		<td>Service</td>
+		<td>Type</td>
+		<td>Access Level</td>
+		<td>Component</td>
+	</tr>
+	<$loop rsServices$>
+		<tr>
+			<td><$services$></td>
+			<td><$type$></td>
+			<td><$accessLevel$></td>
+			<td><$component$></td>
+		</tr>
+	<$endloop$>
+</table>
+
+</body>
+</html>
+

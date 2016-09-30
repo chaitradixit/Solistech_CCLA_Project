@@ -1,0 +1,58 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Share Class Discrepancy Report
+</title>
+	<$include ccla_cs_styles$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_ajax_js$>
+	
+
+</head>
+	<body <$include iris_body_def_internal$>>
+
+		<$include ecs_popup_div_header$>
+		<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container" style="width:1100px">
+		<div id="ccla_cs_right_content" class="cs-right-content-container" style="width:1100px">
+			<div id='ccla_cs_content' class="cs-content-container" style="width:1100px" >
+
+				<$include orangeContainer_top$>
+				<div class='ccla_cs_panel_header'>
+					Share Class Create Movement Result
+				</div>
+				
+				<$if rsSuccess$>
+					<h3 class="ccla_data_panel_header">Successful Results</h3><br/>
+					<$loop rsSuccess$>
+						<$#active.Message$><br/>					
+					<$endloop$>
+				<$endif$>
+				
+				<br />
+				<$if rsFailure$>
+					<h3 class="ccla_data_panel_header">Failure Results</h3><br/>
+					<div class="message_panel error_icon">
+					<$loop rsFailure$>
+						<$#active.Message$><br/>
+					<$endloop$>
+					</div>
+				<$endif$>
+				
+				<$include orangeContainer_bottom$>			
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

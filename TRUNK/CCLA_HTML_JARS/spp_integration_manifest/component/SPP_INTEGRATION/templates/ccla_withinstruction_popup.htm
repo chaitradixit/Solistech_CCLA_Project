@@ -1,0 +1,941 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$if #local.isMultiDoc$>
+			<title>Add Multi Documents</title>
+		<$else$>
+			<title>Add Instruction Documents</title>
+		<$endif$>
+		
+		<$include iris_styles$>
+		<$include iris_jquery_js$>
+		<$include ccla_field_validation_js$>
+		
+		<script type="text/javascript">
+			
+			// Company code set on parent item.
+			var parentCompany = '<$#local.company$>';	
+			
+			function isValidAccount(obj) {
+			  var i = validAccounts.length;
+			  while (i--) {
+			    if (validAccounts[i] === obj) {
+			      return true;
+			    }
+			  }
+			  return false;
+			}
+
+			function addEmptyRows(numRows){
+				for(var i=0; i<numRows; i++){
+					addEmptyRow();
+				}
+			}
+		
+			function addEmptyRow(){
+				var numRows = getIncrementedNumRows();
+
+				//Get reference to table body.
+				var tableBody = document.getElementById('instructionBody');
+				
+				var newRow = document.createElement("tr");
+				newRow.id=numRows;
+				
+				//Add cells
+				var baseCell = document.createElement("td");
+				baseCell.setAttribute("valign","top");
+				
+				var counterCell = $(baseCell).clone();
+				var docClassCell = $(baseCell).clone();
+				var clientNoCell = $(baseCell).clone();
+				var accountCell = $(baseCell).clone();
+				var fundCell = $(baseCell).clone();
+				var amountCell = $(baseCell).clone();
+				var unitsCell = $(baseCell).clone();
+				var checkCell = $(baseCell).clone();
+				
+				counterCell.className="rowCounter";
+				
+				//Add inputs
+				var counterSpan = document.createElement("span");
+				var docClassSelect = document.createElement("select");
+				var clientNoInput = document.createElement("input");
+				var accountInput = document.createElement("input")
+				var fundInput = document.createElement("input");;
+				var amountInput = document.createElement("input");
+				var unitsInput = document.createElement("input");
+				var checkboxInput = document.createElement("input");
+				
+				//Set input classes
+				docClassSelect.className="field";
+				clientNoInput.className="field";
+				accountInput.className="field";
+				fundInput.className="field";
+				amountInput.className="field";
+				unitsInput.className="field";
+				
+				//Set Document class dropdown values
+				//Add empty option
+				docClassSelect.appendChild(document.createElement("option"));
+				
+				<$if false$>
+					<$getViewValuesResultSet("DocumentClassList","","")$>
+					<$loop SchemaData$>
+						var optionValue = document.createElement("option");
+						<$key = getValue("SchemaData", "dOption")$>
+						<$if strIndexOf(#env.SPP_RestrictedChildDocClasses, key) == -1$>
+							optionValue.value="<$key$>";
+							optionValue.text="<$key$>";
+							optionValue.innerText="<$key$>";
+							docClassSelect.appendChild(optionValue);
+						<$endif$>
+					<$endloop$>
+				<$endif$>
+				
+				<$getViewValuesResultSet("vDOCUMENT_CLASSES","","")$>
+				<$loop SchemaData$>
+					var optionValue = document.createElement("option");
+					<$key = getValue("SchemaData", "DOC_CLASS")$>
+					<$if strIndexOf(#env.SPP_RestrictedChildDocClasses, key) == -1$>
+						optionValue.value="<$key$>";
+						optionValue.text="<$key$>";
+						optionValue.innerText="<$key$>";
+						docClassSelect.appendChild(optionValue);
+					<$endif$>
+				<$endloop$>
+
+				docClassSelect.onchange=function(){updateClientNumber('<$clientNumber$>', numRows)};
+				
+				accountInput.onblur=function(){updateFund(numRows)};
+				
+				//Set input ids
+				docClassSelect.id="docClass" + numRows;
+				clientNoInput.id="docClientNo" + numRows;
+				accountInput.id="docAccount" + numRows;
+				fundInput.id="docFund" + numRows;
+				amountInput.id="docAmount" + numRows;
+				unitsInput.id="docUnits" + numRows;
+				checkboxInput.id="checkbox" + numRows;
+				
+				
+				docClassSelect.name="docClass" + numRows;
+				clientNoInput.name="docClientNo" + numRows;
+				accountInput.name="docAccount" + numRows;
+				fundInput.name="docFund" + numRows;
+				amountInput.name="docAmount" + numRows;	
+				unitsInput.name="docUnits" + numRows;	
+				
+				checkboxInput.type="checkbox";
+				checkboxInput.onmouseover=function(){if(this.checked==false) this.parentNode.parentNode.className='hoverHighlight'}
+				checkboxInput.onmouseout=function(){if(this.checked==false) this.parentNode.parentNode.className=''}
+				checkboxInput.onclick=function(){toggleCheckbox(this, null)}
+
+				counterSpan.innerHTML=numRows;
+								
+				//Add textboxes to cells
+				$(counterCell).append(counterSpan);
+				$(docClassCell).append(docClassSelect);
+				$(clientNoCell).append(clientNoInput);
+				$(accountCell).append(accountInput);
+				$(fundCell).append(fundInput);
+				$(amountCell).append(amountInput);
+				$(unitsCell).append(unitsInput);
+				$(checkCell).append(checkboxInput);
+				
+				//Add elements to row.
+				$(newRow).append(counterCell);
+				$(newRow).append(docClassCell);
+				$(newRow).append(clientNoCell);
+				$(newRow).append(accountCell);
+				$(newRow).append(fundCell);
+				$(newRow).append(amountCell);
+				$(newRow).append(unitsCell);
+				$(newRow).append(checkCell);
+				
+				tableBody.appendChild(newRow);
+			}
+			
+			function getIncrementedNumRows(){
+				var rowInput = document.getElementById('rowTotal');
+				var numRows = parseInt(rowInput.value);
+				numRows++;
+				rowInput.value = numRows;
+				
+				document.getElementById('displayRowTotal').innerHTML = numRows;
+				
+				return numRows;
+			}
+			
+			function deleteRow(rowToDelete){
+				rowToDelete++;
+				var table = document.getElementById('instructionTable');
+				table.deleteRow(rowToDelete);
+				
+				//Decrement row number
+				var rowInput = document.getElementById('rowTotal');
+				var numRows = rowInput.value;
+				numRows--;
+				rowInput.value = numRows;
+				document.getElementById('displayRowTotal').innerHTML = numRows;
+				
+				var rowCounter = 0;
+				//Redraw the row number indicators
+				for(i=1; i<=table.tBodies[0].rows.length; i++){
+					if(table.rows[i].cells[0]){
+						rowCounter++;
+						table.rows[i].id=rowCounter;
+						
+						//Update counter label
+				   	var counterSpan = table.rows[i].cells[0].firstChild;
+				   	counterSpan.innerHTML = rowCounter;
+				   	
+				   	//Update the id's of the fields
+				   	var docClass = table.rows[i].cells[1].firstChild;
+					var docClientNo = table.rows[i].cells[2].firstChild;
+				   	var docAccount = table.rows[i].cells[3].firstChild;
+					var docFund = table.rows[i].cells[4].firstChild;
+				   	var docAmount = table.rows[i].cells[5].firstChild;
+					var docUnits = table.rows[i].cells[6].firstChild;
+				   	var checkboxInput = table.rows[i].cells[7].firstChild;
+				   	
+				   	docClass.id = "docClass" + rowCounter;
+					docClientNo.id = "docClientNo" + rowCounter;
+					docAccount.id = "docAccount" + rowCounter;
+					docFund.id = "docFund" + rowCounter;
+					docAmount.id = "docAmount" + rowCounter;
+					docUnits.id = "docUnits" + rowCounter;
+					checkboxInput.id = "checkbox" + rowCounter;
+						
+				   	docClass.name = "docClass" + rowCounter;
+					docClientNo.name = "docClientNo" + rowCounter;
+					docAccount.name = "docAccount" + rowCounter;
+					docFund.name = "docFund" + rowCounter;
+					docAmount.name = "docAmount" + rowCounter;
+					docUnits.name = "docUnits" + rowCounter;
+						
+						checkboxInput.type="checkbox";
+						checkboxInput.onmouseover=function(){if(this.checked==false) this.parentNode.parentNode.className='hoverHighlight'}
+						checkboxInput.onmouseout=function(){if(this.checked==false) this.parentNode.parentNode.className=''}
+						checkboxInput.onclick=function(){toggleCheckbox(this, null)}
+				  }
+			  }
+			}
+			
+			function applyToSelectedRows(){				
+				var totalNoRows = parseInt(document.getElementById('rowTotal').value);
+
+				var newDocClass = document.getElementById('checkedAllDocClass');
+				var newDocClientNo = document.getElementById('checkedAllDocClientNo').value;
+				var newDocAccount = document.getElementById('checkedAllDocAccount').value;
+				var newDocFund = document.getElementById('checkedAllDocFund').value;
+				var newDocAmount = document.getElementById('checkedAllDocAmount').value;
+				var newDocUnits = document.getElementById('checkedAllDocUnits').value;
+				var deleteSelected = document.getElementById('checkedAllDelete').checked;
+				
+				var continueAllowed = true;
+				if(deleteSelected) 
+					continueAllowed = confirm('Are you sure you want to delete the selected rows?');
+				
+				if(continueAllowed){
+					for(var i=1;i<=totalNoRows;i++){
+						var rowCheckbox = document.getElementById('checkbox'+ i);
+	
+						if(rowCheckbox != null && rowCheckbox.checked){
+
+							if(newDocClass.selectedIndex != 0) document.getElementById('docClass'+ i).selectedIndex = newDocClass.selectedIndex;
+							if(newDocClientNo.length > 0)  document.getElementById('docClientNo'+ i).value = newDocClientNo;
+							if(newDocAccount.length > 0)  document.getElementById('docAccount'+ i).value = newDocAccount;
+							if(newDocFund.length > 0)  document.getElementById('docFund'+ i).value = newDocFund;
+							if(newDocAmount.length > 0)  document.getElementById('docAmount'+ i).value = newDocAmount;
+							if(newDocUnits.length > 0)  document.getElementById('docUnits'+ i).value = newDocUnits;
+							if(deleteSelected){ deleteRow(i);i=i-1;}
+						}
+					}
+				}
+			}
+			
+			//Change the size of the fieldsContainer div accordingly.
+			function resizeFieldsContainer(){
+				var fieldsContainer = document.getElementById('fieldsContainer');
+				fieldsContainer.style.height = document.body.clientHeight - 45;
+				fieldsContainer.style.width = document.body.clientWidth - 250 - 18;
+				
+				if (navigator.userAgent.indexOf("Firefox")!=-1) {
+					fieldsContainer.style.width = document.body.clientWidth - 250 - 30;
+				}
+			}
+			
+			function calculateAmount(){
+				var totalNoRows = parseInt(document.getElementById('rowTotal').value);
+				var totalAmount = 0;
+				
+				var digit = /[^[\d$|.]/;
+				
+				for(var i=1; i<=totalNoRows; i++){
+					var strAmountValue = document.getElementById('docAmount' + i).value;
+					
+					if(strAmountValue.length > 0){
+						var amountValue = parseFloat(strAmountValue);
+						
+						if(strAmountValue.search(digit) != -1 || isNaN(amountValue)){
+							//alert('The Amount in row ' + i + ' is not valid.');
+							totalAmount = 0;
+							break;
+						}else{
+							totalAmount = parseFloat(totalAmount  + amountValue);
+						}
+					}
+				}
+					
+				totalAmount = totalAmount.toFixed(2);	
+					
+				document.getElementById('totalAmount').innerHTML = totalAmount;
+				return totalAmount;
+			}
+			
+			function checkAddCustomRows(){
+				var totalNoRows = parseInt(document.getElementById('rowTotal').value);
+				var numRowsToAdd = parseInt(document.getElementById('addRowsAmount').value);
+				
+				if(numRowsToAdd <= 200 && (totalNoRows + numRowsToAdd) <= 200)
+					addEmptyRows(numRowsToAdd);
+				else
+					alert('There is a maximum of 200 rows allowed.');
+				
+			}
+			
+			function toggleCheckbox(objCheckbox, checkedValue){
+				if(checkedValue != null){
+					objCheckbox.checked=checkedValue;
+				}
+				
+				if (objCheckbox.checked == true) {
+					objCheckbox.parentNode.parentNode.className='highlighted';
+				}else{
+					objCheckbox.parentNode.parentNode.className='';
+				}
+			}
+			
+			function toggleAllCheck(objCheckboxAll){
+				var totalNoRows = parseInt(document.getElementById('rowTotal').value);
+				
+				for(var i=1; i<=totalNoRows; i++){
+					var objCheckbox = document.getElementById('checkbox'+i);
+					toggleCheckbox(objCheckbox, objCheckboxAll.checked);
+				}
+			}
+			
+			function toggleCheckAllFields(objAllCheckbox){
+				if(objAllCheckbox.checked){
+					document.getElementById('checkedAllDocClass').disabled=true;
+					document.getElementById('checkedAllDocClientNo').disabled=true;
+					document.getElementById('checkedAllDocAccount').disabled=true;
+					document.getElementById('checkedAllDocFund').disabled=true;
+					document.getElementById('checkedAllDocAmount').disabled=true;
+					document.getElementById('checkedAllDocUnits').disabled=true;
+				}else{
+					document.getElementById('checkedAllDocClass').disabled=false;
+					document.getElementById('checkedAllDocClientNo').disabled=false;
+					document.getElementById('checkedAllDocAccount').disabled=false;
+					document.getElementById('checkedAllDocFund').disabled=false;
+					document.getElementById('checkedAllDocAmount').disabled=false;
+					document.getElementById('checkedAllDocUnits').disabled=false;
+				}
+			}
+			
+			function resetRowNum(){
+				document.getElementById('rowTotal').value = 0;				
+			}
+			
+			function validateFields() {
+				
+				removeErrorMsgs();
+				
+				var totalNoRows = parseInt(document.getElementById('rowTotal').value);
+				var digit = /[^[\d$|.]/;
+				var errors = false;
+				
+				var validRows = 0;
+				
+				var objValidAmount = document.getElementById('totalAmountValidate');
+				var amount = calculateAmount();
+				
+				if(objValidAmount.value.length > 0 && amount != objValidAmount.value){
+					objValidAmount.className="invalidField";
+					errors=true;
+				}else{
+					objValidAmount.className="";
+				}
+				
+				var objValidNumDocs = document.getElementById('totalDocsValidate');
+
+				if(objValidNumDocs.value.length > 0 && totalNoRows != objValidNumDocs.value){
+					objValidNumDocs.className="invalidField";
+					errors=true;
+				}else{
+					objValidNumDocs.className="";
+				}
+				
+				for(var i=1; i<=totalNoRows; i++){
+					var objDocClass 	= document.getElementById('docClass' + i);
+					var objClientNo 	= document.getElementById('docClientNo' + i);
+					var objAccount 		= document.getElementById('docAccount' + i);
+					var objAmount 		= document.getElementById('docAmount' + i);
+					
+					//Validate the doc class
+					if((objDocClass.selectedIndex == 0 || objDocClass.selectedIndex == -1) && 
+						(objAccount.value.length > 0 || objAmount.value.length > 0)){
+						displayChildDocRowErrorMsg(objDocClass,"Required value","");
+						errors = true;
+					}else
+					
+					//Validate the client number field
+					var result = validateCompanyAndClientNumber(parentCompany,objClientNo.value);
+						
+					if (result == "CBF_invalid_length") {
+						displayChildDocRowErrorMsg(objClientNo,"Invalid CBF client","Must be 6 or 7 digits long");
+						errors = true;
+					
+					} else if (result == "COIF_invalid_length") {
+						displayChildDocRowErrorMsg(objClientNo,"Invalid COIF client","Must be 5 digits long");
+						errors = true;
+					}
+					
+					//Validate the amount field
+					if(objAmount.value.length > 0){
+						var amountValue = parseFloat(objAmount.value);
+						
+						if(objAmount.value.search(digit) != -1 || isNaN(amountValue)){
+							displayChildDocRowErrorMsg(objAmount,"Invalid amount","Must be numeric");
+							errors = true;
+						}
+					}
+				
+					if (objDocClass.value != "")
+						validRows++;
+				}
+				
+				if(errors){
+					alert("Your changes weren't saved.\n\nPlease correct the highlighted errors and try again.");
+					return false;
+				}
+				
+				updateInstructionDocCount(validRows);
+			}
+			
+			function removeErrorMsgs() {
+				$(".validation_error").remove();
+				$(".validation_error_field").removeClass("validation_error_field");
+			}
+			
+			/** Used to display error messages underneath field cells. */
+			function displayChildDocRowErrorMsg(field, errorTitle, errorBody) {
+				$(field).addClass("validation_error_field");
+				$(field).after(createErrorMsg(field.id, errorTitle, errorBody));
+			}
+			
+			function createErrorMsg(msgId, msgTitle, msgBody) {
+			
+				// create the divs which hold the error message
+				var errorMsgTitle = document.createElement("div");
+				errorMsgTitle.className = "validation_error_title";
+				errorMsgTitle.innerHTML = msgTitle;
+				
+				if (msgBody && msgBody.length > 0) {
+					var errorMsgBody = document.createElement("p");
+					errorMsgBody.innerHTML = msgBody;
+				}
+				
+				var errorMsgDiv = document.createElement("div");
+				errorMsgDiv.id				= "err_" + msgId;
+				errorMsgDiv.className = "validation_error error_icon";
+				
+				errorMsgDiv.appendChild(errorMsgTitle);
+				
+				if (errorMsgBody)
+					errorMsgDiv.appendChild(errorMsgBody);
+				
+				return errorMsgDiv;
+			}
+			
+			// Called after validation checks on form submit. Updates the instruction
+			// document count on the 'Edit instruction docs' button on the parent window.
+			function updateInstructionDocCount(totalDocs) {
+				
+				if (window.opener) {
+					window.opener.updateInstructionDocCount(totalDocs);
+				}
+			}
+			
+			function updateClientNumber(clientNumber, counter){
+
+				if(clientNumber.length > 0){
+					var objClientNum = document.getElementById('docClientNo' + counter)
+					
+					if(objClientNum.value.length == 0){
+						objClientNum.value = clientNumber;
+					}
+				}
+			}
+			
+			function updateFund(counter){
+				
+				var clientAccNum = document.getElementById('docAccount'+counter).value;
+				
+				clientAccNum=clientAccNum.toUpperCase();
+				document.getElementById('docAccount'+counter).value = clientAccNum;
+				
+				var objFund = document.getElementById('docFund' + counter);
+				
+				if (clientAccNum.length > 0 && objFund.value.length == 0) {
+						
+						try{
+							var suffixLast = "";
+							var suffixSecondLast = "";
+							var suffixThirdLast = "";
+							
+							if(clientAccNum.length >= 3)
+								suffixThirdLast = clientAccNum.substring(clientAccNum.length - 3, clientAccNum.length - 2);
+							
+							if(clientAccNum.length >= 2)
+								suffixSecondLast = clientAccNum.substring(clientAccNum.length - 2, clientAccNum.length - 1);
+								
+							if(clientAccNum.length >= 1)
+								suffixLast = clientAccNum.substring(clientAccNum.length - 1, clientAccNum.length);
+							
+							var fundValue = "";
+							
+							if(suffixThirdLast.match("[A-Z]") && suffixSecondLast.match("[A-Z]") && suffixLast.match("[A-Z]")){
+								fundValue = suffixThirdLast + suffixSecondLast + suffixLast;
+							}else if(suffixSecondLast.match("[A-Z]") && suffixLast.match("[A-Z]")){
+								fundValue = suffixSecondLast + suffixLast;
+							}else if(suffixLast.match("[A-Z]")){
+								fundValue = suffixLast;
+							}
+							
+							objFund.value = fundValue;
+						}catch(err){
+							
+						}
+				}
+			}
+		
+			function generateRows(){
+				var objRedirectUrl = document.getElementById('RedirectUrl');
+				objRedirectUrl.value = objRedirectUrl.value + "&doGenerate=1";
+				document.instructionForm.submit();
+			}
+			
+		</script>
+		
+		<style type="text/css">
+
+			body{
+				width:100%;
+				margin:0;
+				padding:8px;
+				overflow:hidden;
+			}
+			
+			tr{ text-align:left }
+			tr.highlighted{background-color:#DDDDDD;}
+			tr.hoverHighlight{background-color:#EEEEEE;}
+			
+			td{padding:3px;}
+			
+			th{padding-left:3px;}
+			
+			th.checkboxCol{
+				padding:3px;
+				font-size:0.9em;
+				white-space: nowrap;
+			}
+			
+			th.checkboxCol span{
+				vertical-align:3;
+			}
+			
+			.field,
+			.invalidField{
+				width:100%;
+			}
+			
+			.invalidField{
+				background-color:yellow;
+				border:1px solid #AAAAAA;
+				height:22px;
+			}
+			
+			.rowCounter{
+				text-align:right;
+				padding-right:10px;
+			}
+			
+			.fieldsContainer{
+				width:75%;
+				float:left;
+				border:2px solid #999999;
+				padding:10px 0 10px 0;
+				overflow-y:scroll
+			}
+			
+			.rightPanelContainer{
+				padding-left:10px;
+				width:250px;
+				float:left;
+				text-align:center;
+			}
+			
+			.toolboxContainer{
+				margin-bottom:10px;
+				font-size:1em;
+			}
+			
+			.toolbar,
+			.toolbar_top,
+			.toolbar_bottom{
+				border:2px solid #999999;
+				padding:0 0 15px 0;
+				border-top:none;
+				border-bottom:none;
+			}
+			
+			.toolbar_top{
+				border-top:2px solid #999999;
+			}
+			
+			.toolbar_bottom{
+				border-bottom:2px solid #999999;
+			}
+			
+			.toolboxContainer hr{
+				color:#BBBBBB;
+				height:1px;
+				margin:5px 0 5px 0;
+			}
+			
+			.toolboxContainer hr.top{
+				color:#000000;
+			}
+			
+			.toolbarHeader{
+				background-color:#DDDDDD;
+				padding:3px 0 3px 10px;
+				margin-bottom:10px;
+				font-weight:bold;
+				text-align:left;
+				color:#333333;
+				border-top:1px solid #BBBBBB;
+				border-bottom:1px solid #BBBBBB;
+			}
+			
+			
+			.toolboxContainer ul,
+			.toolboxContainer ul li{
+				margin:0 0 0 15px;
+				padding:0;
+				text-align:left;
+			}
+			
+			.toolboxContainer .refreshButton{
+				display:inline-block;
+				background-image:url('images/ccla/refresh.png');
+				width:16px;
+				height:16px;
+				cursor:pointer;
+				background-position:top center;
+				background-repeat:no-repeat;
+			}
+			
+			.total{
+				font-weight:bold;
+			}
+			
+			.updateSelected{
+				font-size:1em;
+			}
+			
+			.updateSelected tr th{	
+				text-align:right;
+				padding:none;
+			}
+			
+			.updateSelected td{
+				padding:0px;
+			}
+			
+			.rowTotal{
+				margin-bottom:10px;
+			}
+			
+			.message{
+				font-size: 1em;
+				padding:0;
+				margin:0 0 5px 0;
+				font-weight:bold;
+			}
+			
+		</style>
+		
+	</head>
+	
+	<$docName = #active.docName$>
+	<$if strLength(docName) > 0$>
+		<$if isTrue(#active.doGenerate)$>
+			<$executeService("SPP_INT_CHECKIN_CHILDDOCS_BY_ENVELOPE")$>
+		<$endif$>
+		
+		<$parentDocName = docName$>
+		<$executeService("SPP_INT_Q_GET_WITHINSTRUCTION_ROWS")$>
+	<$endif$>
+		
+	<body <$if not isTrue(#active.isCheckIn)$>onLoad="<$if not rsWithInstructionDocs$>resetRowNum();addEmptyRows(5);<$endif$>resizeFieldsContainer()" onResize="resizeFieldsContainer()"<$endif$>>
+		<noscript>
+			<h1>You have JavaScript disabled. You need it enabled for this page to work correctly.</h1>
+			<h2>To enable JavaScript click <strong>Tools > Internet Options > Security > Custom Level</strong>. Under 'Scripting', 
+				select 'Active Scripting' to be Enabled.</h2>
+		</noscript>
+		
+		<$if isTrue(#active.isCheckIn)$>
+			<h3>Jobs started successfully</h3>
+		<$else$>
+			<form id="instructionForm" name="instructionForm" onSubmit="return validateFields();updateInstructionDocCount();" method="POST">
+				<input type="hidden" name="IdcService" value="SPP_INT_Q_INSERT_WITHINSTRUCTION_ROWS"/>
+				<$include add_idc_token_to_form$>
+				<input type="hidden" id="rowTotal" name="rowTotal" value="<$if rsWithInstructionDocs$><$rsWithInstructionDocs.#numRows$><$else$>0<$endif$>"/>
+				<input type="hidden" name="dDocName" value="<$#active.docName$>"/>
+				<input type="hidden" name="clientNumber" value="<$#active.clientNumber$>"/>
+				<input type="hidden" name="bundleRef" value="<$#active.bundleRef$>"/>
+				
+				<input type="hidden" name="RedirectUrl" id="RedirectUrl" 
+				value="?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_WITHINSTRUCTION_POPUP&bundleRef=<$bundleRef$>&docName=<$#active.docName$>&company=<$#local.company$>&clientNumber=<$#active.clientNumber$>&isSave=1"/>
+				
+				<div id="greyed_rows_msg" style="width:100%;font-size:1em;padding:3px 0"></div>
+				
+				<div id="fieldsContainer" class="fieldsContainer">
+					<table border="0" width="100%" id="instructionTable" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th width="3%"></th>
+								<th width="15%">Doc Class</th>
+								<th width="15%">Client No</th>
+								<th width="15%">Account</th>
+								<th width="15%">Fund</th>
+								<th width="15%">Amount</th>
+								<th width="15%">Units</th>
+								<th width="7%" class="checkboxCol"><input type="checkbox" onClick="toggleAllCheck(this);" title="Select/unselect all"/><span>(All)</span></th>
+							</tr>
+							
+						</thead>
+						<tbody id="instructionBody">
+							<tr></tr>
+							<$bundleRef=bundleRef$>
+							<$useDualIndexData=1$>
+							<$executeService("IRIS_BATCH_GET_ITEMS")$>
+							
+							<$if rsBatchItems$>
+								<$loop rsBatchItems$>
+								
+									<$if (#active.xDependantDocName like #active.docName) or (#active.xParentDocName like #active.docName)$>
+										<$displayingGeneratedDocs=1$>
+										<tr onClick="alert('This document (<$rsBatchItems.dDocName$>) has already been generated.');">
+											<td>&nbsp;</td>
+											<td><input type="text" disabled="true" class="field" value="<$rsBatchItems.xDocumentClass$>"/></td>
+											<td><input type="text" disabled="true" class="field" value="<$rsBatchItems.xClientNumber$>"/></td>
+											<td><input type="text" disabled="true" class="field" value="<$rsBatchItems.xAccountNumber$>"/></td>
+											<td><input type="text" disabled="true" class="field"value="<$rsBatchItems.xFund$>"/></td>
+											<td><input type="text" disabled="true" class="field" value="<$rsBatchItems.xAmount$>"/></td>
+											<td><input type="text" disabled="true" class="field" value="<$rsBatchItems.xUnits$>"/></td>
+											<td><input type="checkbox" disabled="true"/></td>
+										</tr>
+									<$endif$>
+									
+								<$endloop$>
+							<$endif$>
+							
+							<$if rsWithInstructionDocs$>
+								<$counter = 1$>
+								<$loop rsWithInstructionDocs$>	
+									<tr id="<$counter$>">
+										<td class="rowCounter" valign="top"><span><$counter$></span></td>
+										<td valign="top">
+											
+											
+											<select id="docClass<$counter$>" name="docClass<$counter$>" class="field" onChange="updateClientNumber('<$clientNumber$>', <$counter$>);">
+												<option></option>
+												<$getViewValuesResultSet("vDOCUMENT_CLASSES","","")$>
+												<$loop SchemaData$>
+													<$key = getValue("SchemaData", "DOC_CLASS")$>
+													<$if strIndexOf(#env.SPP_RestrictedChildDocClasses, key) == -1$>
+														<option value="<$key$>" <$if strEquals(key, rsWithInstructionDocs.CLASS)$>selected<$endif$>><$key$></option>
+													<$endif$>
+												<$endloop$>
+											</select>
+											
+											
+											<$if false$>
+												<select id="docClass<$counter$>" name="docClass<$counter$>" class="field" onChange="updateClientNumber('<$clientNumber$>', <$counter$>);">
+													<option></option>
+													<$getViewValuesResultSet("DocumentClassList","","")$>
+													<$loop SchemaData$>
+														<$key = getValue("SchemaData", "dOption")$>
+														<$if strIndexOf(#env.SPP_RestrictedChildDocClasses, key) == -1$>
+															<option value="<$key$>" <$if strEquals(key, rsWithInstructionDocs.CLASS)$>selected<$endif$>><$key$></option>
+														<$endif$>
+													<$endloop$>
+												</select>
+											<$endif$>
+										</td>
+										<td valign="top">
+											<input id="docClientNo<$counter$>" name="docClientNo<$counter$>" class="field" value="<$rsWithInstructionDocs.CLIENTNO$>"/>
+										</td>
+										<td valign="top">
+											<input id="docAccount<$counter$>" name="docAccount<$counter$>" class="field" onBlur="updateFund(<$counter$>);" value="<$rsWithInstructionDocs.ACCOUNT$>"/>
+										</td>
+										<td valign="top">
+											<input id="docFund<$counter$>" name="docFund<$counter$>" class="field" value="<$rsWithInstructionDocs.FUND$>"/>
+										</td>
+										<td valign="top">
+											<input id="docAmount<$counter$>" name="docAmount<$counter$>" class="field" value="<$rsWithInstructionDocs.AMOUNT$>"/>
+										</td>
+										<td valign="top">
+											<input id="docUnits<$counter$>" name="docUnits<$counter$>" class="field" value="<$rsWithInstructionDocs.UNITS$>"/>
+										</td>
+										<td valign="top">
+											<input type="checkbox" id="checkbox<$counter$>" name="checkbox<$counter$>" 
+												onMouseOver="if(this.checked==false) this.parentNode.parentNode.className='hoverHighlight'" 
+												onMouseOut="if(this.checked==false) this.parentNode.parentNode.className=''"
+												onClick="toggleCheckbox(this, null)"/>
+										</td>
+									</tr>
+									<$counter = counter + 1$>
+								<$endloop$>
+							<$endif$>
+						</tbody>
+					</table>
+				</div>
+				
+				<div class="rightPanelContainer">
+					<div class="toolboxContainer">		
+						<div class="toolbar_top">
+							<div class="toolbarHeader">Amount</div>
+							<span class="totalAmountCaption">Total Amount: </span> 
+							<span class="total" id="totalAmount">0</span>
+							<span class="refreshButton" onClick="calculateAmount();"></span>
+						</div>
+						
+						<div class="toolbar">
+							<div class="toolbarHeader">Selected Rows</div>
+							<table class="updateSelected">
+								<tr>
+									<th>Class:</th>
+									<td>
+										<select id="checkedAllDocClass" class="field">
+											<option></option>
+											<$getViewValuesResultSet("vDOCUMENT_CLASSES","","")$>
+											<$loop SchemaData$>
+												<$key = getValue("SchemaData", "DOC_CLASS")$>
+												<$if strIndexOf(#env.SPP_RestrictedChildDocClasses, key) == -1$>
+													<option value="<$key$>"><$key$></option>
+												<$endif$>
+											<$endloop$>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th>Client No:</th>
+									<td><input type="text" id="checkedAllDocClientNo" class="field"/></td>
+								</tr>
+								<tr>
+									<th>Account:</th>
+									<td><input type="text" id="checkedAllDocAccount" class="field"/></td>
+								</tr>
+								<tr>
+									<th>Fund:</th>
+									<td><input type="text" id="checkedAllDocFund" class="field"/></td>
+								</tr>
+								<tr>
+									<th>Amount:</th>
+									<td><input type="text" id="checkedAllDocAmount" class="field"/></td>
+								</tr>
+								<tr>
+									<th>Units:</th>
+									<td><input type="text" id="checkedAllDocUnits" class="field"/></td>
+								</tr>
+								<tr>
+									<th></th>
+									<td><input type="checkbox" id="checkedAllDelete" onClick="toggleCheckAllFields(this);">Delete Row(s)</input></td>
+								</tr>
+								<tr>
+									<th></th>
+									<td><input type="button" value="Update Selected" onClick="applyToSelectedRows()"/></td>
+								</tr>
+							</table>
+						</div>
+						
+						<div class="toolbar" style="display:none;">
+							<div class="toolbarHeader">Accounts</div>
+							<ul>
+								<li><a href="#">Retrieve Accounts for Client XXX</a></li>
+								<li><a href="#">Retrieve All Accounts</a></li>
+							</ul>
+						</div>
+						
+						<div class="toolbar">
+							<div class="toolbarHeader">Rows</div>
+							<div class="rowTotal">
+								<span class="totalAmountCaption">Total Rows: </span> 
+								<span class="total" id="displayRowTotal"><$if rsWithInstructionDocs$><$rsWithInstructionDocs.#numRows$><$else$>0<$endif$></span>		
+							</div>
+							
+							<input type="text" value="1" maxlength="3" size="3" id="addRowsAmount"/>
+							<input type="button" value="Add Row(s)" onClick="checkAddCustomRows()"/>
+						</div>
+						
+						<div class="toolbar_bottom">
+							<div class="toolbarHeader">Validation</div>
+							<table class="updateSelected">
+								<tr>
+									<th>Total No. Docs:</th>
+									<td><input id="totalDocsValidate" value="" size="6"/></td>
+								</tr>
+								<tr>
+									<th>Total Amount:</th>
+									<td><input id="totalAmountValidate" value="" size="6"/></td>
+								</tr>
+							</table>
+						</div>
+		
+					</div>
+					
+					<p class="message">
+						&nbsp;
+						<$if isTrue(#active.doGenerate)$>
+							Generated successfully
+						<$else$>
+							<$if isTrue(#active.isSave)$>Saved successfully<$endif$>
+						<$endif$>
+						
+						<$if isTrue(#active.isCheckIn)$>Jobs started successfully<$endif$>
+					</p>
+					
+					<div>
+						<input type="submit" value="Save"/>&nbsp;&nbsp;<input type="button" value="Cancel" onClick="window.close()"/>
+						<br/><br/>
+						<input type="button" value="Generate" onClick="this.disabled=true;generateRows()"/>
+					</div>
+					
+					<br/>
+					
+				</div>
+			</form>
+			
+			<$if isTrue(displayingGeneratedDocs)$>
+				<script type="text/javascript">
+					document.getElementById('greyed_rows_msg').innerHTML = "The rows greyed out below indicate documents that have already been generated, and are shown just for your reference.";
+				</script>
+			<$endif$>
+		<$endif$>
+	</body>
+</html>

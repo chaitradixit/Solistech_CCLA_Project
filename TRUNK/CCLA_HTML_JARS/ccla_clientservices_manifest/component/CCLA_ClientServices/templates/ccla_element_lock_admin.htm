@@ -1,0 +1,197 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Element Lock Administration
+	</title>
+	
+	<script type="text/javascript">
+
+		
+		function removeElementLock(lockId){
+			var answer = confirm("Are you sure you want to remove element lock: " + lockId + "?" );
+				if (answer){
+					return true;
+				}
+				else{
+					return false;
+				}
+		}
+		
+		function clearElementLocks(lockId){
+			var answer = confirm("Are you sure you want to remove ALL element locks?");
+				if (answer){
+					return true;
+				}
+				else{
+					return false;
+				}
+		}	
+		
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 1000px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+			<div class="ccla_cs_panel_header">
+				<img src="<$HttpWebRoot$>images/ccla/clientservices/lock.png"/>Element Lock Administration <img src="<$HttpWebRoot$>images/ccla/clientservices/lock.png"/>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<br>Sets of currently-locked Elements are shown below.</p>
+			
+				<$if #local.removedLockId or #local.allLocksRemoved or #local.addedTestElementLock$>
+					<div class="message_panel info_icon">
+						<$if #local.removedLockId$>
+							Successfully removed element lock with lockId: <$#local.removedLockId$>
+						<$elseif #local.allLocksRemoved$>
+							Successfully removed element lock with lockId: <$#local.removedLockId$>
+						<$elseif #local.addedTestElementLock$>
+							Successfully added test element lock
+						<$endif$>
+					</div>
+				<$endif$>	
+				<br>
+				<form>
+					<input type="hidden" name="IdcService" value="CCLA_CS_ADD_TEST_ELEMENT_LOCK"/><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>&addedTestElementLock=1"/>								
+					
+					<label for="elementId">(Optional) Element ID: </label><input id="elementId" name="elementId"/>
+					<label for="context">(Optional) Context: </label><input id="context" name="context"/>
+
+					<input type="submit" value="Add test Element Lock">
+				</form>
+				<br>
+				
+				<table class="accounts-table" cellspacing="0" cellpadding="0" width="50%">
+					<tr class="account-details-row">
+						<th class="first-col">
+							Total locks
+						</th>
+						<td>
+							<$#local.TOTAL_LOCKS$>
+						</td>
+					</tr>
+					
+					
+					<tr class="account-details-row">
+						<th class="first-col">
+							Total collisions
+						</th>
+						<td>
+							<$#local.TOTAL_COLLISIONS$>
+						</td>
+					</tr>
+					
+					<tr class="account-details-row">
+						<th class="first-col">
+							Total collisions (fatal)
+						</th>
+						<td>
+							<$#local.TOTAL_FATAL_COLLISIONS$>
+						</td>
+					</tr>
+					
+					<tr class="account-details-row">
+						<th class="first-col">
+							Total sleep time (s)
+						</th>
+						<td>
+							<$if #local.TOTAL_SLEEP_TIME_MILLIS > 0$>
+								<$#local.TOTAL_SLEEP_TIME_MILLIS / 1000$>
+							<$endif$>
+						</td>
+					</tr>
+					
+				</table>
+				
+				<br/>
+				
+				<$if RS_ELEMENT_LOCKS$>
+					<div style="padding-top:5px"></div>
+
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<th class="first-col" width="5%">
+									Lock ID
+								</th>
+								<th width="10%">
+									Lock Date
+								</th>
+								<th width="10%">
+									Locked By
+								</th>
+								<th width="15%">
+									Context
+								</th>
+								<th width="20%">
+									Thread Name
+								</th>
+								<th width="20%">
+									Waiting Threads
+								</th>
+								<th width="15%">
+									Locked Element Ids 
+								</th>
+								<th width="10%">Actions</th>
+							</tr>	
+
+						
+							<$loop RS_ELEMENT_LOCKS$>
+								<form id="elementLockForm_<$#active.LOCK_ID$>" onsubmit="return removeElementLock(<$#active.LOCK_ID$>)">
+									<input type="hidden" name="IdcService" value="CCLA_CS_REMOVE_ELEMENT_LOCK"/><$include add_idc_token_to_form$>
+									<input type="hidden" name="lockId" value="<$#active.LOCK_ID$>"/>
+									<input type="hidden" name="RedirectUrl" value="?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>&removedLockId=<$#active.LOCK_ID$>"/>								
+									
+									<tr class="account-details-row">
+										<td class="first-col" ><$#active.LOCK_ID$></td>
+										<td ><$#active.LOCK_DATE$>&nbsp;</td>
+										<td ><$#active.LOCKED_BY_USER$>&nbsp;</td>
+										<td><$#active.CONTEXT$>&nbsp;</td>
+										<td><$#active.THREAD_NAME$>&nbsp;</td>
+										<td><$#active.WAITING_THREADS$>&nbsp;</td>
+										<td><$#active.ELEMENT_IDS$>&nbsp;</td>
+										<td>
+											<input type="submit" value="Remove"/>
+										</td>
+									</tr>
+								</form>	
+							<$endloop$>
+						
+						</table>
+					<br>
+					
+					<form class="cs-float-right" id="clearElementLocks" onsubmit="return clearElementLocks()">
+						<input type="hidden" name="IdcService" value="CCLA_CS_CLEAR_ELEMENT_LOCKS"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>&clearElementLocks=1"/>
+						<input type="submit" value="Clear ALL Element Locks"/>
+					</form>
+					<div class="cs-clear-both"></div>
+
+					<div style="padding-top:5px"></div>
+
+				<$else$> 
+					<b>There are currently no elements locked. </b>
+				<$endif$>
+				</div>
+				
+			<$include orangeContainer_bottom$>
+		
+			</div>
+		</div>
+			
+</body></html>

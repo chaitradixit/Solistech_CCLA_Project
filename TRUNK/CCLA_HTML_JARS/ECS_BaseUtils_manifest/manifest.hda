@@ -1,0 +1,37 @@
+<?hda version="10.1.3.4.1 (090528)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+CreateDate=12/10/2009 16:22
+blFieldTypes=CreateDate date
+ComponentName=ECS_BaseUtils
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+ECS_BaseUtils/ECS_BaseUtils.hda
+componentExtra
+ECS_BaseUtils/readme.txt
+componentLib
+ECS_BaseUtils/lib/
+componentClasses
+ECS_BaseUtils/classes/ECS_BaseUtils.jar
+componentExtra
+ECS_BaseUtils/ECSLogConfig
+componentExtra
+ECS_BaseUtils/doc/
+common
+ECS_BaseUtils/
+jsp
+ECS_BaseUtils/
+componentClasses
+ECS_BaseUtils/lib/castor-1.1-xml.jar
+componentClasses
+ECS_BaseUtils/lib/castor-0.95-xml.jar
+componentClasses
+ECS_BaseUtils/lib/castor.properties
+componentExtra
+ECS_BaseUtils/documentation/
+@end
+

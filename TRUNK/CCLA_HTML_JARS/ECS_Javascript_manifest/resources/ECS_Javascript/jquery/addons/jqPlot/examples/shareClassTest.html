@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>CCLA Test</title>
+  <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../excanvas.js"></script><![endif]-->
+  
+  <link rel="stylesheet" type="text/css" href="../jquery.jqplot.css" />
+  <link rel="stylesheet" type="text/css" href="examples.css" />
+  
+  <!-- BEGIN: load jquery -->
+  <script language="javascript" type="text/javascript" src="../../../jquery-1.5.1.js"></script>
+  <!-- END: load jquery -->
+  
+  <!-- BEGIN: load jqplot -->
+  <script language="javascript" type="text/javascript" src="../jquery.jqplot.js"></script>
+  <script language="javascript" type="text/javascript" src="../plugins/jqplot.dateAxisRenderer.js"></script>
+  <script language="javascript" type="text/javascript" src="../plugins/jqplot.enhancedLegendRenderer.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../plugins/jqplot.highlighter.min.js"></script>
+
+
+  <!-- END: load jqplot -->
+  <style type="text/css" media="screen">
+    .jqplot-axis {
+      font-size: 0.85em;
+    }
+	table.jqplot-table-legend{
+		width:120px;
+	}
+	.jqplot-table-legend-swatch{
+		width:25% !important;
+	}
+  </style>
+  <script type="text/javascript" language="javascript">
+
+  
+	$(document).ready(function(){
+		
+		var d = new Date();
+		var todaysDateStr = d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear();
+		$("#fromDate").val(todaysDateStr);
+		//add one week to the date.
+		d = new Date(d.getTime()+604800000);
+		var nextWeekStr = d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear();
+		$("#toDate").val(nextWeekStr);
+	
+	
+		initGraph();
+	 });
+ 
+ 
+	 function initGraph(){
+		$.jqplot.config.enablePlugins = true;
+		
+		//alert($("#fromDate").val());
+		//alert($("#toDate").val());
+		
+		$.getJSON('./jsondata_CCLA.txt', function(data) {
+				plot1 = data.plot1;
+				plot2 = data.plot2;
+				plot3 = data.plot3;
+				plot4 = data.plot4;
+				plot5 = data.plot5;
+				
+				graph = $.jqplot('chart', [plot1,plot2,plot3,plot4,plot5], {
+					title: 'End of day share class yield',
+					axes: {
+						xaxis: {
+							label: "Date",
+							renderer: $.jqplot.DateAxisRenderer,
+							numberTicks: 5,
+							tickOptions:{formatString:'%d/%m/%Y'} 
+						}, 
+						yaxis: {
+							label: "Yield in £",
+							tickOptions:{formatString:'£%.2f'} 
+						}
+					},
+					series:[ 
+						{	
+							label: "Share Class 1", 
+							lineWidth:1, 
+							color:'#999999', 
+							showMarker:true
+						},
+						{	
+							label: "Share Class 2", 
+							lineWidth:2, 
+							showMarker:true,  
+							markerOptions: 
+							{ 
+								style:"filledSquare", 
+								size:10 
+							}
+						},
+						{	
+							label: "Share Class 3"
+						},
+						{	
+							label: "Share Class 4" 
+						},
+						{	
+							label: "Share Class 5"
+						}
+					],
+					highlighter: {
+						show: true,
+						sizeAdjust: 7.5
+					  },
+					legend: { 
+							renderer: $.jqplot.EnhancedLegendRenderer,
+							show:true, 
+							location: 'e',
+							placement: 'outside' 
+						}
+				});
+
+			});
+	 }
+  </script>
+  </head>
+  <body>
+    <div id="chart" style="margin-top:20px; margin-left:20px; width:600px; height:300px;"></div>
+	<div>
+		Choose Date Range: 
+		<br>
+		From: <input id="fromDate" value=""/> To: <input id="toDate" value=""/> <input type="button" onclick="initGraph()" value="Show Graph"/>
+	</div>
+  </body>
+</html>

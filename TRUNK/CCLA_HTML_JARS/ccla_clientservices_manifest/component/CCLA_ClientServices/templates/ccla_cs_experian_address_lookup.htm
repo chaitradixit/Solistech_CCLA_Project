@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$processTarget = rsProcess.TARGET$>
+	
+	<title>
+		Address Lookup
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 800px'>
+
+			<$include orangeContainer_top$>
+				
+			<$if not searchType or (#local.searchType like "Clients")$>
+				
+				<div class='ccla_cs_panel_header'>
+					Address Lookup
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<br/>
+				
+					<form>
+						<input type="hidden" name="IdcService" value="CCLA_CS_EXPERIAN_ADDRESS_LOOKUP" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>" />
+						
+						<table width="100%" cellpadding=0 cellspacing=2>
+							<tr>
+								<td width="150">Enter Partial Address (eg "2, SW15 3HA"):</td>
+							</tr>
+							<tr>							
+								<td>
+									<input type="text" name="useAddress" value="<$#local.useAddress$>" /> 
+									<input type="submit" value="Search" />
+								</td>
+							</tr>
+						
+						</table>
+						
+					</form>
+				
+				</div>
+				
+			<$endif$>
+				
+			<$if not searchType$>
+				<br/>
+			<$endif$>
+			
+			<$if rsAddresses$>		
+				
+				<div class='ccla_cs_panel_header'>
+					Address Matches
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<br/>
+					
+										
+						<table width="100%" cellpadding=0 cellspacing=2>
+						<th>Address</th><th>Score</th><th>Use</th>
+						<$loop rsAddresses$>	
+						<form>
+						<input type="hidden" name="IdcService" value="CCLA_CS_EXPERIAN_GET_ADDRESS" /><$include add_idc_token_to_form$>	
+						<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>" />						
+						<input type = "hidden" name="moniker" value = "<$rsAddresses.Moniker$>"/>
+						<input type="hidden" name="useAddress" value="<$#local.useAddress$>" /> 
+							<tr>
+							<tr>
+							
+								<td>
+									<$rsAddresses.Picklist$>
+								</td>
+								<td>
+									<$rsAddresses.Score$>
+								</td>
+								<td>
+								<input type="submit" value="View"/>
+								<td>
+							</tr>
+							<tr><td></td></tr>
+						</form>	
+						<$endloop$>
+						</table>
+						
+					</form>
+				
+				</div>
+			
+			<$endif$>
+
+			<$if rsAddress$>		
+				
+				<div class='ccla_cs_panel_header'>
+					Address Matches
+				</div>
+													
+				<div class='ccla_cs_panel_content'>
+					<br/>
+						<form>
+						<input type="hidden" name="IdcService" value="CCLA_CS_EXPERIAN_TEST" /><$include add_idc_token_to_form$>	
+						<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>" />
+						<input type="hidden" name="NAME_TITLE" value="<$rsAddress.Title$>" /> 
+						<input type="hidden" name="NAME_FORENAME" value="<$rsAddress.Forename$> " /> 
+						<input type="hidden" name="NAME_SURNAME" value="<$rsAddress.Surname$>" /> 
+						<input type="hidden" name="FLAT" value="<$rsAddress.Flat$>" /> 
+						<input type="hidden" name="HOUSENAME" value="<$rsAddress.BuildingName$>" /> 
+						<input type="hidden" name="HOUSENUMBER" value="<$rsAddress.BuildingNumber$>" /> 
+						<input type="hidden" name="STREET" value="<$rsAddress.Street$>" /> 
+						<input type="hidden" name="DISTRICT" value="<$rsAddress.District$>" /> 
+						<input type="hidden" name="TOWN" value="<$rsAddress.Town$>" /> 
+						<input type="hidden" name="COUNTY" value="<$rsAddress.County$>" /> 
+						<input type="hidden" name="POSTCODE" value="<$rsAddress.Postcode$>" /> 
+
+						
+						<table width="100%" cellpadding=0 cellspacing=2>
+						<$loop rsAddress$>						
+						<form>
+							<tr>
+							<tr>
+							<td><$rsAddress.Title$> <$rsAddress.Forename$> <$rsAddress.Middleinitial$> <$rsAddress.Surname$>
+							</td>
+							<tr>
+								<td>
+									<$rsAddress.Flat$>
+								</td>
+							</tr>
+							<tr>							
+								<td>
+									<$rsAddress.BuildingName$>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<$rsAddress.BuildingNumber$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<$rsAddress.Street$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<$rsAddress.District$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<$rsAddress.Town$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<$rsAddress.County$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<$rsAddress.Postcode$>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+								<input type="submit" value="Use"/>
+								<td>
+							</tr>
+							<tr><td></td></tr>
+						</form>	
+						<$endloop$>
+						</table>
+						
+					</form>
+				
+				</div>
+			
+			<$endif$>			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+		
+</body>
+</html>

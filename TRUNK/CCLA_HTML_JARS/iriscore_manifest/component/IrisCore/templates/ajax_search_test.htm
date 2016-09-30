@@ -1,0 +1,159 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Tom's AJAX quick-search
+</title>
+
+<style type="text/css">
+	
+	* {
+		font-family: Verdana, Arial;
+	}
+	
+	.ajax_result_container {
+		height: 20em;
+		width: 20em;
+		border: 1px solid #CCCCCC;
+		overflow-y: auto;
+		background-color: #F29303;
+		color: #FFFFFF;
+		padding: 2px;
+		position: absolute;
+		z-index: 100;
+	}
+	
+	.ajax_result_row {
+		padding: 4px 0px 4px 3px;
+		border-top: 1px solid #CCCCCC;
+	}
+	
+	.ajax_result_row a {
+		text-decoration: none;
+		color: #FFFFFF;
+	}
+	
+	.ajax_result_row a:hover {
+		text-decoration: underline;
+	}
+	
+	.ajax_total_results {
+		font-size: 0.8em;
+		font-weight: bold;
+	}
+	
+	.invis {
+		display: none;
+	}
+
+</style>
+
+<script type="text/javascript">
+	
+	var inputTimer;
+	
+	function initSearchBox() {
+		var searchText = document.getElementById("searchQuery");
+		var resultsContainer = document.getElementById("resultsContainer");
+		
+		resultsContainer.style.left = searchText.offsetLeft + "px";
+		resultsContainer.style.top = (searchText.offsetTop + searchText.offsetHeight) + "px";
+	}
+	
+	function updateSearchText() {
+		
+		if (inputTimer) {
+			clearTimeout(inputTimer);
+		}
+		
+		inputTimer=setTimeout("checkInput()",500);
+	}
+	
+	function checkInput() {	
+		var searchText = document.getElementById("searchQuery").value;
+		
+		if (searchText.length >= 2) {
+			toggleResults(true);
+			
+			// Build the Verity search query
+			var qText='(dDocTitle <substring> `' + searchText + '`)';
+			sendReq(qText);
+			
+		} else {
+			toggleResults(false);
+		}
+	}
+	
+	function toggleResults(show) {
+		var resultsContainer = document.getElementById("resultsContainer");
+		
+		if (show) {
+			resultsContainer.innerHTML = "Searching...";
+			resultsContainer.className = "ajax_result_container";
+		} else {
+			resultsContainer.className = "ajax_result_container invis";
+		}
+	}
+	
+	/** AJAX stuff */
+	function createRequestObject() {
+    var ro;
+    var browser = navigator.appName;
+    if(browser == "Microsoft Internet Explorer"){
+        ro = new ActiveXObject("Microsoft.XMLHTTP");
+    }else{
+        ro = new XMLHttpRequest();
+    }
+    return ro;
+	}
+
+	var http = createRequestObject();
+
+	function sendReq(queryText) {
+    http.open('get', 'idcplg?IdcService=GET_AJAX_SEARCH_RESULTS<$include add_idc_token_to_url$>&QueryText=' + queryText);
+    http.onreadystatechange = handleResponse;
+    http.send(null);
+	}
+
+	function handleResponse() {
+    if(http.readyState == 4){
+        var response = http.responseText;
+        document.getElementById("resultsContainer").innerHTML = response;
+    } else {
+    }
+	}
+
+</script>
+
+</head>
+<body onload="initSearchBox()">
+
+<h1>Tom's AJAX quick-search</h1>
+
+Enter your text below:
+<input type="text" name="searchQuery" id="searchQuery" onkeypress="updateSearchText()" onblur="toggleResults(false)" />
+<div class="ajax_result_container invis" id="resultsContainer">
+</div>
+
+<h1>Tom's workflow test</h1>
+
+<$dID="2086"$>
+<$executeService("DOC_INFO")$>
+
+<$loop DOC_INFO$>
+	<form>
+		Title: <$dDocTitle$>
+	
+		<input type="hidden" name="IdcService" value="IRIS_ADD_DOC_TO_WORKFLOW" />
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="dID" value="<$dID$>" />
+		<input type="hidden" name="dDocName" value="<$dDocName$>" />
+		<input type="hidden" name="dRevLabel" value="<$dRevLabel$>" />
+		<input type="hidden" name="dSecurityGroup" value="<$dSecurityGroup$>" />
+		
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=AJAX_SEARCH_TEST<$include add_idc_token_to_url$>" />
+		
+		<input type="submit" value="Add to WF!" />
+	</form>
+<$endloop$>
+</body></html>

@@ -1,0 +1,14 @@
+CREATE TABLE spp_queued_items(
+  "QUEUED_ITEM_ID" NUMBER(38,0),   
+  "SUBMIT_USER" VARCHAR2(150 CHAR),   
+  "SUBMIT_TIME" TIMESTAMP(6),   
+  "EMBARGO_TIME" TIMESTAMP(6),   
+  "STATUS" VARCHAR2(100 CHAR),   
+  "JOB_TYPE" VARCHAR2(150 CHAR),   
+  "ITEM_ID" NUMBER(38,0),   
+  "ITEM_DOCNAME" VARCHAR2(150 CHAR),   
+  "SUBMIT_TYPE" VARCHAR2(100 CHAR),   
+  CONSTRAINT spp_queued_items_pk PRIMARY KEY(queued_item_id)
+);
+
+CREATE sequence seq_queued_item_id minvalue 1 maxvalue 999999999999999999999999999 increment BY 1 START WITH 1 cache 20 noorder nocycle;

@@ -1,0 +1,92 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+classpath=$COMPONENT_DIR/classes/SPPIntegration.jar;$COMPONENT_DIR/lib/jaxrpc.jar;$COMPONENT_DIR/lib/commons-discovery-0.2.jar;$COMPONENT_DIR/lib/axis-ecs.jar;$COMPONENT_DIR/lib/saaj.jar;$COMPONENT_DIR/lib/wsdl4j-1.5.1.jar;$COMPONENT_DIR/lib/mail.jar;$COMPONENT_DIR/lib/activation.jar;$COMPONENT_DIR/lib/commons-httpclient-3.0.1.jar;$COMPONENT_DIR/lib/commons-codec-1.4.jar
+classpathorder=1
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tAmerica/Los_Angeles
+libpath=$COMPONENT_DIR/lib/
+libpathorder=1
+version=2012_05_10 (Version 2.6.4)
+ComponentName=SPP_INTEGRATION
+hasPreferenceData=false
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+service
+resources/spp_integration_service.htm
+SPP_INTEGRATION_Services
+10
+environment
+spp_integration_environment.cfg
+null
+20
+resource
+resources/spp_integration_resource.htm
+null
+10
+query
+resources/spp_integration_query.htm
+SPP_INTEGRATION_Queries
+10
+template
+templates/spp_integration_template.hda
+null
+10
+query
+resources/spp_integration_gateway_query.htm
+SPP_INTEGRATION_Gateway_Queries
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+extraAfterServicesLoadInit
+com.ecs.stellent.spp.filter.StartupFilter
+null
+40
+postValidateCheckinData
+com.ecs.stellent.spp.filter.UpdateFilter
+null
+11
+postValidateCheckinData
+com.ecs.stellent.spp.filter.CheckinFilter
+null
+20
+validateStandard
+com.ecs.stellent.spp.filter.PreUpdateFilter
+null
+11
+onEndServiceRequestActions
+com.ecs.stellent.spp.filter.ServiceSuccessFilter
+null
+10
+checkScheduledEvents
+com.ecs.stellent.spp.filter.ScheduledEventFilter
+null
+20
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+SPP_INTEGRATION_Templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end
+

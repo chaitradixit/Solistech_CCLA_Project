@@ -1,0 +1,38 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SPP_INTEGRATION CCLA_CHECKOUT_CHECKIN_BULK
+</title>
+</head>
+<body>
+
+<$QueryText="dDocType <matches> `Bundle` <and> dDocName <matches> `CCLA_272570`"$>
+<$ResultCount=1000$>
+<$executeService("GET_SEARCH_RESULTS")$>
+
+<$SearchResults.#numRows$>
+
+<$loop SearchResults$>
+	Processing <$SearchResults.dDocName$> <br/>
+	
+	<$dID=SearchResults.dID$>
+	<$dDocName=SearchResults.dDocName$>
+	<$dSecurityGroup=SearchResults.dSecurityGroup$>
+	<$dDocTitle=SearchResults.dDocTitle$>
+	<$createPrimaryMetaFile=1$>
+	<$dDocType=SearchResults.dDocType$>
+	<$dDocAuthor=SearchResults.dDocAuthor$>
+	<$dRevLabel=2$>
+	
+	<$c="Dont use, not working!"$>
+	
+	<a target="_blank" href="?IdcService=CHECKIN_SEL<$include add_idc_token_to_url$>&dDocName=<$dDocName$>&dID=<$dID$>&dSecurityGroup=<$dSecurityGroup$>&dDocTitle=<$dDocTitle$>&createPrimaryMetaFile=1&dDocType=<$dDocType$>&dDocAuthor=<$dDocAuthor$>&dRevLabel=<$dRevLabel$>">Check in</a>
+	
+	<$executeService("CHECKOUT")$>
+	<br/>
+	
+	
+<$endloop$>
+
+</body></html>

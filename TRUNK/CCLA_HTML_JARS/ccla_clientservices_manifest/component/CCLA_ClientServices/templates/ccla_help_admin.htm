@@ -1,0 +1,252 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Iris Help Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+		function setIdcService(formValue, formName) {
+			var formToUse = document.forms[formName];
+			if (formToUse) {	
+				if (formValue=='delete') {
+					formToUse.IdcService.value='CCLA_REMOVE_HELP';
+					formToUse.RedirectUrl.value=formToUse.RedirectUrl.value+'&removed=1<$include add_idc_token_to_url$>';					
+				} else if (formValue=='update') {
+					formToUse.IdcService.value='CCLA_UPDATE_HELP';
+					formToUse.RedirectUrl.value=formToUse.RedirectUrl.value+'&updated=1<$include add_idc_token_to_url$>';
+				} else {
+					//assume view
+					var helpCode = formToUse.HELP_CODE.value;
+					
+					// This AJAX call uses Aurora web services to fetch data.
+					$.getJSON('?IdcService=CCLA_DISPLAY_HELP_DOCUMENT<$include add_idc_token_to_url$>', 
+						{ 	HELP_CODE: helpCode,
+							IsJson: 1
+						}, function(jsonData) {displayHelp(jsonData)} 
+					);
+					
+					displayHelp = function(jsonData) {
+						
+						if (jsonData == "") {	
+							alert("Cannot Open help file");
+						} else {	
+							var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+					
+							if (jsonErrorMsg) {
+								alert("Cannot Open help file "+jsonErrorMsg);	
+							} else {
+								if (jsonData.LocalData.helpDocUrl) {
+									window.open(jsonData.LocalData.helpDocUrl,
+												'helpWindow',
+												'toolbar=0,location=0,menubar=0,height=480,width=820,resizeable=1');								
+								} else {
+									alert("No help document defined, please contact the administrator");
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+		
+		
+		function checkAddForm() {
+			var helpCode = document.addForm.HELP_CODE.value;
+			var docName = document.addForm.DOCNAME.value;
+			
+			if (helpCode && docName) {
+				return true;
+			} else {
+				alert("You must specify a help code and help document");
+				return false;
+			}
+		}
+		
+	</script>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 700px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Help File Administration
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+
+				<h3 class="ccla_data_panel_header">Current Help Mapping</h3>
+				<p>Below is the current help mappings.<br/>
+				You can update/remove these by selecting the appropriate actions.
+				</p>
+				
+				<$if removed$>
+				<div class="message_panel info_icon">
+					Item removed.
+				</div>
+				<$endif$>
+
+				<$if updated$>
+				<div class="message_panel info_icon">
+					Item Updated.
+				</div>
+				<$endif$>
+			
+				<table class="ccla-table">
+					<tr>
+						<th width="20%">Document Class</th>
+						<th width="30%">Name</th>
+						<th width="15%">Page No.</th>
+						<th width="35%">Action</th>
+					</tr>
+					<$loop rsHelp$>
+					<form name="alter<$#active.HELP_CODE$>" id="alter<$#active.HELP_CODE$>" method="POST">
+					<input type="hidden" name="IdcService" 	value="CCLA_UPDATE_HELP" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_HELP_ADMIN<$include add_idc_token_to_url$>" />
+					<input type="hidden" id="HELP_CODE" name="HELP_CODE" value="<$#active.HELP_CODE$>"/>
+					<tr>
+						<td><$#active.HELP_CODE$></td>
+						<td align="center"><$currentDoc = #active.DOCNAME$>
+							<select id="DOCNAME" name="DOCNAME">
+								<$loop rsHelpDocs$>
+								<option value="<$#active.dDocName$>" <$if strEquals(currentDoc,#active.dDocName)$>selected<$endif$> ><$#active.dDocName$></option>
+								<$endloop$>
+							</select>
+						</td>
+						<td align="center"><input type="text" name="PAGE_NUMBER" id="PAGE_NUMBER" value="<$#active.PAGE_NUMBER$>" size="5"/></td>
+						<td align="center">
+							<input type="submit" name="update" value="update" class="generic_button" onclick="setIdcService(this.value, 'alter<$#active.HELP_CODE$>')"/>&nbsp;
+							<input type="submit" name="delete" value="delete" class="generic_button" onclick="setIdcService(this.value, 'alter<$#active.HELP_CODE$>')"/>&nbsp;
+							<input type="button" name="view" value="view" class="generic_button" onclick="setIdcService(this.value, 'alter<$#active.HELP_CODE$>')"/>&nbsp;
+						</td>
+					</tr>
+					</form>
+					<$endloop$>	
+				</table>
+				
+				<br />
+
+				<h3 class="ccla_data_panel_header">Add New Help Mapping</h3>
+				<p>Add a new help mapping to a document class. Select the document class and name of the uploaded help file.<br>
+				Populate the page No. if you want to jump to a particular page in the file.</p>
+				<form name="addForm" id="addForm" method="post" onsubmit="return checkAddForm();">
+				<input type="hidden" name="IdcService" 	value="CCLA_ADD_HELP" />
+				<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_HELP_ADMIN" />
+				<table class="ccla-table">
+					<tr>
+						<th width="30%">Document Class</th>
+						<th width="40%">Name</th>
+						<th width="15%">Page No.</th>
+						<th width="15%">Action</th>
+					</tr>
+					<tr>
+						<td align="center">
+							<select id="HELP_CODE" name="HELP_CODE">
+								<option value="">-</option>
+								<$loop rsDocClasses$>
+								<option value="<$#active.DOC_CLASS$>"><$#active.DOC_CLASS$></option>
+								<$endloop$>
+							</select>
+						</td>
+						<td align="center"><select id="DOCNAME" name="DOCNAME">
+								<option value="">-</option>
+								<$exec rsFirst("rsHelpDocs")$>
+								<$loop rsHelpDocs$>
+								<option value="<$#active.dDocName$>"><$#active.dDocName$></option>
+								<$endloop$>
+							</select>
+						</td>
+						<td align="center"><input type="text" name="PAGE_NUMBER" id="PAGE_NUMBER" value="" size="5"/></td>
+						<td align="center"><input type="submit" value="Add" name="submitAdd" id="submitAdd" class="generic_button"/></td>
+					</tr>
+				</table>					
+				</form>
+			</div>
+			<$include orangeContainer_bottom$>
+			<br />
+			
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_header'>
+				Upload New Help File
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				<p>Upload new help files. Select a file and type in a name and select upload.</p>
+
+				
+			
+			<$if added$>
+				<div class="message_panel info_icon">
+					New item added.
+				</div>
+			<$endif$>
+			
+			<form name="newdocform" id="newdocform" enctype="multipart/form-data" action="<$HttpCgiPath$>" method="POST">
+			<input type=hidden name="IdcService" value="CCLA_CHECKIN_NEW">
+			<input type=hidden name="dDocAuthor" value="<$dUser$>">
+			<input type=hidden name="dSecurityGroup" value="Public">
+			<!--<input type=hidden name="xStorageRule" value="testStorageRule">-->
+			<input type=hidden name="RedirectUrl" value="<$HttpCgiPath & "?IdcService=CCLA_HELP_ADMIN&added=1"$>">
+			
+			<input type=hidden name="lApp" value="IRIS" />
+			<input type=hidden name="lAction" value="ADD-DOC" />
+			<input type=hidden name="lUser" value="<$dUser$>" />
+				
+			<input type=hidden name="dDocType" value="System"/>
+			<input type=hidden name="dDocTitle" value="testhelp"/>
+			
+			<table class="ccla-table">
+				<tr>
+					<th width="7%">Name: </th><td width="35%"><input type="text" id="dDocName" name="dDocName" size="30" maxlength="30"></td>
+					<th width="8%">File: </th><td width="50%"><input name="primaryFile" size="30" maxlength="250" type="file"></td>
+				</tr>
+				<tr>
+					<td colspan="4"><input type=submit value=Submit class="generic_button"></td>
+				</tr>
+			</table>
+			</form>
+			
+			</div>
+			<$include orangeContainer_bottom$>
+			
+			<br/>
+
+		</div>
+
+	</div>
+	
+	
+	
+</body></html>

@@ -1,0 +1,168 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+isSyncTableDesign=true
+tableName=TAUDITCONFIG_FIXEDMAP
+blFieldTypes=schCreateTimestamp date,schModifyTimestamp date
+numRows=19
+fullQueryString=SELECT *  FROM TAUDITCONFIG_FIXEDMAP WHERE ((TAUDITCONFIG_FIXEDMAP.schCreateTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'})  OR (TAUDITCONFIG_FIXEDMAP.schModifyTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'}) )
+beginDate={ts '2009-01-01 17:04:31.900'}
+primaryKeysTAUDITCONFIG_FIXEDMAP=schPrimaryKey
+useParentTS=false
+useSourceID=0
+modifyTimeStamp=schModifyTimestamp
+archiveDate={ts '2009-05-09 17:43:11.561'}
+removeExistingChildren=0
+createTimeStamp=schCreateTimestamp
+allowDeleteParentRows=0
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+endDate={ts '2009-05-09 17:43:11.561'}
+numFieldsTAUDITCONFIG_FIXEDMAP=7
+isTableArchive=1
+removeOnlyWhenNoChild=0
+timeZone=Europe/London
+instanceName=idcxe
+@end
+@ResultSet ExportResults
+7
+schPrimaryKey 6 20
+schCreateTimestamp 5 20
+schModifyTimestamp 5 20
+schSourceID 6 50
+AC_VALUE 6 64
+AC_FIELD 6 32
+AC_ACTION 6 32
+19
+{ts '2009-04-27 18:27:25.005'}
+{ts '2009-04-27 18:27:25.005'}
+idcxe
+System
+AREF_TYPE
+LOGIN
+1
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+ADD-TASK-COMMENT
+2
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+HERA
+AAPP
+
+3
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+DEV
+AREPOSITORY
+
+4
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Case
+APARENT_TYPE
+
+5
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+_autoDiscussion
+AREF_TYPE
+CREATE-DISCUSSION
+6
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Folder
+AREF_TYPE
+NEW-FOLDER
+7
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Folder
+AREF_TYPE
+UPDATE-FOLDER
+8
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Folder
+AREF_TYPE
+DELETE-CASE-FOLDER
+9
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Team
+AREF_TYPE
+ADD-TEAM-MEMBER
+10
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Team
+AREF_TYPE
+REMOVE-TEAM-MEMBER
+11
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+COMPLETE-TASK
+12
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+ACCEPT-TASK
+13
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+RELEASE-TASK
+14
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Team
+AREF_TYPE
+CREATE-ROLE
+15
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Team
+AREF_TYPE
+REMOVE-ROLE
+16
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Team
+AREF_TYPE
+UPDATE-ROLE
+17
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+CREATE-PROCESS
+18
+{ts '2009-03-30 15:30:42.806'}
+{ts '2009-03-30 15:30:42.806'}
+idcxe
+Task
+AREF_TYPE
+COMPLETE-SIGNED-TASK
+@end
+

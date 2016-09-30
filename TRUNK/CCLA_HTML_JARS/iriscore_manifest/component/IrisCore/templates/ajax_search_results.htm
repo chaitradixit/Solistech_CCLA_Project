@@ -1,0 +1,10 @@
+﻿<$executeService("GET_SEARCH_RESULTS")$>
+<span class="ajax_total_results">Total Results: <$TotalRows$></span>
+<br/>
+<br/>
+
+<$loop SearchResults$>
+	<div class="ajax_result_row">
+		<a href="<$HttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$dDocName$>"><$dDocTitle$></a>
+	</div>
+<$endloop$>

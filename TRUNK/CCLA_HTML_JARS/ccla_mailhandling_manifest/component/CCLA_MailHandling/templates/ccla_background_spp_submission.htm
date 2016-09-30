@@ -1,0 +1,85 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Don't close this window.
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<script type="text/javascript">
+		var userClose = true;
+		
+		function confirmPopupClose(){
+			if(userClose)
+				return 'The envelope might be in the process of submitting to Workflow.';
+			else
+				return '';
+		}
+		
+		function getCurrentTime(){
+			var currentTime = new Date();
+			var hours = currentTime.getHours();
+			var minutes = currentTime.getMinutes();
+			
+			if (minutes < 10){
+				minutes = "0" + minutes
+			}
+			
+			var time = "";
+			time = hours + ":" + minutes + " ";
+			
+			if(hours > 11){
+				time += "PM";
+			} else {
+				time += "AM";
+			}
+			return time;
+		}
+		
+		function performSppSubmission(wfForm){
+			var wfForm = window.opener.getWfForm();
+			var thisWindow = window;
+			
+			if(wfForm != null){
+				try{
+					var currentTime = getCurrentTime();
+					$('#dbg').html('Submitting ' + wfForm.elements['lTitle'].value + ' (' + wfForm.elements['lRef'].value + ') at ' + currentTime);
+					
+					var redirectUrl = wfForm.elements['RedirectUrl'].value;
+					
+					$.post(
+						'?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_BACKGROUND_SPP_SUBMISSION<$include add_idc_token_to_url$>'
+						, 
+						$(wfForm).serialize()
+						,
+						function(data){
+							userClose = false;
+							window.close();
+						}
+					);
+					
+					window.opener.doneBgSppSubmission(redirectUrl);
+					
+				}catch(err){
+					$('#err').html('An error has occurred: ' + err.description);
+					window.focus();
+				}
+			}
+		}
+	</script>
+</head>
+<body onLoad="performSppSubmission();" onbeforeunload='if(userClose) return confirmPopupClose();' onfocus='window.blur();'>
+	Please do not close this window, it should close automatically in a few minutes.
+	
+	<div id="dbg">
+	
+	</div>
+	
+	<div id="err">
+	
+	</div>
+	
+
+</body>
+</html>

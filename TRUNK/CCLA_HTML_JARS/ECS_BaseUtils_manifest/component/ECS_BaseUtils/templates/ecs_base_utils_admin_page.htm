@@ -1,0 +1,35 @@
+﻿<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+	<$defaultPageTitle="ECS Base Utils Test page"$>
+	<$include std_html_head_declarations$>
+</head>
+
+	<$include body_def$>
+
+	<$include std_page_begin$>
+<body>
+	<h1>Base Utils Test Page</h1>
+	<$if #active.testPageDoc$>
+		<h2>Test results:</h2>
+		DocName: <$testPageDoc$></br>
+		
+		<table>
+		<$loop TestResults$>
+			<tr>
+				<td>
+					<$TestResults.dDocName$>
+				</td>
+				<td>
+					<$TestResults.dDocTitle$>
+				</td>
+			</tr>
+		<$endloop$>
+		</table>
+	<$endif$>
+	<$if TestResults$>
+		<a href="?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=ECS_BASE_UTILS_ADMIN_PAGE">Return to admin page</a>
+	<$else$>
+		<a href="?IdcService=ECS_BASE_UTILS_TEST<$include add_idc_token_to_url$>"><button>Run Test</button></a>
+	<$endif$>
+</body></html>

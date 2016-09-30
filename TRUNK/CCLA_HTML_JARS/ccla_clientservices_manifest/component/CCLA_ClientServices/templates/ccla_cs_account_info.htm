@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$isInfo = 1$>
+
+	<$ELEMENT_ID = #active.ACCOUNT_ID$>
+	
+	<title>
+		 <$#active.ACCNUMEXT$> | Account <$if strEquals(#active.ACCOUNT_STATUS_ID,"5")$>Template <$endif$>Info
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_element_relations_js$>
+	<$include ccla_cs_ajax_toggle_panel_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include ccla_cs_ajax_js$>
+	
+	<$include float_menu_header$>
+	
+	
+</head>
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div id="cs_page_container" class="cs-page-container">	
+		
+		<$buttonContext = "account"$>
+		<$include ccla_cs_include_tab_parameters$>
+		<$if NOT hideActionButtons$>
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<$include ccla_cs_account_set_aml_check_override_user_form$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+				<$include ccla_cs_toggle_info_edit_display$>
+			
+				<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Account <$if strEquals(rsAccount.ACCOUNT_STATUS_ID,"5")$>Template <$endif$>info: <$#active.ACCNUMEXT$>
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						<$include ccla_cs_display_account_info$>
+						<br/>			
+					</div>
+
+				<$include orangeContainer_bottom$>
+				
+				<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Instructions
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<$exec rsFirst("rsAccount")$>
+						<$exec rsFirst("rsFund")$>
+						<$exec rsFirst("rsAuroraClientMap")$>
+						
+						<$accountClientNumber = ""$>
+						
+						<$loop rsAuroraClientMap$>
+							<!-- Determine the correct Client Number for this org. -->
+							<$if #active.COMPANY_ID like rsFund.COMPANY_ID$>
+								<$accountClientNumber = #active.CLIENT_NUMBER$>
+							<$endif$>
+						<$endloop$>
+						
+						<$panelToggleLabel 	= "Show/hide most recent"$>
+						<$panelId 			= "instructions_ajax_panel"$>
+						<$panelIncName 		= "ccla_cs_display_instruction_listing"$>
+						<$panelParams 		= 	"{'ACCOUNT_ID': '" & #local.ELEMENT_ID & 
+												"', 'clientNumber': '" & accountClientNumber &
+												"', 'fundCode': '" & rsAccount.FUND_CODE &
+												"', 'accountNumber': '" & rsAccount.ACCOUNTNUMBER & "'}"$>
+						
+						<$include ccla_cs_ajax_panel_display$>
+
+					</div>
+					
+					<$include orangeContainer_bottom$>
+				
+				<$include ccla_cs_account_relations$>
+				
+				<br/>
+				
+			</div>
+		</div>
+
+	</div>
+		
+</body>
+</html>

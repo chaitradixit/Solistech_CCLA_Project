@@ -1,0 +1,27 @@
+﻿<?hda version="10.1.3.5.0 (090707)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+CreateDate=17/04/2008 13:28
+blFieldTypes=CreateDate date
+ComponentName=ECS_SearchAndFilter
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+ECS_SearchAndFilter/ECS_SearchAndFilter.hda
+componentExtra
+ECS_SearchAndFilter/readme.txt
+images
+ECS/SearchAndFilter/
+weblayout
+epoch/epoch_classes.js
+weblayout
+epoch/epoch_styles.css
+weblayout
+epoch/images/epoch_calendar.gif
+componentClasses
+ECS_SearchAndFilter/classes/ECSSearchAndFilter.jar
+@end
+

@@ -1,0 +1,160 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	
+	<style type="text/css">
+		.count-mismatch {
+			background-color:red;
+			color: #FFF !important;
+		}
+		
+		.count-match {
+			background-color:green;
+			color: #FFF !important;
+		}
+		
+		.count-warning {
+			background-color: orange;
+		}
+		
+		.count-error {
+			background-color: red;
+			color: #FFF !important;
+		}
+		
+	</style>
+	
+	<title>Document Volumes Report</title>
+
+	<$include iris_jquery_js$>
+	
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_expandable_region_js$>
+	
+</head>
+
+
+<body <$include iris_body_def_internal$> style="text-align:center">
+
+	<$include iris_header$>
+
+	<div style="text-align: center">
+		<div class="grey_bg" style="margin: 15px auto;width: 980px;">
+		
+		<$include orangeContainer_top$>
+		
+		<div class="ccla_cs_panel_header">
+			Document Volumes Report
+		</div>
+		
+		<$if #local.reportDocName$>
+			<div class="message_panel info_icon">
+				Your report is available here: 
+					<a href="?IdcService=GET_FILE&dDocName=<$#local.reportDocName$>&RevisionSelectionMethod=Latest"><$#local.reportDocName$></a>
+			</div>
+		<$endif$>
+		
+		<p>
+			Document counts grouped by their class, source, status, company and month they were added.
+		</p>
+		
+		<p>
+			The count is based on all documents added to UCM between the start date and (but not including) the end date.
+		</p>
+		
+		<form>
+			<input type="hidden" name="IdcService" value="CCLA_DOCUMENT_VOLUMES_REPORT" />
+			
+			<table border="0">
+				<tr>
+					<th>
+						Start Date
+					</th>
+					<td>
+						<input type="text" name="startDateStr" value="<$#local.startDateStr$>" />
+					</td>
+				</tr>
+				<tr>
+					<th>
+						End Date
+					</th>
+					<td>
+						<input type="text" name="endDateStr" value="<$#local.endDateStr$>" />
+					</td>
+				</tr>
+				<tr>
+					<th>&nbsp;</th>
+					<td>
+						<input type="submit" name="submitType" value="Display Results"/>
+						<input type="submit" name="submitType" value="Generate CSV File"/>
+					</td>
+				</tr>
+			</table>
+		
+		</form>
+		
+		<br/>
+		
+		<$if #local.submitType like "Display Results"$>
+			<table class="accounts-table" width="95%" cellspacing="0" cellpadding="0">
+				<tr>
+					<th class="first-col">
+						Doc Status
+					</th>
+					<th >
+						Doc Type
+					</th>
+					<th >
+						Doc Class
+					</th>
+					<th >
+						Source
+					</th>
+					<th >
+						Process Status
+					</th>
+					<th >
+						Company
+					</th>
+					<th >
+						No. of Docs
+					</th>
+					<th>
+						Month
+					</th>
+					<th>
+						Year
+					</th>
+				</tr>
+				
+				<$loop rsDocumentVolumes$>
+					<tr class="account-details-row">	
+			
+						<td class="first-col"><$if #active.dStatus$><$#active.dStatus$><$else$>&nbsp;<$endif$></td>		
+						<td><$if #active.dDocType$><$#active.dDocType$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.xDocumentClass$><$#active.xDocumentClass$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.xSource$><$#active.xSource$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.xStatus$><$#active.xStatus$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.xCompany$><$#active.xCompany$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.NUM_DOCS$><$#active.NUM_DOCS$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.CREATE_MONTH$><$#active.CREATE_MONTH$><$else$>&nbsp;<$endif$></td>
+						<td><$if #active.CREATE_YEAR$><$#active.CREATE_YEAR$><$else$>&nbsp;<$endif$></td>
+						
+					</tr>
+				<$endloop$>
+			</table>
+
+			<br/>
+		
+		<$endif$>
+		
+		<$include orangeContainer_bottom$>
+		
+	</div>
+	</div>
+
+</body>
+</html>
+

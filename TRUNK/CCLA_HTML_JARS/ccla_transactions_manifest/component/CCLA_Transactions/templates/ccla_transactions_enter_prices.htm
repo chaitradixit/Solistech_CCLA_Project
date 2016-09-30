@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<$fundCode = #env.PSDF_FUND_CODE$>
+
+		
+		<title>
+			Confirm prices for <$fundCode$>  STEP 4.0
+		</title>
+		
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+
+		function editShareClassExpense(expenseId, shareClassId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_EDIT<$include add_idc_token_to_url$>&INCOME_EXPENSE_ID=" + expenseId + "&SHARE_CLASS_ID=" + shareClassId + '&ts=' + new Date());		
+		}
+
+		function addShareClassExpense(shareClassId, fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_NEW<$include add_idc_token_to_url$>&SHARE_CLASS_ID=" + shareClassId + "&FUND_CODE=" + fundCode + '&ts=' + new Date());		
+		}		
+	
+		function editShareClass(shareClassId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_SHARE_CLASS_EDIT<$include add_idc_token_to_url$>&SHARE_CLASS_ID=" + shareClassId + '&ts=' + new Date());		
+		}		
+		
+		function editGeneralExpense(expenseId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_EDIT<$include add_idc_token_to_url$>&INCOME_EXPENSE_ID=" + expenseId + '&ts=' + new Date());		
+		}	
+		
+		function addGeneralExpense(fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_NEW<$include add_idc_token_to_url$>&FUND_CODE=" + fundCode + "&ts=" + new Date());		
+		}	
+
+		function editIncome(fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_INCOME_EDIT<$include add_idc_token_to_url$>&FUND_CODE=" + fundCode + "&ts=" + new Date());		
+		}		
+		
+		function removeExpense()
+		{
+					var frm = document.forms['frmShareClassUpdate'];
+				frm.elements['IdcService'].value = "CCLA_TRANS_INCOME_EXPENSE_DELETE";
+				frm.submit();
+		}	
+
+		function continueNext()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_START_CALCULATE_EOD_PSDF<$include add_idc_token_to_url$>" ;
+		}	
+
+		function restartEOD()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_RESTART_EOD<$include add_idc_token_to_url$>" ;
+		}	
+		
+		function restartEODWithDate()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_RESTART_EOD_WITH_DATE<$include add_idc_token_to_url$>" ;
+		}	
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	<$include ecs_popup_div_header$>		
+	<$include iris_header$>
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+			<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>
+
+				<$if #active.ERROR_MESSAGE$>
+					<$include orangeContainer_top$>
+					<strong><$#active.ERROR_MESSAGE$></strong>
+					
+					<$if AllowRestart == 1$>
+						<br><br>
+							<input type="button" class="generic_button" value="Restart End of Day" onclick="restartEOD();">
+							&nbsp;
+							or 
+							&nbsp;
+							<input type="button" class="generic_button" value="Restart End of Day With Date Range" onclick="restartEODWithDate();">
+						<br><br>
+					<$endif$>
+					
+					<$include orangeContainer_bottom$>
+				<$else$>				
+					<$include orangeContainer_top$>
+					<$if #active.runPreviousEOD == 1$>
+						<div class="message_panel error_icon">
+							<strong>Warning: Last completed end of day was more than 1 day ago. In order to proceed you will first
+									have to run the end of day for the previous time period of
+									<$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>
+							</strong>
+							<br><br>				
+						</div>
+					<$endif$>
+					<$if #active.runWithDateRange == 1$>
+						<div class="message_panel error_icon">
+							<strong>Warning: You are running the end of day with the following date range:
+									<$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>
+							</strong>
+							<br><br>				
+						</div>
+					<$endif$>
+					
+				
+				<div class='ccla_cs_panel_header'>
+					Prices
+				</div>
+				
+					<p>Please enter the prices in pence.</p>
+				<$if rsPrice$>
+					<$loop rsPrice$>
+						<$bid = #active.BID$>
+						<$basic = #active.BASIC$>
+						<$offer = #active.OFFER$>
+					<$endloop$>
+				<$endif$>
+				
+				<$if NOT bid $><$bid =100.00$><$endif$> 
+				<$if NOT basic $><$basic =100.00$><$endif$> 
+				<$if NOT offer $><$offer =100.00$><$endif$> 
+
+				<form name="frmUnitPrice" method="POST">
+				<div class='ccla_cs_panel_header'>
+					<table cellpadding="0" cellspacing="0"  class="accounts-table">
+						<tr  class="account-details-row" >
+							<td>Bid Price (p): </td>
+							<td><input size="10" type="text" value="<$bid$>" name="BID"></td>
+						</tr>
+						<tr class="account-details-row" >
+							<td>Basic Price (p): </td>
+							<td><input size="10" type="text" value="<$basic$>" name="BASIC"></td>
+						</tr>
+						<tr class="account-details-row" >
+							<td>Offer Price (p): </td>
+							<td><input size="10" type="text" value="<$offer$>" name="OFFER"></td>
+						</tr>
+						<tr class="account-details-row" >
+							<td>Model:</td>
+							<td>
+								<select name="DEAL_TYPE_ID">
+									<option value="1">Mid</option>
+									<option value="2">Spread</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<br>
+					<input type="submit" value="Save and Continue" >
+				</div>
+				<input type="hidden" name="FUND_CODE" value="<$fundCode$>">
+				
+				<!-- If running for a date range or previous day --> 
+				<$if #active.runPreviousEOD==1 or #active.runWithDateRange==1$>
+					<input type="hidden" name="END_DATE" value="<$formatDateWithPattern(#active.END_DATE,'dd/MM/yyyy')$>" />
+				<$endif$>
+				
+				<input type="hidden" value="<$#active.FORCE_PROCESS$>" name="FORCE_PROCESS" id="FORCE_PROCESS">
+				<input type="hidden" name="IdcService" value="CCLA_TRANS_PRICE_UPDATE">
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_START_EOD_PSDF&FORCE_PROCESS=<$#active.FORCE_PROCESS$><$include add_idc_token_to_url$>">
+				<$include add_idc_token_to_form$>
+				</form>
+				<$include orangeContainer_bottom$>
+			<$endif$>				  			
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html></body></html>

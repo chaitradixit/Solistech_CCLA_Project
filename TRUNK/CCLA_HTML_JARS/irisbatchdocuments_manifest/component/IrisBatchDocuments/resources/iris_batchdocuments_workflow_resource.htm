@@ -1,0 +1,375 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IRIS_BatchDocuments htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!--
+==============================
+All includes in this file were copied from the Tayside
+Mail Handling component and renamed from 'tayside_' to
+'iris_batch_'. There are preserved here as an example
+only - it is expected that most workflows will be client-
+specific.
+
+TM 01/08/08
+==============================
+-->
+
+
+<!-- Called on entry event to the Open step of the
+		 MailHandling workflow. -->
+<@dynamichtml iris_batch_mailhandling_open_step_entry@>
+
+	<$wfReleaseDocument()$>
+	<$wfUpdateMetaData("xStatus","Open")$>
+	
+<@end@>
+
+<!-- Called on entry event to the Assigned step of the
+		 MailHandling workflow. -->
+<@dynamichtml iris_batch_mailhandling_assigned_step_entry@>
+	
+	<$wfSet("wfJumpEntryNotifyOff", "1")$>
+	<$wfUpdateMetaData("xStatus","Assigned")$>
+	
+<@end@>
+
+<!-- Called in the update event of the Assigned step.
+			
+		 Checks if the new assignee differs from the previously-
+		 saved one. If it does, make the item do a workflow
+		 jump to the same step to give the new assignee access.
+		 
+		 If the xApprover value has been set to '%SEND_BACK%',
+		 the previous assignee must be retrieved from the companion
+		 file. This is then set as the approver before re-entering
+		 the Assigned workflow step.
+		 
+		 If there are no previous assignees remaining, the item
+		 is jumped back to the initial 'Open' step.
+		 -->
+<@dynamichtml iris_batch_mailhandling_assigned_step_update@>
+	
+	<$if xApprover like '%COMPLETED%'$>
+		<!-- User attempting to mark bundle as completed -->
+		<$include iris_batch_mailhandling_finish$>
+	
+	<$elseif xApprover$>	
+		<$if xApprover like '%SEND_BACK%'$>
+			<!-- User has opted to 'send back' bundle to previous
+				 assignee. Companion file must be checked to find
+				 the previous approver. -->
+				 
+			<$assignCount = wfGet("assignCount")$>
+				
+			<!-- Blank out current approver info from companion file -->
+			<$wfSet("approver_" & assignCount,"")$>	
+			
+			<!-- Add user audit message to xAuditParams (if applicable) -->
+			<$wfSet("lastAuditMsg",xAuditParams)$>
+			
+			<$if assignCount == 1$>
+				<!-- There are no assignees left to send the bundle
+						 back to. In this case, move the bundle back to
+						 the intial 'Open' step of the workflow. -->
+				<$wfSet("assignCount","")$>
+				<$wfSet("lastApprover","")$>
+				<$wfUpdateMetaData("xApprover","")$>
+				<$wfUpdateMetaData("xPrevApprover","")$>
+				
+				<$include iris_batch_mailhandling_add_sendback_audit$>
+						 
+				<$wfSet("wfJumpName", "Sent back to Open step")$>
+				<$wfSet("wfJumpEntryNotifyOff", "1")$>
+				<$wfSet("wfJumpTargetStep","Open@MailHandling")$>
+				
+				<!-- TODO: Need a notification here for the 'Open' step guys -->
+				
+			<$else$>
+				<!-- Update assign count -->
+				<$newAssignCount = assignCount-1$>
+				<$wfSet("assignCount",newAssignCount)$>
+					
+				<!-- Retrieve previous assignee name/alias -->
+				<$prevApprover = wfGet("approver_" & (assignCount-1))$>
+					
+				<$wfSet("lastApprover",prevApprover)$>
+				<$wfUpdateMetaData("xApprover",prevApprover)$>
+				
+				<!-- Look for the 2nd previous approver and add to xPrevApprover -->
+				<$if assignCount > 1$>
+					<$prevApprover2 = wfGet("approver_" & (assignCount-2))$>
+					<$wfUpdateMetaData("xPrevApprover",prevApprover2)$>
+				<$else$>
+					<$wfUpdateMetaData("xPrevApprover","")$>
+				<$endif$>
+				
+				<$wfSet("lastAuditMsg",xAuditParams)$>
+				
+				<!-- Set workflow to jump to Assigned step -->
+				<$wfSet("wfJumpName", "Re-assigned")$>
+					
+				<$include iris_batch_mailhandling_add_sendback_audit$>	
+				<$include iris_batch_mailhandling_jump_to_assigned_step$>
+				
+				<$include iris_batch_mailhandling_dispatch_sendback_notification$>
+				
+			<$endif$>
+			
+		<$else$>			
+			<!-- Only jump if the new approver differs from the
+					 previous one. -->
+			<$prevApprover = wfGet("lastApprover")$>		 
+					 
+			<$if not (xApprover like prevApprover)$>
+				<$wfSet("lastApprover",xApprover)$>	
+				
+				<!-- Keep a history in the companion file
+						 of all previous approvers. -->
+				<$count = 1$>
+				<$count = wfGet("assignCount") + 1$>
+				
+				<$wfSet("assignCount",count)$>
+				<$wfSet("approver_" & count,xApprover)$>
+				
+				<$wfUpdateMetaData("xPrevApprover",prevApprover)$>
+				
+				<$wfSet("lastAuditMsg",xAuditParams)$>
+				
+				<$include iris_batch_mailhandling_add_assign_audit$>
+				<$include iris_batch_mailhandling_dispatch_notification$>
+							
+			<$endif$>
+		<$endif$>
+	<$endif$>
+	
+	<$include iris_batch_mailhandling_check_date_fields$>
+		
+<@end@>
+
+<@dynamichtml iris_batch_add_assignee_to_step@>
+	
+	<$wfSet("wfJumpEntryNotifyOff", "1")$>
+	
+	<$if xApprover$>
+		
+		<$if strIndexOf(xApprover,"a:") == 0$>
+			<!-- Approver field holds an alias name. -->
+			<$approverAlias = strSubstring(xApprover,2)$>
+			<$wfAddUser(approverAlias,"alias")$>
+					
+		<$else$>
+			<!-- Approver field holds a user name. -->
+			<$wfAddUser(xApprover,"user")$>
+		<$endif$>
+		
+	<$endif$>
+
+<@end@>
+
+
+<@dynamichtml iris_batch_mailhandling_open_step_update@>
+	
+	<$if xApprover like '%COMPLETED%'$>
+		<!-- User attempting to mark bundle as completed -->
+		<$include iris_batch_mailhandling_finish$>
+		
+	<$elseif xApprover$>
+		<!-- Set workflow to jump to Assigned step -->
+		<$wfSet("approver_1",xApprover)$>
+		<$wfSet("assignCount","1")$>
+		<$wfSet("lastApprover",xApprover)$>
+		
+		<$wfSet("lastAuditMsg",xAuditParams)$>
+		
+		<$wfSet("wfJumpName", "Move to Assigned step")$>
+		
+		<$include	iris_batch_mailhandling_add_assign_audit$>
+		<$include iris_batch_mailhandling_jump_to_assigned_step$>
+		
+		<$include iris_batch_mailhandling_dispatch_notification$>
+			
+	<$endif$>
+	
+	<$include iris_batch_mailhandling_check_date_fields$>
+	
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_jump_to_assigned_step@>
+			
+	<!-- Set workflow to jump to Assigned step -->
+	<$wfSet("wfJumpEntryNotifyOff", "1")$>
+	<$wfSet("wfJumpTargetStep","Assigned@MailHandling")$>
+
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_dispatch_notification@>
+
+	<$wfMailSubject="Bundle " & xBundleRef & " has been assigned to you"$>
+		
+	<$if strIndexOf(xApprover,"a:") == 0$>
+		<$wfNotify(strSubstring(xApprover,2),"alias","IRIS_BATCH_REVIEWER_MAIL")$>
+	<$else$>
+		<$wfNotify(xApprover,"user","IRIS_BATCH_REVIEWER_MAIL")$>
+	<$endif$>
+	
+	<$wfSet("wfJumpEntryNotifyOff", "1")$>
+	
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_dispatch_sendback_notification@>
+
+	<$wfMailSubject="Bundle " & xBundleRef & " was sent back to you"$>
+		
+	<$if strIndexOf(xApprover,"a:") == 0$>
+		<$wfNotify(strSubstring(xApprover,2),"alias","IRIS_BATCH_REVIEWER_MAIL")$>
+	<$else$>
+		<$wfNotify(xApprover,"user","IRIS_BATCH_REVIEWER_MAIL")$>
+	<$endif$>
+	
+	<$wfSet("wfJumpEntryNotifyOff", "1")$>
+	
+<@end@>
+
+
+<!-- Releases a document from the MailHandling workflow -->
+<@dynamichtml iris_batch_mailhandling_finish@>
+	
+	<$wfUpdateMetaData("xApprover","")$>
+	<$wfUpdateMetaData("xStatus","Completed")$>
+			
+	<$include iris_batch_mailhandling_add_completion_audit$>	
+	<$wfExit(100,100)$>
+
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_check_date_fields@>
+
+	<$c="Check for changes in due date field (xPaymentDate)"$>
+	<$lastDueDate = wfGet("last_DueDate")$>
+	
+	<$if xPaymentDate$>
+		<$curVal = formatDateWithPattern(xPaymentDate,#active.Iris_shortDatePattern)$>
+	<$else$>
+		<$curVal = ""$>
+	<$endif$>
+	
+	<$if curVal or lastDueDate$>
+		<$if not (#local.curVal like #local.lastDueDate)$>
+			
+			<$wfSet("last_DueDate",curVal)$>
+			<$thisField = "Due date"$>
+			<$newValue = curVal$>
+			<$include iris_batch_mailhandling_add_fieldupdate_audit$>
+			
+		<$endif$>
+	<$endif$>
+	
+	<$if xAcknowledgeDate$>
+		<$curVal = formatDateWithPattern(xAcknowledgeDate,#active.Iris_shortDatePattern)$>
+	<$else$>
+		<$curVal = ""$>
+	<$endif$>
+
+	<$c="Check for changes in ack date field (xAcknowledgeDate)"$>
+	<$lastAckDate = wfGet("last_AckDate")$>
+	
+	<$if curVal or lastAckDate$>
+		<$if not (#local.curVal like #local.lastAckDate)$>
+			
+			<$wfSet("last_AckDate",curVal)$>
+			<$thisField = "Acknowledge date"$>
+			<$newValue = curVal$>
+			<$include iris_batch_mailhandling_add_fieldupdate_audit$>
+			
+		<$endif$>
+	<$endif$>
+	
+	<$if xOrderDate$>
+		<$curVal = formatDateWithPattern(xOrderDate,#active.Iris_shortDatePattern)$>
+	<$else$>
+		<$curVal = ""$>
+	<$endif$>
+	
+	<$c="Check for changes in resp date field (xOrderDate)"$>
+	<$lastRespDate = wfGet("last_RespDate")$>
+	
+	<$if curVal or lastRespDate$>
+		<$if not (#local.curVal like #local.lastRespDate)$>
+			
+			<$wfSet("last_RespDate",curVal)$>
+			<$thisField = "Response date"$>
+			<$newValue = curVal$>
+			<$include iris_batch_mailhandling_add_fieldupdate_audit$>
+			
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_add_assign_audit@>
+	
+	<$doAudit=1$>
+	<$lApp="IRIS"$>
+	<$lAction="ASSIGN"$>
+	<$lRef=dDocName$>
+	<$lTitle=xBundleRef$>
+	<$lUser=dUser$>
+	<$lMessage=#local.xAuditParams$>
+	<$lParam1=xApprover$>
+	
+	<$executeService("ECS_ADD_AUDIT_ENTRY")$>
+	
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_add_sendback_audit@>
+	
+	<$doAudit=1$>
+	<$lApp="IRIS"$>
+	<$lAction="SEND-BACK"$>
+	<$lRef=dDocName$>
+	<$lTitle=xBundleRef$>
+	<$lUser=dUser$>
+	<$lMessage=#local.xAuditParams$>
+	<$lParam1=#local.prevApprover$>
+	
+	<$executeService("ECS_ADD_AUDIT_ENTRY")$>
+	
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_add_completion_audit@>
+	
+	<$doAudit=1$>
+	<$lApp="IRIS"$>
+	<$lAction="COMPLETE"$>
+	<$lRef=dDocName$>
+	<$lTitle=xBundleRef$>
+	<$lUser=dUser$>
+	<$lMessage=xAuditParams$>
+	
+	<$executeService("ECS_ADD_AUDIT_ENTRY")$>
+	
+<@end@>
+
+<@dynamichtml iris_batch_mailhandling_add_fieldupdate_audit@>
+	
+	<$doAudit=1$>
+	<$lApp="IRIS"$>
+	<$lAction="FIELD-UPDATE"$>
+	<$lRef=dDocName$>
+	<$lTitle=xBundleRef$>
+	<$lUser=dUser$>
+	<$lMessage="Due date set to " & newValue$>
+
+	<$lParam1=thisField$>
+	<$lParam2=newValue$>
+	
+	<$executeService("ECS_ADD_AUDIT_ENTRY")$>
+	
+<@end@>
+
+</body></html>

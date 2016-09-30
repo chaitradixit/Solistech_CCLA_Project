@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$if personId$>
+			<!-- Fetch correspondent data -->
+			<$correspondentId = personId$>
+			<$methodName="GetCorrespondentByCorrespondentCode"$>
+			<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+			
+			<$if rsCorrespondent$>
+				<$executeService("CCLA_CS_GET_PROCESSES_BY_PERSON")$>
+				
+				<$loop rsPersonProcesses$>
+					<$if #active.CAMPAIGN_ID like campaignId$>
+						<$processId = #active.PROCESS_ID$>
+						<$campaignName = #active.CAMPAIGN_NAME$>
+						<$break$>
+					<$endif$>
+				<$endloop$>
+			<$endif$>
+		
+			<$if processId$>
+				<!-- Fetch all correspondent accounts via Aurora web service -->
+				<$methodName="GetAccountsByCorrespondentCode"$>
+				<$fundFilter="R,T"$>
+				<$filterClosedAccounts=1$>
+				<$filterEmptyAccounts=1$>
+				<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+				
+				<!-- Fetch any existing transfers for this process -->
+				<$executeService("CCLA_CS_GET_FUND_TRANSFERS_BY_PROCESS_ID")$>
+			<$endif$>
+		<$endif$>
+		
+		<title>
+			Review Fund Transfers<$if rsCorrespondent$>: <$rsCorrespondent.name$><$endif$>
+		</title>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$if not print$>
+			<$include iris_header$>
+		<$endif$>
+		
+		<div align=center style="margin-top: 20px;">	
+			<div id="ccla_cs_content" style='width: 700px'>
+			
+				<$if not print$>
+				
+					<$include orangeContainer_top$>
+				
+					<!-- Title for the user profile: displays the dDocName for this item -->
+					<div class='ccla_cs_panel_header'>
+						Correspondent lookup
+					</div>
+				
+					<div class='ccla_cs_panel_content'>
+				
+						<br/>
+						
+						<form method="post" action="<$HttpCgiPath$>?IdcService=CCLA_CS_REVIEW_FUND_TRANSFERS">
+							<input type="hidden" name="IdcService" value="CCLA_CS_REVIEW_FUND_TRANSFERS" /><$include add_idc_token_to_form$>
+							
+							<input type="hidden" name="company" value="COIF" />
+							
+							<table width="100%" cellpadding=0 cellspacing=2>
+								<tr>
+									<td width="150">Correspondent code:</td>
+									<td>
+										<input type="text" name="personId" value="<$#local.personId$>" /> 
+									</td>
+								</tr>
+								<tr>
+									<td>Campaign:</td>
+									<td>
+										<$executeService("CCLA_CS_GET_CAMPAIGNS")$>
+									
+										<select name="campaignId">
+											<$loop rsCampaigns$>
+												<option value="<$#active.CAMPAIGN_ID$>" <$if #local.campaignId like #active.CAMPAIGN_ID$>selected<$endif$>><$#active.NAME$></option>
+											<$endloop$>
+										</select>
+										
+										<input type="submit" value="Go" />
+									</td>
+								</tr>
+								
+								<$if correspondentId and not rsCorrespondent$>
+									<tr>
+										<td></td>
+										<td>
+											<div id="err_xAmount" class="validation_error error_icon">
+												<div class="validation_error_title">Error</div>
+												
+												<p>No matching correspondent found.</p>
+										
+											</div>
+										</td>
+									</tr>
+								<$endif$>
+							
+							</table>
+							
+						</form>
+							
+						<br/>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					<br/>
+					
+					<$if rsCorrespondent$>
+						<p style="text-align: left; margin: 0px 5px;">
+							<a target="_blank" href="<$HttpCgiPath$>?IdcService=CCLA_CS_REVIEW_FUND_TRANSFERS<$include add_idc_token_to_url$>&company=COIF&personId=<$personId$>&campaignId=<$campaignId$>&print=1">View printable version</a>
+						</p>
+						
+						<br/>
+					<$endif$>
+					
+				<$endif$>
+				
+				<$if rsCorrespondent$>
+					
+					<$include orangeContainer_top$>
+					
+					<!-- Title for the user profile: displays the dDocName for this item -->
+					<div class="ccla_cs_panel_header">
+						Review Fund Transfers: <$rsCorrespondent.name$><$correspondentName=rsCorrespondent.name$>
+					</div>
+				
+					<div class="ccla_cs_panel_content">
+						
+						<$if print$>
+							<h3 class="ccla_data_panel_header">Campaign</h3>
+							
+							<p>
+								<$campaignName$>
+							</p>
+						<$endif$>
+						
+						<$include ccla_cs_display_correspondent_details$>
+						
+						<br/>
+						
+						<$include ccla_cs_display_process_details$>
+						
+						<br/>
+
+							<!-- 	Work out how many accounts have been marked for transfer -->
+							<$numAccountsForTransfer = 0$>
+							<$loop rsFundTransfers$>
+								<$if #active.TRANSFER_TYPE like "amount|all|undecided"$>
+									<$numAccountsForTransfer = numAccountsForTransfer + 1$>
+								<$endif$>
+							<$endloop$>
+							
+							<$if false$>
+								<div class="ccla_data_panel">
+									<input type="hidden" name="AMLCheck" value="<$if #local.AMLCheck$>on<$endif$>" />
+									
+									<input type="checkbox" name="AMLCheck" <$if #local.AMLCheck$>checked="checked"<$endif$> disabled="disabled" />
+									Correspondent requires AML check
+								</div>
+								
+								<br/>
+							<$endif$>
+							
+							<h3 class="ccla_data_panel_header">Correspondent accounts marked for transfer 
+							<$if rsCorrespondentAccounts$>(<$#local.numAccountsForTransfer$>/<$getValue("rsCorrespondentAccounts","#numRows")$>)<$endif$></h3>
+							
+							<$if not rsFundTransfers$>
+								
+								<p>No transfers have been registered for this correspondent yet.</p>
+								
+							<$else$>
+							
+								<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+									<tr>
+										<th class="first-col">Client no.</th>
+										<th>Acc. no.</th>
+										<th>Acc. name</th>
+										<th>No. units</th>
+										<th>Units to transfer</th>
+									</tr>
+									
+									<$accountFieldPrefixes = "company,clientId,accountNumber,fund,transferType,transferAmount"$>
+									<$exec rsMakeFromString("rsAccountFieldPrefixes",accountFieldPrefixes,"fieldPrefix")$>
+
+									<$loop rsCorrespondentAccounts$>
+										<$fullAccNo = #active.accountNumberExternal$>
+										
+										<$exec rsFirst("rsFundTransfers")$>	
+										<$loop rsFundTransfers$>
+											<$thisFullAccNo = #active.CLIENT_ID & #active.ACCOUNT_NUMBER$>
+											
+											<$if fullAccNo like thisFullAccNo$>
+												<$transferType = #active.TRANSFER_TYPE$>
+												<$transferAmount = #active.TRANSFER_AMOUNT$>
+												<$break$>
+											<$endif$>
+											
+										<$endloop$>
+										
+										<tr id="" class="account-details-row">
+										
+											<td class="first-col"><$#active.clientNumber$></td>
+											<td><$#active.accountNumber$></td>
+											<td>
+												<$if #active.subtitle$><$#active.subtitle$><$else$>[Unnamed account]<$endif$>
+											</td>
+											<td><$#active.units$></td>
+											
+											<td>
+												<$if transferType like "none" or  transferType like "not_interested"$>
+													None
+												<$elseif transferType like "undecided"$>
+													Undecided
+												<$elseif transferType like "all"$>
+													All
+												<$elseif transferType like "amount"$>
+													<$transferAmount$>
+												<$else$>
+													Error: unknown transfer type
+												<$endif$>
+												
+											</td>
+											
+										</tr>
+				
+									<$endloop$>
+
+								</table>
+								
+							<$endif$>	
+							
+						</form>
+						
+					</div>
+					
+					<br/>
+					
+					<$include orangeContainer_bottom$>
+					
+					<br/>
+					
+					<$allowLogAdd=0$>
+					<$CORRESPONDENT_ID=#local.correspondentId$>
+					<$CORRESPONDENT_NAME=correspondentName$>
+					<$include ccla_cs_correspondant_communications_panel$>
+					
+					<br/>
+					
+					<$include ccla_cs_previous_activity_details$>
+					
+					<br/>
+					
+					<$include ccla_cs_correspondent_questions$>
+					
+				<$endif$>
+				
+			</div>
+		</div>
+		
+		<br/>
+		
+	</body>
+</html>

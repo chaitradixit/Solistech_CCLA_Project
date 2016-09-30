@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<!-- TODO: not implemented yet -->
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if RELATION_ID$>
+			Update Relationship
+		<$else$>
+			Add New Relationship
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$if RELATION_ID$>
+					Update Relationship
+				<$else$>
+					Add New Relationship
+				<$endif$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<$if added$>
+					<div class="message_panel info_icon">
+						New relation added.	
+					</div>
+				<$elseif updated$>	
+					<div class="message_panel info_icon">
+						Relation updated.	
+					</div>
+				<$endif$>
+				
+				<form method="POST">
+					<input type="hidden" name="ELEMENT_ID" 	value="<$#local.ELEMENT_ID$>" />
+				
+					<$if not RELATION_ID$>
+						<!-- New relation. -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_ADD_ELEMENT_RELATION" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_RELATION_EDIT<$include add_idc_token_to_url$>&RELATION_ID=<$#local.ELEMENT_ID$>&added=1" />
+						
+						<$include ccla_cs_contact_detail_display$>
+						
+					<$else$>
+						<!-- Existing relation. -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_ELEMENT_RELATION" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RELATION_ID"	value="<$#local.CONTACT_ID$>" />
+						
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_RELATION_EDIT<$include add_idc_token_to_url$>&RELATION_ID=<$#local.ELEMENT_ID$>&CONTACT_ID=<$#local.CONTACT_ID$>&updated=1" />
+						
+						<$loop rsContactDetail$>
+							<$include ccla_cs_contact_detail_display$>
+						<$endloop$>
+						
+					<$endif$>
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

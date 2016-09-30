@@ -1,0 +1,438 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_MailHandling service
+</title>
+</head>
+<body>
+
+<@table CCLA_MailHandling_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CCLA_MANAGE_SIGNATURES</td>
+	<td>DocService
+		0
+		CCLA_MANAGE_SIGNATURES
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_SIGNATURE</td>
+	<td>DocService
+		0
+		CCLA_ADD_SIGNATURE
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_VIEW_SIGNATURES</td>
+	<td>DocService
+		0
+		CCLA_VIEW_SIGNATURES
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_WF_APPROVE</td>
+	<td>WorkflowService
+		1
+		REDIRECT_TEMPLATE
+		null
+		workflows,documents<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		5:QdocInfo:DOC_INFO:6:!csWfApproveError(dDocName)!csItemNoLongerInSystem
+		3:setConditionVars:IgnoreAccounts:0:!csWfApproveError(dDocName)
+		3:checkSecurity:DOC_INFO:0:null
+		3:checkForRevalidateLogin::0:null
+		3:renameValues:dDocName,dDocName,dDocTitle,dDocTitle:0:null
+		3:setLocalValues:wfAction,APPROVE:0:null
+		3:computeWorkflowInfo:WF_INFO,DOC_INFO:0:null
+		3:isDocCheckedOut:false:0:null
+		3:approveDoc::0:null
+		2:IworkflowState::0:null
+		3:docHistoryInfo:Approve,IworkflowDocHistory:1:null
+		3:updateWorkflowAndDocState::8:null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:doSubService:ECS_IRIS_APPLY_POST_WORKFLOW_ACTION_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_WF_REJECT</td>
+	<td>WorkflowService
+		1
+		REDIRECT_TEMPLATE
+		null
+		workflows,documents<br>
+		null</td>
+	<td>5:QdocInfo:DOC_INFO:6:!csWfRejectError(dDocName)!csItemNoLongerInSystem
+		3:computeWorkflowInfo:WF_INFO,DOC_INFO:0:!csWfRejectError(dDocName)
+		3:setConditionVars:IgnoreAccounts:0:!csWfDocRejectError(dDocName,dWfName)<br>
+		3:checkSecurity:DOC_INFO:0:!csWfDocRejectError(dDocName,dWfName)
+		3:renameValues:dWfID,dWfID,dDocName,dDocName,dDocTitle,dDocTitle,dDocAuthor,dDocAuthor,wfRejectMessage,wfMessage,dPublishState,dPublishState:0:null
+		3:setLocalValues:wfAction,REJECT:0:null
+		3:rejectDoc:UrevisionStatus:0:null
+		3:computeRejectTargetStep::0:null
+		2:UworkflowDocStep::0:null
+		2:UrevisionStatus::0:null
+		2:DworkflowDocState::0:null
+		3:docHistoryInfo:Reject,IworkflowDocHistory:1:null
+		5:QwfDocInformation:WF_INFO:1:!csWfContributorMailError
+		3:prepareMailForStepUsers:WF_REJECT_MAIL,<$include wf_rejected_subject$>:1:null
+		3:updateWorkflowAndDocState::8:null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:doSubService:ECS_IRIS_APPLY_POST_WORKFLOW_ACTION_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_CHILD_DOC_COUNT</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QCCLAChildDocCount:childDocCount::null</td>
+</tr>
+<tr>
+	<td>CCLA_IRIS_REPORTS</td>
+	<td>Service
+		0
+		CCLA_IRIS_REPORTS
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		5:QWorkflowNames:rsWfNames::null
+		5:QStepNames:rsWfStepNames::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_WF_ACTION_COUNTS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QWfActionCountsByUser:rsWfActionCounts::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_RESPONSE_SLIPS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QResponseSlips:rsResponseSlips::null</td>
+</tr>
+<tr>
+	<td>CCLA_DELETE_BUNDLE</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:deleteBundle:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_ITEM_STATUS</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:updateItemStatus:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CHECKIN_NEW</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:createBatchItem:::null
+		3:doSubService:IRIS_COMPLETE_NEW_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:IdcService=CHECKIN_CONFIRM_FORM<$include add_idc_token_to_url$>&dID=<$dID$>&dDocTitle=<$url(dDocTitle)$>&dDocName=<$url(dDocName)$>&dDocAuthor=<$url(dDocAuthor)$>:0:null</td>
+</tr>
+<tr>
+	<td>CCLA_CHECKIN_NEW_OLD</td>
+	<td>com.ecs.stellent.iris.batch.BatchCheckinFilter
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CCLA_CHECK_FOR_ENVELOPE_ID_SUB::null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:createBatchItem:::null
+		3:doSubService:IRIS_COMPLETE_NEW_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:IdcService=CHECKIN_CONFIRM_FORM<$include add_idc_token_to_url$>&dID=<$dID$>&dDocTitle=<$url(dDocTitle)$>&dDocName=<$url(dDocName)$>&dDocAuthor=<$url(dDocAuthor)$>:0:null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_DUPLICATES</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateDuplicateItems:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_DOC_DUPLICATES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QGetDuplicates:rsDuplicates::null</td>
+</tr>
+<tr>
+	<td>CCLA_PARKING_LOT_BUNDLES</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		CCLA_PARKING_LOT_BUNDLES
+		null
+		null<br>
+		null</td>
+	<td>3:getParkingLotBundleCounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_RESET_PARKING_LOT_BUNDLES</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:resetParkingLotBundles:::null</td>
+</tr>
+<tr>
+	<td>CCLA_LOCKED_ITEMS</td>
+	<td>Service
+		3
+		CCLA_LOCKED_ITEMS
+		null
+		null<br>
+		null</td>
+	<td>5:QGetLockedItems:rsLockedItems::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_NEXT_BUNDLE</td>
+	<td>Service
+		3
+		CCLA_GET_NEXT_BUNDLE
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_GET_NEXT_BUNDLE_SUBMIT</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getNextPendingBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_RESET_BUNDLES_SUBMIT</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		CCLA_RESET_BUNDLES
+		null
+		null<br>
+		null</td>
+	<td>3:resetBundles:::null</td>
+</tr>
+<tr>
+	<td>CCLA_RESET_BUNDLES</td>
+	<td>Service
+		3
+		CCLA_RESET_BUNDLES
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_FLAG_BUNDLE</td>
+	<td>Service
+		3
+		CCLA_FLAG_BUNDLE
+		null
+		null<br>
+		null</td>
+	<td>5:QGetBundleFlagReasons:rsBundleFlagReasons::null</td>
+</tr>
+<tr>
+	<td>CCLA_FLAG_BUNDLE_SUBMIT</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:flagBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UNFLAG_BUNDLE_SUBMIT</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:unflagBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_VIEW_METADATA_SNAPSHOT</td>
+	<td>DocService
+		3
+		CCLA_VIEW_METADATA_SNAPSHOT
+		null
+		null<br>
+		null</td>
+	<td>5:QGetDocMetaAudit:rsDocMetaAudit::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_PENDING_DOCS_FOR_CLIENT</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForPendingDocsForClientCompany:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_ALL_PENDING_DOCS_FOR_BUNDLE</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForAllPendingDocsInBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_RESET_BUNDLE_DUAL_INDEXING</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addBundleDualIndexItems:::null</td>
+</tr>
+<tr>
+	<td>CCLA_RESET_DUPLICATE_BUNDLE</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:resetDuplicate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_TEST_BUNDLE_CONVERSION</td>
+	<td>com.ecs.ucm.ccla.commproc.CommProcService
+		35
+		CCLA_TEST_BUNDLE_CONVERSION
+		null
+		null<br>
+		null</td>
+	<td>3:addDocumentBundle:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_ACTIVE_BUNDLE_COUNTS</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		CCLA_ACTIVE_BUNDLE_COUNTS
+		null
+		null<br>
+		null</td>
+	<td>3:getActiveBundleCounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CONFIRM_PREADVICE_DICONDIN</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		35
+		CCLA_CONFIRM_PREADVICE_DICONDIN
+		null
+		null<br>
+		null</td>
+	<td>3:getPossiblePreadviceDicondins:::null</td>
+</tr>
+<tr>
+	<td>CCLA_INVOICE_LINE_ITEMS</td>
+	<td>com.ecs.ucm.ccla.commproc.InvoiceService
+		3
+		CCLA_INVOICE_LINE_ITEMS
+		null
+		null<br>
+		null</td>
+	<td>3:addInvoiceReferenceDataToBinder:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_INVOICE_LINE_ITEMS</td>
+	<td>com.ecs.ucm.ccla.commproc.InvoiceService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateInvoiceChildDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_GETLATESTDOCINFO_BY_NAME</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:gMailHandling_getLatestDocInfoByName:DOC_INFO::null</td>
+</tr>
+<tr>
+	<td>CCLA_GET_LAST_FLAG_USER</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getLastFlagUser:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

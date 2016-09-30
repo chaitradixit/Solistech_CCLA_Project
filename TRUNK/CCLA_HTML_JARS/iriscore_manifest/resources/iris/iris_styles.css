@@ -1,0 +1,1236 @@
+
+		/* Default element styles */
+
+		body { 
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 8pt;
+			color: #000000; 
+		}
+		
+		a {
+			text-decoration: none;
+			color: #0000FF;
+		}
+		
+		a:link {
+			text-decoration: none;
+			color: #0000FF;
+		}
+	
+		a:hover { 	/* Dont underline any hyperlinks unless they are mouseover'd */
+			text-decoration: underline;
+			color: #0000FF;
+		}
+		
+		p { 
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 8pt; 
+		}
+		
+		li {
+			list-style-type: square;
+		}
+		
+		table { 
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 8pt;
+			color: #000000; 
+		}
+		
+		tr { 
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 8pt;
+			color: #000000; 
+		}
+	
+		td { 
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 8pt;
+			color: #000000;
+		}
+		
+		img {
+			border: none;
+		}
+		
+		form {
+			margin: 0px;
+		}
+		
+		.hp { 
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 10pt; 
+		}
+		
+		div.logo{
+			background-image: url(../../images/iris/iris-banner-logo.jpg);
+			background-position: top left;
+			background-repeat: no-repeat;
+			width: 259px; 
+			height: 70px;
+		}	
+		
+		/* Top-level containers */
+		#main_container {
+			margin:5px; 
+			margin-top: 7px; 
+			width: 99%;
+		}
+		
+		#preview_div {
+			height: 100%;
+		}
+		
+		#preview_container {
+			width: 100%; 
+			height: 93%; 
+			overflow: hidden;
+		}
+		
+		#doc_panels_container {
+			margin: 0px; 
+			padding: 0px; 
+			width: 100%;
+		}
+		
+		#doc_tabs_container {
+			margin-left: 1px;
+		}
+		
+		#doc_browser_container {
+			height: 55px; 
+			width: 100%;
+		}
+		
+		/* Popup menu styles */
+		
+		/* Div element used to hold the link table */
+		.irisPopupContainer
+		{
+			position: absolute;
+		  border-top: 2px solid #F29303;
+		}
+		
+		.irisPopupTable
+		{
+			background: #FFFFFF; /*popup_menu_background*/
+		  border-top: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+			border-left: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+			border-bottom: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+			border-right: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+		}
+		
+		/* Link elements used for each menu entry */
+		.irisPopupLink
+		{
+			font-size: 8pt;
+			text-align: left;
+			vertical-align: middle;
+			color: #000000; /*popup_menu_link_item_text*/
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			text-decoration: none;
+			font-weight: normal;
+			white-space: nowrap;
+			background-color:  #FFFFFF; /*popup_menu_background*/
+			padding-top: 2px;
+			padding-bottom: 2px;
+			padding-left: 12px;
+			padding-right: 12px;
+		  border-bottom: 1px solid #F29303;
+		}
+		
+		/* Link elements used for each menu entry */
+		.irisPopupLinkMenu
+		{
+			font-size: 8pt;
+			text-align: left;
+			vertical-align: middle;
+			color: #FFFFFF; /*popup_menu_link_item_text*/
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			text-decoration: none;
+			font-weight: normal;
+			white-space: nowrap;
+			background:  #FFFFFF; /*popup_menu_background*/
+			padding-top: 2px;
+			padding-bottom: 2px;
+			padding-left: 12px;
+			padding-right: 12px;
+		  border-bottom: 1px solid #CCCCCC;
+		}
+		
+		/* Link elements used for each menu entry (mouseover) */
+		.irisPopupLink_over
+		{
+			font-size: 8pt;
+			text-align: left;
+			vertical-align: middle;
+			color: #76B900; /*popup_menu_link_item_text_mouseover*/
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			text-decoration: underline;
+			font-weight: normal;
+			white-space: nowrap;
+			background: #dae5ef; /*popup_menu_link_item_background_mouseover*/
+			padding-top: 2px;
+			padding-bottom: 2px;
+			padding-left: 12px;
+			padding-right: 12px;
+		  border-bottom: 1px solid #CCCCCC;
+			cursor: pointer;
+			cursor: hand;
+		}  
+		
+		/* Headings */
+		
+		.xuiPageHeadingCell {
+			text-align: left;
+			vertical-align: bottom;
+			padding-bottom: 3px;
+			border-bottom:1px solid #000000;
+		}
+
+		.xuiPageHeadingText {
+			color: #183D9F;
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 10pt;
+			font-weight: bold;
+			white-space: nowrap;
+			margin: 0px;
+		}
+		
+		h6 {
+			font-size: 10pt;
+			color: #F29303;
+			height: 10pt;
+			margin: 5px 0px 10px 0px;
+		}
+		
+		div.iris_footer {
+			margin-top: -10px;
+			clear: both;
+			padding: 10px 10px 10px 10px;
+			font-size: 85%;
+			overflow: auto;
+		}
+		
+		.item_locked {
+			background-image: url(../../images/iris/icon_padlock.gif);
+			background-repeat: no-repeat; 
+			background-position: top left; 
+			padding-left: 18px;
+			line-height: 1.5em;
+			margin: 0px 0px;
+		}
+		
+		.item_unlocked {
+			background-image: url(../../images/iris/icon_padlock_open.gif);
+			background-repeat: no-repeat; 
+			background-position: top left; 
+			padding-left: 18px;
+			line-height: 1.5em;
+			margin: 0px 0px;
+		}
+		
+		.item_index {
+			background-image: url(../../images/iris/index.png);
+			background-repeat: no-repeat; 
+			background-position: top left; 
+			padding-left: 18px;
+			line-height: 1.5em;
+			margin: 0px 0px;
+		}
+		
+		/* Metadata display styles */
+		
+		.field_caption {
+			padding: 2px;
+			font-weight: bold;
+			/* width: 110px; */
+			width: 40%;
+			font-size: 0.9em;
+		}
+		
+		.field_caption_req {
+			padding: 2px;
+			font-weight: bold;
+			width: 40%;
+			font-size: 0.9em;
+			color: #DC143C;
+		}
+		
+		.field_value {
+			width: 60%;
+		}
+		
+		.dual_index_cell {
+			
+		}
+		
+		.dual_index_cell  input, .dual_index_cell  select, .dual_index_cell  textarea {
+			background-color: #84BE5A !important;
+			color: #FFF !important;
+		}
+		
+		.field_checkbox {
+			width: 1%;
+		}
+		
+		.field_caption_info {
+			padding: 2px;
+			font-weight: bold;
+			width: 110px;
+			font-size: 0.9em;
+			text-align:right;
+		}
+		
+		.field_value_info {
+			font-size:1.1em;
+		}
+		
+		.input_text_field {
+			float: left;
+			width: 100%;
+		}
+		
+		.input_small_memo_field {
+			float: left;
+			height: 3em;
+			width: 100%;
+			font-family: Verdana, Arial, "sans-serif";
+			font-size: 9pt;
+		}
+		
+		.input_memo_field {
+			float: left;
+			height: 5em;
+			width: 100%;
+			font-family: Verdana, Arial, "sans-serif";
+			font-size: 9pt;
+		}
+		
+		.input_date_field {
+			float: left;
+			width: 140px;
+		}
+		
+		.input_short_date_field {
+			float: left;
+			width: 11ex;
+		}
+		
+		.date_picker_btn {
+			width: 23px;
+			height: 23px;
+		}
+		
+		.input_option_field {
+			float: left;
+		}
+		
+		.doc_meta_checkbox {
+		}
+		
+		.sidepanel_button_holder {
+			text-align: center;
+			/* width: 285px; */
+			padding: 0px;
+			margin: 0px;
+		}
+		
+		/* Generic div button CSS. Must supply your own background image, size
+		and positioning. */
+		.iris_button {
+			cursor: pointer;
+		}
+		
+		.iris_button_rest {
+			border: 1px outset;
+			background-color: #EEE;
+		}
+		
+		.iris_button_press {
+			border: 1px inset;
+			background-color: #EEE;
+		}
+		
+		.iris_button_disabled {
+			border: 1px solid #BBB;
+			background-color: #DEDEDE;
+		}
+		
+		/** Specific button styles */
+		.search_button {
+			background-image: url(../../images/iris/search.png);
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+			
+			float: left;
+			width: 20px;
+			height: 20px;
+		}
+		
+		.signature_button {
+			background-image: url(../../images/iris/sig.png);
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+			
+			float: left;
+			width: 20px;
+			height: 20px;
+		}
+		
+		.tables_button {
+			background-image: url(../../images/iris/table.png);
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+			
+			width: 20px;
+			height: 20px;
+			float: left;
+		}
+		
+		.linked_tables_button {
+			background-image: url(../../images/iris/linked_table.png);
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+			
+			float: left;
+			width: 20px;
+			height: 20px;
+		}
+		
+		.notification {
+			color: #DC143C;
+		}
+		
+		.iris_user_note {
+			padding: 0.5em;
+			margin: 2px 0px 0px 0px;
+			border: 1px solid #CCCCCC;
+			background-color: #FFF0DB;
+		}
+		
+		.iris_reject_note {
+			padding: 0.5em;
+			margin: 2px 0px 0px 0px;
+			border: 1px solid #CCCCCC;
+			background-color: #F35151;
+			color: #FFFFFF
+		}
+		
+		.iris_approve_note {
+			padding: 0.5em;
+			margin: 2px 0px 0px 0px;
+			border: 1px solid #CCCCCC;
+			background-color: #B1ED70;
+			/* color: #FFFFFF; */
+		}
+		
+		/* Apply to 'validated' input fields */
+		.validation_verified_field {
+			background-color:  #018000; /* #1ABD02; */
+			color: #FFFFFF;
+		}
+		
+		/* Apply to input fields that validated with a warning */
+		.validation_warning_field {
+			background-color: #FFD177 !important;
+			color: #000000;
+		}
+		
+		/* Apply to input fields that failed validation */
+		.validation_error_field {
+			background-color:  #DC143C;
+			color: #FFFFFF;
+		}
+		
+		.error_icon {
+			background-image: url(../../images/iris/error.png);
+			background-position: 2px 2px;
+			background-repeat: no-repeat;
+		}
+		
+		.warning_icon {
+			background-image: url(../../images/iris/info.png);
+			background-position: 2px 2px;
+			background-repeat: no-repeat;
+		}
+		
+		.info_icon {
+			background-image: url(../../images/iris/info.png);
+			background-position: 2px 2px;
+			background-repeat: no-repeat;
+		}
+		
+		.loading_icon {
+			background-image: url(../../images/iris/loading-small.gif);
+			background-position: 2px 4px;
+			background-repeat: no-repeat;
+		}
+		
+		.validation_error, .message_panel {
+			background-color: #FFF0DB;
+			border: 1px solid #BBBBBB;
+			padding: 3px 3px 3px 22px;
+			margin: 3px 0px 8px 0px;
+			
+			text-align: left;
+			
+			cursor: pointer;
+		}
+		
+		.validation_error p, .messe_panel p {
+			margin: 3px 0px;
+			color: #000;
+		}
+		
+		.validation_error_title {
+			color: #DC143C;
+			font-weight: bold;
+		}
+		
+		.validation_warning_title {
+			color: blue;
+			font-weight: bold;
+		}
+		
+		.validation_info_title {
+			color: blue;
+			font-weight: bold;
+		}
+		
+		.message_panel_title {
+			color: #DC143C;
+			font-weight: bold;
+		}
+		
+		.doc_panel_submit_button {
+			width: 90px;
+			margin: 3px;
+		}
+		
+		/* workflow comment box */
+		#wfComments {
+			width: 100%; 
+			height: 3em; 
+			border: thin inset;
+		}
+		
+		/* S&F styles */
+		
+		.IssueBlock {
+			width: 100%;
+		}
+		
+		.sfColumnHeader {
+			font-size: 1em;
+			font-weight: bold;
+		}
+		
+		.sfInput {
+			width: 99%;
+		}
+		
+		.sfSelect {
+			width: 99%;
+		}
+		
+		.sfInfo, .sfLink, .sfRight {
+			font-size: 1.2em;
+		}
+		
+		.sfAdvSearchCaption {
+			width: 15%;
+		}
+		
+		.sfAdvSearchField {
+			width: 35%;
+		}
+
+		/* Div used as the container for header elements */
+		div.header {
+			width: 100%;
+			height: 70px;
+			display: block;
+			background-image: url(../../images/iris/iris-banner-filler.jpg);
+			background-repeat: no-repeat; 
+			background-position: 259px 0px; 
+			background-color: #FEB74D;
+		}
+		
+		div.menuBar {
+			height: 16px;
+			width: 100%;
+			background-color: #F29303;
+		}
+		
+		ul.menuItems {
+  		list-style-type: none;
+  		margin-top: 0px;
+  		margin: 0px;
+  		padding: 0px;
+  		margin-left: 95px;
+		}
+		
+		
+		ul.menuItems li.menuItem {
+		  border-left: 1px solid #FFFFFF;
+			float:left;
+			padding-right: 5px;
+			padding-left: 5px;
+			padding-bottom: 2px;
+			list-style-type: none;
+		}
+		
+		ul.menuItems li.menuItem a.menuLink {
+			font-size:1.1em;
+			text-decoration: none;
+			color: #FFFFFF;
+			font-weight:bold;
+		}
+		
+		ul.menuItems li.glowMenuItem {
+		  border-left: 1px solid #FFFFFF;
+		  background-color: #FFFFFF;
+			float:left;
+			padding-right: 5px;
+			padding-left: 5px;
+			padding-bottom: 2px;
+			list-style-type: none;
+		}
+		
+		ul.menuItems li.glowMenuItem a.menuLink {
+			font-size:1.1em;
+			text-decoration: none;
+			color: #F29303;
+			font-weight:bold;
+		}
+		
+		.optlist_label {
+			font-size: 10pt;
+			line-height: 0.9em;
+			display: block;
+		}
+		
+		.config_optlist {
+			margin: 5px;
+			height: 130px;
+			width: 185px;
+		}
+		
+		.add_rem_button {
+			width: 100px;
+			margin:5px;
+		}
+		
+		.insert_div_btn {
+			width: 110px;
+			margin: 0px;
+		}
+		
+		.up_down_btn {
+			border: 1px inset;
+			margin: 5px;
+			background-color: #BBBBBB;
+			cursor: default;
+		}
+		
+		.up_down_btn_avail {
+			border: 1px outset;
+			margin: 5px;
+			background-color: #FFFFFF;
+		}
+		
+		/* Styles used for dynamic divs holding field config. data */
+		.field_config_row {
+			margin-top: 3px;
+			height: 2em;
+			border-bottom: 1px dashed #BBBBBB;
+			width: 100%;
+		}
+
+		.field_config_label {
+			float: left;
+			width: 160px;
+		}
+
+		.field_config_checkbox {
+			text-align: center;
+			float: left;
+			width: 95px;
+		}
+		
+		.field_config_text {
+			float: left;
+			width: 150px;
+		}
+		
+		.field_config_text input, .field_config_text select  {
+			width: 95%;
+		}
+		
+		/* Style used for links in the header */
+		span.headerlink {
+			font-size: 1.1em;
+			color: #0000FF;
+			font-weight: bold;
+			text-decoration: none; 
+		}
+
+		/* Style used for panels */
+		div.panelheader {
+			margin-bottom: 5px;
+			padding: 2px;
+		}
+		
+		span.panelheading {
+			font-weight: bold;
+			font-size: 1.1em;
+		}
+		
+		.toggle_img {
+			vertical-align: middle;
+			cursor: hand;
+			cursor: pointer;
+		}
+		
+		div.side_panel {
+			border: 4px solid;
+			border-color: #A9A8CB;
+			padding: 0px;
+			margin:0px;
+		}
+		
+		div.panelbody {
+			background-color: #EEEEEE;
+			padding-top: 4px; 
+			margin:0px;
+			overflow: hidden;
+		}
+
+		div.subheader {
+			font-weight: bold;
+			font-size: 1em;
+			border-bottom: thin solid;
+			width: 100%;
+			margin-bottom: 3px;
+			padding: 2px;
+			display: compact;
+			color: EB6D30;
+		}
+		
+		div.resizeBar {
+			height: 100%; 
+			width: 1px; 
+			border-left: 1px dotted #BBBBBB;
+		}
+		
+		span.docname {
+			font-size: 1.1em;
+			font-weight: bold;		
+			color: #DC143C
+		}
+		
+		#batchItemIndexPanel {
+			margin-bottom: 1px;
+			text-align: center;
+			/* display: none; */
+		}
+		
+		#batchItemIndexPanel input {
+			margin: 0px 3px;
+		}
+		
+		th.sfHeader_start {
+			background-image: url(../../images/iris/headerLeft.gif);
+		  background-repeat: no-repeat;
+		  background-position: top left;
+		  padding-left: 7px;
+		  text-align:left;
+		}
+		
+		th.sfHeader_mid {
+		  background-image: url(../../images/iris/headerMiddle.gif);
+		  background-repeat: repeat-x;
+		  background-position: top left;
+		  text-align:left;
+		}
+		
+		th.sfHeader_end {
+		  background-image: url(../../images/iris/headerRight.gif);
+		  background-repeat: no-repeat;
+		  background-position: top right;
+		  padding-right: 7px;
+		  text-align:left;
+		}
+
+		/*
+		html, body {
+			height: 100%;
+		}
+		*/
+		
+		.tabOn {
+			background: url(../../images/iris/shinytab-on.gif) no-repeat top left;
+			width: 174px;
+		}
+		
+		.tabOff {
+			background: url(../../images/iris/shinytab-off.gif) no-repeat top left;
+			width: 174px;
+		}
+		
+		.tabOn a, .tabOff a {
+			color: #FFFFFF;
+			font-weight: bold;
+			font-size: 1em;
+			font-family: Verdana, Arial;
+		}
+		
+		/* Available link */
+		span.avail {
+			color: #000000;
+			font-size: 1.1em;			
+		}
+		
+		/* Unavailable link */
+		span.unavail {
+			color: #A9A9A9;
+			font-size: 1.1em;	
+		}
+		
+		/* Used as a header for the infomation fields */
+		div.fieldsheader {
+			font-size: 1.1em;
+			font-weight: bold;
+			border: thin solid;
+			border-color: B7BECA;
+			padding: 3px;
+			margin-bottom: .5em;
+		}
+		
+		span.tab_text {
+			font-size: 1em;
+			color: #FFFFFF;
+			text-decoration: none;
+		}
+				
+		span.caption {
+			font-size: 1em;
+		}
+		
+		#recentnotes {
+			border: thin inset; 
+			margin: 5px; 
+			margin-top: 10px; 
+			height: 5em; 
+			overflow: auto; 
+			padding: 2px; 
+			background-color: #FFFFFF;
+		}
+		
+		#recentnotes_span, #recentnotes_links {
+			font-size: 1em;
+		}
+		
+		#recentnotes_links a {
+			color: #000000;
+		}
+		
+		/* Error notification */
+		div.error {
+			margin: 10px;
+			border: 1px solid #CCCCCC;
+			padding: 10px;
+			padding-bottom: 20px;
+		}
+		
+		div.error p {
+			font-size: 1.2em;
+			font-weight: bold;
+			color: #FF0000;
+			margin-top: 0px;
+		}
+
+		/* Pop-up divs */
+		
+		#blanket {
+			background-color:#111;
+			opacity: 0.65;
+			filter:alpha(opacity=65);
+			position:absolute;
+			z-index: 9001;
+			top:0px;
+			left:0px;
+			bottom: 0px;
+			right: 0px;
+			height: auto;
+			width:100%;
+		}
+		 
+		#popUpDiv {
+			position:absolute;
+			background-color:#eeeeee;
+			/* width:300px;
+			height:300px; */
+			overflow:auto;
+			z-index: 9002;
+			padding: 5px;
+		}
+		
+		#closeLink {
+			margin: 5px;
+			display: block;
+			clear: both;
+		}
+		
+		#popUpDivInner {
+			background-color: #fff;
+			border: none;
+		}
+		
+		#popUpContainingDiv {
+			overflow:auto;
+			padding:5px;
+		}
+		
+		body.popupBody {
+			margin: 0px;
+			padding: 0px;
+			overflow: auto;
+			height: auto;
+		}
+		
+		.toggle_img_collapse,
+		.toggle_img_expand {
+			height:100%;
+			width:100%;
+			vertical-align: middle;
+			cursor: hand;
+			cursor: pointer;
+		  background-repeat: no-repeat;
+		  background-position: top left;
+		}
+		
+		.toggle_img_collapse{
+			background-image: url(../../images/iris/orange-arrow-left.gif);
+		}
+		
+		.toggle_img_expand{
+			background-image: url(../../images/iris/orange-arrow-down.gif);
+		}
+		
+		.lock_display_box{
+			margin: 2px;
+			padding: 5px 3px;
+			border: 1px solid #BBBBBB;
+			background-color: #FFF0DB;
+		}
+		
+		.recentnotes_row{
+			background-color: #FFF0DB;
+		}
+		
+		#recentnotes_cell{
+			width:23%;
+		}
+		
+		#recentnotes_cell1{
+			width:60%;
+			background-color: #FFF0DB;
+		}
+		
+		.recentnotes_cell2{
+			width:17%
+		}
+		
+		#recentnotes_region{
+			width:100%;
+		}
+		
+		.bundle-item-count {
+			color: #AAA;
+		}
+		
+
+/* Batch thumbnail/panel styles */
+		
+		/* Individual thumbnail containers */
+		.iris_thumb_container {
+			display: inline;
+			position: relative;
+			float: left;
+			height: 90px;
+			margin: 0px;
+			text-align: center;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			
+			overflow:hidden;
+			
+			margin-right: 1px; 
+			background-color: #EEEEEE;
+		}
+		
+		.iris_thumb_container_vertical {
+			width:100%;
+			margin:0;
+			padding-bottom:0;
+			margin-bottom:3px;
+		}
+		
+		.iris_thumb_container_horizontal {
+			width:79px;
+			padding-bottom: 5px;
+		}
+		
+		/* Container for all thumbnails */
+		.iris_thumbset_container {
+			position: relative;
+			background-color: #FFFFFF;
+		}
+		
+		.iris_thumbset_container_vertical {
+			width:100%;
+		}
+		
+		.iris_thumbset_container_horizontal {
+			width: 1000px;
+			height: 90px;
+		}
+		
+		/* Scrollable region which the thumbnail container sits inside */
+		.iris_thumbset_scroller {
+			overflow: hidden;
+			position: relative;
+		}
+		
+		.iris_thumbset_scroller_disabled {
+			margin-left: 5px;
+			width: auto;
+		}
+		
+		.iris_thumbset_scroller_enabled {
+			border-top: 1px inset;
+			border-bottom: 1px inset;
+		}
+		
+		.iris_thumbset_scroller_vertical {
+			margin:5px 0 0 0;
+			border:5px solid #FFFFFF;
+			border-top:none;
+		}
+		
+		.iris_thumbset_scroller_horizontal {
+			height: 90px;
+			width: 320px;
+			float: left;
+		}
+		
+		/* Scroll buttons */
+		.iris_scroll {
+			text-align: center;
+			
+			border: 1px outset;
+			background-color: #DEDEDE;
+			margin: 0px 5px 0px 5px;
+			cursor: pointer;
+			
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+		}
+		
+		.iris_scroll_disabled {
+			display:none;
+		}
+		
+		.iris_scroll_enabled {
+			
+		}
+		
+		.iris_scroll_vertical {
+			height: 20px;
+			width: 90px;
+		}
+		
+		.iris_scroll_horizontal {
+			float: left;
+			height: 90px;
+			width: 25px;
+		}
+
+		.iris_thumb_select {
+			background-color:	#FBE3C2;
+		}
+		
+		/* Text/content placed directly underneath thumbnail image */
+		.iris_thumb_details {
+			margin-top: 2px;
+			text-align: center;
+			clear: both;
+		}
+		
+		.iris_thumb_details a {
+			font-size: 0.8em;
+		}
+		
+		.iris_thumb_details_vertical {
+			width:100%;
+		}
+		
+		.iris_thumb_details_horizontal {
+			width: 80px;
+		}		
+		
+		.iris_batchitem_info {
+			margin: 0px 0px 5px 5px; 
+			height: 90px; 
+			width: 230px; 
+			font-size: 8pt; 
+			float:left;
+			display: inline;
+		}
+		
+		.iris_batchitem_info_header {
+			padding: 3px;
+			border-bottom: 1px solid #DEDEDE;
+			margin-bottom: 3px;
+			margin-right: 3px;
+			background-color: #FBE3C2;
+			overflow: auto;
+			height: auto;
+		}
+		
+		.iris_batchitem_info_body {
+			padding: 3px;
+			height: 45px;
+		}
+		
+		.iris_batchitem_info_body label {
+			display:block;
+			font-weight:bold;
+		}
+		
+		.iris_batchitem_info_body input {
+			margin-top: 3px;
+			float:left;
+		}
+		
+		.iris_batchitem_info_body input.item_name {
+			width: 12em;
+			margin-right: 3px;
+		}
+		
+		.iris_batchitem_info hr {
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		
+		.iris_dual_index_grid {
+			border:1px inset;
+			height:600px;
+			width:1200px;
+			margin-top:1px;
+			overflow-y:scroll;
+			overflow-x:scroll;
+		}
+		
+	#xContentReportCheckBoxes li{
+		float:left;
+		list-style:none;
+		width:130px;
+	}	
+	
+
+	#xContentReportStatusChkBxs li{
+		float:left;
+		list-style:none;
+		width:210px;
+	}
+
+	.processListingSF, .activityListingSF, .campaignTargetContainer {
+		width:1050px;
+	}	
+
+	.interactionSF, .doc_listing_sf_container, .enrolmentListingSF{
+		margin:10px;
+	}
+	
+	.enrolmentListingSF, .interactionSF{
+		1200px;
+	}
+	
+	.instrSF {
+		width: 1150px;
+	}
+
+	.flaggedItemsReportContainer {
+		margin: 15px auto;
+		width: 1200px;
+	}		
+		
+	.openDocInNewTab_forIpad{
+		 display:none;
+	}
+		
+		
+	
+@media only screen and (device-width: 768px) and (orientation: landscape) {
+	  /* rules for iPad in landscape orientation */	  
+
+	  .openDocInNewTab_forIpad{
+		 font-size:18px;
+		}
+	  
+	 div.menuBar {
+		height: 24px;
+		font-size:14px;
+		}
+
+	 .topPopupLink a, .topPopupLink_over a{
+		font-size:14px !important;
+	 } 
+	 
+	 .cs-page-container {
+	  width: 960px !important;
+	 }
+
+	   .doc_listing_sf, .searchFormContainer{
+		width:940px !important;
+	 }
+
+	 #addNewDocLi{
+		display:none !important;
+	 }
+
+	 
+	 .enrolmentInfoContainer, .eodListingSF, .processListingSF, 
+	 .instrSF, .flaggedItemsReportContainer, .enrolmentListingSF, 
+	 .activityListingSF, .campaignTargetContainer, .interactionSF{
+		width:960px !important;
+	 }
+
+	  .orgInfoContainer, .orgEditContainer, .bulkUpdateContainer{
+		width:800px !important;
+	  }
+	  
+	  .cs-link-tab, .cs-info-tab {
+		  font-size: 13px;
+		  height: 20px !important;
+		}
+		
+
+	  .homeContainer{
+		width:900px !important;
+	  }
+
+
+	    
+	  
+	  /* This is an uncommitted comment to see whether the idcautopublish folder will overwrite this file PT*/
+	  
+}	
+
+
+	  .homePageContainer{
+		width:900px !important;
+	  }

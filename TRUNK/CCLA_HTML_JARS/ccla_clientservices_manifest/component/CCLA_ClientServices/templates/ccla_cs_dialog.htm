@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Dialog Box
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+
+			<div class='ccla_cs_panel_header'>
+				<$if #local.isInteraction$>Interaction<$else$>Confirm<$endif$>
+			</div>
+			<div class="ccla_cs_panel_content">
+			
+				<$if #local.isPerson$>
+					<p>Person successfully created.</p>
+					
+					<p>Would you like to perform an IVS check,<$if #env.CCLA_SC_ShowSignaturePanels==1$> add a signature,<$endif$> or update the details of this this person further?</p>
+										
+					<div align="right">
+						<input type="button" onClick="window.parent.closePopup();" value="Update User"/>
+						<input type="button" onClick="window.parent.close();" value="Finish and Close"/>
+					</div>
+				<$elseif #local.isEntity$>
+					<p>Organisation successfully created.</p>
+					
+					<p>Would you like to update the details of this this organisation?</p>
+					
+					<div align="right">
+						<input type="button" onClick="window.parent.closePopup();" value="Update Organisation"/>
+						<input type="button" onClick="window.parent.close();" value="Finish and Close"/>
+					</div>
+				<$elseif #local.isInteraction$>	
+				<p>Interaction <$if isUpdated$>updated<$elseif isAdded$>created<$endif$>. What would you like to do next?</p>
+				<$include ccla_cs_interaction_action_choice$>
+					
+				<$endif$>
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Client info: <$rsClient.CLIENT_NAME$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+				<!-- basic client info-->
+				<$include ccla_cs_client_info$>
+				
+				<$if addNote$>
+					
+					<br/>
+				
+					<$include orangeContainer_top$>
+					
+					<a name="add_note" ></a>
+					
+					<div class='ccla_cs_panel_header'>
+						Add client note
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+
+						<form method="POST">
+							<input type="hidden" name="IdcService" 	value="CCLA_CS_ADD_ACTIVITY_NOTE" /><$include add_idc_token_to_form$>
+							<input type="hidden" name="clientId" 	value="<$#local.clientId$>" />
+							<input type="hidden" name="company" 	value="<$#local.company$>" />
+							
+							<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_CLIENT_INFO<$include add_idc_token_to_url$>&clientId=<$clientId$>&company=<$company$>&addNote=1#add_note" />
+						
+							<textarea name="note" style="width: 350px; height: 5em;"></textarea>
+							<br/>
+							<input type="submit" value="Submit" />
+						</form>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+				
+				<$endif$>
+				
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Account listing - 1
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+				
+				<$include ccla_cs_display_accounts_last_update$>
+				
+				<$if rsAccounts$>
+					<$displayAccSummary=1$>
+					<$include ccla_cs_display_accounts$>
+				
+				<$else$>
+					<p class="no-info">
+						No registered accounts for this client
+					</p>
+				<$endif$>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Campaigns
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$include ccla_cs_display_client_campaigns$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Documents
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$include ccla_cs_display_document_listing$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Interactions
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$executeService("CCLA_CS_GET_CLIENT_INTERACTIONS")$>
+		
+					<$if rsInteractions$>
+						<$include ccla_cs_display_interactions$>
+					
+					<$else$>
+						<p class="no-info">No interactions logged for this client</p>
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Activities
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$if not rsActivities$>
+						<p class="no-info">
+							This client has no logged activity.
+						</p>
+					<$else$>
+						
+						<$include ccla_cs_display_activity_listing$>
+						
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+			</div>
+		</div>
+		
+	</body>
+</html>

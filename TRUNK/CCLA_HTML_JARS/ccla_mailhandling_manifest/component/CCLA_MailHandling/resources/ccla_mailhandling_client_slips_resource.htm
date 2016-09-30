@@ -1,0 +1,926 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_MailHandling htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml ccla_correspondence_pref_field@>
+
+	<$correspondencePrefs = "Email,Hard copy,Both,Neither"$>
+
+	<$exec rsMakeFromString("rsPrefs",correspondencePrefs,"pref")$>
+
+	<select name="xUnits" id="xUnits"
+			class="input_option_field"
+			tabindex="<$include iris_get_next_tabindex$>">
+			
+		<option value=""></option>
+		
+		<$loop rsPrefs$>
+			<option value="<$#active.pref$>" <$if #active.xUnits like #active.pref$>selected<$endif$>><$#active.pref$></option>
+		<$endloop$>
+		
+	</select>
+
+<@end@>
+
+<!-- 	Displays workflow-related information, plus
+			approve/reject buttons. Nothing is displayed
+			if the document is not within a workflow
+			-->
+<@dynamichtml doc_approval_wf@>
+
+	<$if DOC_WF_INFO$>
+
+		<$include greyPanel_top$>
+		<form id="approve_reject_form" action="<$HttpCgiPath$>" method="GET" style="padding:0px; margin:0px">
+			<div class='panelheader'>
+				<table width='100%' cellspacing=0 cellpadding=0>
+					<tr height=20>
+						<td>
+							<a name="wfpanel_anchor" id="wfpanel_anchor"></a>
+							<span class='panelheading'>Workflow Details</span>
+						</td>
+						<td>
+						<$include iris_wf_panel_buttons$>
+						</td>
+						<td width=22>
+							<div onclick="togglePanelGoToLink(this, 'wfpanel_anchor')" id="toggle_wf_panel" class="toggle_img_expand"></div>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<!-- This div has an ID so the display setting can be toggled between block/none -->
+			<div id='wf_panel' class='panelbody' style="overflow: hidden;display:none;">
+
+				<$if isInfo$>
+					<$classStr = "_info"$>
+				<$else$>
+					<$classStr = ""$>
+				<$endif$>
+
+			
+					<!-- These form fields have their values inserted through javascript -->
+					<input type=hidden name=IdcService>
+					<input type=hidden name=wfRejectMessage>
+					<input type=hidden name=wfApproveMessage>
+					<$include add_idc_token_to_form$>
+					<input type=hidden name=dID value="<$dID$>">
+
+					<$if getValue("#env","Iris_passStatusInURL")$>
+						<$statusInfo = "&prevStatus=" & docStatus$>
+					<$endif$>
+					
+					<$if #local.autoFetch$>
+						<!-- Automatically redirect to next bundle. -->
+						<input type=hidden name=RedirectUrl value="<$HttpCgiPath$>?IdcService=CCLA_GET_NEXT_BUNDLE<$include add_idc_token_to_url$>">
+					<$else$>
+						<input type=hidden name=RedirectUrl value="<$eval(#env.Iris_workflowRedirectUrl)$>">
+					<$endif$>
+					
+					<!-- ECS_AuditLog fields -->
+					<input type="hidden" name="doAudit" value="1" />
+					<input type="hidden" name="lApp" value="IRIS" />
+					<input type="hidden" name="lRef" value="<$dDocName$>" />
+					<input type="hidden" name="lTitle" value="<$dDocTitle$>" />
+					<input type="hidden" name="lAction" /> <!-- Added before submit using javascript -->
+					<input type="hidden" name="lUser" value="<$dUser$>" />
+
+					<input type="hidden" name="lMessage" /> <!-- Any workflow comment is copied here -->
+					
+					<!-- Audit parameters are:
+						1. current workflow name 
+						2. current step name
+						-->
+					<input type="hidden" name="lParam1" value="<$DOC_WF_INFO.dWfName$>" />
+					<input type="hidden" name="lParam2" value="<$DOC_WF_INFO.dWfStepName$>" />
+				
+
+				<!-- This table holds the workflow information -->
+				<table width="100%" cellpadding=0 cellspacing=2>
+					<!-- Display approve/reject buttons -->
+					
+					<tr>
+						<td colspan=2 style="color: #DC143C" id="missing_field_count">
+							<$if #active.numMissingFields > 0$>
+								<$numMissingFields$> required field value(s) are missing.
+							<$endif$>
+						</td>
+					</tr>
+					
+						
+					<tr>
+
+						<$if not allowWorkflowActions$>
+							<!-- User is not a valid contributor/reviewer,
+									 hide the approve/reject buttons -->
+
+							<td colspan=2 align="left" class="nofication">
+								<$if isEditStep$>
+									<$roleName = "contributor"$>
+								<$else$>
+									<$roleName = "reviewer"$>
+								<$endif$>
+
+								You are not a valid <$roleName$> for this step.<br/><br/>
+								<a href="javascript:toggleApprovers()"><span id="toggleApproverLink">Show <$roleName$>s &gt;&gt;</span></a>
+
+								<div id="approverList" style="display: none">
+
+									<$exec rsMakeFromString("rsUserQueue",wfUserQueue,"user")$>
+
+									<ul>
+									<$loop rsUserQueue$>
+										<$userEmail = getValueForSpecifiedUser(rsUserQueue.user,"dEmail")$>
+
+										<$if userEmail$>
+											<li><a href='mailto:<$userEmail$>?subject=Approval of item [<$dDocName$>]'><$rsUserQueue.user$></a></li>
+										<$else$>
+											<li><$rsUserQueue.user$></li>
+										<$endif$>
+
+									<$endloop$>
+									</ul>
+
+								</div>
+
+								<script type="text/javascript">
+
+									function toggleApprovers() {
+
+										var approverList = document.getElementById("approverList");
+										var approverLink = document.getElementById("toggleApproverLink");
+
+										if (approverList.style.display == '') {
+											approverList.style.display = 'none';
+											approverLink.innerHTML = 'Show <$roleName$>s &gt;&gt;';
+										} else {
+											approverList.style.display = '';
+											approverLink.innerHTML = 'Hide <$roleName$>s &lt;&lt;';
+										}
+									}
+
+								</script>
+
+							</td>
+						<$endif$>
+
+					</tr>
+					
+					<$if allowWorkflowActions$>
+						<tr>
+							<!-- Workflow notification messages -->
+							<td colspan=2 align="center" id="wfStatusText" class="notification">
+								&nbsp;
+							</td>
+						</tr>
+					<$endif$>
+					
+					<$if false$>
+						<tr>
+							<td colspan=2 valign=center>
+								<!-- Text area for approve/reject comments -->
+								<textarea id="wfComments" 
+													wrap="virtual" 
+													tabindex="<$tabIndex$>"
+													<$if (#active.numMissingFields > 0) or (not allowWorkflowActions) or (not enableWorkflowForm)$>disabled="disabled"<$endif$>></textarea>
+								<$tabIndex = tabIndex + 1$>
+							</td>
+						</tr>
+					<$endif$>
+					
+					
+					<tr>
+						<td class="field_caption<$#active.classStr$>">Name:</td>
+						<td class="field_value<$#active.classStr$>">
+							<$if DOC_WF_INFO$>
+								<$DOC_WF_INFO.dWfName$>
+							<$else$>
+								<$docWfName$> ??
+							<$endif$>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="field_caption<$#active.classStr$>">Step:</td>
+						<td class="field_value<$#active.classStr$>">
+							<$if DOC_WF_INFO$>
+								<$DOC_WF_INFO.dWfStepName$>
+							<$else$>
+								<$docWfStepName$> ??
+							<$endif$>
+
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan=2>
+							<br>
+							<$DOC_WF_INFO.dWfStepDescription$>
+						</td>
+					</tr>
+
+					<tr><td colspan=2><br></td></tr>
+
+					</table>
+
+				</form>
+
+			</div>
+
+		<$include greyPanel_bottom$>
+	<$endif$>
+
+<@end@>
+
+<!-- Document listing configuration. Overrides ccla_mailhandling_resource. -->
+<@dynamichtml iris_doc_listing_pre@>
+
+	<$if not #local.view$>
+		<$view = "Bundle"$>
+	<$endif$>
+
+	<$include super.iris_doc_listing_pre$>
+	
+	<$if view like "Response"$>
+		<$QueryFieldList="REF,CCLA_BUNDLE_STATUS,QUICKDATE,CCLA_BUNDLE_DATE,DATE_ADV,DUEDATE_ADV,AUTHOR,IRIS_STATUS,CCLA_CORRESPOND_ID,TITLE,CCLA_CORRESPOND_PREF,CCLA_CLIENT_EMAIL,SENDER"$>
+	
+		<$nodeFilterFieldWidth="1,1,15,10,15,15,30,15"$>
+		<$nodeFilterFieldNames="CHECKBOX,REF,CCLA_BUNDLE_DATE,CCLA_CORRESPOND_ID,CCLA_CORRESPOND_PREF,CCLA_CLIENT_EMAIL,CCLA_BUNDLE_STATUS"$>
+		<$CCLA_CORRESPOND_PREF_CustomFilterScript="CORRESPOND_PREF_CCLA_CustomFilterScript"$>
+		
+		<$SF_REF_caption="Response slip ID"$>
+	<$endif$>
+	
+	<$PARAMETERSLIST=PARAMETERSLIST & ",view"$>
+	
+	<!-- Overrides nodeSearchQuery defined in super include -->
+	<$nodeSearchQuery = "(dDocType <matches> `" & view & "`) "$>
+	
+	<$if #active.amt$>
+		<$trueAmt = amt * 100$>
+		<$nodeSearchQuery = nodeSearchQuery & " <and> ((xTotalAmount <= " & trueAmt & ") <and> (xTotalAmount >= " & trueAmt & ")) "$>
+	<$endif$>
+	
+	<$if #local.st like 'Completed'$>
+		<$showCompleted=1$>
+	<$endif$>
+	
+	<$if #local.st like 'Deleted'$>
+		<$showDeleted=1$>
+	<$endif$>
+
+	<$if not #active.showCompleted$>
+		<$nodeSearchQuery = nodeSearchQuery & " <and> <not> (xStatus <matches> `Completed`) "$>
+	<$endif$>
+	  
+	<$if not #active.showDeleted$>
+		<$nodeSearchQuery = nodeSearchQuery & " <and> <not> (xStatus <matches> `Deleted`) "$>
+	<$endif$>
+	
+	<$include ccla_get_sf_url_params$>
+	
+<@end@>
+
+<@dynamichtml CORRESPOND_PREF_CCLA_CustomFilterScript@> 
+
+	<$correspondencePrefs = "Email,Hard copy,Both,Neither"$>
+	<$exec rsMakeFromString("rsPrefs",correspondencePrefs,"pref")$>
+
+	<select name="corrpref" id="corrpref" class="sfSelect" <$if autoSearch$>onChange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+		<option value=""></option>
+
+		<$loop rsPrefs$>
+			<option value="<$rsPrefs.pref$>" <$if #local.corrpref like rsPrefs.pref$>selected="selected"<$endif$>>
+				<$rsPrefs.pref$>
+			</option>
+		<$endloop$>
+	</select>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource
+		 Displays the 3 most recent notes/activities, plus some useful links.
+		 This refers to the newer table-based audit notes.
+ -->
+<@dynamichtml doc_approval_recent_notes@>
+
+	<table id="recentnotes_region" border=0>
+
+		<$auditRef = dDocName$>	
+		<$auditApp = "IRIS"$>
+		<$executeService("ECS_GET_AUDIT_ENTRIES_BY_REF")$>
+		
+		<$getViewValuesResultSet("vDepartments","","")$>
+		<$getViewValuesResultSet("vSubDepts","","")$>
+
+		<tr>
+			<td valign="top">
+
+				<!-- Link strings -->
+				<$moreNotes = 'javascript:openTab("tab_notes")'$>
+
+				<div class="subheader">
+					<span id="recentnotes_span">
+						Recent notes/activity<$if numNotes gt 3$> (<a href='<$moreNotes$>'>more..</a>) <$endif$>
+					</span>
+
+					<span id="recentnotes_links">
+						
+						<$if thumbnailMode$>
+							<$newNoteLink = "?IdcService=IRIS_NEW_NOTE" & inc('add_idc_token_to_url') & "&parentId=" & dDocName & "&bundleRef=" & bundleRef$>
+						<$else$>
+							<$newNoteLink = "?IdcService=IRIS_NEW_NOTE" & inc('add_idc_token_to_url') & "&parentId=" & dDocName & "&dDocName=" & dDocName$>
+							<$getFileUrl = HttpCgiPath & "?IdcService=GET_FILE" & inc('add_idc_token_to_url') & "&dID=" & dID$>
+						<$endif$>
+						
+						<$if userCanWrite$>
+						<!-- 	Open popup link used to contain: &hashString=' + window.location.hash, 
+									this caused issues with new popup window code so its been removed. -->
+							<$if not thumbnailMode$>
+								| <a href="<$HttpCgiPath & newNoteLink$>" target="_blank" onclick='openPopup("<$newNoteLink$>&viaPopUp=1",470,170);return false;'>Add new indexing note</a>
+							<$else$>
+								| <a href="<$HttpCgiPath & newNoteLink$>" target="_blank" onclick='addBundleNote();return false;'>Add new indexing note</a>
+							<$endif$>
+						<$endif$>
+						
+						<$if not thumbnailMode$>
+							| <a href='<$getFileUrl$>'>Download item</a>
+						
+						
+							<$if userHasRole("WF_COO") or userHasRole("admin")$>
+								| <a href='javascript:expireItem();'>Delete item</a>
+							<$endif$>
+							
+						<$endif$>
+					</span>
+				</div>
+				
+				<$if not thumbnailMode$>
+				
+					<script type="text/javascript">
+						function expireItem() {
+							if (!confirm("Are you sure you wish to delete this item? " +
+							 "It can be restored later by an administrator."))
+								return;
+								
+							document.expireItemForm.submit();
+						}
+					</script>
+				
+					<form id="expireItemForm" 	name="expireItemForm">
+						<input type="hidden" name="IdcService" 	value="UPDATE_DOCINFO" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="dDocName"	value="<$#active.dDocName$>" />
+						<input type="hidden" name="dID"			value="<$#active.dID$>" />
+						
+						<input type="hidden" name="dOutDate"	value="<$dateCurrent()$>" />
+						
+						<input type="hidden" name="xIndexer"	value="<$UserName$>" />
+						
+						<input type="hidden" name="RedirectUrl"	value="<$eval(#env.Iris_workflowRedirectUrl)$>" />
+					</form>
+					
+				<$endif$>
+				
+			<!-- This div element acts like an iframe, containing a table of recent notes -->
+			<div id="recentnotes" name='recentnotes'>
+				<table width="100%" cellpadding=2 cellspacing=1>
+					<$num = 0$>
+
+					<$if not rsAuditEntries$>
+						<tr><td>There are no recent notes/activities for this item.</td></tr>
+					<$endif$>
+
+					<$loop rsAuditEntries$>
+						<$num = num+1$>
+
+						<$auditText = "(Unknown action)"$>
+
+						<tr class="recentnotes_row" cellspacing=2 cellpadding=3>
+							<td name="recentnotes_cell" id='recentnotes_cell' valign=top>
+								<span><$lDate$></span>
+							</td>
+
+							<td class="recentnotes_cell1" valign=top>
+								<$include iris_compute_audit_text$>
+								<$auditText$>
+							</td>
+
+							<td class="recentnotes_cell2" valign=top>
+								<$#active.lUser$>
+							</td>
+						</tr>
+
+						<$if num ge 3$>
+							<$break$>
+						<$endif$>
+
+					<$endloop$>
+
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<@end@>
+
+<!-- Doc metadata validation hook. Add any required validation
+ 		 logic for CCLA documents here. -->
+<@dynamichtml iris_doc_validation_extra_js@> 
+	
+	<$if #active.bundleRef$>
+		<$include super.iris_doc_validation_extra_js$>
+	<$elseif #active.dDocType like "Response"$>
+		var correspondId = document.doc_fields['xClientNumber'];
+		if (correspondId && !(correspondId.value == "")) {
+			var isValid = validateIntegerValue(correspondId.value);
+			
+			if (!isValid) {
+				displayFieldErrorMsg("xClientNumber","Invalid number","Must be numeric");
+				hasErrors = true;
+			} else {
+				// correspondent ID is numeric, now check it is in the valid range.
+				if (correspondId.value < 200001 | correspondId.value > 242340) {
+					displayFieldErrorMsg("xClientNumber","Invalid ID","Out of range, must be between 200001 and 242340");
+					hasErrors = true;
+				}
+			
+			}
+		}
+		
+		var clientEmail 		= document.doc_fields['xClientName'];
+		var sendToStaticData 	= document.doc_fields['xWithInstruction'];
+		var comment				= document.doc_fields['xComments'];
+		
+		if (clientEmail && !(clientEmail.value == "")) {
+			// TODO: email validation
+		}
+		
+		var correspondPref = document.doc_fields['xUnits'];
+		if (correspondPref && (correspondPref.value != "")) {
+			if (correspondPref.value == "Email") {
+				// ensure email address is present, unless the 
+				// 'send to static data' checkbox is ticked.
+				
+				if (clientEmail && (clientEmail.value == "") && (sendToStaticData.value != "Yes")) {
+					displayFieldErrorMsg("xUnits","Email missing",
+					 "You have selected email correspondence, but not entered an email address.");
+					hasErrors = true;
+				}
+			}
+		}
+		
+		// If the 'send to static data' checkbox is ticked, the user must
+		// leave a comment explaining why.
+		if (sendToStaticData.value == "Yes" && comment.value == "") {
+			displayFieldErrorMsg("xComments","Comment missing",
+			 "You have chosen to send this to static data, but not entered a reason in the comment box.");
+			 hasErrors = true;
+		}
+		
+	<$endif$>
+
+<@end@>
+
+<!-- Displays the document title (dDocTitle) field -->
+<@dynamichtml iris_document_title_field@>
+
+	<tr>
+		<$if isInfo$>
+			<td valign=center class="field_caption_info">Title:</td>
+			<td valign=center class="field_value_info"><$dDocTitle$></td>
+		<$else$>
+			<td valign=center class="field_caption">Title:</td>
+			
+			<td valign=center class="field_value">
+				<$if #active.dDocType like "Response"$>
+					<$dDocTitle$>
+				<$else$>
+					<textarea 	name="dDocTitle" id="dDocTitle"
+								class="input_memo_field"
+								tabindex="<$tabIndex$>"><$#active.dDocTitle$></textarea>
+					
+					<$if false$>
+						<input type="text" class="input_text_field" name="dDocTitle" value="<$dDocTitle$>" tabindex=<$tabIndex$>>
+					<$endif$>
+				<$endif$>
+			</td>
+		<$endif$>
+	</tr>
+	<input type="hidden" name="dDocTitle_old" value="<$dDocTitle$>">
+
+<@end@>
+
+<@dynamichtml ccla_send_to_static_data_field@>
+
+	<input 	type="checkbox" name="sendToStaticData" id="sendToStaticData" onclick="sendToStaticDataChanged(this);"
+			<$if #active.xWithInstruction and (#active.xWithInstruction like "Yes")$>checked="checked"<$endif$> />
+	<input type="hidden"  name="xWithInstruction" id="xWithInstruction" value="<$#active.xWithInstruction$>" />
+	
+	<script type="text/javascript">
+		
+		// 'Send to static data' checkbox was clicked
+		sendToStaticDataChanged = function(chk) {
+			if (chk.checked) {
+				document.doc_fields['xWithInstruction'].value = "Yes";
+			} else {
+				document.doc_fields['xWithInstruction'].value = "No";
+			}
+		}
+		
+	</script>
+	
+<@end@>
+
+<@dynamichtml REF_CustomIncludeScript@>
+	<$c="overriding from iriscore_resource.htm"$>
+	<$c="added lock notification text"$>
+	
+	<$c="For displaying bundle ref/dDocName on Item Listing page."$>
+
+	<$thisBundleRef=""$>
+
+	<$if dDocType like #env.Iris_batchDocType$>
+		
+		<$thisBundleRef = getValue("#active",#env.Iris_batchIdField)$>
+
+		<$if strEquals(#local.noLink,"y")$>
+			<$thisBundleRef$>
+		<$else$>
+
+			<$if isActionListing$>
+				<$c="Open bundle link in new window when displaying action listing"$>
+				<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$dDocName$>&bundleRef=<$thisBundleRef$>" target="_blank"><$thisBundleRef$></a>
+			
+			<$else$>
+
+				<$if xPaymentDate$>
+					<$if not (xStatus like 'Completed') and (parseDate(xPaymentDate) < parseDate(dateCurrent()))$>
+			  		<!-- This bundle is incomplete and past its due date! -->
+			  		<$bundleIsOverdue=1$>
+			  	<$else$>
+			  		<$bundleIsOverdue=''$>
+			  	<$endif$>
+			  <$else$>
+			 		<$bundleIsOverdue=''$>
+				<$endif$>
+				
+				<a id="<$#active.dDocName$>_BundleRef_Col" href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.dDocName$>&bundleRef=<$thisBundleRef$><$#local.sfparamstring$>"><$thisBundleRef$></a>
+				
+				<$if false$>
+					<a <$if bundleIsOverdue$>style="color: #FF0000;"<$endif$> id="<$SearchResults.dDocName$>_BundleRef_Col" onClick="openBundle('<$dDocName$>','<$thisBundleRef$>',event)"><$thisBundleRef$></a>
+				<$endif$>
+			<$endif$>
+			
+			<span name="<$thisBundleRef$>_item_count" class="bundle-item-count"></span>
+				
+		<$endif$>
+
+	<$else$>
+		<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$dDocName$><$#local.sfparamstring$>"><$dDocName$></a>
+	<$endif$>
+	
+	<$if #env.Iris_enableBatchLocking and rsItemLocks$>
+		<$if rsFindRowPrimary("rsItemLocks",#active.dDocName)$>
+			<p class="item_locked">locked by <$rsItemLocks.LOCKUSER$></p>
+		<$endif$>
+		
+		<$exec rsFirst("rsItemLocks")$>
+	<$endif$>
+
+<@end@>
+
+<!-- Override from IrisCore.
+
+		 When in bundle item edit mode, update calls are done
+		 via AJAX requests. -->
+<@dynamichtml doc_approval_fields_actions@>
+
+	<$if not isInfo$>
+		
+		<tr>
+			<td colspan=3 align="left">
+				<div class="sidepanel_button_holder">
+					<$if batchEditMode like 'document' and not (#active.dDocType like "Response")$>
+						<!-- bind to AJAX functions -->
+						<$saveEvent 		= "saveDocInfo()"$>
+						<$discardEvent 	= "reloadDocInfo()"$>
+						<$disableButtons = ""$>
+					<$else$>
+						<!-- bind to standard form submission functions -->
+						
+						<$saveEvent 		= "saveDocInfo()"$>
+						<$discardEvent 	= "reloadDocInfo()"$>
+					<$endif$>
+					
+					<input type=button name="submitbtn" id="submitbtn" value="Save" 
+								 onclick="<$saveEvent$>;" 
+								 class="doc_panel_submit_button"
+								 <$#local.disableButtons$> 
+								 tabindex="<$include iris_get_next_tabindex$>" />
+					
+					<input type=button name="discardbtn" name="discardbtn" value="Reload" 
+								 onclick="<$discardEvent$>;" 
+								 class="doc_panel_submit_button"
+								 tabindex="<$include iris_get_next_tabindex$>"
+								 <$#local.disableButtons$> />
+								 	
+					<$if isBatchDoc and #env.Iris_enableBatchUpdates$>
+						<!-- Display batch update button -->
+						<input type="button" name="batchUpdateBtn" id="discardbtn" value="Batch update"
+									 onclick="applyBatchUpdate()"
+									 class="doc_panel_submit_button"
+									 tabindex="<$include iris_get_next_tabindex$>"
+									 disabled />
+						
+					<$endif$>			 	
+					
+					<$if not isBatchDoc$>
+						
+						<$if dDocType like "Document|ChildDocument"$>
+							<!-- Added extra button to standard controls to allow SPP workflow submission -->
+							<$if userHasRole("admin") or userHasRole("sysman") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+								<input 	type=button name="submitToSPPButton" id="submitToSPPButton" 
+												value="Submit to Workflow" onclick="submitToSPP();" 
+												style="width: 120; margin: 2px;"
+												tabindex="<$include iris_get_next_tabindex$>">
+							<$endif$>
+						<$endif$>
+						
+						<$if xDocumentClass like "MAND"$>
+							<!-- Added extra button to standard controls to allow forced checkout/checkin of MAND item -->
+							<$if userHasRole("admin") or userHasRole("sysman") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+								<input 	type=button name="checkOutCheckinButton" id="checkOutCheckinButton" 
+												value="Checkout/checkin" onclick="checkOutCheckin();" 
+												style="width: 120; margin: 2px;"
+												tabindex="<$include iris_get_next_tabindex$>">
+							<$endif$>
+							
+						<$endif$>
+						
+								
+						<script type="text/javascript">
+							
+							function submitToSPP() {
+								<$if userHasRole("admin")$>
+									<$if #active.xWorkflowDate or (#active.xBatchNumber and (#active.xBatchNumber > 0))$>
+										var conf = confirm("This item has a workflow ID or workflow date set, " +
+										"indicating it has already been submitted to Workflow.\n\nDo you want to resubmit it?");
+									<$else$>
+										var conf = confirm("Are you sure you want to submit this item to Workflow?");
+									<$endif$>
+								
+								<$else$>
+									alert("Sorry, you can't submit jobs this way any more.\n\n" +
+									 "If you want to resubmit a workflow job, track down its associated " +
+									 "instruction in the Instruction Register and set its status " +
+									 "to 'Ready for Workflow Release', or contact an administrator.");
+									return;
+								<$endif$>
+								
+								if (conf) {
+									// call single-doc SPP submit service.
+									
+									var frm = document.forms['sppSubmit'];
+									
+									if (frm) {
+										frm.elements['dDocName'].value = "<$#active.dDocName$>";
+										frm.submit();
+									} else {
+										window.location.assign("idcplg?IdcService=ECS_MANUAL_TRIGGER_SPP_WORKFLOW<$include add_idc_token_to_url$>&dDocName=<$#active.dDocName$>");
+									}
+								}
+							}
+							
+							function checkOutCheckin() {
+								<$if #active.xWorkflowDate or (#active.xBatchNumber and (#active.xBatchNumber > 0))$>
+									var conf = confirm("This MAND has a workflow ID or workflow date set, " +
+									"indicating it has already been submitted to Workflow.\n\nAre you sure you wish to send it to the Parking Lot?");
+								<$else$>
+									var conf = confirm("Are you sure you want to send this MAND to the Parking Lot?");
+								<$endif$>
+								
+								if (conf) {
+									// call single-doc checkout/checkin service to trigger VerifyMandate workflow
+									
+									var frm = document.forms['checkOutCheckinForm'];
+									
+									if (frm) {
+										frm.elements['dDocName'].value = "<$#active.dDocName$>";
+										frm.submit();
+									}
+								}
+							}
+							
+						</script>	
+									
+					<$endif$>
+					
+					<script type="text/javascript">
+						// send a list of the displayed fields so their
+						// values can be cached.
+						collectDocFieldValues('<$fields$>');
+						
+						<$if isBatchDoc$>
+							// callback the batch thumbnail display and update the
+							// thumbnail caption.
+							updateThumbCaption(
+								document.forms.doc_fields['dDocName'].value,
+								document.forms.doc_fields['xDocumentClass'].value
+							);
+						
+						<$elseif not isInfo$>
+							// Always enable the doc meta panel if this isn't a batch doc.
+							setDocPanelEnabled(true);
+
+						<$endif$>
+						
+					</script>
+								 	
+				</div>
+			</td>
+		</tr>
+
+	<$else$>
+					
+		<tr><td colspan=2 align="right">
+			<br/>
+			<a href="<$HttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$dDocName$>">View standard info</a>
+		</td></tr>
+
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml iris_update_form_header@>
+
+<$if not isBatchDoc$>
+	<$if isInfo$>
+		
+		<form name="doc_fields" id="doc_fields" action="<$HttpCgiPath$>" method="POST" style="margin: 0px; padding: 0px">
+	
+			<input type=hidden name=isIris					value="1">
+	
+			<input type=hidden name=IdcService 			value="IRIS_UPDATE_DOCINFO">
+			<$include add_idc_token_to_form$>
+			<input type=hidden name=dID							value="<$dID$>">
+			<input type=hidden name=dSecurityGroup	value="<$dSecurityGroup$>">
+			<input type=hidden name=dRevLabel				value="<$dRevLabel$>">
+			<input type=hidden name=dDocName				value="<$dDocName$>">
+			<input type=hidden name=dInDate					value="<$dInDate$>">
+			
+			<input type=hidden name=RedirectUrl			value="<$HttpCgiPath & '?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=' & dDocName & #local.urlparams$>">
+			
+			<$include iris_document_extra_hidden_fields$>
+			
+			<input type="hidden" name="dDocType" value="<$dDocType$>" />
+
+			<$numMissingFields = 0$>
+	
+			<!-- 	Table containing metadata fields.
+						Header customized for CCLA documents.
+						 -->
+			<table width="100%" cellpadding=0 cellspacing=2>
+				
+				<tr>
+					<td valign=center class="field_caption_info">Envelope ID:</td>
+					<td valign=center class="field_value_info"><a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$xBundleRef$>"><$xBundleRef$></a></td>
+				</tr>
+				
+				<tr>
+					<td valign=center class="field_caption_info">Added:</td>
+					<td valign=center class="field_value_info"><$dReleaseDate$></a></td>
+				</tr>
+				
+				<$if #active.dDocType like "Document|ChildDocument"$>
+					<tr>
+						<td valign=center class="field_caption_info">Workflow date:</td>
+						<td valign=center class="field_value_info"><$#active.xWorkflowDate$></a></td>
+					</tr>
+				<$endif$>
+				
+				<tr><td colspan=2><br><td></tr>
+				
+				<tr>
+					<td valign=center class="field_caption_info">Scanned by:</td>
+					<td valign=center class="field_value_info"><$#active.xScanUser$></a></td>
+				</tr>
+				
+				<tr>
+					<td valign=center class="field_caption_info">Indexed by:</td>
+					<td valign=center class="field_value_info"><$#active.xIndexer$></a></td>
+				</tr>
+				
+				<tr>
+					<td valign=center class="field_caption_info">Title:</td>
+					<td valign=center class="field_value_info"><$dDocTitle$></a></td>
+				</tr>
+				
+				<tr><td colspan=2><br><td></tr>
+		
+	<$else$>
+		
+		<$include super.super.iris_update_form_header$>
+			
+		<tr>
+			<td valign=center class="field_caption">Envelope ID:</td>
+			<td valign=center class="field_value">
+				<a 	href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$#active.xBundleRef$>"
+						title="View this envelope"><$#active.xBundleRef$></a>
+			
+				<$if dDocType like "ChildDocument" and false$>
+					<input type=hidden name="createPrimaryMetaFile"		value="1" />
+				<$endif$>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<$include ccla_update_form_audit_fields$>
+				<br/>
+			</td>
+		</tr>
+		
+		<$if #active.dDocType like "Document|ChildDocument"$>
+			<tr>
+				<td valign=center class="field_caption">Workflow ID:</td>
+				<td valign=center class="field_value">
+					<a 	href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&wfid=<$#active.xBatchNumber$>"
+							title="Search for all items with this workflow ID"><$#active.xBatchNumber$></a>
+				</td>
+			</tr>
+			
+			<tr>
+				<td valign=center class="field_caption">Workflow date:</td>
+				<td valign=center class="field_value"><$formatDateWithPattern(#active.xWorkflowDate,#env.Iris_longDatePattern)$></td>
+			</tr>
+		<$endif$>
+		
+		<tr><td><br/></td></tr>
+		
+	<$endif$>
+		
+<$else$>
+	
+	<form name="doc_fields" id="doc_fields" action="<$HttpCgiPath$>" method="POST" style="margin: 0px; padding: 0px">
+
+		<input type=hidden name=isIris					value="1">
+
+		<input type=hidden name=IdcService 			value="IRIS_UPDATE_DOCINFO">
+		<$include add_idc_token_to_form$>
+		<input type=hidden name=dID							value="<$dID$>">
+		<input type=hidden name=dSecurityGroup	value="<$dSecurityGroup$>">
+		<input type=hidden name=dRevLabel				value="<$dRevLabel$>">
+		<input type=hidden name=dDocName				value="<$dDocName$>">
+		<input type=hidden name=dInDate					value="<$dInDate$>">
+		
+		<input type=hidden name=RedirectUrl			value="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&dDocName=' & dDocName & #local.urlparams$>">
+		
+		<$include iris_document_extra_hidden_fields$>
+		
+		<input type="hidden" name="dDocType" value="<$dDocType$>" />
+		
+		<$include ccla_update_form_audit_fields$>
+		
+		<input type="hidden" name="xIndexer" value="<$dUser$>" />
+		
+		<$if dDocType like "ChildDocument" and false$>
+			<input type=hidden name="createPrimaryMetaFile"		value="1" />
+		<$endif$>
+
+		<$numMissingFields = 0$>
+
+		<!-- table containing metadata fields -->
+		<table width="100%" cellpadding=0 cellspacing=2>
+			
+			<$if isInfo$>
+				<tr>
+					<td class="field_caption_info">
+						Last indexer:
+					</td>
+					<td class="field_value_info">
+						<$#active.xIndexer$>
+					</td>
+				</tr>
+			<$else$>
+				<tr>
+					<td class="field_caption">
+						Last indexer:
+					</td>
+					<td class="field_value">
+						<$#active.xIndexer$>
+					</td>
+				</tr>
+			<$endif$>
+			
+<$endif$>
+
+<@end@>
+
+</body></html>

@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+		<$ELEMENT_ID = #active.ACCOUNT_ID$>
+
+	<title>
+		<$pageTitle = "Update default bank accounts"$>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		var isUpdated = <$if isUpdated$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			
+			if (isUpdated){
+				window.parent.refreshAccountRelations('<$#local.ACCOUNT_ID$>','');
+				window.parent.closePopup();
+			}
+		});
+		
+	</script>
+	
+	
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$pageTitle$>
+			</div>
+			
+				<$if isUpdated$>	
+					<div class="message_panel info_icon">
+						Default bank details updated.
+					</div>
+				<$endif$>			
+			
+			<div class='ccla_cs_panel_content'>
+				<form name="frmUpdateDefaults" id="frmUpdateDefaults" method="POST">
+				
+					<input type="hidden" name="ACCOUNT_ID" value="<$#local.ACCOUNT_ID$>"><$include add_idc_token_to_url$>
+					<input type="hidden" name="IdcService" value="CCLA_CS_BANK_ACCOUNT_DEFAULT_UPDATE"><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_BANK_ACCOUNT_UPDATE_DEFAULT&ACCOUNT_ID=<$#active.ACCOUNT_ID$>">
+
+					<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Account$>
+					<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_BankAccount$>	
+
+					<$defaultTitle = "Withdrawal"$>
+					<$defaultRelationNameId=120$>
+						<$include ccla_cs_default_bank_account_display$>
+						
+					<$defaultTitle = "Income"$>
+					<$defaultRelationNameId=121$>
+						<$include ccla_cs_default_bank_account_display$>	
+				<br>
+				<div style="float:right;"><input type="submit" value="Save"></div>
+						
+				</form>
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

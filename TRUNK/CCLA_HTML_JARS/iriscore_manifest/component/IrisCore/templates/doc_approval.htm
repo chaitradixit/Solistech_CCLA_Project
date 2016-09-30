@@ -1,0 +1,112 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include iris_styles$>
+
+	<$include doc_approval_preamble$>
+
+	<title>
+		<$include iris_doc_approval_title$>
+	</title>
+
+</head>
+
+<body <$include iris_body_def_internal$> 
+			height="100%" 
+			onLoad='setHeights();
+			<$if false and #env.Iris_checkChangesOnExit$>
+			collectFields();<$endif$>prepareCalendars();setTimeout(highlightFirstField,300);' 
+			onUnload='<$if #env.Iris_enableAutoBatchLocking$>removeItemLockOnExit();<$endif$>' 
+			onbeforeunload='<$if #env.Iris_checkChangesOnExit$>
+			return checkForChangesOnExit();<$endif$>'
+			onresize='setHeights();'>
+	
+	<$include ecs_popup_div_header$>
+		
+	<$include iris_header$>
+	<$include iris_check_for_errors$>
+	<$include iris_debug_info$>
+
+<$loop DOC_INFO$>
+
+	<$isDocApproval = 1$>
+	<div id="main_container">
+
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" 
+					 id="container_table" 
+					 onclick="stopResize(event)" 
+					 onmouseup="stopResize()" 
+					 onmousemove="resizeTable(event)">
+ 		<tr>
+ 			
+ 			<$include iris_compute_panels_width$>
+ 			
+ 			<td valign="top" width="<$panelWidth$>" id="container_table_left_cell">
+
+				<$if sel and not (strIndexOf(sel,",") == -1)$>
+					<div id="doc_browser_container">
+						<!-- Document selection browse controls -->
+						<$include doc_approval_browse$>
+					</div>
+				<$endif$>
+
+				<$tabIndex = 1$>
+
+				<div id="doc_panels_container">
+					
+					<!-- Controls display of side panels -->
+					<$include iris_doc_panel_display$>
+				
+				</div>
+
+			</td>
+
+			<!-- 	This 10-pixel wide table column can be 'dragged' by the user
+						to adjust the relative sizes of the panels and preview region -->
+			<td width=10 style="cursor: w-resize" onmouseup="stopResize(event)" onmousedown="startResize(event)" align="center">
+				<$include resize_table_js$>
+				<div id="resize_bar" class="resizeBar">
+				</div>
+			</td>
+
+			<td valign=top id="container_table_right_cell">
+				<div id="preview_div">
+
+					<!-- Tabs -->
+					<div id="doc_tabs_container">
+						<$include doc_approval_tabs$>
+														
+					</div>
+
+					<$include orangeContainer_top$>
+
+						<div name="colored_region" id="preview_container">
+							<!-- Preview iframe -->
+							<$include doc_approval_preview$>
+
+							<!-- Recent notes / Add new note panels -->
+							<$include doc_approval_recent_notes$>
+
+						</div>
+
+					<$include orangeContainer_bottom$>
+				</div>
+
+			</td>
+		</tr>
+		</table>
+
+	</div>
+
+<$endloop$> <!-- end loop on DOC_INFO resultset -->
+
+<$if false$>
+	<$msg="Approval page: loaded"$>
+	<$executeService("ECS_LOG")$>
+<$endif$>
+
+<$include std_page_end$>
+
+</body>
+</html>

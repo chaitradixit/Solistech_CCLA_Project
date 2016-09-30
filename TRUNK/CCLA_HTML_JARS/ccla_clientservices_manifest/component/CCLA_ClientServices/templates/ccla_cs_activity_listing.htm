@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Activity Listing
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' class="search_results_cont activityListingSF" >
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Activity Listing 
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$SF_UseDatabaseSearch=1$>
+					<$SF_QueryProvider="CCLA_POOL1"$>
+					
+					<$SF_QueryTable="V_PROCESS_ACTIVITY"$>
+					
+					<$if not sf$>
+						<$sf="ACTIVITY_ID"$>
+						<$so="DESC"$>
+					<$endif$>
+					
+					<$include iris_sf_sort_images$>
+			
+					<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+					<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+					<$calendarSelectFields="DATE,DATE_ADV"$>
+					<$include epoch_calendar_header$>
+					
+					<$SF_DISPLAYADVSEARCHLINK=""$>
+					
+					<$hideLineBreak=1$>
+					<$hideInfoLink="Y"$>
+
+					<$displayPagingOptions="N"$>
+					<$displayPaginator="Y"$>
+					<$SF_CustomPaginator="iris_sf_paginator"$>
+
+					<$advSearchBackgroundColour="#FFFFFF"$>
+					<$advSearchDisplay_pre='orangeContainer_top'$>
+					<$advSearchDisplay_after='orangeContainer_bottom'$>
+
+					<$nodeFilterFieldNames="ACTIVITY_ID_COL,ORGANISATION_ID_COL,PERSON_ID_COL,PROCESS_ID_COL,CAMPAIGN_NAME_COL,ACTIVITY_TYPE_COL,ACTIVITY_DATE_COL,ACTIVITY_ACTION_COL"$>
+					<$nodeFilterFieldWidth="5,5,5,5,15,20,10,35"$>
+					
+					<$QueryFieldList="ACTIVITY_ID_COL,PERSON_ID_COL,CLIENT_ID_COL,PROCESS_ID_COL,CAMPAIGN_NAME_COL,PROCESS_STATUS_COL,ACTIVITY_TYPE_COL,ACTIVITY_DATE_COL,ACTIVITY_ACTION_COL"$>	
+					
+					<$suppressSortLinks="PROCESS_ACTIONS"$>
+						
+					<$SF_ORGANISATION_ID_COL_idcname="PROCESS_ENTITY_ID"$>
+					<$ORGANISATION_ID_COL_CustomIncludeScript="ccla_cs_display_entity_id"$>
+					
+					<$CAMPAIGN_NAME_COL_CustomFilterScript="ccla_cs_campaign_filter"$>					
+					<$PERSON_ID_COL_CustomIncludeScript="ccla_cs_display_person_id"$>
+					<$ACTIVITY_DATE_COL_CustomIncludeScript="ccla_cs_display_activity_date"$>
+					<$ACTIVITY_TYPE_COL_CustomFilterScript="ccla_cs_activity_type_filter"$>
+					<$ACTIVITY_OUTCOME_COL_CustomIncludeScript="ccla_cs_display_activity_outcome"$>
+					<$PROCESS_ID_COL_CustomIncludeScript="ccla_cs_display_process_id"$>
+					
+					<$SF_ACTIVITY_ID_COL_caption="Activity ID"$>
+					<$SF_ACTIVITY_ID_COL_type="input"$>
+					<$SF_ACTIVITY_ID_COL_shortname="actid"$>
+					<$SF_ACTIVITY_ID_COL_list="none"$>
+					<$SF_ACTIVITY_ID_COL_idcname="ACTIVITY_ID"$>
+					<$SF_ACTIVITY_ID_COL_search="int"$>
+					
+					<$SF_ACTIVITY_TYPE_COL_caption="Type"$>
+					<$SF_ACTIVITY_TYPE_COL_type="input"$>
+					<$SF_ACTIVITY_TYPE_COL_shortname="acttype"$>
+					<$SF_ACTIVITY_TYPE_COL_list="none"$>
+					<$SF_ACTIVITY_TYPE_COL_idcname="ACTIVITY_TYPE"$>
+					<$SF_ACTIVITY_TYPE_COL_search="substring"$>
+					
+					<$SF_ACTIVITY_ACTION_COL_caption="Action"$>
+					<$SF_ACTIVITY_ACTION_COL_type="input"$>
+					<$SF_ACTIVITY_ACTION_COL_shortname="actaction"$>
+					<$SF_ACTIVITY_ACTION_COL_list="none"$>
+					<$SF_ACTIVITY_ACTION_COL_idcname="ACTIVITY_ACTION"$>
+					<$SF_ACTIVITY_ACTION_COL_search="substring"$>
+					
+					<$SF_ACTIVITY_OUTCOME_COL_caption="Outcome"$>
+					<$SF_ACTIVITY_OUTCOME_COL_type="input"$>
+					<$SF_ACTIVITY_OUTCOME_COL_shortname="actoutcome"$>
+					<$SF_ACTIVITY_OUTCOME_COL_list="none"$>
+					<$SF_ACTIVITY_OUTCOME_COL_idcname="ACTIVITY_OUTCOME"$>
+					<$SF_ACTIVITY_OUTCOME_COL_search="substring"$>
+					
+					<$SF_ACTIVITY_DATE_COL_caption="Date"$>
+					<$SF_ACTIVITY_DATE_COL_type="input"$>
+					<$SF_ACTIVITY_DATE_COL_shortname="actdate"$>
+					<$SF_ACTIVITY_DATE_COL_list="none"$>
+					<$SF_ACTIVITY_DATE_COL_idcname="ACTIVITY_DATE"$>
+					<$SF_ACTIVITY_DATE_COL_search="date"$>
+					
+					<$PROCESS_ACTIONS_COL_CustomIncludeScript="ccla_cs_process_actions"$>				
+					
+					<$include ecsSearchAndFilter$>
+					
+					<script type="text/javascript">
+						
+						function generateAndPrintForm(processId, lastActivity) {
+							
+							if (lastActivity == "Form Print") {
+								var conf = confirm("Are you sure you want to generate and print a " +
+								"form for this process? \n\nThe last action was 'Form Print', " +
+								"so you may end with a duplicate print.");
+								
+								if (!conf)
+									return;
+							}
+							
+							var frm = document.forms["generateAndPrintActionForm"];
+							frm.elements["processId"].value = processId;
+							
+							frm.submit();
+						}
+						
+					</script>
+					
+					<form id="generateAndPrintActionForm" name="generateAndPrintActionForm" method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_CREATE_AND_PRINT_ETHICAL_FUND_FORM" /><$include add_idc_token_to_form$>
+						
+						<$include ccla_cs_get_sf_url_params$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$><$#local.sfparamstring$>&formGenAndPrinted=1" />
+						
+						<input type="hidden" name="processId" value="" />
+				
+					</form>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

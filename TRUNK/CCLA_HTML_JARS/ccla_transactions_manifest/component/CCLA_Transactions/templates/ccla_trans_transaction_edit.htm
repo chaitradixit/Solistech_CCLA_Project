@@ -1,0 +1,87 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Add/Edit Transaction
+</title>
+
+		<$if #local.INSTRUCTION_ID$>
+			<$isEdit=1$>
+			<$buttonText="Save"$>
+		<$else$>
+			<$isNew=1$>
+			<$buttonText="Add"$>
+		<$endif$>
+
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+		<script type="text/javascript">
+
+		</script>
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Add or edit transaction
+							</div>
+					<form name="frmTransaction" method="POST">
+						
+						<$include add_idc_token_to_form$>
+						<$if isNew$>
+						<input type="hidden" name="IdcService" value="CCLA_TRANS_TRANSACTION_ADD">
+						<input type="hidden" name="INSTRUCTION_STATUS_ID" value="1">
+						
+						<$else$>
+						<input type="hidden" name="IdcService" value="CCLA_TRANS_TRANSACTION_UPDATE">	
+						<input type="hidden" name="INSTRUCTION_ID" value="<$#local.INSTRUCTION_ID$>">
+						<input type="hidden" name="INSTRUCTION_STATUS_ID" value="<$#active.INSTRUCTION_STATUS_ID$>">
+
+						
+						<$endif$>
+						
+						<input type="hidden" name="COMM_ID" value="1">						
+						
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_TRANSACTION_LIST<$include add_idc_token_to_url$>&INSTRUCTION_ID=">								
+
+
+							<$include ccla_trans_edit_transactions$>
+						<div style="float:right">
+							<input type="submit"class="generic_button" value="<$buttonText$>">&nbsp;&nbsp;
+						</div>
+						</form>
+						<br><br>
+	
+					
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

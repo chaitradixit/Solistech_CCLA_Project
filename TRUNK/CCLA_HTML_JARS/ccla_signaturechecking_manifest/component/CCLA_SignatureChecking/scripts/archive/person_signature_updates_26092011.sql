@@ -1,0 +1,14 @@
+-- Add new column to PERSON_SIGNATURE table
+ALTER TABLE PERSON_SIGNATURE ADD (
+  SOURCE_DOC_ID Number(38,0)
+)
+/
+
+COMMENT ON COLUMN PERSON_SIGNATURE.SOURCE_DOC_ID IS 'Source Doc ID where the signature was apparently captured from. Won''t be present for earlier records hence the lack of a non-null constraint.'
+/
+
+-- Add foreign key ref.
+CREATE INDEX REVISIONS_PERSONSIG_IX ON PERSON_SIGNATURE (SOURCE_DOC_ID) 
+/
+ALTER TABLE PERSON_SIGNATURE ADD CONSTRAINT REVISIONS_PERSONSIG_FK FOREIGN KEY (SOURCE_DOC_ID) REFERENCES UCMADMIN.REVISIONS (DID)
+/

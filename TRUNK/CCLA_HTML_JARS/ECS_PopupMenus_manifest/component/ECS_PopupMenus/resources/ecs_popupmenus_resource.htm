@@ -1,0 +1,452 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+PopupMenus htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Place this include in the header of any templates 
+		 containing action menus. Contains required javascript
+		 and default stylesheets -->
+<@dynamichtml float_menu_header@>
+
+	<$include ecs_popup_jquery_js$>
+
+	<$include float_menu_js$>
+	<$include float_menu_styles$>
+
+<@end@>
+
+<!-- Pop-up action menu includes -->
+<@dynamichtml action_menu@>
+
+  <$if not #active.menu_id$>
+    <$c= 'Check for a custom identifier for this menu'$>
+    <$if #active.dID$>
+      <$menu_id = dID$>
+    <$else$>
+      <$menu_id = "default"$>
+    <$endif$>
+  <$endif$>
+  
+  <$if not #active.menu_style_prefix$>
+  	<$c='Determines the CSS style prefix used for menu elements'$>
+    <$menu_style_prefix = "xui"$>
+  <$endif$>
+  
+  <$if not #active.menu_button_text$>
+    <$c = 'Displays a rollover image, which acts as a toggle button for the popup action menu'$>
+    
+    <$if not #active.menu_img_src$>
+      <$menu_img = HttpWebRoot & "images/stellent/ActionsIcon.gif"$>
+    <$else$>
+      <$menu_img = menu_img_src$>
+    <$endif$>
+    
+		<img id="actIcon_<$menu_id$>" title="Click to open action menu" src="<$menu_img$>" height="16" width="16" border="0" onclick="togglePopup('popup_<$menu_id$>', 'actIcon_<$menu_id$>', event <$if menu_justify$>,'<$menu_justify$>'<$if menu_img_src$>,'<$menu_img_src$>'<$endif$><$endif$>);" <$if menu_button_attr$><$menu_button_attr$><$endif$>/>
+	
+	<$elseif #active.menu_use_html_button$>
+		
+		<$c = 'Use a HTML button toggle for this action menu'$>
+		<input type="button" id="actIcon_<$menu_id$>" value="<$menu_button_text$>" onclick="togglePopup('popup_<$menu_id$>', 'actIcon_<$menu_id$>', event <$if menu_justify$>,'<$menu_justify$>'<$endif$>);" <$if menu_button_attr$><$menu_button_attr$><$endif$> />
+		
+		
+	<$else$>	
+		
+	  <$c = 'Use a text-based toggle for this action menu'$>
+	  <a id="actIcon_<$menu_id$>" onclick="togglePopup('popup_<$menu_id$>', 'actIcon_<$menu_id$>', event <$if menu_justify$>,'<$menu_justify$>'<$endif$>);" <$if menu_button_attr$><$menu_button_attr$><$endif$>><$menu_button_text$></a>
+	
+	<$endif$>
+	  
+	<$include results_action_popup$>
+	
+	<$c = 'Wipe all menu variables'$>
+	<$menu_id=""$>
+  <$menu_button_text=""$>
+  <$menu_img_src=""$>
+  <$menu_button_attr=""$>
+  <$menu_justify=""$>
+  <$menu_style_prefix=""$>
+	<$menu_use_html_button=""$>
+  
+  <$actionMenu_CustomInclude=""$>
+
+<@end@>
+
+<!-- Sets up static vars required by ecs_popupmenus.js -->
+<@dynamichtml float_menu_static_js@>
+
+	<script type="text/javascript">
+		
+		var useSlideAnimation = <$if #env.ECS_PopupMenus_use_menu_slide_animations$>true<$else$>false<$endif$>;
+		var httpWebRoot = "<$HttpWebRoot$>";
+
+	</script>	
+	
+<@end@>
+
+<@dynamichtml float_menu_js@>
+
+	<$include float_menu_static_js$>
+	
+	<script type="text/javascript" src="<$HttpWebRoot$>resources/ECS_PopupMenus/ecs_popupmenus.js"></script>
+
+<@end@>
+
+
+<@dynamichtml float_menu_styles@>
+<$if IsDebug$>float_menu_styles<$endif$>
+<style type="text/css">
+
+/* ===================================================== */
+/* xui menu CSS */
+
+/* Div element used to hold the link table */
+.xuiPopupContainer
+{
+	position: absolute;
+  border-top: 4px solid #0066cc;
+}
+
+/* Table element that holds menu entries */
+.xuiPopupTable
+{
+	background: #FFFFFF; /*popup_menu_background*/
+  border-top: 1px solid #418ADE; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #418ADE; /*popup_menu_inner_border_topleft*/
+	border-bottom: 2px solid #418ADE; /*popup_menu_inner_border_bottomright*/
+	border-right: 2px solid #418ADE; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.xuiPopupLink
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #418ADE; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry */
+.xuiPopupLinkMenu
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #FFFFFF; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry (mouseover) */
+.xuiPopupLink_over
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #76B900; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background: #dae5ef; /*popup_menu_link_item_background_mouseover*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
+	cursor: hand;
+}  
+
+
+/* ===================================================== */
+/* top-level menu CSS */
+
+/* Div element used to hold the link table */
+.topPopupContainer
+{
+	position: absolute;
+  border-top: 1px solid #1A97C9;
+  margin-top: 2px;
+  margin-left: -6px;
+  z-index: 99;
+}
+
+/* Table element that holds menu entries */
+.topPopupTable
+{
+	background: #F29303; /*popup_menu_background*/
+  border-top: 1px solid #1A97C9; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #1A97C9; /*popup_menu_inner_border_topleft*/
+	border-bottom: 1px solid #1A97C9; /*popup_menu_inner_border_bottomright*/
+	border-right: 1px solid #1A97C9; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.topPopupLink
+{
+	font-size: 1em;
+	text-align: left;
+	vertical-align: middle;
+	text-decoration: none;
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color:  #F29303; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  /* border-bottom: 1px solid #CCCCCC; */
+}
+
+/* Link elements used for each menu entry */
+.topPopupLinkMenu
+{
+	font-size: 1em;
+	text-align: left;
+	vertical-align: middle;
+	color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color: #F29303; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  /* border-bottom: 1px solid #CCCCCC; */
+  cursor: pointer;
+	cursor: hand;
+}
+
+.topPopupLinkMenu a
+{
+  text-decoration: none;
+  font-size: 1em;
+  color: #FFFFFF;
+}
+
+/* Link elements used for each menu entry (mouseover) */
+.topPopupLink_over
+{
+	font-size: 1em;
+	text-align: left;
+	vertical-align: middle;
+	color: #F29303; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color: #FFFFFF; /*popup_menu_link_item_background_mouseover*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  /* border-bottom: 1px solid #CCCCCC; */
+	cursor: pointer;
+	cursor: hand;
+}
+
+/* ===================================================== */
+/* Iris menu CSS */
+
+/* Div element used to hold the link table */
+.irisPopupContainer
+{
+	position: absolute;
+  border-top: 2px solid #F29303;
+}
+
+/* Table element that holds menu entries */
+.irisPopupTable
+{
+	background: #FFFFFF; /*popup_menu_background*/
+  border-top: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+	border-left: 1px solid #F29303; /*popup_menu_inner_border_topleft*/
+	border-bottom: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+	border-right: 2px solid #F29303; /*popup_menu_inner_border_bottomright*/
+}
+
+/* Link elements used for each menu entry */
+.irisPopupLink
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #000000; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background-color:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #F29303;
+}
+
+/* Link elements used for each menu entry */
+.irisPopupLinkMenu
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #FFFFFF; /*popup_menu_link_item_text*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none;
+	font-weight: normal;
+	white-space: nowrap;
+	background:  #FFFFFF; /*popup_menu_background*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+}
+
+/* Link elements used for each menu entry (mouseover) */
+.irisPopupLink_over
+{
+	font-size: 8pt;
+	text-align: left;
+	vertical-align: middle;
+	color: #76B900; /*popup_menu_link_item_text_mouseover*/
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+	font-weight: normal;
+	white-space: nowrap;
+	background: #dae5ef; /*popup_menu_link_item_background_mouseover*/
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+  border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
+	cursor: hand;
+}  
+
+</style>
+
+<@end@>
+
+<!-- this popup is displayed when the user clicks on the action icon/link text -->
+<@dynamichtml results_action_popup@>
+
+	
+	<div class="<$menu_style_prefix$>PopupContainer" id="popup_<$menu_id$>" style="display:none;white-space:nowrap;z-index:99" nowrap>
+	<table class="<$menu_style_prefix$>PopupTable">
+	<tbody>
+	  
+	  
+	  <$if #active.actionMenu_CustomInclude$>
+	    <$inc(actionMenu_CustomInclude)$>
+	  <$else$>
+	  
+  	  <$if not #active.hideInfoActionLink$>
+  	  
+  	  	<$if not #active.infoURL$>
+  	  		<$infoURL = HttpCgiPath & "?IdcService=DOC_INFO&dID=" & dID & "&dDocName=" & dDocName & "&IsPlanning=Y&IsHidePlanningFields=Y&IsPlanningDocument=Y"$>
+  	  	<$endif$>
+  	  
+  		  <tr>
+  		  	<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  		  		<a href="<$infoURL$>" target="_NEW">Info</a>		
+  				</td>
+  			</tr>
+  			
+  		<$endif$>
+  		
+  		<$if #active.updateURL$>
+  		
+  			<tr>
+  				<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  					<a href="<$updateURL$>">Update</a>
+  				</td>
+  			</tr>
+  		
+  		<$endif$>
+  		
+  		<$if #active.showDownloadLink$>
+  		
+  			<tr>
+  				<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  					<a href="<$HttpCgiPath$>?IdcService=GET_FILE&dID=<$dID$>">Download file</a>
+  				</td>
+  			</tr>
+  		
+  		<$endif$>
+  		
+  		<$if #active.showCheckoutOpenLink$>
+  		
+  				<$c = 'check if this is an ms office document before displaying the Checkout & open link'$>
+  				<$if strIndexOf("doc,xls,ppt,pps,rtf",dExtension) >= 0$>
+  			
+  					<tr>
+  						<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  							<a onClick="javascript:postCheckoutAndOpen('<$dDocName$>','<$url(dDocTitle)$>','<$dExtension$>');" target="<$popupLinkTarget$>">Edit document</a>
+  						</td>
+  					</tr>
+  			
+  				<$endif$>
+  		
+  		<$endif$>
+  		
+  		<$if #active.showApproveRejectLinks and strIndexOf(xDocumentStatus,#env.NEEDS_APPROVAL_PREFIX) >= 0$>
+  			<!-- This document has been marked as requiring approval.
+  					 Show the approve/reject links providing that the current
+  					 user is a member of the approvers role -->
+  			<$if isTrue(userHasRole(#env.PS_APPROVERS_ROLE))$> 
+  	
+  				<tr>
+  					<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  						<a onClick="javascript:docApproval('<$dID$>','approve');" target="<$popupLinkTarget$>"><$#env.APPROVE_PHRASE$></a>
+  					</td>
+  				</tr>
+  				
+  				<tr>
+  					<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')" onClick="linkItem_onclick(event, this)">
+  						<a onClick="javascript:docApproval('<$dID$>','reject');" target="<$popupLinkTarget$>"><$#env.REJECT_PHRASE$></a>
+  					</td>
+  				</tr>
+  				
+  			<$endif$>
+  		
+  		<$endif$>
+  		
+  	<$endif$>
+
+		<$doingPopupActions = 1$>
+
+	</tbody>
+	</table>
+	</div>
+	
+<@end@>
+	  
+</body></html>

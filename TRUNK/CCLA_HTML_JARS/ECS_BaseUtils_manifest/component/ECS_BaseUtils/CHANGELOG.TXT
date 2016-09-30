@@ -1,0 +1,2044 @@
+------------------------------------------------------------------------
+r18790 | tm | Thu Jun 28 17:17:43 BST 2012
+
+Changes to:
+
+DateFormatter - changed logging and layout of static init code to be a little cleaner. The static block will also catch any errors caused by failed access to the SharedObjects class, which won't be available when running the class outside of server context. Added a new method decodeDate() which is a more reliable version of the one found in the core RIDC libraries
+
+LWDocument - switched use of the core RIDC decodeDate() function to the new one in the DateFormatter class
+------------------------------------------------------------------------
+r18778 | tm | Thu Jun 28 14:58:26 BST 2012
+
+Switched call to RIDC decodeDate function to our new DateFormatter.decodeDate function
+------------------------------------------------------------------------
+r18777 | tm | Thu Jun 28 14:57:27 BST 2012
+
+Refactored logging during static initialization.
+
+Added new method decodeDate - alternative to core RIDC function of the same name. Always specifies input strings as being in GMT timezone.
+------------------------------------------------------------------------
+r18776 | camli | Thu Jun 28 11:38:31 BST 2012
+
+added checks for initialising dateFormatter so it can run on the local machine.
+------------------------------------------------------------------------
+r18620 | camli | Tue Jun 12 14:01:12 BST 2012
+
+updated fix info.
+------------------------------------------------------------------------
+r18585 | tm | Fri Jun 08 17:15:44 BST 2012
+
+Added connection refresh call every time a data source is fetched.
+
+This enables the Facade to recover from terminated connections etc. without requiring a Content Server restart.
+
+This behaviour can be switched off by specifying the env var ORACLE_JDBC_FORCE_DATA_SOURCE_CONNECTION_REFRESH=0.
+------------------------------------------------------------------------
+r17910 | camli | Tue May 08 14:16:00 BST 2012
+
+fixed issue with ridc library on new check issues
+------------------------------------------------------------------------
+r17909 | camli | Tue May 08 14:12:11 BST 2012
+
+fixed issue with ridc library on new check issues
+------------------------------------------------------------------------
+r17892 | tm | Wed May 02 14:15:49 BST 2012
+
+Fixed version
+------------------------------------------------------------------------
+r17891 | tm | Wed May 02 14:13:34 BST 2012
+
+Added 1.6.6 changes
+------------------------------------------------------------------------
+r17890 | tm | Wed May 02 13:51:21 BST 2012
+
+Added companion method to convertDatesToRIDCFormat: convertDatesFromRIDCFormat.
+
+This performs as you'd expect: takes an RIDC-formatted date field string, converts it to a Date instance, then converts this to a UCM date-formatted String.
+
+Only applicable when RIDC library use is enabled.
+------------------------------------------------------------------------
+r17889 | tm | Wed May 02 13:47:20 BST 2012
+
+Added exception error messages to try-catch blocks, to make SQL-related errors more clear in the front end
+------------------------------------------------------------------------
+r17881 | camli | Tue May 01 13:01:42 BST 2012
+
+added check for null primary file as this could be null for bundle items. 
+------------------------------------------------------------------------
+r17880 | camli | Tue May 01 12:06:57 BST 2012
+
+attempt at parsing date using DateFormatter
+------------------------------------------------------------------------
+r17879 | camli | Tue May 01 12:05:27 BST 2012
+
+removed line breaks
+------------------------------------------------------------------------
+r17621 | camli | Fri Apr 13 12:03:24 BST 2012
+
+fixed syntax for trimtext
+------------------------------------------------------------------------
+r17530 | camli | Wed Apr 11 15:54:45 BST 2012
+
+removed redundant import
+------------------------------------------------------------------------
+r17510 | PAULT | Wed Apr 11 12:12:58 BST 2012
+
+moved class loading code into its own class 
+------------------------------------------------------------------------
+r17508 | camli | Wed Apr 11 11:30:47 BST 2012
+
+format empty string if returned formatted date is null 
+------------------------------------------------------------------------
+r17486 | camli | Tue Apr 10 16:51:41 BST 2012
+
+ensure that all copied resultsetvalues are not null.
+------------------------------------------------------------------------
+r17462 | gs | Tue Apr 10 14:14:36 BST 2012
+
+Updated string replacement utility (used to inject text into Ms Office docs) so that it copes with null characters in the office doc (which have to be preserved when injecting in text) #304
+------------------------------------------------------------------------
+r17385 | camli | Wed Apr 04 15:20:24 BST 2012
+
+added extra properties.
+------------------------------------------------------------------------
+r17378 | camli | Wed Apr 04 15:10:56 BST 2012
+
+change to log output instead of system out.
+------------------------------------------------------------------------
+r17377 | camli | Wed Apr 04 15:04:14 BST 2012
+
+updated property names
+------------------------------------------------------------------------
+r17375 | camli | Wed Apr 04 14:45:10 BST 2012
+
+updated comment.
+------------------------------------------------------------------------
+r17374 | camli | Wed Apr 04 14:44:25 BST 2012
+
+flag to set the auto commit when getting a connection.
+------------------------------------------------------------------------
+r17373 | camli | Wed Apr 04 13:06:07 BST 2012
+
+added ability to override the System Date format and time zone.
+------------------------------------------------------------------------
+r17372 | camli | Wed Apr 04 13:03:57 BST 2012
+
+added ability to override the System Date format and time zone.
+------------------------------------------------------------------------
+r16748 | gs | Wed Mar 07 12:46:44 GMT 2012
+
+Added in service definition for util service that returns all env parameters - ECS_GET_ENVIRONMENT_PARAMETERS
+------------------------------------------------------------------------
+r16747 | gs | Wed Mar 07 12:44:57 GMT 2012
+
+Updated service name in comment ECS_GET_ENVIRONMENT_PARAMETERS
+------------------------------------------------------------------------
+r16678 | sgebbie | Thu Mar 01 16:44:30 GMT 2012
+
+removed spurious space when timestamp logs files
+------------------------------------------------------------------------
+r16677 | sgebbie | Thu Mar 01 16:44:15 GMT 2012
+
+removed spurious space when timestamp logs files
+------------------------------------------------------------------------
+r16529 | gs | Sat Feb 18 15:44:44 GMT 2012
+
+Updated DocGenerator/StringUtils so you can set an encoding on value strings inserted into templates.  For example to insert values into a MS Word 2003 doc you need to insert it as Cp1252 not as UTF8. Fix for Issue #152.
+
+------------------------------------------------------------------------
+r16423 | pradcliffe | Fri Feb 10 11:46:38 GMT 2012
+
+made initializeConnectionCache a public method. Was private.
+------------------------------------------------------------------------
+r16335 | kib | Tue Jan 31 12:18:59 GMT 2012
+
+Removed dependency on UCM_Core since the required JAR was already in extlib
+------------------------------------------------------------------------
+r16156 | PAULT | Wed Jan 11 12:04:22 GMT 2012
+
+added new executeSearch method which allows additional params to be passed to control the query
+------------------------------------------------------------------------
+r16074 | darrenj | Wed Dec 21 16:51:10 GMT 2011
+
+Fixed bug with getInstance() method where it wasnt instantiating itself propeperly
+------------------------------------------------------------------------
+r15991 | gs | Wed Dec 14 22:00:21 GMT 2011
+
+Removed spurious binder get call from GET_ENVIRONMENT_PARAMETERS method call
+------------------------------------------------------------------------
+r15989 | gs | Tue Dec 13 17:46:41 GMT 2011
+
+Added new service, GET_ENVIRONMENT_PARAMETERS that returns all name/value pairs configured in the server environment.
+------------------------------------------------------------------------
+r15988 | gs | Tue Dec 13 17:45:46 GMT 2011
+
+Added new service, GET_ENVIRONMENT_PARAMETERS that returns all name/value pairs configured in the server environment.
+------------------------------------------------------------------------
+r15973 | gs | Fri Dec 09 15:06:29 GMT 2011
+
+Removed reference to uncommitted debug package
+------------------------------------------------------------------------
+r15972 | gs | Fri Dec 09 13:48:46 GMT 2011
+
+Committed change with GET_METADATA_SCHEMA service def
+------------------------------------------------------------------------
+r15971 | gs | Fri Dec 09 13:44:28 GMT 2011
+
+Added new service, GET_METADATA_SCHEMA to return WCC metadata schema information
+------------------------------------------------------------------------
+r15904 | tm | Wed Nov 30 15:18:52 GMT 2011
+
+Removed TODO comment in the 2 execute methods, replaced with a justification of why the explicit commit call is required
+------------------------------------------------------------------------
+r15896 | tm | Mon Nov 28 16:25:30 GMT 2011
+
+latest jar
+------------------------------------------------------------------------
+r15895 | tm | Mon Nov 28 16:24:52 GMT 2011
+
+Added my change for pending version 1.6.4
+------------------------------------------------------------------------
+r15894 | tm | Mon Nov 28 16:23:37 GMT 2011
+
+Switched off auto-commit flag on new Connection instances. This fixes the issue with transaction blocks not working correctly - before, every single execute line was automatically committed regardless of the current transaction state.
+------------------------------------------------------------------------
+r14715 | gs | Fri Jul 15 16:24:36 BST 2011
+
+Initial RIDC only api for working with UCM documents/services.
+------------------------------------------------------------------------
+r14676 | pault | Thu Jul 14 14:02:29 BST 2011
+
+extended flag to control localisation logging
+------------------------------------------------------------------------
+r14588 | pault | Tue Jul 12 15:04:36 BST 2011
+
+added additional localisation logging 
+------------------------------------------------------------------------
+r14578 | gs | Tue Jul 12 10:24:57 BST 2011
+
+Bug in service name retrieval.
+------------------------------------------------------------------------
+r14573 | pault | Mon Jul 11 16:55:59 BST 2011
+
+removed flag checks
+------------------------------------------------------------------------
+r14571 | pault | Mon Jul 11 16:48:14 BST 2011
+
+add extra logging
+------------------------------------------------------------------------
+r14570 | pault | Mon Jul 11 16:31:21 BST 2011
+
+added extra logging and switch to control it. 
+------------------------------------------------------------------------
+r14569 | pault | Mon Jul 11 16:30:59 BST 2011
+
+adding ECS_BaseUtils_Enable_Localisation_Logging switch
+------------------------------------------------------------------------
+r14529 | pault | Fri Jul 08 14:38:41 BST 2011
+
+executeUpdate is now RIDC compatible 
+------------------------------------------------------------------------
+r14528 | pault | Fri Jul 08 11:57:43 BST 2011
+
+added appendIdcTokenToUrl method 
+------------------------------------------------------------------------
+r14445 | kib | Thu Jul 07 10:20:48 BST 2011
+
+Updated compiler target to 1.5
+------------------------------------------------------------------------
+r14444 | kib | Thu Jul 07 10:19:06 BST 2011
+
+Added reference to 11g jar
+------------------------------------------------------------------------
+r14443 | kib | Thu Jul 07 10:16:12 BST 2011
+
+Added reference to 11g jar
+------------------------------------------------------------------------
+r14441 | kib | Thu Jul 07 10:13:30 BST 2011
+
+Added reference to 11g jar
+------------------------------------------------------------------------
+r14438 | kib | Thu Jul 07 09:51:37 BST 2011
+
+This jar shouldnt really live in lib
+
+------------------------------------------------------------------------
+r14431 | kib | Wed Jul 06 16:48:55 BST 2011
+
+Added idcserver-11gR1.jar - contains new 11g versions of intradoc Classes
+------------------------------------------------------------------------
+r14429 | kib | Wed Jul 06 16:34:10 BST 2011
+
+Updated logging methods to remove dependancy on 'ex2' methods.
+------------------------------------------------------------------------
+r14428 | kib | Wed Jul 06 16:32:44 BST 2011
+
+Added code which returns IdcClassLoader if product version > 11
+------------------------------------------------------------------------
+r14427 | kib | Wed Jul 06 16:31:39 BST 2011
+
+Added code which returns IdcClassLoader if product version > 11
+------------------------------------------------------------------------
+r14227 | pradcliffe | Tue Jun 28 10:03:56 BST 2011
+
+Updated readme with 11g install instructions
+------------------------------------------------------------------------
+r14222 | pradcliffe | Mon Jun 27 17:31:53 BST 2011
+
+added a logging of the date
+------------------------------------------------------------------------
+r14191 | pradcliffe | Fri Jun 24 17:20:20 BST 2011
+
+Added dOutDate = now + 1 day to generated documents to test date.
+------------------------------------------------------------------------
+r14188 | pradcliffe | Fri Jun 24 16:31:52 BST 2011
+
+Added test page method to test basic functionality like checking in docs, making LWResultSets etc.
+------------------------------------------------------------------------
+r14187 | pradcliffe | Fri Jun 24 16:30:57 BST 2011
+
+Added test page method to test basic functionality like checking in docs, making LWResultSets etc.
+------------------------------------------------------------------------
+r14186 | gs | Fri Jun 24 16:27:50 BST 2011
+
+Minor changes for 11g deploy
+------------------------------------------------------------------------
+r14132 | gs | Tue Jun 21 22:48:27 BST 2011
+
+Changes to facilitate audit function in base utils - new filter, new log4j config and env vars to control process
+------------------------------------------------------------------------
+r14131 | gs | Tue Jun 21 22:46:39 BST 2011
+
+Added simple audit capability to base utils - options to 
+- audit all services or Site Studio page requests only, pipe delimited with the following details: DATE | Thread ID | Service Name | User | User host | Run time (ms) | URL.
+- insert Service run time into HTTP header response
+------------------------------------------------------------------------
+r14124 | pradcliffe | Tue Jun 21 14:52:39 BST 2011
+
+Added $COMPONENT_DIR/lib/commons-lang-2.6.jar to classpath as part of a fix for KW00379
+------------------------------------------------------------------------
+r14018 | nigeln | Wed Jun 15 10:26:45 BST 2011
+
+Fixed error with commons lib being not in the path.
+------------------------------------------------------------------------
+r13972 | pradcliffe | Fri Jun 10 15:56:42 BST 2011
+
+Added apache commons library jar for unescapeHtml idoc function.
+------------------------------------------------------------------------
+r13965 | pradcliffe | Fri Jun 10 15:27:47 BST 2011
+
+Added new idoc function unescapeHtml.
+------------------------------------------------------------------------
+r13963 | pradcliffe | Fri Jun 10 15:10:08 BST 2011
+
+Added apache commons library jar for unescapeHtml idoc function.
+------------------------------------------------------------------------
+r13961 | pradcliffe | Fri Jun 10 15:09:54 BST 2011
+
+moved to component lib
+------------------------------------------------------------------------
+r13958 | pradcliffe | Fri Jun 10 15:06:48 BST 2011
+
+Added apache commons library jar for unescapeHtml idoc function.
+------------------------------------------------------------------------
+r13951 | pradcliffe | Fri Jun 10 10:15:46 BST 2011
+
+removed link to unused jar library
+------------------------------------------------------------------------
+r13615 | gs | Mon May 23 15:45:49 BST 2011
+
+Updated project classpath with RIDC library
+------------------------------------------------------------------------
+r13613 | gs | Mon May 23 15:31:19 BST 2011
+
+Updated to include RIDC library in build
+------------------------------------------------------------------------
+r13612 | gs | Mon May 23 15:28:38 BST 2011
+
+Updated readme with some detail on using RIDC.
+------------------------------------------------------------------------
+r13611 | gs | Mon May 23 15:28:12 BST 2011
+
+Updated component class path to include RIDC and cut down IdcServerBean libraries.
+------------------------------------------------------------------------
+r13605 | gs | Mon May 23 14:56:03 BST 2011
+
+Updated code to provide experimental support for the RIDC layer rather than the legacy IdcServerBean. Note: While IdcServerBean can connect to UCM 11g it cannot run within the server context.
+------------------------------------------------------------------------
+r13604 | gs | Mon May 23 14:40:11 BST 2011
+
+Fixed spelling mistake
+------------------------------------------------------------------------
+r13059 | tm | Wed Apr 27 16:39:41 BST 2011
+
+Added new UPDATE_DOCINFO_NOTRANS service
+------------------------------------------------------------------------
+r13058 | tm | Wed Apr 27 16:31:45 BST 2011
+
+Added changes for v1.6.3
+------------------------------------------------------------------------
+r13057 | tm | Wed Apr 27 16:30:11 BST 2011
+
+Added new useTransaction switch to LWDocument. Defaults to true. This is passed to the LWFacade instance when executing the update() method and determines which UCM service is used to execute the update.
+
+True - UPDATE_DOCINFO
+False - UPDATE_DOCINFO_NOTRANS
+
+The latter service is the same as the default one but it doesn't run in its own transaction block.
+------------------------------------------------------------------------
+r13056 | tm | Wed Apr 27 16:28:21 BST 2011
+
+Added isInTransaction() method, returns the private member var inTransaction
+------------------------------------------------------------------------
+r11876 | kib | Wed Feb 16 13:50:25 GMT 2011
+
+Added extra check to rollback transaction if connection is released prematurely.
+------------------------------------------------------------------------
+r11635 | gs | Mon Jan 17 13:30:21 GMT 2011
+
+Added UCM RIDC library
+------------------------------------------------------------------------
+r11634 | gs | Mon Jan 17 12:54:28 GMT 2011
+
+IdcServerBean with UCM server packages removed.
+------------------------------------------------------------------------
+r11248 | gs | Fri Dec 03 18:09:06 GMT 2010
+
+Added new constructor to allow instantiation via a dID directly against the database.
+------------------------------------------------------------------------
+r11206 | tm | Tue Nov 30 14:17:20 GMT 2010
+
+Added change log for version 1.6.21
+------------------------------------------------------------------------
+r11205 | tm | Tue Nov 30 14:12:56 GMT 2010
+
+Added getBinderStringValue(DataBinder binder, String name)
+------------------------------------------------------------------------
+r11204 | tm | Tue Nov 30 13:56:51 GMT 2010
+
+Minor changes - refactored name of ResultSetUtils to DataResultSetUtils to avoid name clash with intradoc.data.ResultSetUtils.
+
+Removed references to resultSet.getStringValueByName() method which is only available in UCM 10g.
+------------------------------------------------------------------------
+r11169 | tm | Thu Nov 25 14:22:44 GMT 2010
+
+Updated readme for version 1.6.2
+------------------------------------------------------------------------
+r11168 | tm | Thu Nov 25 14:16:32 GMT 2010
+
+Added new utility classes:
+
+BinderUtils - functions for fetching, inserting and casting values from DataBinder instances
+ResultSetUtils - functions for fetching and casting values from ResultSet instances
+------------------------------------------------------------------------
+r11167 | tm | Thu Nov 25 14:14:55 GMT 2010
+
+Added new methods:
+
+trimLeadingChars
+padString
+
+------------------------------------------------------------------------
+r10965 | gs | Mon Nov 08 11:11:47 GMT 2010
+
+Updated Globals v no to 1.6.23 and updated OracleJDBCFacade error logging in prep for new Base Utils release.
+------------------------------------------------------------------------
+r10940 | gs | Fri Nov 05 09:26:02 GMT 2010
+
+Added delete revision/all revisions methods
+------------------------------------------------------------------------
+r10645 | pault | Thu Oct 07 13:27:09 BST 2010
+
+reverting code back to original 
+------------------------------------------------------------------------
+r10577 | kib | Mon Oct 04 14:54:20 BST 2010
+
+Problem solving base utils problems
+------------------------------------------------------------------------
+r10576 | kib | Mon Oct 04 14:26:31 BST 2010
+
+Problem solving base utils problems
+------------------------------------------------------------------------
+r10573 | kib | Mon Oct 04 14:16:33 BST 2010
+
+Problem solving base utils problems
+------------------------------------------------------------------------
+r10572 | kib | Mon Oct 04 14:08:15 BST 2010
+
+Problem solving base utils problems
+------------------------------------------------------------------------
+r10564 | pault | Fri Oct 01 17:41:56 BST 2010
+
+modified fileNamePrefixRestriction length to be dynamic to parameter being passed in
+------------------------------------------------------------------------
+r10563 | pault | Fri Oct 01 17:24:45 BST 2010
+
+updated applet version build number
+------------------------------------------------------------------------
+r10562 | pault | Fri Oct 01 17:23:56 BST 2010
+
+added fileNamePrefixRestriction. If set then filenames beginning with a certain value are not uploaded. 
+------------------------------------------------------------------------
+r10454 | kib | Wed Sep 15 16:00:05 BST 2010
+
+Fixed non jdk 1.4.2 compliant method
+------------------------------------------------------------------------
+r10453 | kib | Wed Sep 15 15:23:58 BST 2010
+
+Fixed non jdk 1.4.2 compliant method
+------------------------------------------------------------------------
+r10429 | kib | Tue Sep 14 10:03:29 BST 2010
+
+Updated jFileUploader documentation
+------------------------------------------------------------------------
+r10428 | kib | Tue Sep 14 09:59:01 BST 2010
+
+Eclipse Launch configuration for upload applet
+------------------------------------------------------------------------
+r10423 | kib | Mon Sep 13 16:44:35 BST 2010
+
+Eclipse Launch configuration for upload applet
+------------------------------------------------------------------------
+r10413 | kib | Mon Sep 13 14:49:59 BST 2010
+
+Add signjar line for weakssl.jar
+------------------------------------------------------------------------
+r10412 | kib | Mon Sep 13 14:45:11 BST 2010
+
+Support for untrusted ssl certificates
+------------------------------------------------------------------------
+r10411 | kib | Mon Sep 13 14:32:04 BST 2010
+
+Incorporated jfileuploader into ecsbaseutils
+------------------------------------------------------------------------
+r10402 | gs | Fri Sep 10 17:55:28 BST 2010
+
+Updated logic to check whether connection is authenticated or not now that applet can pass authentication details through
+------------------------------------------------------------------------
+r10392 | gs | Fri Sep 10 13:22:04 BST 2010
+
+Updated to check for and clean up the relativefilename attribute (which is passed by the upload applet)
+------------------------------------------------------------------------
+r10274 | kib | Tue Aug 31 14:19:25 BST 2010
+
+Removed 'copy' section of init target to prevent the copying of unwanted files to jar file
+------------------------------------------------------------------------
+r10272 | kib | Tue Aug 31 14:03:57 BST 2010
+
+Excluded extlib
+------------------------------------------------------------------------
+r10270 | kib | Tue Aug 31 13:39:31 BST 2010
+
+Excluded extlib
+------------------------------------------------------------------------
+r10269 | kib | Tue Aug 31 13:14:27 BST 2010
+
+Excluded extlib/*.jar
+------------------------------------------------------------------------
+r10259 | gs | Fri Aug 27 11:08:18 BST 2010
+
+Added method to explicitly set the native file name (if not set a new item will use the checked in content item's filename, if updating an existing item the original item's file name is used)
+------------------------------------------------------------------------
+r10233 | gs | Wed Aug 25 17:50:13 BST 2010
+
+Put switch on setting revision label
+------------------------------------------------------------------------
+r10230 | gs | Wed Aug 25 16:59:58 BST 2010
+
+Added a new param OUTPUT_NODE_INFORMATION, when set to 1, the user is a member of the admin group and ClusterNodeName is set (i.e. we're running in a clustered environment) this will output info about which node handled the request on every standard UCM server page
+------------------------------------------------------------------------
+r10227 | gs | Wed Aug 25 12:04:14 BST 2010
+
+Updated template to include extra usage info and output the HTTP response code within the message
+------------------------------------------------------------------------
+r10226 | gs | Wed Aug 25 12:03:29 BST 2010
+
+Updated GET_NODE_STATUS service to log info to the ucm log when the status changes.  Updated GET_NODE_STATUS so that the service will return a 503, service unavailable http code when server is not in active mode and the flag useHTTPResponseCode=1 is passed to the service call.
+------------------------------------------------------------------------
+r10107 | pault | Thu Aug 12 11:58:22 BST 2010
+
+added UPLOAD_SUCCESS template to UPLOAD_FILES service
+------------------------------------------------------------------------
+r9980 | kib | Mon Aug 02 13:15:35 BST 2010
+
+Changed refrence from 'EcsBaseUtils' to ECS_BaseUtils
+------------------------------------------------------------------------
+r9979 | kib | Fri Jul 30 20:18:17 BST 2010
+
+Renaming EcsBaseUtils to ECS_BaseUtils
+------------------------------------------------------------------------
+r9978 | kib | Fri Jul 30 20:16:13 BST 2010
+
+Renaming EcsBaseUtils to ECS_BaseUtils
+------------------------------------------------------------------------
+r9975 | kib | Fri Jul 30 20:12:05 BST 2010
+
+Renaming EcsBaseUtils to ECS_BaseUtils
+------------------------------------------------------------------------
+r9974 | kib | Fri Jul 30 20:11:03 BST 2010
+
+Removed bogus EcsBaseUtils.jar
+------------------------------------------------------------------------
+r9969 | kib | Fri Jul 30 19:58:50 BST 2010
+
+Renaming EcsBaseUtils to ECS_BaseUtils
+------------------------------------------------------------------------
+r9964 | kib | Fri Jul 30 19:51:22 BST 2010
+
+Renaming EcsBaseUtils to ECS_BaseUtils
+------------------------------------------------------------------------
+r9955 | kib | Fri Jul 30 18:07:43 BST 2010
+
+Attempting to fix build problems with KEW_WEBSITE. Fixed eclipse build path for ECS_BaseUtils
+------------------------------------------------------------------------
+r9920 | gs | Wed Jul 28 11:26:34 BST 2010
+
+Added UPLOAD_FILES service definition for using with the jFileUpload applet
+------------------------------------------------------------------------
+r9919 | gs | Wed Jul 28 11:22:01 BST 2010
+
+Modified IUpload profile and added new UploadService (UPLOAD_FILES) for using with the jFileUpload applet (this is as opposed to using the file_uploader.jsp which is very inefficient as it involves 5 file copies as opposed to 3 file copies when using this service).
+------------------------------------------------------------------------
+r9873 | pault | Mon Jul 26 11:43:20 BST 2010
+
+recompiled the jars using java 1.4
+------------------------------------------------------------------------
+r9858 | pault | Fri Jul 23 17:37:28 BST 2010
+
+added new logging for max file size and memory. 
+
+
+------------------------------------------------------------------------
+r9823 | gs | Thu Jul 22 15:41:42 BST 2010
+
+Tweaked error in compression settings
+------------------------------------------------------------------------
+r9820 | gs | Thu Jul 22 14:55:52 BST 2010
+
+Updated LW facade/document so that it can return a content stream rather than all the content in memory - for working with large files.
+------------------------------------------------------------------------
+r9819 | pault | Thu Jul 22 14:30:17 BST 2010
+
+CMNLT-152 - remove unregistered error. 
+------------------------------------------------------------------------
+r9815 | gs | Thu Jul 22 13:19:40 BST 2010
+
+Added ability to configure the default compression level used by Zipper.  Modified Zipper file loader so that files are not loaded fully into memory before writing out to file.
+------------------------------------------------------------------------
+r9803 | gs | Tue Jul 20 18:45:57 BST 2010
+
+Updated logic flaw in GET_NODE_STATUS which returned empty page on first call
+------------------------------------------------------------------------
+r9801 | gs | Tue Jul 20 18:42:06 BST 2010
+
+Updated text of GET_NODE_STATUS to make it more helpful
+------------------------------------------------------------------------
+r9800 | gs | Tue Jul 20 18:24:35 BST 2010
+
+Removed security on GET_NODE_STATUS service
+------------------------------------------------------------------------
+r9799 | gs | Tue Jul 20 18:22:04 BST 2010
+
+Bug in log output
+------------------------------------------------------------------------
+r9797 | gs | Tue Jul 20 18:16:22 BST 2010
+
+Added GET_NODE_STATUS template for load balancer status service.
+------------------------------------------------------------------------
+r9796 | gs | Tue Jul 20 18:01:22 BST 2010
+
+Created GET_NODE_STATUS service to return the status of a content server - to be used by upstream load balancers to determine whether to send requests to the server.
+------------------------------------------------------------------------
+r9783 | gs | Mon Jul 19 18:21:11 BST 2010
+
+Added service for cluster node status checking
+------------------------------------------------------------------------
+r9769 | darrenj | Fri Jul 16 18:19:37 BST 2010
+
+Added Linux install notes
+------------------------------------------------------------------------
+r9753 | gs | Thu Jul 15 15:29:57 BST 2010
+
+Updated startup filter to check log file location from component as absolute, then relative to the bin directory then relative to the UCM instance directory.
+------------------------------------------------------------------------
+r9746 | gs | Thu Jul 15 12:43:54 BST 2010
+
+Updated Baseutils init to ensure that LWFacade gets the correct default server setting - If IdcCommandServerHost is defined it uses that rather than localhost which may be firewalled in some environments.
+------------------------------------------------------------------------
+r9736 | gs | Wed Jul 14 17:08:08 BST 2010
+
+Changed case of jar file referenced to match jar
+------------------------------------------------------------------------
+r9734 | gs | Wed Jul 14 16:30:47 BST 2010
+
+Updated built jar name so it matches case of jar used in hda file - required for Unix environments.
+------------------------------------------------------------------------
+r9732 | gs | Wed Jul 14 16:18:21 BST 2010
+
+Removed reliance on generics (java1.5)
+------------------------------------------------------------------------
+r9726 | gs | Wed Jul 14 15:55:49 BST 2010
+
+Updated logging so that it works properly in unix env
+------------------------------------------------------------------------
+r9725 | gs | Wed Jul 14 15:51:50 BST 2010
+
+Added runQuery handler to service file for Ora custom pools work
+------------------------------------------------------------------------
+r9702 | darrenj | Fri Jul 09 18:12:36 BST 2010
+
+Fixed Andy Warhol bug
+------------------------------------------------------------------------
+r9699 | kib | Fri Jul 09 16:59:28 BST 2010
+
+Significant changes to connection pooling to improve performance.
+------------------------------------------------------------------------
+r9692 | darrenj | Fri Jul 09 16:25:44 BST 2010
+
+Added chunking to pluploader code
+------------------------------------------------------------------------
+r9640 | darrenj | Wed Jul 07 17:49:01 BST 2010
+
+Added cos.jar and uploadbean.js in for build
+------------------------------------------------------------------------
+r9639 | darrenj | Wed Jul 07 17:47:19 BST 2010
+
+For pluploader
+------------------------------------------------------------------------
+r9638 | darrenj | Wed Jul 07 17:44:43 BST 2010
+
+For pluploader
+------------------------------------------------------------------------
+r9637 | darrenj | Wed Jul 07 17:43:53 BST 2010
+
+For pluploader
+------------------------------------------------------------------------
+r9635 | darrenj | Wed Jul 07 17:30:49 BST 2010
+
+Added libraries for pluploader
+------------------------------------------------------------------------
+r9632 | darrenj | Wed Jul 07 17:26:56 BST 2010
+
+Renamed
+------------------------------------------------------------------------
+r9614 | darrenj | Tue Jul 06 15:32:51 BST 2010
+
+Added support for new plUploadr widget, and CosUploadFile files
+------------------------------------------------------------------------
+r9590 | hamishb | Mon Jul 05 13:19:29 BST 2010
+
+jFileUploader jars
+------------------------------------------------------------------------
+r9557 | darrenj | Fri Jul 02 13:13:00 BST 2010
+
+Rolling back to old version
+------------------------------------------------------------------------
+r9457 | katie | Fri Jun 25 11:25:00 BST 2010
+
+prevented null string being returned by result set.
+------------------------------------------------------------------------
+r9454 | katie | Fri Jun 25 10:10:43 BST 2010
+
+changes by gordon - on commit transaction commits currently open connection, previously got new connection and committed
+------------------------------------------------------------------------
+r9442 | katie | Thu Jun 24 12:07:16 BST 2010
+
+updated with correct settings
+------------------------------------------------------------------------
+r9426 | gs | Thu Jun 24 10:01:17 BST 2010
+
+Updates to Ora JDC stuff following inital testing
+------------------------------------------------------------------------
+r9388 | gs | Wed Jun 23 13:12:37 BST 2010
+
+Small bit of code tidy up - no logic changes
+------------------------------------------------------------------------
+r9387 | gs | Wed Jun 23 13:08:26 BST 2010
+
+Updated FWFacade with new constructor to allow a custom connection to an Oracle DB that avoids UCM provider pools
+------------------------------------------------------------------------
+r9380 | tm | Tue Jun 22 17:40:54 BST 2010
+
+Added update info for RadInks applet
+------------------------------------------------------------------------
+r9379 | tm | Tue Jun 22 17:26:21 BST 2010
+
+Updated DND Plus jarfile to latest version 4.12. This prevents an invalid certificate error being displayed when loading the applet.
+------------------------------------------------------------------------
+r9357 | kib | Fri Jun 18 16:12:46 BST 2010
+
+Ready for sandbox testing.
+------------------------------------------------------------------------
+r9356 | kib | Fri Jun 18 12:33:20 BST 2010
+
+Work in progress.
+------------------------------------------------------------------------
+r9355 | kib | Fri Jun 18 12:30:23 BST 2010
+
+Work in progress.
+------------------------------------------------------------------------
+r9349 | gs | Fri Jun 18 09:35:06 BST 2010
+
+Added Ora jdbc lib
+------------------------------------------------------------------------
+r9334 | gs | Thu Jun 17 13:17:02 BST 2010
+
+Added new service GET_CONNECTION_POOL_STATUS to dump out the status of custom JDBC connection pools.
+------------------------------------------------------------------------
+r9333 | gs | Thu Jun 17 13:15:49 BST 2010
+
+Added new method for service GET_CONNECTION_POOL_STATUS to dump out custom JDBC connection pool statuses
+------------------------------------------------------------------------
+r9332 | gs | Thu Jun 17 13:13:45 BST 2010
+
+Updated new line chars on debug dump method to html friendly
+------------------------------------------------------------------------
+r9321 | gs | Thu Jun 17 11:28:45 BST 2010
+
+Updated to include pool construction from UCM env params and method to output connection information.
+------------------------------------------------------------------------
+r9313 | kib | Wed Jun 16 17:32:16 BST 2010
+
+Work in progress
+------------------------------------------------------------------------
+r9312 | gs | Wed Jun 16 17:16:34 BST 2010
+
+Added service GET_SQL_FOR_QUERY which returns the SQL for a passed UCM canned qry name (use param QueryName)
+------------------------------------------------------------------------
+r9311 | gs | Wed Jun 16 17:15:29 BST 2010
+
+Added JDBC utility method with accompanying utility service
+------------------------------------------------------------------------
+r9308 | gs | Wed Jun 16 15:51:49 BST 2010
+
+Required for Oracle JDBC work
+------------------------------------------------------------------------
+r8957 | gs | Fri Apr 30 13:19:00 BST 2010
+
+Bug in jsp - it now needs to catch a throwable due to uploader change
+------------------------------------------------------------------------
+r7763 | btipper | Fri Jan 15 15:02:39 GMT 2010
+
+Resolving faulty lang resource reference in hda file
+------------------------------------------------------------------------
+r7716 | darrenj | Fri Jan 15 11:33:35 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7715 | darrenj | Fri Jan 15 11:33:07 GMT 2010
+
+Removing entire lang folder and recomitting it without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7694 | gs | Thu Jan 14 17:13:49 GMT 2010
+
+Updated javadoc with further guidance on usage (inc deprecating main method in this class)
+------------------------------------------------------------------------
+r7634 | pault | Tue Jan 12 17:08:13 GMT 2010
+
+adding the new .hda files
+------------------------------------------------------------------------
+r7633 | pault | Tue Jan 12 17:08:13 GMT 2010
+
+adding the new .hda files
+------------------------------------------------------------------------
+r7632 | pault | Tue Jan 12 17:07:57 GMT 2010
+
+removing the two old hda files
+
+------------------------------------------------------------------------
+r7631 | pault | Tue Jan 12 17:02:39 GMT 2010
+
+checking in lang folder
+------------------------------------------------------------------------
+r7622 | gs | Mon Jan 11 18:06:57 GMT 2010
+
+Updated config so that extra fields to add to log4j lines is now controlled by 2 env vars, one holds a list of binder local params to read, one holds a lost of binder environment params to read.
+------------------------------------------------------------------------
+r7621 | gs | Mon Jan 11 18:03:55 GMT 2010
+
+Updated log4j logging so you can configure the binder info to add to each log line (note info is set when service call is initiated only)
+------------------------------------------------------------------------
+r7587 | pault | Fri Jan 08 16:01:05 GMT 2010
+
+added comments
+------------------------------------------------------------------------
+r7583 | pault | Fri Jan 08 15:54:00 GMT 2010
+
+importing updated .hda file
+------------------------------------------------------------------------
+r7582 | pault | Fri Jan 08 15:53:46 GMT 2010
+
+removing old .hda file
+------------------------------------------------------------------------
+r7580 | pault | Fri Jan 08 15:51:54 GMT 2010
+
+moving documentation folder to component folder
+------------------------------------------------------------------------
+r7579 | pault | Fri Jan 08 15:50:06 GMT 2010
+
+adding documentation
+------------------------------------------------------------------------
+r7578 | pault | Fri Jan 08 15:49:53 GMT 2010
+
+no longer needed
+
+------------------------------------------------------------------------
+r7577 | pault | Fri Jan 08 15:43:52 GMT 2010
+
+adding ecslc() documentation
+
+------------------------------------------------------------------------
+r7576 | pault | Fri Jan 08 15:41:29 GMT 2010
+
+added new ecslc() custom idoc function
+
+------------------------------------------------------------------------
+r6810 | gs | Fri Nov 27 10:49:33 GMT 2009
+
+Updated for field validation stuff
+------------------------------------------------------------------------
+r6809 | gs | Fri Nov 27 10:37:06 GMT 2009
+
+Reviewed & Refactored prior to build
+------------------------------------------------------------------------
+r6808 | pault | Thu Nov 26 18:48:19 GMT 2009
+
+added v1.5.14 readme notes
+------------------------------------------------------------------------
+r6807 | pault | Thu Nov 26 18:29:19 GMT 2009
+
+added regex's
+------------------------------------------------------------------------
+r6806 | pault | Thu Nov 26 18:28:02 GMT 2009
+
+changed all system.out's to log.info's
+------------------------------------------------------------------------
+r6792 | pault | Thu Nov 26 12:06:46 GMT 2009
+
+created FieldValidation class that allows dynamic field validation against a regular expression, used for form validation
+
+------------------------------------------------------------------------
+r6706 | gs | Thu Nov 12 15:09:34 GMT 2009
+
+Updated load order of the extraBeforeCacheLoadInit to 1 (from 10) so that it jumps in before the logging in collab workspace. (Note: 1 has a greater priority that 10 in this situation)
+------------------------------------------------------------------------
+r6486 | kib | Thu Oct 29 17:09:02 GMT 2009
+
+Added code to prevent more then one thread using database provider at a time.
+------------------------------------------------------------------------
+r6484 | kib | Thu Oct 29 16:57:15 GMT 2009
+
+Added code to prevent more then one thread using database provider at a time,
+------------------------------------------------------------------------
+r6482 | kib | Thu Oct 29 16:46:52 GMT 2009
+
+KW00109 - Added code to prevent more then one thread using database provider at a time.
+----
+FWFacade: Added provider specific transaction queues.
+------------------------------------------------------------------------
+r6409 | kib | Tue Oct 20 16:11:28 BST 2009
+
+ECS_Alerts, ECS_AuditLog, ECS_AutoVue, ECS_BaseUtils, ECS_XForms - updated Eclipse classpath. Modified build.properties and buildComponent.xml in line with new process.
+------------------------------------------------------------------------
+r6403 | kib | Tue Oct 20 13:50:54 BST 2009
+
+ECS_BaseUtils: Converting Component to use build process.
+------------------------------------------------------------------------
+r6400 | kib | Tue Oct 20 10:28:02 BST 2009
+
+ECS_BaseUtils: Converting Component to use build process.
+------------------------------------------------------------------------
+r6378 | kib | Mon Oct 19 11:30:59 BST 2009
+
+buildComponent.xml: Fixed incorrect case of generated ECSBaseUtils.jar
+------------------------------------------------------------------------
+r6365 | kib | Mon Oct 19 10:36:08 BST 2009
+
+buildComponent.xml: Removed unnecessary copy to 'bin' directory
+------------------------------------------------------------------------
+r6363 | kib | Mon Oct 19 10:03:26 BST 2009
+
+_TEMPLATE no longer needed
+------------------------------------------------------------------------
+r6357 | kib | Sun Oct 18 15:47:52 BST 2009
+
+Fixed path problems with build scripts
+------------------------------------------------------------------------
+r6355 | kib | Sun Oct 18 15:43:44 BST 2009
+
+Fixing in progress...
+------------------------------------------------------------------------
+r6323 | gs | Thu Oct 15 14:19:28 BST 2009
+
+Removed readme header as it's now auto generated
+------------------------------------------------------------------------
+r6319 | gs | Thu Oct 15 13:22:21 BST 2009
+
+Updated readme with further details about setting up logging
+------------------------------------------------------------------------
+r6304 | kib | Wed Oct 14 16:17:58 BST 2009
+
+EcsBaseUtils buildComponent - tidied up build paths
+------------------------------------------------------------------------
+r6299 | kib | Wed Oct 14 13:34:07 BST 2009
+
+created hda template for ecs build utility.
+------------------------------------------------------------------------
+r6294 | kib | Tue Oct 13 16:17:09 BST 2009
+
+buildComponent : Added missing call to create compile and build directories
+------------------------------------------------------------------------
+r6293 | kib | Tue Oct 13 15:24:18 BST 2009
+
+Added jar target to buildComponent.xml = EcsBaseUtils
+------------------------------------------------------------------------
+r6289 | gs | Tue Oct 13 10:02:32 BST 2009
+
+Added items remotely
+
+C:\Documents and Settings\demouser\My Documents\KEW\P0.9\ECS Components\build.properties
+
+------------------------------------------------------------------------
+r6257 | kib | Fri Oct 09 13:39:07 BST 2009
+
+ECS Base utilities component
+------------------------------------------------------------------------
+r5920 | gs | Tue Sep 08 17:45:56 BST 2009
+
+1.5.13 baseline changes
+------------------------------------------------------------------------
+r5919 | gs | Tue Sep 08 17:45:21 BST 2009
+
+Moved version no on to 1.5.13
+------------------------------------------------------------------------
+r5868 | pf | Mon Sep 07 14:24:16 BST 2009
+
+
+------------------------------------------------------------------------
+r5805 | gs | Fri Sep 04 09:11:39 BST 2009
+
+1.5.12 baseline (with new service to provide an audit of IdcServices)
+------------------------------------------------------------------------
+r5803 | gs | Fri Sep 04 09:05:18 BST 2009
+
+New classes to provide service information about a UCM instance
+------------------------------------------------------------------------
+r5779 | tm | Thu Sep 03 14:53:07 BST 2009
+
+Added new LWDocument constructor which accepts a LWFacade, docName and database switch. Updated DocGenerator to use this constructor.
+------------------------------------------------------------------------
+r5730 | tm | Tue Sep 01 18:21:01 BST 2009
+
+
+------------------------------------------------------------------------
+r5716 | tm | Tue Sep 01 18:07:54 BST 2009
+
+
+------------------------------------------------------------------------
+r5714 | tm | Tue Sep 01 18:03:08 BST 2009
+
+
+------------------------------------------------------------------------
+r5713 | tm | Tue Sep 01 17:59:00 BST 2009
+
+Changed the LWDocument instantiation method to use database lookup, this prevents errors when checking in 2 generated items with the same dDocName in quick succession.
+------------------------------------------------------------------------
+r5441 | gs | Fri Aug 14 13:15:51 BST 2009
+
+1.5.10 baseline
+------------------------------------------------------------------------
+r5440 | gs | Fri Aug 14 13:14:10 BST 2009
+
+Moved flag to 1.5.10 for baseline
+------------------------------------------------------------------------
+r5417 | tm | Thu Aug 13 12:24:21 BST 2009
+
+Shifted the useDatabase() call used when up-revisioning documents
+------------------------------------------------------------------------
+r5409 | tm | Wed Aug 12 18:04:28 BST 2009
+
+
+------------------------------------------------------------------------
+r5400 | gs | Wed Aug 12 11:35:06 BST 2009
+
+Updated docgenerator so that if a dDocName is passed in the template metadata it will search for and attempt to upversion and existing file with that dDocName.  In the event that it cannot lock an existing document an exception is thrown.
+------------------------------------------------------------------------
+r5319 | gs | Fri Aug 07 15:16:16 BST 2009
+
+1.5.9 baseline
+------------------------------------------------------------------------
+r5305 | gs | Fri Aug 07 11:51:58 BST 2009
+
+added method to return metadata values from template object
+------------------------------------------------------------------------
+r5266 | gs | Thu Aug 06 11:26:35 BST 2009
+
+Bug fix: Updated queries returning latest obj or release date by dDocName to exclude rows with a status of Deleted.  Without this if you delete the latest version of an object then try to instantiate it using LWDocument against the database you will get an 'ambiguous' exception as 2 rows are returned in the query.
+------------------------------------------------------------------------
+r5143 | gs | Tue Aug 04 10:06:44 BST 2009
+
+1.5.8 build elements
+------------------------------------------------------------------------
+r5140 | gs | Tue Aug 04 10:04:49 BST 2009
+
+Updated for 1.5.8 build inc new javadoc
+------------------------------------------------------------------------
+r5128 | gs | Mon Aug 03 17:37:49 BST 2009
+
+Wrapper for UCM UserData object
+------------------------------------------------------------------------
+r5036 | gs | Thu Jul 30 11:43:40 BST 2009
+
+Added method to set the target server to generate documents against
+------------------------------------------------------------------------
+r4989 | gs | Wed Jul 29 15:51:05 BST 2009
+
+Set version 1.5.7 details
+------------------------------------------------------------------------
+r4988 | gs | Wed Jul 29 15:47:36 BST 2009
+
+1.5.7 jar build
+------------------------------------------------------------------------
+r4987 | gs | Wed Jul 29 15:47:15 BST 2009
+
+1.5.7 build flag set
+------------------------------------------------------------------------
+r4968 | gs | Wed Jul 29 09:26:57 BST 2009
+
+Added a couple of sequence utility methods to facade
+------------------------------------------------------------------------
+r4933 | gs | Mon Jul 27 18:35:31 BST 2009
+
+Updated FWFacade so you can also initialise it with a provider name
+------------------------------------------------------------------------
+r4670 | gs | Tue Jul 14 11:43:57 BST 2009
+
+Moved version flag to 1.5.6
+------------------------------------------------------------------------
+r4669 | gs | Tue Jul 14 11:18:52 BST 2009
+
+Updated for good 1.5.6 release
+------------------------------------------------------------------------
+r4636 | gs | Sun Jul 12 12:58:32 BST 2009
+
+Version 1.5.5 base
+------------------------------------------------------------------------
+r4610 | darrenj | Tue Jul 07 12:20:06 BST 2009
+
+Added seq caching controls createSequence() method
+------------------------------------------------------------------------
+r4581 | mattf | Thu Jul 02 17:19:02 BST 2009
+
+added the method releaseConnection
+------------------------------------------------------------------------
+r4580 | mattf | Thu Jul 02 17:08:43 BST 2009
+
+Added re-throwing exceptions in the catch blocks to allow calling classes know an error has occurred. 
+------------------------------------------------------------------------
+r4559 | gs | Wed Jul 01 14:23:47 BST 2009
+
+Updated to include two new objects to wrap idc workspace and log objects.
+------------------------------------------------------------------------
+r4552 | gs | Tue Jun 30 10:15:17 BST 2009
+
+New class to wrap to SCS workspace object.
+------------------------------------------------------------------------
+r4551 | gs | Tue Jun 30 10:10:53 BST 2009
+
+Added method to return ordered file list for a directory structure with last modified time held for each file in a map
+------------------------------------------------------------------------
+r4446 | tm | Wed Jun 10 12:35:35 BST 2009
+
+1.5.4 baseline
+------------------------------------------------------------------------
+r4445 | tm | Wed Jun 10 12:32:01 BST 2009
+
+Changed load-order of component cfg file to allow overriding
+------------------------------------------------------------------------
+r4444 | tm | Wed Jun 10 12:17:16 BST 2009
+
+
+------------------------------------------------------------------------
+r4206 | gs | Wed May 20 15:59:36 BST 2009
+
+Added extra switch to allow doc template to be retrieved using system account as user with Read access does not be default have rights to get the native file of an object.
+------------------------------------------------------------------------
+r4183 | tm | Mon May 18 11:09:21 BST 2009
+
+
+------------------------------------------------------------------------
+r4182 | tm | Mon May 18 11:04:29 BST 2009
+
+Added flexibility to getRelativeDate method, so it returns sensible results for dates in the future.
+------------------------------------------------------------------------
+r4175 | tm | Thu May 14 18:10:02 BST 2009
+
+Updated getLWBinder() method to accept empty-string values in the binder.
+------------------------------------------------------------------------
+r4131 | tm | Mon May 11 13:17:01 BST 2009
+
+Removed RelativeDate class
+------------------------------------------------------------------------
+r4127 | gs | Mon May 11 12:06:57 BST 2009
+
+
+------------------------------------------------------------------------
+r4126 | gs | Mon May 11 12:02:41 BST 2009
+
+
+------------------------------------------------------------------------
+r4125 | tm | Mon May 11 12:01:36 BST 2009
+
+Now has 2 working functions:
+
+formatDateRelative
+log4j
+------------------------------------------------------------------------
+r4124 | tm | Mon May 11 12:01:16 BST 2009
+
+Added Relative date handling
+------------------------------------------------------------------------
+r4116 | gs | Mon May 11 08:18:56 BST 2009
+
+Updated to relect current dev environment
+------------------------------------------------------------------------
+r4089 | gs | Sat May 09 16:11:24 BST 2009
+
+Prep for 1.5.3 release
+------------------------------------------------------------------------
+r4088 | gs | Sat May 09 16:08:56 BST 2009
+
+Updated javadoc
+------------------------------------------------------------------------
+r4087 | gs | Sat May 09 16:03:14 BST 2009
+
+Updated jar prior to new release
+------------------------------------------------------------------------
+r4083 | tm | Fri May 08 18:54:07 BST 2009
+
+Started work on date handling code
+------------------------------------------------------------------------
+r4056 | tm | Mon Apr 27 18:04:34 BST 2009
+
+
+------------------------------------------------------------------------
+r4032 | gs | Mon Apr 20 12:23:41 BST 2009
+
+Added Oracle UCM date handler
+------------------------------------------------------------------------
+r4018 | gs | Fri Apr 17 09:17:02 BST 2009
+
+Fixed bug in refactored DocGenerator which was adding nulls to returned vector
+------------------------------------------------------------------------
+r4016 | gs | Thu Apr 16 20:32:48 BST 2009
+
+Refactored document creation logic and remove single static with multiple args calls!
+------------------------------------------------------------------------
+r4012 | gs | Thu Apr 16 12:50:57 BST 2009
+
+Updated Byte array merge logic to replace non ascii chars with spaces (32) when finding embedded placeholders in byte array (which resolve to UCM field names) since MS Word does on occasion add funny chars which then break the string split function.
+------------------------------------------------------------------------
+r4008 | gs | Wed Apr 15 15:41:08 BST 2009
+
+Added javadoc line
+------------------------------------------------------------------------
+r3970 | tm | Mon Apr 06 13:12:39 BST 2009
+
+
+------------------------------------------------------------------------
+r3968 | gs | Fri Apr 03 18:05:53 BST 2009
+
+Command line executor utility class
+------------------------------------------------------------------------
+r3939 | gs | Tue Mar 31 15:59:04 BST 2009
+
+Updated version number
+------------------------------------------------------------------------
+r3937 | gs | Tue Mar 31 15:52:17 BST 2009
+
+Updates for 1.5.1 build
+------------------------------------------------------------------------
+r3936 | gs | Tue Mar 31 15:48:34 BST 2009
+
+Compile error in StartCheck filter removed
+------------------------------------------------------------------------
+r3935 | gs | Tue Mar 31 15:33:10 BST 2009
+
+
+------------------------------------------------------------------------
+r3934 | gs | Tue Mar 31 14:16:18 BST 2009
+
+Fixed major bug in Aliases singleton constructor
+------------------------------------------------------------------------
+r3933 | gs | Tue Mar 31 13:42:43 BST 2009
+
+Further update to Aliases class
+------------------------------------------------------------------------
+r3932 | gs | Tue Mar 31 11:58:00 BST 2009
+
+Updates to include persisted Aliases object from which to check user aliases
+------------------------------------------------------------------------
+r3891 | gs | Mon Mar 30 11:27:20 BST 2009
+
+Updated javadoc for 1.5.1
+------------------------------------------------------------------------
+r3890 | gs | Mon Mar 30 11:17:34 BST 2009
+
+Version 1.5.1 configuration
+------------------------------------------------------------------------
+r3889 | gs | Mon Mar 30 11:12:18 BST 2009
+
+1.5.1 jar package
+------------------------------------------------------------------------
+r3888 | gs | Mon Mar 30 11:08:19 BST 2009
+
+Updates in prep for 1.5.1 release
+------------------------------------------------------------------------
+r3887 | gs | Mon Mar 30 11:05:31 BST 2009
+
+Fix to javadoc
+------------------------------------------------------------------------
+r3886 | gs | Mon Mar 30 11:02:02 BST 2009
+
+Updated javadoc
+------------------------------------------------------------------------
+r3885 | gs | Mon Mar 30 10:59:53 BST 2009
+
+Reverted encrypt call to private constructor
+------------------------------------------------------------------------
+r3875 | gs | Fri Mar 27 13:57:46 GMT 2009
+
+Added check to include user name in Log context whenever a service called
+------------------------------------------------------------------------
+r3870 | gs | Fri Mar 27 12:28:05 GMT 2009
+
+Added ability to set another id on a log call (such as a user name)
+------------------------------------------------------------------------
+r3859 | gs | Thu Mar 26 17:14:29 GMT 2009
+
+Fixed bug in constructor which meant session wasn't created as passed user
+------------------------------------------------------------------------
+r3825 | gs | Wed Mar 18 15:04:36 GMT 2009
+
+Made Log call safer - if it cant figure out calling class it doesn't return a null class name anymore
+------------------------------------------------------------------------
+r3741 | tm | Fri Feb 27 15:20:00 GMT 2009
+
+Added new constructor to allow immediate initialization of FWDocument
+------------------------------------------------------------------------
+r3740 | gs | Thu Feb 26 18:38:50 GMT 2009
+
+Added new featherweight document object which can be called when running in a Stellent server context
+------------------------------------------------------------------------
+r3675 | gs | Thu Feb 19 15:05:54 GMT 2009
+
+Added new util method for reading file to byte/string and new constructor for LWDocument so you can pass username, docName and force database level access.
+------------------------------------------------------------------------
+r3552 | tm | Thu Feb 05 13:44:58 GMT 2009
+
+
+------------------------------------------------------------------------
+r3551 | tm | Thu Feb 05 13:37:52 GMT 2009
+
+Added extra methods to handle check-in of web-viewable files
+------------------------------------------------------------------------
+r3547 | darrenj | Mon Feb 02 10:28:17 GMT 2009
+
+Added more escape chars to the makeFileNameSafe method.
+------------------------------------------------------------------------
+r3413 | darrenj | Wed Jan 14 15:59:17 GMT 2009
+
+Changed class to public
+------------------------------------------------------------------------
+r3412 | darrenj | Wed Jan 14 15:50:44 GMT 2009
+
+Updated to point to hera10g instead of lille
+------------------------------------------------------------------------
+r3401 | gs | Mon Jan 12 18:52:29 GMT 2009
+
+Created one-way SHA encryption utility method
+------------------------------------------------------------------------
+r3280 | gordanam | Wed Dec 03 17:05:03 GMT 2008
+
+Updating readme file and version to basline
+------------------------------------------------------------------------
+r3279 | gordanam | Wed Dec 03 14:04:22 GMT 2008
+
+TM: Added pre-service call filter which adds the content server version to the binder
+TM: Added new filter spec
+TM: Added extra value in return Vector in generateDoc method (generatedFileName)
+TM: Added isOracleUCM flag
+TM: Corrected method signature
+TM: Changed original doc name parameter
+------------------------------------------------------------------------
+r3274 | tm | Thu Nov 27 18:37:31 GMT 2008
+
+Changed original doc name parameter
+------------------------------------------------------------------------
+r3264 | tm | Thu Nov 27 11:04:32 GMT 2008
+
+Corrected method signature
+------------------------------------------------------------------------
+r3263 | tm | Thu Nov 27 10:45:09 GMT 2008
+
+
+------------------------------------------------------------------------
+r3259 | tm | Wed Nov 26 18:30:50 GMT 2008
+
+Added isOracleUCM flag
+------------------------------------------------------------------------
+r3258 | tm | Wed Nov 26 18:30:38 GMT 2008
+
+Added extra value in return Vector in generateDoc method (generatedFileName)
+------------------------------------------------------------------------
+r3246 | tm | Wed Nov 26 13:16:37 GMT 2008
+
+Added new filter spec
+------------------------------------------------------------------------
+r3245 | tm | Wed Nov 26 13:15:27 GMT 2008
+
+
+------------------------------------------------------------------------
+r3244 | tm | Wed Nov 26 13:14:37 GMT 2008
+
+Added pre-service call filter which adds the content server version to the binder.
+------------------------------------------------------------------------
+r3235 | gs | Tue Nov 25 17:36:06 GMT 2008
+
+Updated so it works with hera10g environment
+------------------------------------------------------------------------
+r3230 | gs | Tue Nov 25 17:11:03 GMT 2008
+
+Package with latest updates incorporated
+------------------------------------------------------------------------
+r3224 | gs | Tue Nov 25 15:19:32 GMT 2008
+
+Updated view content services so text is more user/business orientated
+------------------------------------------------------------------------
+r3223 | gs | Tue Nov 25 14:21:53 GMT 2008
+
+Updated string method so it logs a warning rather than throwing exception (used by doc generator code) [relates to Hera issue 330]
+------------------------------------------------------------------------
+r3221 | gs | Tue Nov 25 13:10:19 GMT 2008
+
+Modifed uploader so that the original file name is not lost on upload - previously the temp filename (uploaderXXX) was then appplied within oracle as the original file name.
+------------------------------------------------------------------------
+r3217 | gs | Tue Nov 25 11:11:41 GMT 2008
+
+Updated code so a user can be passed.  If set this user is used to create the document - previously all docs were created as sysadmin
+------------------------------------------------------------------------
+r3146 | tm | Fri Nov 14 17:11:12 GMT 2008
+
+
+------------------------------------------------------------------------
+r3145 | tm | Fri Nov 14 17:10:34 GMT 2008
+
+
+------------------------------------------------------------------------
+r3130 | gs | Fri Nov 14 15:09:14 GMT 2008
+
+Added constructor for LWFacade which just takes username.
+------------------------------------------------------------------------
+r3128 | tm | Fri Nov 14 14:44:55 GMT 2008
+
+
+------------------------------------------------------------------------
+r3125 | tm | Fri Nov 14 13:06:06 GMT 2008
+
+Added extra line at the end of generateDocument(), adds the document dID to the returned Vector instance.
+------------------------------------------------------------------------
+r3107 | tm | Thu Nov 13 15:28:02 GMT 2008
+
+Added ECS_VIEW_CONTENT service
+------------------------------------------------------------------------
+r3099 | tm | Wed Nov 12 17:55:45 GMT 2008
+
+Added services for viewing content items, using only the dID/dDocName as arguments
+------------------------------------------------------------------------
+r2916 | darrenj | Fri Oct 10 16:09:09 BST 2008
+
+Updated to include a description for the template that does a Check Out and Open via a service call.
+------------------------------------------------------------------------
+r2915 | darrenj | Fri Oct 10 16:06:15 BST 2008
+
+Added a template for performing Check Out and Open  via a service call.
+------------------------------------------------------------------------
+r2905 | darrenj | Thu Oct 09 14:24:39 BST 2008
+
+Changed package delaration back so that it appears after intro comment - eclipse was complaining otherwise
+------------------------------------------------------------------------
+r2802 | gs | Wed Sep 24 15:35:39 BST 2008
+
+Updated in prep for 1.4.3 build
+------------------------------------------------------------------------
+r2801 | gs | Wed Sep 24 15:10:27 BST 2008
+
+Updated LWDocument (Hera10g bug HEI00338) so that search by dID/dDocName uses <matches> keyword rather than = - ensures support across 7.5/10g
+------------------------------------------------------------------------
+r2715 | tm | Mon Sep 15 13:20:38 BST 2008
+
+
+------------------------------------------------------------------------
+r2701 | tm | Fri Sep 12 18:02:39 BST 2008
+
+
+------------------------------------------------------------------------
+r2657 | tm | Wed Sep 10 15:45:41 BST 2008
+
+
+------------------------------------------------------------------------
+r2656 | tm | Wed Sep 10 15:44:00 BST 2008
+
+
+------------------------------------------------------------------------
+r2634 | tm | Wed Sep 10 12:45:20 BST 2008
+
+
+------------------------------------------------------------------------
+r2632 | tm | Wed Sep 10 12:43:58 BST 2008
+
+Added executeForcedUpdate method
+------------------------------------------------------------------------
+r2629 | tm | Wed Sep 10 12:41:18 BST 2008
+
+
+------------------------------------------------------------------------
+r2628 | tm | Wed Sep 10 12:37:49 BST 2008
+
+
+------------------------------------------------------------------------
+r2598 | tm | Mon Sep 01 12:20:41 BST 2008
+
+
+------------------------------------------------------------------------
+r2595 | tm | Mon Sep 01 12:16:19 BST 2008
+
+
+------------------------------------------------------------------------
+r2594 | tm | Mon Sep 01 12:02:11 BST 2008
+
+
+------------------------------------------------------------------------
+r2590 | tm | Mon Sep 01 11:39:12 BST 2008
+
+Added new class, DynamicXMLObjectCache. Designed to store unmarshalled XML items.
+
+Cache class structure required various updates to support new cache type.
+------------------------------------------------------------------------
+r2589 | tm | Mon Sep 01 11:38:16 BST 2008
+
+Added new getCustomCacheValue() function
+------------------------------------------------------------------------
+r2588 | tm | Mon Sep 01 11:38:02 BST 2008
+
+Static utility functions for Castor XML / Oracle integration
+------------------------------------------------------------------------
+r2587 | tm | Mon Sep 01 11:10:28 BST 2008
+
+Added to package com.ecs.stellent.utils.uploader
+------------------------------------------------------------------------
+r2586 | gs | Fri Aug 29 10:23:03 BST 2008
+
+Updated cache to allow storage/retrieval of xml objects from oracle
+------------------------------------------------------------------------
+r2544 | darrenj | Fri Aug 22 15:58:21 BST 2008
+
+Version 1.3
+------------------------------------------------------------------------
+r2543 | darrenj | Fri Aug 22 15:49:43 BST 2008
+
+Updated new build.
+------------------------------------------------------------------------
+r2542 | gs | Fri Aug 22 15:48:21 BST 2008
+
+Updated javadoc
+------------------------------------------------------------------------
+r2538 | gs | Fri Aug 22 12:45:46 BST 2008
+
+Added comment line explaining magic integer used in private method
+------------------------------------------------------------------------
+r2537 | gs | Fri Aug 22 12:44:03 BST 2008
+
+Added deleteTree method to delete File object (and all containing objects if it is a dir).
+------------------------------------------------------------------------
+r2528 | darrenj | Thu Aug 21 09:47:22 BST 2008
+
+Added method executeServiceRaw to return an unparsed raw response from an service call.
+------------------------------------------------------------------------
+r2423 | gs | Fri Aug 08 10:35:17 BST 2008
+
+Updated StringUtils so it could handle multiple names within one include 
+(for now it simply puts a single space between each include).
+Allows multiple entries to be tagged together in a template given the limitation that each include needs padded
+out with white space (to preserve the Word/Excel file integrity).
+------------------------------------------------------------------------
+r2418 | gs | Thu Aug 07 13:05:40 BST 2008
+
+Updated doc generator code
+------------------------------------------------------------------------
+r2170 | tm | Fri Jul 04 16:39:13 BST 2008
+
+
+------------------------------------------------------------------------
+r2166 | tm | Fri Jul 04 16:13:21 BST 2008
+
+
+------------------------------------------------------------------------
+r2165 | gs | Fri Jul 04 16:12:02 BST 2008
+
+updated with log4j init advice
+------------------------------------------------------------------------
+r2163 | tm | Fri Jul 04 15:48:50 BST 2008
+
+
+------------------------------------------------------------------------
+r2000 | tm | Thu Jun 19 17:13:05 BST 2008
+
+
+------------------------------------------------------------------------
+r1999 | tm | Thu Jun 19 17:12:20 BST 2008
+
+
+------------------------------------------------------------------------
+r1881 | gs | Thu Jun 12 15:27:30 BST 2008
+
+Added TODO line
+------------------------------------------------------------------------
+r1680 | gs | Fri May 16 08:21:54 BST 2008
+
+Expanded javadoc description.
+------------------------------------------------------------------------
+r1658 | gs | Wed May 14 19:31:08 BST 2008
+
+Fixed silly byte issue when dealing with CR/NL.
+------------------------------------------------------------------------
+r1654 | gs | Wed May 14 19:18:03 BST 2008
+
+Updated template generator to cope with CR, newline sequences (and replace with space, CR only - which is what MS Word etc works with)
+------------------------------------------------------------------------
+r1653 | gs | Wed May 14 19:08:27 BST 2008
+
+Updated StringUtils template handling after major foulup - replaced with pure byte replacement strategy
+------------------------------------------------------------------------
+r1649 | gs | Wed May 14 14:16:38 BST 2008
+
+Javadoc spiked, regenerated
+------------------------------------------------------------------------
+r1648 | gs | Wed May 14 14:14:20 BST 2008
+
+Updated DocGenerator javadoc
+------------------------------------------------------------------------
+r1646 | gs | Wed May 14 13:57:55 BST 2008
+
+Added service GENERATE_DOC_FROM_TEMPLATE.
+------------------------------------------------------------------------
+r1645 | gs | Wed May 14 13:53:42 BST 2008
+
+Added generate from template functionality and moved build no provisionally onto 19
+------------------------------------------------------------------------
+r1643 | gs | Wed May 14 13:00:08 BST 2008
+
+Updated query to include ` tag to define values - required to work in 10g
+------------------------------------------------------------------------
+r1496 | gs | Wed Apr 23 09:42:09 BST 2008
+
+Modified ServiceUtils javadoc
+------------------------------------------------------------------------
+r1342 | gs | Tue Apr 15 16:37:09 BST 2008
+
+Updated description
+------------------------------------------------------------------------
+r1329 | gs | Tue Apr 15 11:07:40 BST 2008
+
+Updated version label
+------------------------------------------------------------------------
+r1326 | gs | Tue Apr 15 10:27:06 BST 2008
+
+No longer required by eclipse project
+------------------------------------------------------------------------
+r1325 | gs | Tue Apr 15 10:20:53 BST 2008
+
+Updated readme file
+------------------------------------------------------------------------
+r1324 | gs | Tue Apr 15 09:38:48 BST 2008
+
+Updated links to files in manifest file
+------------------------------------------------------------------------
+r1323 | gs | Tue Apr 15 09:33:33 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1322 | gs | Mon Apr 14 17:09:28 BST 2008
+
+Updated BaseUtils build no and readme to reflect new component structure.
+------------------------------------------------------------------------
+r1321 | gs | Mon Apr 14 16:29:37 BST 2008
+
+Test of eclipse update
+------------------------------------------------------------------------
+r1320 | gs | Mon Apr 14 16:10:26 BST 2008
+
+Further case of wrong jsp/common paths
+------------------------------------------------------------------------
+r1319 | gs | Mon Apr 14 16:02:57 BST 2008
+
+Modified jstp/common links to include ECS_BaseUtils in path
+------------------------------------------------------------------------
+r1318 | gs | Mon Apr 14 15:40:52 BST 2008
+
+Moved then regenerated baseutils javadocs
+------------------------------------------------------------------------
+r1317 | gs | Mon Apr 14 15:33:36 BST 2008
+
+Removed file/folder
+------------------------------------------------------------------------
+r1315 | gs | Mon Apr 14 15:33:12 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1314 | gs | Mon Apr 14 15:32:57 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1313 | gs | Mon Apr 14 15:30:47 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1312 | gs | Mon Apr 14 15:30:36 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1311 | gs | Mon Apr 14 15:30:25 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1309 | gs | Mon Apr 14 15:01:48 BST 2008
+
+Mod to eclipse classpath
+------------------------------------------------------------------------
+r1308 | gs | Mon Apr 14 14:56:16 BST 2008
+
+
+------------------------------------------------------------------------
+r1307 | gs | Mon Apr 14 14:51:37 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1306 | gs | Mon Apr 14 14:51:27 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1305 | gs | Mon Apr 14 14:51:23 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1304 | gs | Mon Apr 14 14:51:18 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1303 | gs | Mon Apr 14 14:51:13 BST 2008
+
+Created folder remotely
+------------------------------------------------------------------------
+r1302 | gs | Mon Apr 14 14:51:03 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1301 | gs | Mon Apr 14 14:50:51 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1300 | gs | Mon Apr 14 14:50:38 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1271 | gs | Mon Apr 14 13:45:04 BST 2008
+
+
+------------------------------------------------------------------------
+r1270 | gs | Mon Apr 14 13:43:33 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1269 | gs | Mon Apr 14 13:43:28 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1268 | gs | Mon Apr 14 13:43:15 BST 2008
+
+Created folder remotely
+------------------------------------------------------------------------
+r1267 | gs | Mon Apr 14 13:40:09 BST 2008
+
+
+------------------------------------------------------------------------
+r1266 | gs | Mon Apr 14 13:39:08 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1265 | gs | Mon Apr 14 13:38:52 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1264 | gs | Mon Apr 14 13:37:50 BST 2008
+
+Moved to COMPONENT_PACKAGE location
+------------------------------------------------------------------------
+r1263 | gs | Mon Apr 14 13:37:12 BST 2008
+
+Modified build location for maven component build test
+------------------------------------------------------------------------
+r1257 | gs | Mon Apr 14 12:47:30 BST 2008
+
+Named to match component name
+------------------------------------------------------------------------
+r1242 | gs | Tue Apr 08 17:00:39 BST 2008
+
+Fixed unix bug which caused filename on uploader to use fully qualified file path rather than file name.
+Moved build number to 17
+------------------------------------------------------------------------
+r1222 | gs | Tue Apr 01 13:49:30 BST 2008
+
+Updated Log methods so all methods can have a level specified which determines the class a log line is logged against - by default the calling class is used but for applications that wrap the Log methods you will probably want to output a higher level class for clarity.
+------------------------------------------------------------------------
+r1214 | gs | Mon Mar 31 12:41:15 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r819 | gs | Fri Jan 04 12:07:45 GMT 2008
+
+
+------------------------------------------------------------------------
+r817 | gs | Fri Jan 04 11:52:32 GMT 2008
+
+Fixed Build 15 bug which was causing log config to get lost when starting server as a service.
+------------------------------------------------------------------------
+r815 | gs | Fri Jan 04 10:47:51 GMT 2008
+
+Updated baseutils to support Oracle 10gR3
+-Changed how logging configured, added copyright notice, updated javadoc & readme
+-Added 10gR3 server.zip (Oracle content server package) to project
+------------------------------------------------------------------------
+r737 | gs | Wed Dec 05 11:18:22 GMT 2007
+
+
+------------------------------------------------------------------------
+r736 | gs | Wed Dec 05 10:41:18 GMT 2007
+
+
+------------------------------------------------------------------------
+r630 | gs | Fri Nov 23 17:21:38 GMT 2007
+
+Added delete of temp files on applet uploader, moved baseutils build to 14.
+------------------------------------------------------------------------
+r374 | gs | Thu Sep 13 11:41:46 BST 2007
+
+Added easy zip creating util for zipping target file/directory
+------------------------------------------------------------------------
+r373 | gs | Thu Sep 13 11:34:50 BST 2007
+
+Added util method to clean a string so it only contains valid filename chars.
+Added read bytes to file method which allows target filename to be specified.
+------------------------------------------------------------------------
+r372 | gs | Thu Sep 13 11:22:50 BST 2007
+
+Updated getContent type calls so a Rendition type can be specified
+- essentially by passing a rendition type of Web you get the web rendition rather than the native (Primary) rendition.
+------------------------------------------------------------------------
+r367 | gs | Thu Sep 06 16:18:20 BST 2007
+
+Pushed on Build level to 13 and added check when starting from within the SCS to set the default port on Facade calls to the port the SCS is running on.
+
+This will ensure that Facade calls which work against port 4444 don't break if BaseUtils is deployed against a SCS on another port
+------------------------------------------------------------------------
+r342 | gs | Wed Aug 08 16:09:18 BST 2007
+
+Latest LWDocument changes
+------------------------------------------------------------------------
+r341 | nicolasb | Wed Aug 08 16:07:47 BST 2007
+
+getAttributes() third time
+------------------------------------------------------------------------
+r340 | gs | Wed Aug 08 16:01:00 BST 2007
+
+Updated with latest LWDocument changes
+------------------------------------------------------------------------
+r339 | nicolasb | Wed Aug 08 15:59:32 BST 2007
+
+
+------------------------------------------------------------------------
+r338 | nicolasb | Wed Aug 08 15:58:25 BST 2007
+
+getAttributes second part
+------------------------------------------------------------------------
+r337 | gs | Wed Aug 08 15:30:55 BST 2007
+
+Updated with latest changes
+------------------------------------------------------------------------
+r336 | nicolasb | Wed Aug 08 15:27:56 BST 2007
+
+getAttributes() added
+------------------------------------------------------------------------
+r334 | gs | Wed Aug 08 14:11:20 BST 2007
+
+Created constructor which allowed useDatabase flag to be passed .
+------------------------------------------------------------------------
+r241 | gs | Fri Jun 22 18:38:54 BST 2007
+
+Updated LWDocument checkin so that it now forces a removal of any dRendition attributes from the binder as these cause the checkin to fail (the attrs define paths to alternate renditions of the content which don't exist)
+------------------------------------------------------------------------
+r235 | gs | Tue Jun 12 10:19:02 BST 2007
+
+Updated Build number to 12 to match component build number
+------------------------------------------------------------------------
+r234 | gs | Tue Jun 12 10:05:25 BST 2007
+
+Updated javadoc and fix to GET_FILE call in LWFacade so that errors on this call are now trapped and reported.
+------------------------------------------------------------------------
+r233 | gs | Mon Jun 11 19:03:48 BST 2007
+
+Added check on GET_FILE call to parse binder if response is under 2k in size.  The parse is required to check for errors but for GET_FILE is ordinarily switched off given potential size of responses if successful.
+------------------------------------------------------------------------
+r232 | gs | Mon Jun 11 17:13:52 BST 2007
+
+version 1.0 Build 9 jar for release in latest component
+------------------------------------------------------------------------
+r231 | gs | Mon Jun 11 17:10:10 BST 2007
+
+Added missing javadoc tag
+------------------------------------------------------------------------
+r227 | gs | Fri Jun 08 18:10:23 BST 2007
+
+Bug fix to FileUtils
+------------------------------------------------------------------------
+r225 | gs | Fri Jun 08 10:37:43 BST 2007
+
+Changed BUILD flag from a string to an integer
+------------------------------------------------------------------------
+r223 | gs | Fri Jun 08 09:37:55 BST 2007
+
+Updated jar with java source code removed
+------------------------------------------------------------------------
+r222 | gs | Fri Jun 08 09:36:33 BST 2007
+
+Updated javadoc for recent changes
+------------------------------------------------------------------------
+r221 | gs | Thu Jun 07 18:00:15 BST 2007
+
+Updated JAR file ahead of new build release.
+------------------------------------------------------------------------
+r220 | gs | Thu Jun 07 17:59:46 BST 2007
+
+The log4j config file used in the ECSBaseUtils component.  To use with Eclipse add the following to the run/debug vm arguments: -DECS_LOG_CONFIG_LOCATION=.\ECSLogConfig
+------------------------------------------------------------------------
+r219 | gs | Thu Jun 07 17:53:37 BST 2007
+
+Added support for dealing with folders (OS and stellent), improved LWFacade logging and incremented ECS build version in anticipation of new release
+------------------------------------------------------------------------
+r218 | gs | Thu Jun 07 17:49:41 BST 2007
+
+Removed some quirks in code and improved checkin so that the revision release date can be set - added support for retriving localised date format from binder so it can cope with multi locale use.
+------------------------------------------------------------------------
+r202 | gs | Wed May 09 18:35:58 BST 2007
+
+Modified LWFacade use so that the object is created local to the isStale and retrieveToCache methods.  resolves synching issue
+------------------------------------------------------------------------
+r195 | gs | Tue May 08 13:45:02 BST 2007
+
+Cleaned up cache call further with new Cache class and rebuild javadoc
+------------------------------------------------------------------------
+r192 | gs | Tue May 08 09:21:00 BST 2007
+
+Added caching mechanism to base utils - cache code is not at release standard, this is just an initial commit to SVN
+------------------------------------------------------------------------
+r182 | gs | Thu May 03 19:23:11 BST 2007
+
+Multiple updates to facilitate Hera changes.
+
+This revolves mainly around support for database lookup rather than reliance on (verity) search index. 
+------------------------------------------------------------------------
+r154 | tm | Wed May 02 11:08:37 BST 2007
+
+Added update() method to LWDocument class. This calls the executeUpdate() method on the LWFacade member object.
+
+Includes the latest .jar build.
+------------------------------------------------------------------------
+r152 | tm | Tue May 01 18:17:24 BST 2007
+
+Forgot to instantiate LWFacade object in new LWDocument constructor... adding this.
+------------------------------------------------------------------------
+r150 | tm | Tue May 01 18:01:02 BST 2007
+
+Added new constructor to LWDocument class:
+
+-public LWDocument(int dID)
+
+This method will attempt to create an LWDocument using the existing content item with a matching dID.
+------------------------------------------------------------------------
+r148 | tm | Tue May 01 16:44:14 BST 2007
+
+Added freshly-built jar file.
+------------------------------------------------------------------------
+r147 | tm | Tue May 01 16:35:24 BST 2007
+
+Changed checkBinderForErrors() method. Previously it was only checking for a StatusCode of -1 to determine if there was an error or not. Should be checking for ALL StatusCodes less than zero. 
+------------------------------------------------------------------------
+r78 | tm | Fri Apr 27 17:20:25 BST 2007
+
+
+------------------------------------------------------------------------
+r77 | tm | Fri Apr 27 17:19:20 BST 2007
+
+Added static checkBinderForErrors() method
+------------------------------------------------------------------------
+r76 | tm | Fri Apr 27 16:54:01 BST 2007
+
+Updated source code (SVN test)
+------------------------------------------------------------------------
+r69 | tm | Fri Apr 27 16:32:53 BST 2007
+
+Another svn test
+------------------------------------------------------------------------
+r68 | tm | Fri Apr 27 16:29:57 BST 2007
+
+SVN test plus added in external libs as part of eclipse project
+------------------------------------------------------------------------
+r65 | gs | Thu Apr 12 13:23:16 BST 2007
+
+Build 8 - updated javadocs
+------------------------------------------------------------------------
+r64 | gs | Thu Apr 12 12:22:20 BST 2007
+
+Updated by modifying Version flag to Build 8
+------------------------------------------------------------------------
+r63 | gs | Thu Apr 12 12:19:19 BST 2007
+
+Updated jar containing ServiceUtils
+------------------------------------------------------------------------
+r62 | gs | Thu Apr 12 12:08:43 BST 2007
+
+
+------------------------------------------------------------------------
+r55 | gs | Mon Jan 29 10:23:56 GMT 2007
+
+Added uploader (upload applet handling) functionality and extended LWDocument
+------------------------------------------------------------------------
+r52 | gs | Fri Jan 19 14:44:50 GMT 2007
+
+Added upload functionality and added new constructor for LWDocument
+------------------------------------------------------------------------
+r29 | gs | Fri Nov 03 17:22:22 GMT 2006
+
+ECSBaseUtils component - build6 jar
+------------------------------------------------------------------------
+r28 | gs | Fri Nov 03 16:45:02 GMT 2006
+
+
+------------------------------------------------------------------------
+r4 | gs | Fri Oct 20 16:01:30 BST 2006
+
+
+------------------------------------------------------------------------
+r2 | gs | Fri Oct 20 15:20:26 BST 2006
+
+Created folder remotely

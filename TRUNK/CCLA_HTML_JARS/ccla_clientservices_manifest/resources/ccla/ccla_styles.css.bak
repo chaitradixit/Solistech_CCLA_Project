@@ -1,0 +1,166 @@
+div.menuBar{
+	background-color:#C20072;
+}
+
+.searchHeader {
+	color: #FFF;
+}
+
+th.sfHeader_mid {
+	background-image:url(../../images/ccla/headerMiddle.jpg);
+	color: #FFF;
+}
+
+th.sfHeader_start {
+	background-image:url(../../images/ccla/headerLeft.jpg);
+	color: #FFF;
+	width:105px;
+}
+
+th.sfHeader_end {
+	background-image:url(../../images/ccla/headerRight.jpg);
+	color: #FFF;
+	width:150px;
+}
+
+ul.menuItems li.glowMenuItem a.menuLink {
+	color:#000000;
+}
+
+.resultrow_hilite,
+.resultrow_hilite td{
+	background-color: #F3E9F0;				
+}
+
+.iris_thumb_container iris_thumb_select{
+	background-color: #ECDDE7;
+}
+
+tr.resultrow_sel,
+tr.resultrow_sel td{
+	background-color: #ECDDE7;
+}
+
+.toggle_img_collapse{
+	background-image: url(../../images/ccla/grey-arrow-left.gif);
+}
+
+.toggle_img_expand{
+	background-image: url(../../images/ccla/grey-arrow-down.gif);
+}
+
+.tabOn{
+	background:transparent url(../../images/ccla/shinytab-on.gif) no-repeat scroll left top;
+}
+
+div.header{
+	background-image: url(../../images/ccla/iris-banner-filler.jpg);
+	background-color: #C486A1;
+}
+
+div.subheader{
+	color:#222222;
+	border-bottom:0;
+}
+
+#recentnotes {
+	margin:0;
+	margin-bottom:7px;
+}
+
+span.docname{
+	color:#C20072;
+}
+
+.contextFrame{
+	border:none;
+}
+
+div.ccla_ajax_loader {
+	background-image: url(../../images/ccla/ccla-ajax-loader.gif);
+	width: 16px;
+	height: 16px;
+	float: left;
+	margin-left: 5px;
+	margin-top: 3px;
+}
+
+div.logo{
+	background-image: url(../../images/ccla/logo.gif);
+	background-position: top left;
+	background-repeat: no-repeat;
+	background-color: #FFFFFF;
+	
+	height: 70px;
+
+}	
+
+.searchbtn_small{
+	display:none;
+}
+
+/*
+.SF_CHECKBOX_results,
+#CHECKBOX_header{
+	width:0px;
+	padding:0;
+	margin:0;
+}
+
+.SF_CHECKBOX_results input{
+	display:none;
+}
+*/
+
+	.lock_display_box{
+		margin: 2px;
+		padding: 5px 3px;
+		border: 1px solid #AAAAAA;
+		background-color: #CCCCCC;
+	}
+	
+	.recentnotes_row,
+	.recentnotes_cell1{
+		background-color: #F3E9F0;
+	}
+	.iris_user_note{
+		background-color: #FFFFFF;
+	}
+	
+	#recentnotes_links a{
+		color:blue;
+	}
+	
+	#recentnotes_cell{
+		width:115px;
+	}
+	
+	.recentnotes_cell2{
+		width:150px;
+	}
+
+	.field_caption_req{
+	/*white-space: nowrap;*/
+	
+	}
+	
+	/* Custom buttons */
+	a.ccla_child_docs_button {
+		background-image: url(../../images/iris/table.png);
+		background-position: 2px 50%;
+		background-repeat: no-repeat;
+		
+		width: 40px;
+		height: 20px;
+		float: left;
+		
+		text-align: right;
+		line-height: 18px;
+		padding-right: 4px;
+		
+		color: #555;
+	}
+	
+	a.ccla_child_docs_button:hover {
+		text-decoration: none;
+	}

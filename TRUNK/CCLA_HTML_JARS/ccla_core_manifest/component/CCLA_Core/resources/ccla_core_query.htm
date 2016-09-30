@@ -1,0 +1,2797 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Core query
+</title>
+</head>
+<body>
+
+<@table CCLA_Core_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qClientServices_getInteractionOutcomes</td>
+	<td>SELECT * FROM REF_INTERACTION_OUTCOME</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_getInteractionOutcomeTypes</td>
+	<td>SELECT * FROM REF_INTERACTION_OUTCOME_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllProperties</td>
+	<td>SELECT * FROM REF_PROPERTY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementRelationNames</td>
+	<td>SELECT * FROM REF_RELATION_NAMES relname
+		INNER JOIN REF_RELATION_TYPES reltype on relname.RELATION_TYPE_ID = reltype.RELATION_TYPE_ID
+		ORDER BY relname.RELATION_TYPE_ID, relname.RELATION_NAME_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationNamesSync</td>
+	<td>SELECT * FROM REF_RELATION_NAMES_SYNC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionSubjects</td>
+	<td>SELECT * FROM REF_INTERACTION_SUBJECT
+		ORDER BY SUBJECT</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionSubjectCategories</td>
+	<td>SELECT * FROM REF_INTERACTION_CATEGORY
+		ORDER BY CATEGORY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountStatuses</td>
+	<td>SELECT * FROM REF_ACCOUNT_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationTypes</td>
+	<td>select * from REF_RELATION_TYPES</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetFunds</td>
+	<td>SELECT 
+			F.*, FS.FUND_STATUS_NAME, FTC.FUND_TYPECODE, FTC.TYPECODE_DESC, 
+			ITC.INCOME_TYPECODE, ITC.INCOMECODE_DESC, FDC.FUND_DEFCODE, FDC.DEFCODE_DESC   
+		FROM 
+			FUND F
+		LEFT JOIN 
+			REF_FUND_STATUS FS ON (F.FUND_STATUS_ID = FS.FUND_STATUS_ID) 
+		LEFT JOIN 
+			REF_FUND_TYPECODE FTC ON (F.FUND_TYPECODE_ID = FTC.FUND_TYPECODE_ID)
+		LEFT JOIN 
+			REF_INCOME_TYPECODE ITC ON (F.INCOME_TYPECODE_ID = ITC.INCOME_TYPECODE_ID)
+		LEFT JOIN 
+			REF_FUND_DEFINITION_CODE FDC ON (F.FUND_DEFCODE_ID = FDC.FUND_DEFCODE_ID)
+		ORDER BY F.FUND_CODE ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetCompanies</td>
+	<td>SELECT * FROM REF_COMPANY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementTypes</td>
+	<td>SELECT * FROM REF_ELEMENT_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetDataSources</td>
+	<td>SELECT * FROM REF_DATA_SOURCE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAgreementTypes</td>
+	<td>SELECT * FROM REF_AGREEMENT_TYPE ORDER BY AGREEMENT_TYPE_ID ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetMarketingGroups</td>
+	<td>SELECT * FROM REF_MARKETING_GROUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetMarketingSubGroups</td>
+	<td>SELECT * FROM REF_MARKETING_SUBGROUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountGroups</td>
+	<td>SELECT * FROM REF_ACCOUNT_GROUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_getAllOrganisationCategories</td>
+	<td>SELECT CATEGORY_NAME, CATEGORY_ID, PARENT_CATEGORY_ID, LEVEL
+      FROM REF_ORG_CATEGORY
+      START WITH PARENT_CATEGORY_ID IS NULL
+      CONNECT BY PRIOR CATEGORY_ID = PARENT_CATEGORY_ID
+      ORDER SIBLINGS BY CATEGORY_ID</td>
+	 <td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetCrockfords</td>
+	<td>select * from REF_CROCKFORDS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAccountFlags</td>
+	<td>SELECT af.*, DECODE(ACCOUNT_FLAG_ID, 1, '1', '0') AS IS_NO_ISSUE_FLAG FROM REF_ACCOUNT_FLAG af
+	ORDER BY IS_NO_ISSUE_FLAG DESC, ACCOUNT_FLAG_NAME ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAuthenticationConditions</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllTitles</td>
+	<td>select ct.*, ctc.TITLE_CATEGORY_NAME as CATEGORY_NAME, gend.GENDER_NAME 
+	from REF_TITLE ct inner join ref_title_category ctc 
+	on (ct.TITLE_CATEGORY_ID = ctc.TITLE_CATEGORY_ID)
+	LEFT JOIN REF_GENDER gend ON (ct.GENDER_ID = gend.GENDER_ID)
+	ORDER BY ct.TITLE_CATEGORY_ID, ct.TITLE_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllGenders</td>
+	<td>select * from REF_GENDER</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetCompanyList</td>
+	<td>SELECT * FROM REF_COMPANY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetVerificationSources</td>
+	<td>SELECT * FROM REF_VERIFICATION_SOURCE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributes</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN REF_DATA_TYPE dt ON (attribs.ELEMENT_ATTRIBUTE_DATA_TYPE = dt.DATA_TYPE_NAME)
+		INNER JOIN REF_ELEMENT_ATTRIBUTE_TYPE at ON (attribs.ELEMENT_ATTRIBUTE_TYPE_ID = at.ELEMENT_ATTRIBUTE_TYPE_ID)
+		LEFT JOIN REF_VERIFICATION_SOURCE src ON (attribs.VERIFICATION_SOURCE_ID = src.VERIFICATION_SOURCE_ID)
+		ORDER BY attribs.ELEMENT_ATTRIBUTE_TYPE_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QDocClasses</td>
+	<td>SELECT *
+FROM DOCUMENT_CLASSES
+ORDER BY DOC_CLASS ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextCommId</td>
+	<td>SELECT SEQ_COMM.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextCommGroupId</td>
+	<td>SELECT SEQ_COMM_GROUP.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInstructionAuditId</td>
+	<td>SELECT SEQ_INSTRUCTION_AUDIT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInstructionId</td>
+	<td>SELECT SEQ_INSTRUCTION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInstructionDataAppliedId</td>
+	<td>SELECT SEQ_INSTRUCTION_DATA_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAuroraClientNumberId</td>
+	<td>SELECT SEQ_AURORA_CLIENTNUMBER.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAuroraCorrespondentNumberId</td>
+	<td>SELECT SEQ_AURORA_CORRNUMBER.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllElementTypes</td>
+	<td>SELECT * FROM REF_ELEMENT_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllDataSources</td>
+	<td>SELECT * FROM REF_DATA_SOURCE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllDataTypes</td>
+	<td>SELECT * FROM REF_DATA_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCommTypes</td>
+	<td>SELECT * FROM REF_COMM_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCommSources</td>
+	<td>SELECT * FROM REF_COMM_SOURCE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCommStatuses</td>
+	<td>SELECT * FROM REF_COMM_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionStatuses</td>
+	<td>SELECT * FROM REF_INSTRUCTION_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllTransactionTypes</td>
+	<td>SELECT * FROM REF_TRANSACTION_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionTypes</td>
+	<td>SELECT * FROM REF_INSTRUCTION_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionData</td>
+	<td>SELECT * FROM REF_INSTRUCTION_DATA</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionConditionOP</td>
+	<td>SELECT * FROM REF_INSTRUCTION_CONDITION_OP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllApplicableInstructionData</td>
+	<td>SELECT * FROM APPLICABLE_INSTRUCTION_DATA</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllUCMMetadataTranslations</td>
+	<td>SELECT * FROM REF_UCM_METADATA_TRANSLATION</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCompanies</td>
+	<td>SELECT * FROM REF_COMPANY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddCommGroup</td>
+	<td>INSERT INTO COMM_GROUP VALUES (?,?,?)</td>
+	<td>COMM_GROUP_ID int
+		UCM_BATCH_REF varchar
+		SPP_BATCH_REF int</td>
+</tr>
+<tr>
+	<td>qCore_GetCommGroup</td>
+	<td>SELECT * FROM COMM_GROUP WHERE COMM_GROUP_ID=?</td>
+	<td>COMM_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCommGroupByUCMBatchRef</td>
+	<td>SELECT * FROM COMM_GROUP WHERE UCM_BATCH_REF=?</td>
+	<td>UCM_BATCH_REF varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetCommsInGroup</td>
+	<td>SELECT * FROM COMM WHERE COMM_GROUP_ID=?</td>
+	<td>COMM_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsInCommGroup</td>
+	<td>SELECT i.* FROM COMM c
+		INNER JOIN INSTRUCTION i ON (c.comm_id = i.comm_id)
+		WHERE c.COMM_GROUP_ID = ?</td>
+	<td>COMM_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateCommGroup</td>
+	<td>UPDATE COMM_GROUP SET 
+		UCM_BATCH_REF=?,
+		SPP_BATCH_REF=?
+		WHERE COMM_GROUP_ID=?</td>
+	<td>UCM_BATCH_REF varchar
+		SPP_BATCH_REF int
+		COMM_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetComm</td>
+	<td>SELECT * FROM COMM WHERE COMM_ID=?</td>
+	<td>COMM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCommByDocId</td>
+	<td>SELECT * FROM COMM WHERE DOC_ID=?</td>
+	<td>DOC_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCommByDocIdAndOrgId</td>
+	<td>SELECT * FROM COMM WHERE DOC_ID=? AND ORGANISATION_ID=?</td>
+	<td>DOC_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstruction</td>
+	<td>select * from V_INSTRUCTIONS_DISTINCT where INSTRUCTION_ID =?</td>
+	<td>INSTRUCTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionExtended</td>
+	<td>select * from V_INSTRUCTIONS_EXTENDED where INSTRUCTION_ID =?</td>
+	<td>INSTRUCTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsExtendedByOrgId_OLD</td>
+	<td>SELECT * FROM (
+			select * from V_INSTRUCTIONS_EXTENDED where ORGANISATION_ID =?
+			ORDER BY INSTRUCTION_ID DESC
+		) i
+		WHERE ROWNUM <= ?</td>
+	<td>ORGANISATION_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsExtendedByOrgId</td>
+	<td>select aa.instruction_id, 
+		aa.created AS DATE_ADDED, 
+		aa.inst_type AS INSTRUCTION_TYPE_NAME, 
+		com_source AS COMM_SOURCE_NAME, 
+		INSTRUCTION_DOC_GUID,
+		acc.ACCOUNT_ID,
+		acc.ACCOUNTNUMBER, 
+		acc.FUND_CODE, 
+		wf_id AS spp_batch_ref,
+		inst_status AS INSTRUCTION_STATUS_NAME
+		from (
+			select ins.instruction_id, ins.DATE_ADDED created
+				  ,typ.instruction_type_name inst_type
+				  ,src.comm_source_name com_source
+				  ,grp.spp_batch_ref wf_id
+				  ,ist.instruction_status_name   inst_status    
+				, ins.INSTRUCTION_DOC_GUID
+				,(select a1.instruction_value from ccla.instruction_data_applied a1 
+				   inner join ccla.applicable_instruction_data ia on ia.applicable_instruction_data_id =a1.applicable_instruction_data_id and ia.instruction_data_id=1
+				  where a1.instruction_id = ins.instruction_id
+				 ) acc_id 
+			from ccla.instruction ins 
+		
+			-- Link to applied data values that contain the required Org ID
+			inner join (
+			  select idv.INSTRUCTION_ID, idv.INSTRUCTION_NUM_VALUE AS orgIdValue 
+			  from v_instruction_data_value idv
+			  
+			  where idv.instruction_data_id IN (
+				9, -- ORGANISATION_ID data field ID
+				69 -- BENEFICIARY_ORG_ID data field ID
+			  )
+			  -- group here to ensure that a single instruction id/applied value
+			  -- is only returned once.
+			  group by idv.instruction_id, idv.INSTRUCTION_NUM_VALUE
+			) idvOrgIds ON (
+			  idvOrgIds.instruction_id = ins.instruction_id
+			  AND 
+			  idvOrgIds.orgIdValue = ?
+			)
+    
+		inner join ccla.comm com ON (ins.COMM_ID = com.COMM_ID)
+		INNER JOIN REF_COMM_SOURCE src  ON (com.COMM_SOURCE_ID = src.COMM_SOURCE_ID)
+		INNER JOIN COMM_GROUP grp  ON (com.COMM_GROUP_ID = grp.COMM_GROUP_ID)
+		INNER JOIN ref_instruction_type typ  ON (typ.instruction_type_id = ins.instruction_type_id)
+		INNER JOIN ref_instruction_status ist  ON (ins.instruction_status_id = ist.instruction_status_id)
+		
+		ORDER BY INSTRUCTION_ID DESC
+	
+	) aa
+	LEFT outer JOIN ACCOUNT acc ON aa.acc_id = acc.ACCOUNT_ID
+	where rownum <= ?</td>
+	<td>ORGANISATION_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsExtendedByAccountId</td>
+	<td>SELECT * FROM (
+			select * from V_INSTRUCTIONS_EXTENDED where ACCOUNT_ID =?
+			ORDER BY INSTRUCTION_ID DESC
+		) i
+		WHERE ROWNUM <= ?</td>
+	<td>ACCOUNT_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionByDocId</td>
+	<td>select * from INSTRUCTION where INSTRUCTION_DOC_ID =?</td>
+	<td>INSTRUCTION_DOC_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionByCommId</td>
+	<td>select * from INSTRUCTION where COMM_ID =?</td>
+	<td>COMM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionDataAppliedById</td>
+	<td>select * from instruction_data_applied 
+where instruction_id = ? and applicable_instruction_data_id=?</td>
+	<td>INSTRUCTION_ID int
+		APPLICABLE_INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionDataAppliedByInstructionAndInstructionData</td>
+	<td>select ida.* from instruction_data_applied ida
+inner join applicable_instruction_data aid ON (ida.APPLICABLE_INSTRUCTION_DATA_ID = aid.APPLICABLE_INSTRUCTION_DATA_ID)
+inner join ref_instruction_data rid ON (aid.INSTRUCTION_data_ID = rid.instruction_data_id)
+where ida.instruction_id = ? and rid.instruction_data_id = ?</td>
+	<td>INSTRUCTION_ID int
+		INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionDataApplied</td>
+	<td>update instruction_data_applied
+	set instruction_value = ?, instruction_string_value=?,
+	instruction_num_value=?, instruction_date_value=?
+where instruction_id = ? and applicable_instruction_data_id=?</td>
+	<td>INSTRUCTION_VALUE varchar
+	INSTRUCTION_STRING_VALUE varchar
+	INSTRUCTION_NUM_VALUE int
+	INSTRUCTION_DATE_VALUE date
+	INSTRUCTION_ID int
+	APPLICABLE_INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qCore_CreateInstructionDataApplied</td>
+	<td>insert into INSTRUCTION_DATA_APPLIED values
+	(?,?,?,?,?,?)</td>
+	<td>INSTRUCTION_ID int
+	APPLICABLE_INSTRUCTION_DATA_ID int
+	INSTRUCTION_VALUE varchar
+	INSTRUCTION_STRING_VALUE varchar
+	INSTRUCTION_NUM_VALUE int
+	INSTRUCTION_DATE_VALUE date	</td>
+</tr>
+<tr>
+	<td>qCore_RemoveInstructionDataApplied</td>
+	<td>DELETE FROM INSTRUCTION_DATA_APPLIED
+		WHERE INSTRUCTION_ID = ? 
+		AND APPLICABLE_INSTRUCTION_DATA_ID = ?</td>
+	<td>INSTRUCTION_ID int
+		APPLICABLE_INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableInstructionDataByType</td>
+	<td>select rid.* from ref_instruction_data rid
+inner join applicable_instruction_data aid on (rid.instruction_data_id = aid.instruction_data_id)
+where aid.instruction_type_id = ?</td>
+	<td>INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableInstructionDataByTypeExt</td>
+	<td>select rid.*, aid.is_optional, aid.applicable_instruction_data_id from ref_instruction_data rid
+inner join applicable_instruction_data aid on (rid.instruction_data_id = aid.instruction_data_id)
+where aid.instruction_type_id = ?</td>
+	<td>INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableInstructionDatabyName</td>
+	<td>select aid.* from applicable_instruction_data aid
+inner join ref_instruction_data rid on (rid.instruction_data_id = aid.instruction_data_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = aid.instruction_type_id)
+where rid.instruction_data_name = ? and rit.instruction_type_id=?</td>
+	<td>INSTRUCTION_DATA_NAME varchar
+	INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableInstructionDatabyId</td>
+	<td>select aid.* from applicable_instruction_data aid
+inner join ref_instruction_data rid on (rid.instruction_data_id = aid.instruction_data_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = aid.instruction_type_id)
+where rid.instruction_data_id=? and rit.instruction_type_id=?</td>
+	<td>INSTRUCTION_DATA_ID int
+	INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableInstructionData</td>
+	<td>select aid.* from applicable_instruction_data aid
+left join instruction ins on (ins.INSTRUCTION_TYPE_ID = aid.INSTRUCTION_TYPE_ID)
+where ins.instruction_id=?</td>
+	<td>INSTRUCTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionValues</td>
+	<td>select * from applicable_instruction_data aid  
+		INNER JOIN instruction_data_applied ida
+		ON (aid.APPLICABLE_INSTRUCTION_DATA_ID = ida.APPLICABLE_INSTRUCTION_DATA_ID)
+		INNER JOIN ref_instruction_data rid
+		ON (rid.INSTRUCTION_DATA_ID = aid.INSTRUCTION_DATA_ID)
+		where ida.INSTRUCTION_ID =?</td>
+	<td>INSTRUCTION_ID int</td>
+</tr>
+
+<tr>
+	<td>qCore_GetInstructionDataApplied</td>
+	<td>select * from INSTRUCTION_DATA_APPLIED where 
+		INSTRUCTION_ID = ? AND APPLICABLE_INSTRUCTION_DATA_ID = ?</td>
+	<td>INSTRUCTION_ID int
+		APPLICABLE_INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetRefInstructionData</td>
+	<td>select * from ref_instruction_data where instruction_data_name=?</td>
+	<td>INSTRUCTION_DATA_NAME varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionValueByName</td>
+	<td>select * from V_INSTRUCTION_VALUES where INSTRUCTION_ID =?
+	and INSTRUCTION_DATA_NAME=?</td>
+	<td>INSTRUCTION_ID int
+	INSTRUCTION_DATA_NAME varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetTransactionsByStatusProcessDateFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id = ? and ins.process_date <= ?
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>INSTRUCTION_STATUS_ID int
+	PROCESS_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetDestTransactionsByStatusProcessDateFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_dest_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id = ? and ins.process_date <= ?
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>INSTRUCTION_STATUS_ID int
+	PROCESS_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetTransactionsByStatusFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id = ?
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>INSTRUCTION_STATUS_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassByFund</td>
+	<td>select * from ref_share_class 
+where is_enabled=1 and fund_code=?</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetEnabledShareClassbyFund</td>
+		<td>select * from REF_SHARE_CLASS 
+			where FUND_CODE = ? and IS_ENABLED = 1
+			ORDER BY MIN_THRESHOLD ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextShareClassId</td>
+	<td>SELECT SEQ_SHARE_CLASS_ID.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddInstructionRule</td>
+	<td>INSERT INTO INSTRUCTION_RULE (INSTRUCTION_RULE_ID, RULE_NAME, ADDED_BY, DATE_ADDED, RULE_TYPE_ID) 
+		VALUES (?,?,?,SYSDATE,?)</td>
+	<td>INSTRUCTION_RULE_ID int
+		RULE_NAME varchar
+		ADDED_BY varchar
+		RULE_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionRule</td>
+	<td>UPDATE INSTRUCTION_RULE SET
+		RULE_NAME=?, 
+		ADDED_BY=?,  
+		DATE_ADDED=?, 
+		RULE_TYPE_ID=? 
+		WHERE INSTRUCTION_RULE_ID=?</td>
+	<td>RULE_NAME varchar
+		ADDED_BY varchar
+		DATE_ADDED date
+		RULE_TYPE_ID int
+		INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteInstructionRuleByRuleId</td>
+	<td>DELETE FROM INSTRUCTION_RULE 
+		WHERE INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteInstrRuleConditionsAppliedByRuleId</td>
+	<td>DELETE FROM INSTR_RULE_CONDITION_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteInstrRuleConditionsAppliedByRuleIdAndCondtionId</td>
+	<td>DELETE FROM INSTR_RULE_CONDITION_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=? AND INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionRuleById</td>
+	<td>SELECT * FROM INSTRUCTION_RULE 
+		WHERE INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionRuleWithPriorityById</td>
+	<td>SELECT I.*, IRPA.PRIORITY FROM INSTRUCTION_RULE I
+		LEFT JOIN INSTR_RULE_PRIORITY_APPLIED IRPA 
+		ON (I.INSTRUCTION_RULE_ID = IRPA.INSTRUCTION_RULE_ID 
+		AND IRPA.INSTRUCTION_CONDITION_ID IS NULL) 
+		WHERE I.INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionRuleByName</td>
+	<td>SELECT * FROM INSTRUCTION_RULE 
+		WHERE RULE_NAME=?</td>
+	<td>RULE_NAME varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInstructionRuleId</td>
+	<td>SELECT SEQ_INSTRUCTION_RULE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInstructionConditionId</td>
+	<td>SELECT SEQ_INSTRUCTION_CONDITION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionRules</td>
+	<td>SELECT * FROM INSTRUCTION_RULE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionRulesWithPriority</td>
+	<td>SELECT I.*, IRPA.PRIORITY FROM INSTRUCTION_RULE I
+		INNER JOIN INSTR_RULE_PRIORITY_APPLIED IRPA 
+		ON (I.INSTRUCTION_RULE_ID = IRPA.INSTRUCTION_RULE_ID 
+		AND IRPA.INSTRUCTION_CONDITION_ID IS NULL)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionRulesWithoutPriority</td>
+	<td>SELECT I.* FROM INSTRUCTION_RULE I
+		WHERE NOT EXISTS (
+			SELECT IRPA.INSTRUCTION_RULE_ID 
+			FROM INSTR_RULE_PRIORITY_APPLIED IRPA 
+			WHERE IRPA.INSTRUCTION_RULE_ID = I.INSTRUCTION_RULE_ID
+		)</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>qCore_GetAllInstructionConditions</td>
+	<td>SELECT * FROM INSTRUCTION_CONDITION</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionRuleConditionApplied</td>
+	<td>SELECT * FROM INSTR_RULE_CONDITION_APPLIED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionRuleConditionAppliedByFK</td>
+	<td>SELECT * FROM INSTR_RULE_CONDITION_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=? AND INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionConditionsForRuleId</td>
+	<td>SELECT IC.* FROM INSTRUCTION_CONDITION IC 
+		LEFT JOIN INSTR_RULE_CONDITION_APPLIED IRCA 
+		ON (IC.INSTRUCTION_CONDITION_ID=IRCA.INSTRUCTION_CONDITION_ID) 
+		WHERE IRCA.INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionPrioritiesForRuleId</td>
+	<td>SELECT IC.*, IRPA.PRIORITY FROM INSTRUCTION_CONDITION IC 
+		LEFT JOIN INSTR_RULE_PRIORITY_APPLIED IRPA 
+		ON (IC.INSTRUCTION_CONDITION_ID=IRPA.INSTRUCTION_CONDITION_ID) 
+		WHERE IRPA.INSTRUCTION_RULE_ID=? 
+		AND IRPA.INSTRUCTION_CONDITION_ID IS NOT NULL</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddInstructionCondition</td>
+	<td>INSERT INTO INSTRUCTION_CONDITION 
+		(INSTRUCTION_CONDITION_ID, INSTRUCTION_DATA_ID, OPERATOR_ID, CHECK_VALUE, 
+		CHECK_INSTRUCTION_DATA_ID, DESCRIPTION, LAST_UPDATED, LAST_UPDATED_BY) 
+		VALUES (?,?,?,?,?,?,SYSDATE,?)</td>
+	<td>INSTRUCTION_CONDITION_ID int
+		INSTRUCTION_DATA_ID int
+		OPERATOR_ID int
+		CHECK_VALUE varchar
+		CHECK_INSTRUCTION_DATA_ID int
+		DESCRIPTION varchar
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionCondition</td>
+	<td>UPDATE INSTRUCTION_CONDITION SET
+		INSTRUCTION_DATA_ID=?, 
+		OPERATOR_ID=?, 
+		CHECK_VALUE=?, 
+		CHECK_INSTRUCTION_DATA_ID=?, 
+		DESCRIPTION=?, 
+		LAST_UPDATED=SYSDATE, 
+		LAST_UPDATED_BY=?
+		WHERE INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_DATA_ID int
+		OPERATOR_ID int
+		CHECK_VALUE varchar
+		CHECK_INSTRUCTION_DATA_ID int
+		DESCRIPTION varchar
+		LAST_UPDATED_BY varchar
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionConditionById</td>
+	<td>SELECT * FROM INSTRUCTION_CONDITION
+		WHERE INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionRuleConditionApplied</td>
+	<td>UPDATE INSTR_RULE_CONDITION_APPLIED SET
+		USER_ID=?, 
+		DATE_ADDED=?,  
+		LAST_UPDATED=SYSDATE, 
+		WHERE INSTRUCTION_RULE_ID=? AND 
+		INSTRUCTION_CONDITION_ID=?</td>
+	<td>USER_ID varchar
+		DATE_ADDED date
+		INSTRUCTION_RULE_ID int 
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddInstructionRuleConditionApplied</td>
+	<td>INSERT INTO INSTR_RULE_CONDITION_APPLIED 
+		(INSTRUCTION_RULE_ID, INSTRUCTION_CONDITION_ID, USER_ID, DATE_ADDED, LAST_UPDATED) 
+		VALUES (?,?,?, SYSDATE,SYSDATE)</td>
+	<td>INSTRUCTION_RULE_ID int 
+		INSTRUCTION_CONDITION_ID int
+		USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetNoteById</td>
+	<td>SELECT * FROM NOTE
+		WHERE NOTE_ID = ?</td>
+	<td>NOTE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddNote</td>
+	<td>INSERT INTO NOTE
+		(NOTE_ID, USER_ID, DATE_ADDED, LAST_UPDATED, LAST_UPDATED_BY, NOTE_CONTENT)
+		VALUES (?,?,SYSDATE,NULL,NULL,?)</td>
+	<td>NOTE_ID int
+		USER_ID varchar
+		NOTE_CONTENT varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateNote</td>
+	<td>UPDATE NOTE
+		SET LAST_UPDATED=SYSDATE, LAST_UPDATED_BY=?, NOTE_CONTENT=?
+		WHERE NOTE_ID=?</td>
+	<td>LAST_UPDATED_BY varchar
+		NOTE_CONTENT varchar
+		NOTE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAccountByOrg</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		WHERE ACC.ORGANISATION_ID = ?
+		AND ACC.ACCOUNTNUMBER = ?
+		AND FUND_CODE like ?
+		</td>
+	<td>ORGANISATION_ID int
+		ACCOUNT_ID int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetElementAttributeTypes</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTE_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetEntitiesByClientNumber</td>
+	<td>SELECT * FROM CLIENT_AURORA_MAP clMap
+		INNER JOIN ORGANISATION o ON (clMap.ORGANISATION_ID = o.ORGANISATION_ID)
+		INNER JOIN REF_COMPANY comp ON (clMap.COMPANY_ID = comp.COMPANY_ID)
+		WHERE clMap.CLIENT_NUMBER = ?</td>
+	<td>CLIENT_NUMBER int</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassOverride</td>
+		<td>select * from SHARE_CLASS_OVERRIDE 
+			where ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_InsertShareClassOverride</td>
+		<td>insert into SHARE_CLASS_OVERRIDE 
+			values(?,?,?,SYSDATE,?)</td>
+	<td>ACCOUNT_ID int
+	SHARE_CLASS_ID int
+	OVERRIDE_USER_ID varchar
+	OVERRIDE_REASON varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateShareClassOverride</td>
+		<td>update SHARE_CLASS_OVERRIDE 
+			set SHARE_CLASS_ID=?, OVERRIDE_USER_ID=?,
+			OVERRIDE_DATE=SYSDATE, OVERRIDE_REASON=?
+			WHERE ACCOUNT_ID=?</td>
+	<td>SHARE_CLASS_ID int
+	OVERRIDE_USER_ID varchar
+	OVERRIDE_REASON varchar
+	ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteShareClassOverride</td>
+		<td>DELETE from SHARE_CLASS_OVERRIDE 
+			where ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroup</td>
+	<td>SELECT * from REF_SHARE_CLASS_GROUP WHERE GROUP_ID=?</td>
+	<td>GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_InsertShareClassGroup</td>
+	<td>INSERT INTO REF_SHARE_CLASS_GROUP VALUES (?,?,?,?,?,0,SYSDATE,?)</td>
+	<td>GROUP_ID int
+	GROUP_NAME varchar
+	FUND_CODE varchar
+	IS_OVERRIDDEN int
+	SHARE_CLASS_ID int
+	LAST_UPDATED_BY varchar</td>	
+</tr>
+<tr>
+	<td>qCore_UpdateShareClassGroup</td>
+	<td>UPDATE REF_SHARE_CLASS_GROUP set GROUP_NAME=?, IS_OVERRIDDEN=?,
+	SHARE_CLASS_ID=?, LAST_UPDATED_BY=?, TOTAL_CASH_VALUE =?
+	WHERE GROUP_ID=?</td>
+	<td>GROUP_NAME varchar
+	IS_OVERRIDDEN int
+	SHARE_CLASS_ID int
+	LAST_UPDATED_BY varchar
+	TOTAL_CASH_VALUE varchar
+	GROUP_ID int</td>	
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupByAccount</td>
+	<td>select gr.* from ref_share_class_group gr
+inner join share_class_group_applied app on (gr.group_id = app.group_id)
+and app.account_id = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupAccounts</td>
+	<td>select acc.* from V_account_extended_client acc
+where acc.account_id in (select account_id from share_class_group_applied
+where group_id=?)</td>
+	<td>GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroups</td>
+	<td>select * from ref_share_class_group ORDER BY last_updated DESC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupsByFund</td>
+	<td>select * from ref_share_class_group 
+	where fund_code = ? ORDER BY last_updated DESC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupApplied</td>
+	<td>SELECT * from SHARE_CLASS_GROUP_APPLIED WHERE GROUP_APPLIED_ID=?</td>
+	<td>GROUP_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteShareClassGroupApplied</td>
+	<td>DELETE from SHARE_CLASS_GROUP_APPLIED WHERE GROUP_APPLIED_ID=?</td>
+	<td>GROUP_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qCore_InsertShareClassGroupApplied</td>
+	<td>INSERT INTO SHARE_CLASS_GROUP_APPLIED VALUES (?,?,?,SYSDATE,?)</td>
+	<td>GROUP_APPLIED_ID int
+	GROUP_ID int
+	ACCOUNT_ID int
+	LAST_UPDATED_BY varchar</td>	
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupAppliedByAccount</td>
+	<td>SELECT * from SHARE_CLASS_GROUP_APPLIED WHERE ACCOUNT_ID=?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetShareClassGroupAppliedByAccountGroup</td>
+	<td>SELECT * from SHARE_CLASS_GROUP_APPLIED WHERE ACCOUNT_ID=?
+	and GROUP_ID=?</td>
+	<td>ACCOUNT_ID int
+	GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_InsertShareClassOverride</td>
+	<td>INSERT INTO SHARE_CLASS_OVERRIDE VALUES (?,?,?,SYSDATE,?)</td>
+	<td>ACCOUNT_ID int
+	SHARE_CLASS_ID int
+	OVERRIDE_USER_ID varchar
+	OVERRIDE_REASON varchar</td>	
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassOverride</td>
+	<td>SELECT * FROM SHARE_CLASS_OVERRIDE 
+		WHERE ACCOUNT_ID=?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassbyId</td>
+		<td>select * from REF_SHARE_CLASS 
+			where SHARE_CLASS_ID = ?</td>
+	<td>SHARE_CLASS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassbyFund</td>
+		<td>select * from REF_SHARE_CLASS 
+			where FUND_CODE = ?
+			ORDER BY MIN_THRESHOLD ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEnabledShareClassbyFund</td>
+		<td>select * from REF_SHARE_CLASS 
+			where FUND_CODE = ? and IS_ENABLED = 1
+			ORDER BY MIN_THRESHOLD ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEnabledShareClassWithAllowedMovementbyFund</td>
+		<td>select * from REF_SHARE_CLASS 
+			where FUND_CODE = ? and IS_ENABLED = 1 and IS_EXCLUDED_FROM_MOVEMENT!=1
+			ORDER BY MIN_THRESHOLD ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+
+<tr>
+	<td>qTransactions_UpdateShareClass</td>
+		<td>update REF_SHARE_CLASS
+			set FUND_CODE = ?, SHARE_CLASS_NAME=?,
+			DESCRIPTION=?, IS_ENABLED=?, MIN_THRESHOLD=?,
+			MANAGEMENT_RATE=?, INITIAL_CHARGE=?, EXIT_CHARGE=?,
+			DATE_ADDED=?, LAST_UPDATED=SYSDATE, IS_EXCLUDED_FROM_MOVEMENT = ?
+			where SHARE_CLASS_ID = ?</td>
+	<td>FUND_CODE varchar
+	SHARE_CLASS_NAME varchar
+	DESCRIPTION varchar
+	IS_ENABLED int
+	MIN_THRESHOLD int
+	MANAGEMENT_RATE int
+	INITIAL_CHARGE int
+	EXIT_CHARGE int
+	DATE_ADDED date
+	IS_EXCLUDED_FROM_MOVEMENT int
+	SHARE_CLASS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_InsertShareClass</td>
+		<td>insert into ref_share_class values
+		(?,?,?,?,?,?,?,?,?,SYSDATE,SYSDATE, ?)</td>
+	<td>SHARE_CLASS_ID int
+	SHARE_CLASS_NAME varchar
+	FUND_CODE varchar
+	DESCRIPTION varchar
+	IS_ENABLED int
+	MIN_THRESHOLD int
+	MANAGEMENT_RATE int
+	INITIAL_CHARGE int
+	EXIT_CHARGE int
+	IS_EXCLUDED_FROM_MOVEMENT int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetAllShareClasses</td>
+		<td>select * from REF_SHARE_CLASS order by SHARE_CLASS_NAME ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassListing</td>
+	<td>select * from ref_share_class
+order by fund_code,share_class_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassGroupByAccount</td>
+	<td>select gr.* from ref_share_class_group gr
+inner join share_class_group_applied app on (gr.group_id = app.group_id)
+and app.account_id = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassGroupTotalCash</td>
+	<td>select gr.group_id, sum(acval.acc_cash) from account_value acval
+inner join share_class_group_applied gr on (gr.account_id = acval.account_id)
+group by gr.group_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddInstructionAudit</td>
+	<td>INSERT INTO INSTRUCTION_AUDIT 
+	(INSTRUCTION_AUDIT_ID, INSTR_AUDIT_ACTION_ID, INSTRUCTION_ID, 
+	MODULE_ID, AUDIT_DATE, TIME_ELAPSED, 
+	INSTRUCTION_STATUS_ID, INSTRUCTION_ACTION_ID, USER_ID) VALUES
+	(?,?,?,?,SYSDATE,?,?,?,?)</td>
+	<td>INSTRUCTION_AUDIT_ID int
+		INSTR_AUDIT_ACTION_ID int
+		INSTRUCTION_ID int
+		MODULE_ID int
+		TIME_ELAPSED int
+		INSTRUCTION_STATUS_ID int
+		INSTRUCTION_ACTION_ID int
+		USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionAudit</td>
+	<td>UPDATE INSTRUCTION_AUDIT 
+		SET INSTR_AUDIT_ACTION_ID=?, INSTRUCTION_ID=?, 
+		MODULE_ID=?, AUDIT_DATE=?, TIME_ELAPSED=?, INSTRUCTION_STATUS_ID=?, 
+		INSTRUCTION_ACTION_ID=?, USER_ID=?
+		WHERE INSTRUCTION_AUDIT_ID=?</td>
+	<td>INSTR_AUDIT_ACTION_ID int
+		INSTRUCTION_ID int
+		MODULE_ID int
+		AUDIT_DATE date
+		TIME_ELAPSED int
+		INSTRUCTION_STATUS_ID int
+		INSTRUCTION_ACTION_ID int
+		USER_ID varchar
+		INSTRUCTION_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionAuditById</td>
+	<td>SELECT * FROM INSTRUCTION_AUDIT 
+		WHERE INSTRUCTION_AUDIT_ID=?</td>
+	<td>INSTRUCTION_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionAuditAction</td>
+	<td>SELECT * FROM REF_INSTR_AUDIT_ACTION</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstructionRulePriorityApplied</td>
+	<td>UPDATE INSTR_RULE_PRIORITY_APPLIED SET
+		LAST_UPDATED_BY=?, 
+		DATE_ADDED=?,  
+		LAST_UPDATED=SYSDATE,
+		PRIORITY=?	
+		WHERE INSTRUCTION_RULE_ID=? AND 
+		INSTRUCTION_CONDITION_ID=?</td>
+	<td>LAST_UPDATED_BY varchar
+		DATE_ADDED date
+		PRIORITY int
+		INSTRUCTION_RULE_ID int 
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateBaseInstructionRulePriorityApplied</td>
+	<td>UPDATE INSTR_RULE_PRIORITY_APPLIED SET
+		LAST_UPDATED_BY=?, 
+		DATE_ADDED=?,  
+		LAST_UPDATED=SYSDATE,
+		PRIORITY=?	
+		WHERE INSTRUCTION_RULE_ID=? AND 
+		INSTRUCTION_CONDITION_ID IS NULL</td>
+	<td>LAST_UPDATED_BY varchar
+		DATE_ADDED date
+		PRIORITY int
+		INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddInstructionRulePriorityApplied</td>
+	<td>INSERT INTO INSTR_RULE_PRIORITY_APPLIED 
+		(INSTRUCTION_RULE_ID, INSTRUCTION_CONDITION_ID, LAST_UPDATED_BY, DATE_ADDED, LAST_UPDATED, PRIORITY) 
+		VALUES (?,?,?,SYSDATE,SYSDATE,?)</td>
+	<td>INSTRUCTION_RULE_ID int 
+		INSTRUCTION_CONDITION_ID int
+		LAST_UPDATED_BY varchar
+		PRIORITY int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllInstructionRulePriorityApplied</td>
+	<td>SELECT * FROM INSTR_RULE_PRIORITY_APPLIED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionRulePriorityAppliedByFK</td>
+	<td>SELECT * FROM INSTR_RULE_PRIORITY_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=? AND INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_RemoveInstructionRulePriorityApplied</td>
+	<td>DELETE FROM INSTR_RULE_PRIORITY_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=? AND INSTRUCTION_CONDITION_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int
+		INSTRUCTION_CONDITION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteInstructionRulePriorityByRuleId</td>
+	<td>DELETE FROM INSTR_RULE_PRIORITY_APPLIED 
+		WHERE INSTRUCTION_RULE_ID=?</td>
+	<td>INSTRUCTION_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllWorkGroups</td>
+	<td>SELECT * FROM REF_WORK_GROUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddUserWorkGroup</td>
+	<td>INSERT INTO USER_WORK_GROUP VALUES 
+		(SEQ_USER_WORK_GROUP.NEXTVAL, ?, ?, SYSDATE)</td>
+	<td>USER_ID varchar
+		WORK_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateUserWorkGroup</td>
+	<td>UPDATE USER_WORK_GROUP SET
+		WORK_GROUP_ID = ?,
+		LAST_UPDATED = SYSDATE
+		WHERE USER_ID = ?</td>
+	<td>WORK_GROUP_ID int
+		USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetUserWorkGroup</td>
+	<td>SELECT * FROM USER_WORK_GROUP
+		WHERE USER_WORK_GROUP_ID = ?</td>
+	<td>USER_WORK_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetUserWorkGroupByUser</td>
+	<td>SELECT * FROM USER_WORK_GROUP
+		WHERE USER_ID = ?</td>
+	<td>USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetAllUserWorkGroups</td>
+	<td>SELECT * FROM USER_WORK_GROUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_RemoveUserWorkGroup</td>
+	<td>DELETE FROM USER_WORK_GROUP
+		WHERE USER_ID = ?</td>
+	<td>USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextTransactionBatchId</td>
+	<td>SELECT SEQ_TRANSACTION_BATCH.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_AddTransactionBatch</td>
+	<td>INSERT INTO TRANSACTION_BATCH (  
+			TRANSACTION_BATCH_ID, TRANSACTION_DATE, DATE_ADDED, 
+			OPENING_BALANCE, CLOSING_BALANCE, APPLIED_DATE, 
+			COMM_ID, USER_ID, TRANS_BATCH_STATUS_ID, TRANS_BATCH_SEQUENCE, BANK_ACCOUNT_ID) 
+		VALUES (?,?,SYSDATE,?,?,NULL,?,?,?,?,?)</td>
+	<td>TRANSACTION_BATCH_ID int
+		TRANSACTION_DATE date
+		OPENING_BALANCE int
+		CLOSING_BALANCE int
+		COMM_ID int
+		USER_ID varchar
+		TRANS_BATCH_STATUS_ID int
+		TRANS_BATCH_SEQUENCE int
+		BANK_ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateTransactionBatch</td>
+	<td>UPDATE TRANSACTION_BATCH SET
+			TRANSACTION_DATE=?, OPENING_BALANCE=?,
+			CLOSING_BALANCE=?, APPLIED_DATE=?,
+			COMM_ID=?, USER_ID=?, TRANS_BATCH_STATUS_ID=?,
+			TRANS_BATCH_SEQUENCE=?, BANK_ACCOUNT_ID=?
+		WHERE TRANSACTION_BATCH_ID=?</td>
+	<td>TRANSACTION_DATE date
+		OPENING_BALANCE int
+		CLOSING_BALANCE int
+		APPLIED_DATE date
+		COMM_ID int
+		USER_ID varchar
+		TRANS_BATCH_STATUS_ID int
+		TRANS_BATCH_SEQUENCE int
+		BANK_ACCOUNT_ID int
+		TRANSACTION_BATCH_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetTransactionBatchById</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+		INNER JOIN REF_TRANS_BATCH_STATUS TBS ON 
+		(TB.TRANS_BATCH_STATUS_ID = TBS.TRANS_BATCH_STATUS_ID)
+		INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)
+		WHERE TB.TRANSACTION_BATCH_ID=?</td>
+	<td>TRANSACTION_BATCH_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllTransactionBatch</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+		INNER JOIN REF_TRANS_BATCH_STATUS TBS ON 
+		(TB.TRANS_BATCH_STATUS_ID = TBS.TRANS_BATCH_STATUS_ID) 
+		INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllTransactionBatchStatus</td>
+	<td>SELECT * FROM REF_TRANS_BATCH_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllTransactionBatchInstructions</td>
+	<td>SELECT INSTRUCTION_ID, INSTRUCTION_TYPE_NAME, INSTRUCTION_TYPE_ID, 
+			MAX(CASH_AMOUNT) AS CASH, MAX(NARRATIVE) AS NARRATIVE,
+			MAX(DICONDIN_REF) AS DICONDIN_REF, MAX(DICONDIN_MATCHED) AS DICONDIN_MATCHED,
+			MAX(DOC_DATE) AS DOC_DATE, MAX(TRANS_BATCH_MATCH) AS TRANS_BATCH_MATCH			
+		FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END AS CASH_AMOUNT,
+				CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE ''
+				END AS NARRATIVE,
+				CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=33 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE NULL
+					END AS DICONDIN_REF,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE 0
+					END AS DICONDIN_MATCHED,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+						ELSE NULL
+					END AS DOC_DATE,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE NULL
+					END AS TRANS_BATCH_MATCH
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+						AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE I.COMM_ID = ?) V
+			GROUP BY INSTRUCTION_ID, INSTRUCTION_TYPE_NAME, INSTRUCTION_TYPE_ID
+			ORDER BY INSTRUCTION_ID ASC</td>
+	<td>COMM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllPendingDicondinInstructions</td>
+	<td>SELECT * FROM (
+			SELECT 
+				INSTRUCTION_ID, INSTRUCTION_TYPE_NAME, INSTRUCTION_TYPE_ID, 
+				MAX(CASH_AMOUNT) AS CASH, MAX(NARRATIVE) AS NARRATIVE, 
+				MAX(DICONDIN_MATCHED) AS DICONDIN_MATCHED,
+				MAX(DOC_DATE) AS DOC_DATE, MAX(TRANS_BATCH_MATCH) AS TRANS_BATCH_MATCH
+			FROM (
+				SELECT 
+					I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE 0 
+					END AS CASH_AMOUNT,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+						ELSE NULL
+					END AS NARRATIVE,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE 0
+					END AS DICONDIN_MATCHED,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+						ELSE NULL
+					END AS DOC_DATE,
+					CASE 
+						WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+						ELSE NULL
+					END AS TRANS_BATCH_MATCH
+				FROM INSTRUCTION I 
+					INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+					INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+					INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+						(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+						AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+					INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+				WHERE I.COMM_ID<>? AND RIT.INSTRUCTION_TYPE_ID =113
+			) V
+			GROUP BY INSTRUCTION_ID, INSTRUCTION_TYPE_NAME, INSTRUCTION_TYPE_ID
+		) W WHERE (DOC_DATE BETWEEN ? AND ?) AND (DICONDIN_MATCHED=0) AND CASH>0</td>
+	<td>COMM_ID int
+		START_TRANSACTION_DATE date
+		END_TRANSACTION_DATE date</td>
+</tr>
+<tr>
+	<td>qCore_GetAllPendingInstructions</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END) AS CASH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS NARRATIVE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE 0
+				END) AS DICONDIN_MATCHED,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+					ELSE NULL
+				END) AS DOC_DATE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS TRANS_BATCH_MATCH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=44 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_SORT_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=43 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_NUMBER					
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE I.COMM_ID<>? AND RIT.INSTRUCTION_TYPE_ID =?
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID
+		) W 
+		WHERE (DICONDIN_MATCHED=0) AND (CASH>0 AND CASH IS NOT NULL)</td>
+	<td>COMM_ID int
+		INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllPendingInstructionsByBankAccount</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END) AS CASH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS NARRATIVE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE 0
+				END) AS DICONDIN_MATCHED,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+					ELSE NULL
+				END) AS DOC_DATE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS TRANS_BATCH_MATCH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=44 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_SORT_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=43 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_NUMBER					
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE I.COMM_ID<>? AND RIT.INSTRUCTION_TYPE_ID =?
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID
+		) W 
+		WHERE (DICONDIN_MATCHED=0) AND (CASH>0 AND CASH IS NOT NULL) 
+		AND DEST_BANK_ACCOUNT_NUMBER=? AND DEST_SORT_CODE=?</td>
+	<td>COMM_ID int
+		INSTRUCTION_TYPE_ID int
+		DEST_BANK_ACCOUNT_NUMBER varchar2
+		DEST_SORT_CODE varchar2</td>
+</tr>
+<tr>
+	<td>qCore_GetUnprocessedTransactionBatchByDate</td>
+	<td>SELECT * FROM DOCMETA DM 
+		INNER JOIN REVISIONS R ON (DM.DID = R.DID)
+		WHERE R.DDOCTYPE = 'TransactionBatch' AND R.DREVRANK=0 AND DM.XPROCESSDATE BETWEEN ? AND ?
+		AND DM.XSTATUS = 'Pending'</td>
+	<td>START_TRANSACTION_DATE date
+		END_TRANSACTION_DATE date</td>
+</tr>	
+<tr>
+	<td>qCore_GetUnprocessedTransactionBatch</td>
+	<td>SELECT * FROM DOCMETA DM 
+		INNER JOIN REVISIONS R ON (DM.DID = R.DID)
+		WHERE R.DDOCTYPE = 'TransactionBatch' AND R.DREVRANK=0 
+		AND DM.XSTATUS = 'Pending'
+		ORDER BY xProcessDate, xFund, xAmount</td>
+	<td></td>
+</tr>	
+
+<tr>
+	<td>qCore_GetTransactionBatchByStatusAndDate</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+		INNER JOIN REF_TRANS_BATCH_STATUS TBS ON 
+		(TB.TRANS_BATCH_STATUS_ID = TBS.TRANS_BATCH_STATUS_ID)
+		INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)
+		WHERE TB.TRANSACTION_DATE=? AND TB.TRANS_BATCH_STATUS_ID=?</td>
+	<td>TRANSACTION_DATE date
+		TRANS_BATCH_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetTransactionBatchByStatusId</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+		INNER JOIN REF_TRANS_BATCH_STATUS TBS ON 
+		(TB.TRANS_BATCH_STATUS_ID = TBS.TRANS_BATCH_STATUS_ID)
+		INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)
+		WHERE TB.TRANS_BATCH_STATUS_ID=?</td>
+	<td>TRANS_BATCH_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetTransactionBatchByParams</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+		INNER JOIN REF_TRANS_BATCH_STATUS TBS ON (TB.TRANS_BATCH_STATUS_ID = TBS.TRANS_BATCH_STATUS_ID)
+		INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)
+		INNER JOIN COMM ON (TB.COMM_ID=COMM.COMM_ID) 
+		WHERE TB.TRANS_BATCH_SEQUENCE=? AND TB.BANK_ACCOUNT_ID=? AND (TB.TRANSACTION_DATE BETWEEN ? AND ?)</td>
+	<td>TRANS_BATCH_SEQUENCE int
+		BANK_ACCOUNT_ID int
+		START_TRANSACTION_DATE date
+		END_TRANSACTION_DATE date</td>
+</tr>
+<tr>
+	<td>qCore_GetLastTransactionBatchByParams</td>
+	<td>SELECT * FROM TRANSACTION_BATCH TB
+	    INNER JOIN BANK_ACCOUNT BA ON (TB.BANK_ACCOUNT_ID = BA.BANK_ACCOUNT_ID)
+		WHERE TB.TRANSACTION_DATE<? AND TB.BANK_ACCOUNT_ID=? 
+		ORDER BY TB.TRANSACTION_DATE, TB.TRANS_BATCH_SEQUENCE DESC</td>
+	<td>TRANSACTION_DATE date
+		BANK_ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllPendingTransBatchInstructionsByType</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID, I.COMM_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END) AS CASH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS NARRATIVE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE 0
+				END) AS DICONDIN_MATCHED,
+				MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=33 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DICONDIN_REF,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+					ELSE NULL
+				END) AS DOC_DATE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=40 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS FUND_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS TRANS_BATCH_MATCH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=44 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_SORT_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=43 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_NUMBER	
+			FROM INSTRUCTION I 
+			INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+			INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+			INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+				(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+				AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE RIT.INSTRUCTION_TYPE_ID=?
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID, I.COMM_ID
+		) W WHERE (DICONDIN_MATCHED=0 AND DICONDIN_REF IS NULL) AND (CASH IS NOT NULL AND CASH>0)
+		ORDER BY COMM_ID ASC</td>
+	<td>INSTRUCTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllPendingTransBatchInstructionsByTypeAndFund</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID, I.COMM_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END) AS CASH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=35 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS NARRATIVE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=34 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE 0
+				END) AS DICONDIN_MATCHED,
+				MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=33 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DICONDIN_REF,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=16 THEN IDA.INSTRUCTION_DATE_VALUE
+					ELSE NULL
+				END) AS DOC_DATE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=40 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS FUND_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=37 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS TRANS_BATCH_MATCH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=44 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_SORT_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=43 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_NUMBER	
+			FROM INSTRUCTION I 
+			INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+			INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+			INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+				(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+				AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE RIT.INSTRUCTION_TYPE_ID=?
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID, I.COMM_ID
+		) W WHERE (DICONDIN_MATCHED=0 AND DICONDIN_REF IS NULL) AND FUND_CODE=? AND (CASH IS NOT NULL AND CASH>0)
+		ORDER BY COMM_ID ASC</td>
+	<td>INSTRUCTION_TYPE_ID int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsPendingIATSweep</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, I.COMM_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL 
+				END) AS CASH_AMOUNT,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=39 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS IAT_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=40 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_FUND_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=1 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_ID
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE (RIT.INSTRUCTION_TYPE_ID=14 OR RIT.INSTRUCTION_TYPE_ID=49)
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID, I.COMM_ID
+		) W WHERE (IAT_ID IS NULL) AND DEST_FUND_CODE=?</td>
+	<td>DEST_FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsForIATSweepId</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS CASH,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=39 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS IAT_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=38 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS FUND_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=7 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_ID,	
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=2 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS BANK_ACCOUNT_ID
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE (RIT.INSTRUCTION_TYPE_ID=14 OR RIT.INSTRUCTION_TYPE_ID=49)  
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID
+		) W WHERE IAT_ID=?</td>
+	<td>IAT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllIATSweep</td>
+	<td>select i.instruction_id, i.date_added, i.last_updated_by,
+		MAX(
+			CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL 
+			END
+		) AS CASH_AMOUNT,
+		MAX(
+			CASE 
+			WHEN RID.INSTRUCTION_DATA_ID=38 THEN IDA.INSTRUCTION_STRING_VALUE
+			ELSE NULL
+			END
+		) AS FUND_CODE
+		from applicable_instruction_data aid
+		inner join instruction_data_applied ida on (aid.applicable_instruction_data_id = ida.applicable_instruction_data_id)
+		inner join ref_instruction_data rid on (aid.instruction_data_id = rid.instruction_data_id)
+		inner join instruction i on (ida.instruction_id = i.instruction_id)
+		where aid.instruction_type_id = 124
+		group by i.instruction_id, i.date_added, i.last_updated_by
+		order by i.instruction_id desc</td>
+	<td></td>
+</tr>	
+<tr>
+	<td>qCore_GetIATInstruction</td>
+	<td>select i.instruction_id, i.date_added, i.last_updated_by,
+		MAX(
+			CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL 
+			END
+		) AS CASH_AMOUNT,
+		MAX(
+			CASE 
+			WHEN RID.INSTRUCTION_DATA_ID=38 THEN IDA.INSTRUCTION_STRING_VALUE
+			ELSE NULL
+			END
+		) AS FUND_CODE
+		from applicable_instruction_data aid
+		inner join instruction_data_applied ida on (aid.applicable_instruction_data_id = ida.applicable_instruction_data_id)
+		inner join ref_instruction_data rid on (aid.instruction_data_id = rid.instruction_data_id)
+		inner join instruction i on (ida.instruction_id = i.instruction_id)
+		where aid.instruction_type_id = 124 and i.instruction_id=?
+		group by i.instruction_id, i.date_added, i.last_updated_by
+		order by i.instruction_id desc</td>
+	<td>IAT_ID int</td>
+</tr>	
+<tr>
+	<td>qCore_GetMatchedTransactionsForDicondin</td>
+	<td>SELECT * FROM (
+			SELECT 
+				I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=33 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DICONDIN_REF				
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE (RIT.INSTRUCTION_TYPE_ID=14 OR RIT.INSTRUCTION_TYPE_ID=49)  
+			GROUP BY I.INSTRUCTION_ID, RIT.INSTRUCTION_TYPE_NAME, RIT.INSTRUCTION_TYPE_ID
+		) W WHERE DICONDIN_REF=?</td>
+	<td>DICONDIN_REF int</td>
+</tr>	
+<tr>
+	<td>qCore_GetAllAuthStatuses</td>
+	<td>SELECT * FROM REF_AUTH_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetDocStorageAttributes</td>
+	<td>SELECT xPartitionId, xStorageRule, xFolderName FROM DocMeta dm 
+		INNER JOIN Revisions r ON (r.dID = dm.dID AND r.dRevRank = 0)
+		WHERE r.dDocName = ?
+	</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>qCore_PossibleIATSweep</td>
+	<td>SELECT DEST_FUND_CODE, SUM(CASH_AMOUNT) AS TOTAL FROM (
+			SELECT 
+				I.INSTRUCTION_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE 0 
+				END) AS CASH_AMOUNT,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=39 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS IAT_ID,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=40 THEN IDA.INSTRUCTION_STRING_VALUE
+					ELSE NULL
+				END) AS DEST_FUND_CODE,
+				MAX(CASE 
+					WHEN RID.INSTRUCTION_DATA_ID=7 THEN IDA.INSTRUCTION_NUM_VALUE
+					ELSE NULL
+				END) AS DEST_BANK_ACCOUNT_ID
+			FROM INSTRUCTION I 
+				INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+				INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+				INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+					(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+					AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+				INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			WHERE (RIT.INSTRUCTION_TYPE_ID=14 OR RIT.INSTRUCTION_TYPE_ID=49)
+			GROUP BY I.INSTRUCTION_ID
+		) W WHERE (IAT_ID IS NULL) 
+		GROUP BY DEST_FUND_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllHelpMapping</td>
+	<td>SELECT * FROM HELP_MAPPING</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetHelpMappingByHelpCode</td>
+	<td>SELECT * FROM HELP_MAPPING
+		WHERE HELP_CODE=?</td>
+	<td>HELP_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateHelpMapping</td>
+	<td>UPDATE HELP_MAPPING
+		SET DOCNAME=?, PAGE_NUMBER=? WHERE HELP_CODE=?</td>
+	<td>DOCNAME varchar
+		PAGE_NUMBER int
+		HELP_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_AddHelpMapping</td>
+	<td>INSERT INTO HELP_MAPPING (HELP_CODE,DOCNAME,PAGE_NUMBER)
+		VALUES (?,?,?)</td>
+	<td>HELP_CODE varchar
+		DOCNAME varchar
+		PAGE_NUMBER int</td>
+</tr>
+<tr>
+	<td>qCore_DeleteHelpMapping</td>
+	<td>DELETE FROM HELP_MAPPING
+		WHERE HELP_CODE=?</td>
+	<td>HELP_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetAllSDU</td>
+	<td>SELECT * FROM REF_STATIC_DATA_UPDATE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllSDUApplied</td>
+	<td>SELECT * FROM STATIC_DATA_UPDATE_APPLIED
+		ORDER BY EXECUTION_ORDER ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetEntityIdByClientNumberAndFund</td>
+	<td>SELECT ORGANISATION_ID FROM V_ACCOUNT_EXTENDED_CLIENT 
+		WHERE CLIENT_NUMBER = ? AND FUND_CODE = ?
+		GROUP BY ORGANISATION_ID</td>
+	<td>CLIENT_NUMBER int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qCore_AddEnrolmentAttributeApplied</td>
+	<td>INSERT INTO ENROLMENT_ATTRIBUTE_APPLIED 
+		VALUES (?,?,?,?)</td>
+	<td>ENROLATTRAPPL_ID int
+		APPLENROLATTR_ID int
+		CAMPAIGN_ENROLMENT_ID int
+		ATTRIBUTE_VALUE</td>
+</tr>
+<tr>
+	<td>qCore_GetAllEnrolmentAttributes</td>
+	<td>SELECT * FROM REF_ENROLMENT_ATTRIBUTE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllApplicableEnrolmentAttributes</td>
+	<td>SELECT * FROM APPLICABLE_ENROLMENT_ATTR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableEnrolmentAttributesByCampaignId</td>
+	<td>SELECT * FROM APPLICABLE_ENROLMENT_ATTR
+		WHERE CAMPAIGN_ID = ?</td>
+	<td>CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateEnrolmentAttributeApplied</td>
+	<td>UPDATE ENROLMENT_ATTRIBUTE_APPLIED 
+		SET ATTRIBUTE_VALUE = ? WHERE ENROLATTRAPPL_ID = ?</td>
+	<td>ATTRIBUTE_VALUE
+		ENROLATTRAPPL_ID int</td>
+</tr>
+<tr>
+	<td>qCore_RemoveEnrolmentAttributeApplied</td>
+	<td>DELETE FROM ENROLMENT_ATTRIBUTE_APPLIED 
+		WHERE ENROLATTRAPPL_ID = ?</td>
+	<td>ENROLATTRAPPL_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetEnrolmentAttributeAppliedByEnrolmentId</td>
+	<td>SELECT * FROM ENROLMENT_ATTRIBUTE_APPLIED
+		WHERE CAMPAIGN_ENROLMENT_ID = ?</td>
+	<td>CAMPAIGN_ENROLMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetEnrolmentAttributeApplied</td>
+	<td>SELECT * FROM ENROLMENT_ATTRIBUTE_APPLIED
+		WHERE ENROLATTRAPPL_ID = ?</td>
+	<td>ENROLATTRAPPL_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetSubscription</td>
+	<td>SELECT * FROM CCLA.SUBSCRIPTION
+		WHERE SUBSCRIPTION_ID = ?</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetSubscriptionByPaymentRef</td>
+	<td>SELECT * FROM CCLA.SUBSCRIPTION
+		WHERE SUBSCRIPTION_PAYMENT_REF = ?</td>
+	<td>SUBSCRIPTION_PAYMENT_REF varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetAllSubscriptionsByAccountId</td>
+	<td>SELECT subs.*, ss.SUBSCRIPTION_STATUS_NAME FROM CCLA.SUBSCRIPTION subs
+		INNER JOIN REF_SUBSCRIPTION_STATUS ss
+		ON (subs.SUBSCRIPTION_STATUS_ID = ss.SUBSCRIPTION_STATUS_ID)
+		WHERE subs.ACCOUNT_ID = ?
+		ORDER BY subs.DATE_ADDED</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddSubscription</td>
+	<td>INSERT INTO SUBSCRIPTION
+		(SUBSCRIPTION_ID, ACCOUNT_ID, SUBSCRIPTION_STATUS_ID,
+		SUBSCRIPTION_AMOUNT, SUBSCRIPTION_DATE, SUBSCRIPTION_PAYMENT_REF,
+		DATE_FORM_RECEIVED, DATE_LATEST_CASH_PROCESSED, DATE_COMPLETED,
+		START_DATE, END_DATE,
+		PRODUCT_ID,
+		DATE_ADDED, LAST_UPDATED, LAST_UPDATED_BY)
+		VALUES
+		(?,?,?,
+		?,?,?,
+		?,?,?,
+		?,?,
+		?,
+		SYSDATE,SYSDATE,?)</td>
+	<td>SUBSCRIPTION_ID int
+		ACCOUNT_ID int
+		SUBSCRIPTION_STATUS_ID int
+		SUBSCRIPTION_AMOUNT int
+		SUBSCRIPTION_DATE date
+		SUBSCRIPTION_PAYMENT_REF varchar
+		DATE_FORM_RECEIVED date
+		DATE_LATEST_CASH_PROCESSED date
+		DATE_COMPLETED date
+		START_DATE date
+		END_DATE date
+		PRODUCT_ID int
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateSubscription</td>
+	<td>UPDATE SUBSCRIPTION SET 
+		ACCOUNT_ID=?, SUBSCRIPTION_STATUS_ID=?,
+		SUBSCRIPTION_AMOUNT=?, SUBSCRIPTION_DATE=?, SUBSCRIPTION_PAYMENT_REF=?,
+		DATE_FORM_RECEIVED=?, DATE_LATEST_CASH_PROCESSED=?, DATE_COMPLETED=?,
+		START_DATE=?, END_DATE=?, CLIENT_CONFIRMED=?,
+		PRODUCT_ID=?,
+		LAST_UPDATED=SYSDATE, LAST_UPDATED_BY=?
+		WHERE SUBSCRIPTION_ID = ?</td>
+	<td>ACCOUNT_ID int
+		SUBSCRIPTION_STATUS_ID int
+		SUBSCRIPTION_AMOUNT int
+		SUBSCRIPTION_DATE date
+		SUBSCRIPTION_PAYMENT_REF varchar
+		DATE_FORM_RECEIVED date
+		DATE_LATEST_CASH_PROCESSED date
+		DATE_COMPLETED date
+		START_DATE date
+		END_DATE date
+		CLIENT_CONFIRMED int
+		PRODUCT_ID int
+		LAST_UPDATED_BY varchar
+		SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetContribution</td>
+	<td>SELECT * FROM CONTRIBUTION WHERE CONTRIBUTION_ID = ?</td>
+	<td>CONTRIBUTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionsBySubscriptionId</td>
+	<td>SELECT * FROM CONTRIBUTION
+		WHERE SUBSCRIPTION_ID = ?
+		ORDER BY DATE_ADDED</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionsBySubscriptionIdExtended</td>
+	<td>SELECT don.*, 
+	
+		ttlaAllocs.NUM_TTLA_ALLOCS, 
+		ttlaAllocs.SUM_TTLA_ALLOCS,
+		ttlaAllocs.SUM_TTLA_GOV_AMT_EXPECTED,
+		ttlaAllocs.SUM_TTLA_GOV_AMT_ACTUAL,
+		
+		assetAllocs.NUM_ASSET_ALLOCS,
+		assetAllocs.SUM_ASSET_AMOUNTS,
+		assetAllocs.SUM_ASSET_GOV_AMT_EXPECTED,
+		assetAllocs.SUM_ASSET_GOV_AMT_ACTUAL
+		
+		FROM CONTRIBUTION don
+		
+		LEFT JOIN (
+			SELECT COUNT(*) AS NUM_TTLA_ALLOCS, 
+			SUM(INCOME_ALLOCATION_PERCENT) AS SUM_TTLA_ALLOCS, 
+			SUM(INCOME_ALLOCATION_AMOUNT) AS SUM_TTLA_AMOUNTS,
+			SUM(GOV_RECOVERY_AMT_EXPECTED) AS SUM_TTLA_GOV_AMT_EXPECTED,
+			SUM(GOV_RECOVERY_AMT_ACTUAL) AS SUM_TTLA_GOV_AMT_ACTUAL,
+			CONTRIBUTION_ID FROM CONTRIBUTION_TTLA_ALLOCATION
+			GROUP BY CONTRIBUTION_ID
+		) ttlaAllocs ON (ttlaAllocs.CONTRIBUTION_ID = don.CONTRIBUTION_ID) 
+		
+		LEFT JOIN (
+			SELECT COUNT(*) AS NUM_ASSET_ALLOCS, 
+			SUM(CONTRIBUTION_PERCENT) AS SUM_ASSET_ALLOCS, 
+			SUM(CONTRIBUTION_AMOUNT) AS SUM_ASSET_AMOUNTS,
+			SUM(GOV_RECOVERY_AMT_EXPECTED) AS SUM_ASSET_GOV_AMT_EXPECTED,
+			SUM(GOV_RECOVERY_AMT_ACTUAL) AS SUM_ASSET_GOV_AMT_ACTUAL,
+			CONTRIBUTION_ID FROM CONTRIBUTION_ASSET_ALLOCATION
+			GROUP BY CONTRIBUTION_ID
+		) assetAllocs ON (assetAllocs.CONTRIBUTION_ID = don.CONTRIBUTION_ID) 
+		
+		WHERE SUBSCRIPTION_ID = ?
+		ORDER BY DATE_ADDED</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddContribution</td>
+	<td>INSERT INTO CONTRIBUTION 
+		(CONTRIBUTION_ID, SUBSCRIPTION_ID, CONTRIBUTOR_ID, BENEFACTOR_ID,
+		CONTRIBUTION_TYPE_ID, CONTRIBUTION_PAYMENT_REF, CONTRIBUTION_AMOUNT, CONTRIBUTION_PERCENT,
+		MATCHED_CONTRIBUTION_ID, RPI_ID, PRODUCT_ID, CAMPAIGN_ID, FORM_ID,
+		DATE_LATEST_CASH_PROCESSED, DATE_COMPLETED, START_DATE, END_DATE,
+		DATE_ADDED, LAST_UPDATED, LAST_UPDATED_BY)
+		
+		VALUES
+		
+		(?,?,?,?,
+		?,?,?,?,
+		?,?,?,?,?,
+		?,?,?,?,
+		SYSDATE,SYSDATE,?)</td>
+	<td>CONTRIBUTION_ID int
+		SUBSCRIPTION_ID int
+		CONTRIBUTOR_ID int
+		BENEFACTOR_ID int
+		CONTRIBUTION_TYPE_ID int
+		CONTRIBUTION_PAYMENT_REF varchar
+		CONTRIBUTION_AMOUNT int
+		CONTRIBUTION_PERCENT int
+		MATCHED_CONTRIBUTION_ID int
+		RPI_ID int
+		PRODUCT_ID int
+		CAMPAIGN_ID int
+		FORM_ID int
+		DATE_LATEST_CASH_PROCESSED date
+		DATE_COMPLETED date
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qCore_UpdateContribution</td>
+	<td>UPDATE CONTRIBUTION SET
+		SUBSCRIPTION_ID=?, CONTRIBUTOR_ID=?, BENEFACTOR_ID=?,
+		CONTRIBUTION_TYPE_ID=?, CONTRIBUTION_PAYMENT_REF=?, CONTRIBUTION_AMOUNT=?, CONTRIBUTION_PERCENT=?,
+		MATCHED_CONTRIBUTION_ID=?, RPI_ID=?, PRODUCT_ID=?, CAMPAIGN_ID=?, FORM_ID=?,
+		DATE_LATEST_CASH_PROCESSED=?, DATE_COMPLETED=?, START_DATE=?, END_DATE=?,
+		LAST_UPDATED=SYSDATE, LAST_UPDATED_BY=?
+		WHERE CONTRIBUTION_ID=?</td>
+	<td>SUBSCRIPTION_ID int
+		CONTRIBUTOR_ID int
+		BENEFACTOR_ID int
+		CONTRIBUTION_TYPE_ID int
+		CONTRIBUTION_PAYMENT_REF varchar
+		CONTRIBUTION_AMOUNT int
+		CONTRIBUTION_PERCENT int
+		MATCHED_CONTRIBUTION_ID int
+		RPI_ID int
+		PRODUCT_ID int
+		CAMPAIGN_ID int
+		FORM_ID int
+		DATE_LATEST_CASH_PROCESSED date
+		DATE_COMPLETED date
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar
+		CONTRIBUTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_RemoveContribution</td>
+	<td>DELETE FROM CONTRIBUTION
+		WHERE CONTRIBUTION_ID = ?</td>
+	<td>CONTRIBUTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetContributionAssetAllocation</td>
+	<td>SELECT * FROM CONTRIBUTION_ASSET_ALLOCATION 
+		WHERE CONTRIB_ASSET_ALLOCATION_ID = ?</td>
+	<td>CONTRIB_ASSET_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionAssetAllocationsBySubscriptionId</td>
+	<td>SELECT alloc.* FROM CONTRIBUTION_ASSET_ALLOCATION alloc
+		INNER JOIN CONTRIBUTION contrib ON (alloc.CONTRIBUTION_ID = contrib.CONTRIBUTION_ID)
+		WHERE contrib.SUBSCRIPTION_ID = ?</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionAssetAllocationsByContributionId</td>
+	<td>SELECT alloc.* FROM CONTRIBUTION_ASSET_ALLOCATION alloc
+		WHERE CONTRIBUTION_ID = ?</td>
+	<td>CONTRIBUTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetContributionAssetAllocationByValues</td>
+	<td>SELECT * FROM CONTRIBUTION_ASSET_ALLOCATION
+		WHERE CONTRIBUTION_ID = ? 
+		AND (FUND_CODE = ? AND ACCOUNT_ID IS NULL)
+		OR (FUND_CODE IS NULL AND ACCOUNT_ID = ?)</td>
+	<td>CONTRIBUTION_ID int
+		FUND_CODE varchar
+		ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddContributionAssetAllocation</td>
+	<td>Insert into CONTRIBUTION_ASSET_ALLOCATION (
+			CONTRIB_ASSET_ALLOCATION_ID,
+			CONTRIBUTION_ID,FUND_CODE,ACCOUNT_ID,
+			CONTRIBUTION_AMOUNT,CONTRIBUTION_PERCENT,
+			START_DATE, END_DATE,
+			DATE_ADDED,LAST_UPDATED,LAST_UPDATED_BY,
+			GOV_RECOVERY_AMT_EXPECTED, GOV_RECOVERY_AMT_ACTUAL,
+			GOV_MATCH_RATE_ID
+		) 
+		
+		VALUES (
+			?,?,
+			?,?,
+			?,?,
+			?,?,
+			SYSDATE,SYSDATE,?,
+			?,?,
+			?)
+	</td>
+	<td>CONTRIB_ASSET_ALLOCATION_ID int
+		CONTRIBUTION_ID int
+		FUND_CODE varchar
+		ACCOUNT_ID int
+		CONTRIBUTION_AMOUNT int
+		CONTRIBUTION_PERCENT int
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar
+		GOV_RECOVERY_AMT_EXPECTED int
+		GOV_RECOVERY_AMT_ACTUAL int
+		GOV_MATCH_RATE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_RemoveContributionAssetAllocation</td>
+	<td>DELETE FROM CONTRIBUTION_ASSET_ALLOCATION
+		WHERE CONTRIB_ASSET_ALLOCATION_ID=?</td>
+	<td>CONTRIB_ASSET_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateContributionAssetAllocation</td>
+	<td>UPDATE CONTRIBUTION_ASSET_ALLOCATION SET
+		CONTRIBUTION_ID=?,FUND_CODE=?,ACCOUNT_ID=?,
+		CONTRIBUTION_AMOUNT=?,CONTRIBUTION_PERCENT=?,
+		START_DATE=?,END_DATE=?,
+		LAST_UPDATED=SYSDATE,LAST_UPDATED_BY=?,
+		GOV_RECOVERY_AMT_EXPECTED=?, GOV_RECOVERY_AMT_ACTUAL=?,
+		GOV_MATCH_RATE_ID=?
+		WHERE CONTRIB_ASSET_ALLOCATION_ID = ?</td>
+	<td>CONTRIBUTION_ID int
+		FUND_CODE varchar
+		ACCOUNT_ID int
+		CONTRIBUTION_AMOUNT int
+		CONTRIBUTION_PERCENT int
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar
+		GOV_RECOVERY_AMT_EXPECTED int
+		GOV_RECOVERY_AMT_ACTUAL int
+		GOV_MATCH_RATE_ID int
+		CONTRIB_ASSET_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetContributionTTLAAllocation</td>
+	<td>SELECT * FROM CONTRIBUTION_TTLA_ALLOCATION 
+		WHERE CONTRIB_TTLA_ALLOCATION_ID = ?</td>
+	<td>CONTRIB_TTLA_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionTTLAAllocationsByContributionId</td>
+	<td>SELECT * FROM CONTRIBUTION_TTLA_ALLOCATION
+		WHERE CONTRIBUTION_ID = ?
+		ORDER BY TTLA_ORG_ID</td>
+	<td>CONTRIBUTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddContributionTTLAAllocation</td>
+	<td>INSERT INTO CONTRIBUTION_TTLA_ALLOCATION
+		(CONTRIB_TTLA_ALLOCATION_ID,CONTRIBUTION_ID,TTLA_ORG_ID,PRODUCT_ID,
+		INCOME_ALLOCATION_AMOUNT,INCOME_ALLOCATION_PERCENT,
+		GOV_MATCH_LIMIT_ID,GOV_MATCH_RATE_ID,GOV_RECOVERY_AMT_EXPECTED,GOV_RECOVERY_AMT_ACTUAL,
+		START_DATE,END_DATE,
+		DATE_ADDED,LAST_UPDATED,LAST_UPDATED_BY)
+		VALUES 
+		(?,?,?,?,
+		?,?,
+		?,?,?,?,
+		?,?,
+		SYSDATE,SYSDATE,?)</td>
+	<td>CONTRIB_TTLA_ALLOCATION_ID int
+		CONTRIBUTION_ID int
+		TTLA_ORG_ID int
+		PRODUCT_ID int
+		INCOME_ALLOCATION_AMOUNT int
+		INCOME_ALLOCATION_PERCENT int
+		GOV_MATCH_LIMIT_ID int
+		GOV_MATCH_RATE_ID int
+		GOV_RECOVERY_AMT_EXPECTED int
+		GOV_RECOVERY_AMT_ACTUAL int
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qCore_RemoveContributionTTLAAllocation</td>
+	<td>DELETE FROM CONTRIBUTION_TTLA_ALLOCATION
+		WHERE CONTRIB_TTLA_ALLOCATION_ID=?</td>
+	<td>CONTRIB_TTLA_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateContributionTTLAAllocation</td>
+	<td>UPDATE CONTRIBUTION_TTLA_ALLOCATION SET
+		CONTRIBUTION_ID=?,TTLA_ORG_ID=?,PRODUCT_ID=?,
+		INCOME_ALLOCATION_AMOUNT=?,INCOME_ALLOCATION_PERCENT=?,
+		GOV_MATCH_LIMIT_ID=?,GOV_MATCH_RATE_ID=?,GOV_RECOVERY_AMT_EXPECTED=?,GOV_RECOVERY_AMT_ACTUAL=?,
+		START_DATE=?,END_DATE=?,
+		LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?
+		WHERE CONTRIB_TTLA_ALLOCATION_ID = ?</td>
+	<td>CONTRIBUTION_ID int
+		TTLA_ORG_ID int
+		PRODUCT_ID int
+		INCOME_ALLOCATION_AMOUNT int
+		INCOME_ALLOCATION_PERCENT int
+		GOV_MATCH_LIMIT_ID int
+		GOV_MATCH_RATE_ID int
+		GOV_RECOVERY_AMT_EXPECTED int
+		GOV_RECOVERY_AMT_ACTUAL int
+		START_DATE date
+		END_DATE date
+		LAST_UPDATED_BY varchar
+		CONTRIB_TTLA_ALLOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllFundsEligibleForCommunityFirst</td>
+	<td>SELECT * FROM FUND WHERE COMMUNITY_FIRST_IS_ELIGIBLE = 1
+		ORDER BY FUND_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionTypes</td>
+	<td>SELECT * FROM REF_CONTRIBUTION_TYPE
+		ORDER BY CONTRIBUTION_TYPE_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllContributionTypesByProduct</td>
+	<td>SELECT ct.* FROM REF_CONTRIBUTION_TYPE ct
+		INNER JOIN REF_APP_PROD_CONTRIB_TYPES apct 
+		ON (ct.CONTRIBUTION_TYPE_ID = apct.CONTRIBUTION_TYPE_ID)
+		WHERE apct.PRODUCT_ID = ?
+		ORDER BY ct.CONTRIBUTION_TYPE_ID</td>
+	<td>PRODUCT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllSubscriptionStatuses</td>
+	<td>SELECT * FROM REF_SUBSCRIPTION_STATUS
+		ORDER BY SUBSCRIPTION_STATUS_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllRetailPriceIndexes</td>
+	<td>SELECT * FROM REF_RPI
+		ORDER BY RPI_START_DATE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllGovMatchRates</td>
+	<td>SELECT * FROM REF_GOV_MATCH_RATE
+		ORDER BY GOV_MATCH_START_DATE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllProducts</td>
+	<td>SELECT * FROM REF_PRODUCT
+		ORDER BY PRODUCT_NAME</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllApplicableProductAssetInvestments</td>
+	<td>SELECT * FROM REF_APP_PROD_ASSET_INVESTMENT
+		ORDER BY APP_PROD_ASSET_INVEST_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetApplicableFundsByProductId</td>
+	<td>SELECT f.* FROM FUND f INNER JOIN
+		REF_APP_PROD_ASSET_INVESTMENT applInv ON (f.FUND_CODE = applInv.FUND_CODE)
+		WHERE applInv.PRODUCT_ID = ?
+		ORDER BY f.FUND_CODE</td>
+	<td>PRODUCT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllGovMatchRatesByContributionType</td>
+	<td>SELECT * FROM REF_GOV_MATCH_RATE
+		WHERE CONTRIBUTION_TYPE_ID = ?
+		ORDER BY GOV_MATCH_START_DATE</td>
+	<td>CONTRIBUTION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllTTLAOrganisations</td>
+	<td>SELECT * FROM ORGANISATION
+		WHERE CATEGORY_ID = 1056
+		ORDER BY ORGANISATION_NAME</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllEntitiesByCategoryId</td>
+	<td>SELECT * FROM ORGANISATION
+		WHERE CATEGORY_ID = ?
+		ORDER BY ORGANISATION_NAME ASC</td>
+	<td>CATEGORY_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetFormByTypeAndSubscriptionWithReturnedDoc</td>
+	<td>SELECT * FROM FORM WHERE FORM_TYPE_ID=? 
+		AND SUBSCRIPTION_ID=? 
+		AND RET_DOC_GUID IS NOT NULL 
+		ORDER BY DATE_ADDED DESC</td>
+	<td>FORM_TYPE_ID int
+		SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestFormBySubscriptionId</td>
+	<td>SELECT f.*, rfs.FORM_STATUS_NAME, rft.FORM_TYPE_NAME, rft.FORM_TYPE_SHORTNAME FROM FORM f
+		INNER JOIN REF_FORM_STATUS RFS ON (F.FORM_STATUS_ID = RFS.FORM_STATUS_ID)
+		INNER JOIN REF_FORM_TYPE RFT ON (F.FORM_TYPE_ID = RFT.FORM_TYPE_ID)
+		
+		INNER JOIN (
+		  SELECT SUBSCRIPTION_ID, MAX(FORM_ID) AS FORM_ID FROM FORM
+		  WHERE SUBSCRIPTION_ID = ?
+		  GROUP BY SUBSCRIPTION_ID
+		) latestSubForm ON (f.FORM_ID = latestSubForm.FORM_ID)</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestFormDataByTypeOrgAndCalculationDate</td>
+	<td>SELECT f.*, rfs.FORM_STATUS_NAME, rft.FORM_TYPE_NAME, rft.FORM_TYPE_SHORTNAME FROM FORM f
+		INNER JOIN REF_FORM_STATUS RFS ON (F.FORM_STATUS_ID = RFS.FORM_STATUS_ID)
+		INNER JOIN REF_FORM_TYPE RFT ON (F.FORM_TYPE_ID = RFT.FORM_TYPE_ID)
+		
+		INNER JOIN (
+		  SELECT MAX(FORM_ID) AS FORM_ID FROM FORM
+		  WHERE FORM_TYPE_ID = ? AND ORGANISATION_ID = ? AND TRUNC(CALCULATION_DATE) = TRUNC(?)
+		  GROUP BY FORM_TYPE_ID, ORGANISATION_ID, TRUNC(CALCULATION_DATE)
+		) latestForm ON (f.FORM_ID = latestForm.FORM_ID)</td>
+	<td>FORM_TYPE_ID int
+		ORGANISATION_ID int
+		CALCULATION_DATE date</td>
+</tr>
+<tr>
+	<td>qCore_GetTotalAssetAllocationsBySubscriptionId</td>
+	<td>SELECT assetAmounts.*, 
+
+	TRIM(TO_CHAR((assetAmounts.ASSET_AMOUNT/subs.SUBSCRIPTION_AMOUNT)*100,'990D009999999999')) AS ASSET_PERCENT
+
+	FROM (
+	  SELECT
+		contrib.SUBSCRIPTION_ID,
+			alloc.FUND_CODE,
+		NULL AS ACCOUNT_ID,
+			TRIM(TO_CHAR(SUM(alloc.CONTRIBUTION_AMOUNT), '999999999990D00')) AS ASSET_AMOUNT
+			FROM CONTRIBUTION_ASSET_ALLOCATION alloc
+			INNER JOIN CONTRIBUTION contrib
+			ON (alloc.CONTRIBUTION_ID = contrib.CONTRIBUTION_ID)
+			WHERE contrib.SUBSCRIPTION_ID = ?
+			GROUP BY contrib.SUBSCRIPTION_ID, alloc.FUND_CODE
+	) assetAmounts
+
+	 INNER JOIN SUBSCRIPTION subs 
+	 ON (assetAmounts.SUBSCRIPTION_ID = subs.SUBSCRIPTION_ID)</td>
+	<td>SUBSCRIPTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetCFAccountByFundAndAccType</td>
+	<td>SELECT ACC.* FROM ACCOUNT ACC
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED EAA ON (EAA.ELEMENT_ID = ACC.ACCOUNT_ID)
+		WHERE EAA.ELEMENT_ATTRIBUTE_ID=63 AND ACC.FUND_CODE=? AND ATTRIBUTE_VALUE=?</td>
+	<td>FUND_CODE varchar
+		ATTRIBUTE_VALUE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetOrgsWithAttributeStatus</td>
+	<td>SELECT org.* FROM ORGANISATION org
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED eaa 
+		ON (org.ORGANISATION_ID = eaa.ELEMENT_ID
+			AND eaa.ELEMENT_ATTRIBUTE_ID = ?
+			AND eaa.ATTRIBUTE_STATUS = ?)
+		ORDER BY ORGANISATION_NAME
+	</td>
+	<td>ELEMENT_ATTRIBUTE_ID int
+		ATTRIBUTE_STATUS int</td>
+</tr>
+<tr>
+	<td>qCore_GetAllGeneralLedgers</td>
+	<td>SELECT * FROM REF_GENERAL_LEDGER
+		ORDER BY GL_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllDeptProjectCodes</td>
+	<td>SELECT * FROM REF_DEP_PROJECT_CODES
+		ORDER BY DEP_PROJECT_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetAllCostCentres</td>
+	<td>SELECT * FROM REF_COST_CENTRES
+		ORDER BY COST_CENTRE_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetCommByDocGuid</td>
+	<td>SELECT * FROM COMM WHERE DOC_GUID=?</td>
+	<td>DOC_GUID varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetCommByDocGuidAndOrgId</td>
+	<td>SELECT * FROM COMM WHERE DOC_GUID=? AND ORGANISATION_ID=?</td>
+	<td>DOC_GUID varchar
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_AddInstruction</td>
+	<td>INSERT INTO INSTRUCTION
+		(INSTRUCTION_ID, COMM_ID, INSTRUCTION_TYPE_ID, INSTRUCTION_STATUS_ID, 
+		DEPENDENT_INSTRUCTION_ID, INSTRUCTION_DOC_GUID,
+		PROCESS_DATE, ACTUAL_PROCESS_DATE, SPP_JOB_ID,
+		LAST_UPDATED, DATE_ADDED, LAST_UPDATED_BY,
+		PRIORITY,ORIGINAL_PROCESS_DATE)
+		VALUES 
+			(?,?,?,?,
+			?,?,
+			?,?,?,
+			SYSDATE,SYSDATE,?, 
+			?,?)</td>
+	<td>INSTRUCTION_ID int
+		COMM_ID int
+		INSTRUCTION_TYPE_ID int
+		INSTRUCTION_STATUS_ID int
+		DEPENDENT_INSTRUCTION_ID int
+		INSTRUCTION_DOC_GUID varchar
+		PROCESS_DATE date
+		ACTUAL_PROCESS_DATE date
+		SPP_JOB_ID varchar
+		LAST_UPDATED_BY varchar
+		PRIORITY int
+		ORIGINAL_PROCESS_DATE date</td>
+</tr>
+<tr>
+	<td>qCore_UpdateInstruction</td>
+	<td>update instruction set 
+	COMM_ID = ?,
+	INSTRUCTION_TYPE_ID = ?,
+	INSTRUCTION_STATUS_ID = ?,
+	DEPENDENT_INSTRUCTION_ID = ?,
+	INSTRUCTION_DOC_GUID = ?,
+	PROCESS_DATE = ?,
+	ACTUAL_PROCESS_DATE = ?,
+	SPP_JOB_ID = ?,
+	LAST_UPDATED = SYSDATE,
+	LAST_UPDATED_BY = ?,
+	PRIORITY = ?
+	where INSTRUCTION_ID =?</td>
+	<td>COMM_ID int
+		INSTRUCTION_TYPE_ID int
+		INSTRUCTION_STATUS_ID int
+		DEPENDENT_INSTRUCTION_ID int
+		INSTRUCTION_DOC_GUID varchar
+		PROCESS_DATE date
+		ACTUAL_PROCESS_DATE date
+		SPP_JOB_ID varchar
+		LAST_UPDATED_BY varchar
+		PRIORITY int
+		INSTRUCTION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionByDocGuid</td>
+	<td>select * from INSTRUCTION where INSTRUCTION_DOC_GUID =?</td>
+	<td>INSTRUCTION_DOC_GUID varchar</td>
+</tr>
+<tr>
+	<td>qCore_AddComm</td>
+	<td>INSERT INTO COMM 
+		(COMM_ID, COMM_SOURCE_ID, COMM_TYPE_ID, COMM_STATUS_ID, 
+		 PERSON_ID, ORGANISATION_ID, DATE_ADDED, CREATED_BY, 
+		 DOC_GUID, INTERACTION_ID,
+		 COMM_GROUP_ID)
+		VALUES (?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>COMM_ID int
+		COMM_SOURCE_ID int
+		COMM_TYPE_ID int
+		COMM_STATUS_ID int
+		PERSON_ID int
+		ORGANISATION_ID int
+		DATE_ADDED date
+		CREATED_BY varchar
+		DOC_GUID varchar
+		INTERACTION_ID int
+		COMM_GROUP_ID int</td>
+</tr>
+<tr>
+	<td>qCore_UpdateComm</td>
+	<td>UPDATE COMM 
+		SET COMM_SOURCE_ID=?, 
+			COMM_TYPE_ID=?, 
+			COMM_STATUS_ID=?,
+			PERSON_ID=?, 
+			ORGANISATION_ID=?, 
+			CREATED_BY=?, 
+			DOC_GUID=?, 
+			INTERACTION_ID=?,
+			COMM_GROUP_ID=?
+		 
+		WHERE COMM_ID=?</td>
+	<td>COMM_SOURCE_ID int
+		COMM_TYPE_ID int
+		COMM_STATUS_ID int
+		PERSON_ID int
+		ORGANISATION_ID int
+		CREATED_BY varchar
+		DOC_GUID varchar
+		INTERACTION_ID int
+		COMM_GROUP_ID int
+		COMM_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetInterFundTransactions</td>
+	<td>select * from INTER_FUND_TRANSACTIONS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCore_GetCommonPersonAccountRelations</td>
+	<td>
+		SELECT relName.*, p.* FROM (
+		  SELECT rel.ELEMENT_ID1 AS PERSON_ID, rel.RELATION_NAME_ID, COUNT(*) AS NUM_ACC_RELATIONS, 'xyz' AS JOIN_PARAM 
+		  FROM RELATIONS rel
+		  INNER JOIN REF_RELATION_NAMES relName ON (rel.RELATION_NAME_ID = relName.RELATION_NAME_ID)
+
+		  WHERE relName.RELATION_TYPE_ID = 20 AND rel.ELEMENT_ID2 IN (?)
+		  GROUP BY rel.ELEMENT_ID1, rel.RELATION_NAME_ID
+		) accRelations
+
+		INNER JOIN (
+		  SELECT COUNT(*) AS NUM_CHECK_ACCOUNTS, 'xyz' AS JOIN_PARAM
+		  FROM ELEMENT WHERE ELEMENT_ID IN (?)
+		) numCheckAccounts ON (numCheckAccounts.JOIN_PARAM = accRelations.JOIN_PARAM)
+
+		INNER JOIN REF_RELATION_NAMES relName ON (accRelations.RELATION_NAME_ID = relName.RELATION_NAME_ID)
+		INNER JOIN PERSON p ON (accRelations.PERSON_ID = p.PERSON_ID)
+
+		WHERE numCheckAccounts.NUM_CHECK_ACCOUNTS = accRelations.NUM_ACC_RELATIONS
+	</td>
+	<td>accountIds int
+		accountIds int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsByAppliedNumValue</td>
+	<td>SELECT * FROM INSTRUCTION WHERE INSTRUCTION_ID IN
+		(
+		  SELECT INSTRUCTION_ID FROM V_INSTRUCTION_DATA_VALUE idv 
+		  
+		  WHERE idv.INSTRUCTION_DATA_ID = ?
+		  AND idv.INSTRUCTION_NUM_VALUE = ?
+		) ORDER BY INSTRUCTION_ID ASC
+	</td>
+	<td>INSTRUCTION_DATA_ID int
+		INSTRUCTION_NUM_VALUE int</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsByAppliedStringValue</td>
+	<td>SELECT * FROM INSTRUCTION WHERE INSTRUCTION_ID IN
+		(
+		  SELECT INSTRUCTION_ID FROM V_INSTRUCTION_DATA_VALUE idv 
+		  
+		  WHERE idv.INSTRUCTION_DATA_ID = ?
+		  AND idv.INSTRUCTION_STRING_VALUE = ?
+		) ORDER BY INSTRUCTION_ID ASC
+	</td>
+	<td>INSTRUCTION_DATA_ID int
+		INSTRUCTION_STRING_VALUE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsByAppliedDateValue</td>
+	<td>SELECT * FROM INSTRUCTION WHERE INSTRUCTION_ID IN
+		(
+		  SELECT INSTRUCTION_ID FROM V_INSTRUCTION_DATA_VALUE idv 
+		  
+		  WHERE idv.INSTRUCTION_DATA_ID = ?
+		  AND idv.INSTRUCTION_DATE_VALUE = ?
+		) ORDER BY INSTRUCTION_ID ASC
+	</td>
+	<td>INSTRUCTION_DATA_ID int
+		INSTRUCTION_DATE_VALUE date</td>
+</tr>
+<tr>
+	<td>qCore_GetInstructionsByAppliedDateValueRange</td>
+	<td>SELECT * FROM INSTRUCTION WHERE INSTRUCTION_ID IN
+		(
+		  SELECT INSTRUCTION_ID FROM V_INSTRUCTION_DATA_VALUE idv 
+		  
+		  WHERE idv.INSTRUCTION_DATA_ID = ?
+		  AND idv.INSTRUCTION_DATE_VALUE >= ? AND idv.INSTRUCTION_DATE_VALUE < ?
+		) ORDER BY INSTRUCTION_ID ASC
+	</td>
+	<td>INSTRUCTION_DATA_ID int
+		INSTRUCTION_DATE_VALUE_START date
+		INSTRUCTION_DATE_VALUE_END date</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestSDAuditByEventAndRelationId</td>
+	<td>SELECT * FROM SDAUDIT aud WHERE aud.AUDITID = (
+			SELECT MAX(aud.AUDITID) FROM SDAUDIT aud 
+			INNER JOIN SDAUDIT_RELATIONS rel ON (aud.AUDITID = rel.AUDITID)
+			WHERE aud.EVENT = ? AND rel.RELATIONTYPE = ?
+			AND rel.relationid = ?
+		)
+	</td>
+	<td>EVENT varchar
+		RELATIONTYPE varchar
+		RELATIONID int</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestAuditDataFieldUpdate</td>
+	<td>SELECT aud.* FROM SDAUDIT aud 
+		WHERE aud.AUDITID = (
+		  SELECT MAX(aud.AUDITID) FROM SDAUDIT aud 
+		  INNER JOIN SDAUDIT_RELATIONS rel ON (aud.AUDITID = rel.AUDITID)
+		  INNER JOIN SDAUDIT_DATA audData ON (aud.AUDITID = audData.AUDITID)
+		  WHERE aud.EVENT = ? AND rel.RELATIONTYPE = ?
+		  AND rel.relationid = ?
+		  AND auddata.attr_name = ?
+		)
+	</td>
+	<td>EVENT varchar
+		RELATIONTYPE varchar
+		RELATIONID int
+		ATTR_NAME varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestRelationChangeByElementAndRelationName</td>
+	<td>SELECT aud.* FROM SDAUDIT aud 
+		WHERE aud.AUDITID = (
+			SELECT MAX(aud.AUDITID) FROM SDAUDIT aud
+			INNER JOIN SDAUDIT_DATA audDataElemId1 ON (aud.AUDITID = audDataElemId1.AUDITID) 
+			INNER JOIN SDAUDIT_DATA audDataRelNameId ON (aud.AUDITID = audDataRelNameId.AUDITID) 
+			WHERE aud.EVENT = ?
+			AND aud.ACTION IN ('DELETE','ADD')
+
+			AND audDataElemId1.ATTR_NAME = ? AND (
+			  audDataElemId1.ATTR_VAL_BEFORE = ?
+			  OR 
+			  audDataElemId1.ATTR_VAL_AFTER = ?
+			)
+
+			AND audDataRelNameId.ATTR_NAME = 'RELATION_NAME_ID' AND (
+			  audDataRelNameId.ATTR_VAL_BEFORE = ?
+			  OR 
+			  audDataRelNameId.ATTR_VAL_AFTER = ?
+			)
+		)
+	</td>
+	<td>EVENT varchar
+		ELEMENT_ID_COL varchar
+		ELEMENT_ID varchar
+		ELEMENT_ID varchar
+		RELATION_NAME_ID varchar
+		RELATION_NAME_ID varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetLatestRelationPropertyDeletionByElementId</td>
+	<td>SELECT * FROM SDAUDIT WHERE AUDITID = (
+			SELECT MAX(AUDITID) FROM (
+				SELECT sd.AUDITID, sd.AUDIT_DATE FROM SDAUDIT sd
+				INNER JOIN SDAUDIT_RELATIONS sdr ON (sd.AUDITID = sdr.AUDITID)
+				INNER JOIN SDAUDIT_DATA sdd ON (sd.AUDITID = sdd.AUDITID)
+				WHERE Event = 'RelationPropertyApplied' AND RelationType = ?
+				AND ATTR_NAME = 'RELATION_PROPERTY_ID' AND ATTR_VAL_BEFORE = ? 
+				AND Action = 'DELETE' AND RelationId = ?
+			)
+		)
+	</td>
+	<td>RELATIONTYPE varchar
+		RELATION_PROPERTY_ID varchar
+		ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAuroraCompaniesByPersonId</td>
+	<td>SELECT comp.* FROM REF_COMPANY comp
+		WHERE COMPANY_ID IN (
+			SELECT COMPANY_ID FROM PERSON_AURORA_MAP
+			WHERE PERSON_ID = ?
+		)
+		AND comp.COMPANY_ID NOT IN (5)
+		ORDER BY COMPANY_ID ASC
+	</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAuroraCompaniesByOrgId</td>
+	<td>SELECT comp.* FROM REF_COMPANY comp
+		WHERE COMPANY_ID IN (
+			SELECT COMPANY_ID FROM CLIENT_AURORA_MAP
+			WHERE ORGANISATION_ID = ?
+		)
+		AND comp.COMPANY_ID NOT IN (5)
+		ORDER BY COMPANY_ID ASC
+	</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetAuroraCompaniesByAccountId</td>
+	<td>SELECT comp.* FROM REF_COMPANY comp
+		WHERE COMPANY_ID IN (
+			SELECT COMPANY_ID FROM FUND f
+			INNER JOIN ACCOUNT acc ON (f.FUND_CODE = acc.FUND_CODE)
+			WHERE acc.ACCOUNT_ID = ?
+			AND acc.AURORA_ACCOUNT = 1
+		)
+		AND comp.COMPANY_ID NOT IN (5)
+		ORDER BY COMPANY_ID ASC
+	</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetElementAttributesAppliedByValue</td>
+	<td>SELECT * FROM ELEMENT_ATTRIBUTE_APPLIED 
+		WHERE element_attribute_id = ? AND attribute_value = ?</td>
+	<td>ELEMENT_ATTRIBUTE_ID int
+		ATTRIBUTE_VALUE varchar</td>
+</tr>
+<tr>
+	<td>qCore_GetAllRpiDrawdownsByCampaignDateOwner</td>
+	<td>SELECT * FROM RPI_DRAWDOWN 
+		WHERE CAMPAIGN_ID = ? 
+		AND TRUNC(RPI_DATE) = TRUNC(?)
+		AND OWNER_ID = ?</td>
+	<td>CAMPAIGN_ID int
+		RPI_DATE date
+		OWNER_ID int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

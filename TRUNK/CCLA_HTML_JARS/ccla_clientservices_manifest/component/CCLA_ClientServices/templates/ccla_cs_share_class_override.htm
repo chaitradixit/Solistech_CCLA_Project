@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle = "Share Class Override"$>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		var updated = <$if updated$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			
+			if (updated){
+				window.parent.updateShareClass('<$#active.ACCOUNT_ID$>');
+				window.parent.closePopup();
+			}
+		});
+		
+		function override()
+		{
+			var frm = document.frmOverride;			
+			var reason = frm.OVERRIDE_REASON.value;
+			if (reason == null || reason.length == 0)
+				alert("Please give a reason for overriding share class");
+			else
+				frm.submit();
+		}
+	</script>
+	
+	
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$pageTitle$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+
+						
+						<form method="POST" name="frmOverride" id="frmOverride" >
+							<input type="hidden" name="ACCOUNT_ID" 	value="<$#local.ACCOUNT_ID$>" />
+							
+							<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_SHARE_CLASS_OVERRIDE" /><$include add_idc_token_to_form$>
+							<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_SHARE_CLASS_OVERRIDE<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#local.ACCOUNT_ID$>&updated=1" />
+					
+						
+							<table  cellpadding=0 cellspacing=0>			
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+										
+								<$loop rsShareClass$>
+									
+										<tr class="account-details-row">
+											<td class="first-col" align="right">
+												<strong>Current Share Class:</strong>
+												
+											</td>
+											<td>&nbsp;</td>
+											<td>
+												<$rsShareClass.SHARE_CLASS_NAME$>
+											</td>
+											
+										</tr>
+									
+								<$endloop$>
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+										<tr class="account-details-row">
+											<td align="right">
+												<strong>Override to Share Class:</strong>												
+											</td>	
+											<td>&nbsp;</td>											
+											<td>
+											<select name="SHARE_CLASS_ID" id="SHARE_CLASS_ID">
+												<$loop rsAvailableShareClasses$>
+													<option value="<$rsAvailableShareClasses.SHARE_CLASS_ID$>"><$rsAvailableShareClasses.SHARE_CLASS_NAME$></option>
+												<$endloop$>
+											</select>
+											</td>
+											
+										</tr>								
+	
+										<tr>
+											<td>&nbsp;</td>
+										</tr>
+										
+										<tr><td align="right" ><strong>Reason:</strong></td>
+										<td>&nbsp;</td>
+										<td>
+											<input type="text" name="OVERRIDE_REASON" id="OVERRIDE_REASON" size="50">
+										</td>
+										</tr>
+	
+							</table>
+							
+							<br/>
+							
+							<div style="text-align:right">
+								<input type="button" value="Override" onclick="override()"/>
+								<input type="button" value="Cancel" onclick="window.parent.closePopup()" />
+							<div>
+							
+						</form>
+						
+				
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Transaction Listing
+</title>
+
+		<$if #local.INSTRUCTION_ID$>
+		<$isEdit=1$>
+		<$buttonText="Save"$>
+		<$else$>
+		<$isNew=1$>
+		<$buttonText="Add"$>
+		<$endif$>
+
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+		<$if false$>
+		function editInstruction(instructionId)
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_TRANSACTION_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_ID=" + instructionId;
+		}
+		function addTransaction()
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_TRANSACTION_NEW<$include add_idc_token_to_url$>";
+		}
+		<$endif$>
+		function openEOD(eodId)
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_EOD_GET_DETAIL<$include add_idc_token_to_url$>&EOD_ID=" + eodId;
+		}		
+		</script>		
+</head>
+	<body <$include iris_body_def_internal$>>
+
+		
+			<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container" style="width:1000px" >
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container" style="width:1000px" >
+		
+			<div id='ccla_cs_content' class="cs-content-container" style="width:1000px"  >
+				
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Transaction Listing <$if rsInstructions AND NOT #local.INSTRUCTION_STATUS_ID$> - Number of Transactions:<$rsInstructions.#numRows$><$endif$>
+							</div>
+
+							<$include ccla_trans_transaction_list$>
+							
+							
+							
+							<$if false$>
+							<br>
+							<input type="button" class="generic_button" onclick="addTransaction()" value="Add a new transaction">
+							<br>
+							<$endif$>
+						<$include orangeContainer_bottom$>
+	
+					
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

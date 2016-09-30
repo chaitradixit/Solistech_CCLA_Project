@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Entity Checking/Verification
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Entity Checking/Verification
+			</div>
+			
+			<div class="ccla_cs_panel_content">
+				
+				<table width="100%" class="cs-info-table">
+					<tr>
+						<th width=200>Organisation check status:</th>
+						
+						<td>
+							<$suppressEntityCheckPopup=1$>
+							<$include ccla_cs_display_entity_check_result$>
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+								
+				<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+					<tbody>
+						<tr>
+							<th class="first-col" align=left>
+								Source Name
+							</th>
+							<th align=left width="150">Last Checked By</td>
+							<th align=left width="120">Check Date</td>
+							<th width="60">Status</th>
+						</tr>
+
+					<$loop rsElementAttributes$>
+						<$if #active.VERIFICATION_SOURCE_ID$>
+						
+							<$if #active.IS_OVERRIDE == 0$>
+								<$attribStatus = "", checkedBy = "", checkDate = ""$>
+								<$attribDisabled = ""$>
+								
+								<$exec rsFirst("rsElementAttributesApplied")$>
+								
+								<$loop rsElementAttributesApplied$>
+									<$if rsElementAttributesApplied.ELEMENT_ATTRIBUTE_ID == rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>
+										<$attribStatus = rsElementAttributesApplied.ATTRIBUTE_STATUS$>
+										<$checkedBy = strReplace(rsElementAttributesApplied.LAST_UPDATED_BY,"CCLA\\","")$>
+										<$checkDate = rsElementAttributesApplied.LAST_UPDATED$>
+										<$break$>
+									<$endif$>
+								<$endloop$>
+							
+								<$if attribStatus$>
+									<$verificationAttributeFound=1$>
+									
+									<tr class="account-details-row">
+										<td class="first-col">
+											<$#active.VER_SOURCE_NAME$>
+										</td>
+										
+										<td>
+											<$#local.checkedBy$>&nbsp;
+										</td>
+										
+										<td>
+											<$#local.checkDate$>&nbsp;
+										</td>
+										
+										<td align="center">
+											<$if attribStatus like "1"$>
+												<img src="images/ccla/tick.gif">
+											<$else$>
+												<img src="images/ccla/cross.png">
+											<$endif$>
+										</td>
+									</tr>
+									
+								<$endif$>
+							<$endif$>
+						<$endif$>
+					<$endloop$>
+					
+					<$if not verificationAttributeFound$>
+						<tr class="account-details-row">
+							<td class="first-col" colspan=4>
+								<span class="no-info">None</span>
+							</td>
+						</tr>
+					<$endif$>
+	
+					</tbody>
+				</table>
+				
+				<p>
+					<img src="images/ccla/tick.gif"> Organisation has been verified against this source
+				</p>
+				<p>
+					<img src="images/ccla/cross.png"> A failed attempt was made to verify the organisation against this source
+				</p>
+				
+				<br/>
+				
+				<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+					<tbody>
+						<tr>
+							<th align=left class="first-col">
+								Override
+							</th>
+							
+							<th align=left width="150">Override User</td>
+							<th align=left width="120">Date</td>
+							
+							<th width="60">Enabled</th>
+						</tr>
+						
+						<$loop rsElementAttributes$>
+							<$if #active.VERIFICATION_SOURCE_ID$>
+								<$if #active.IS_OVERRIDE == 1$>
+									
+									<$attribStatus = "", checkedBy = "", checkDate = ""$>
+									<$attribDisabled = ""$>
+								
+									<$exec rsFirst("rsElementAttributesApplied")$>
+									
+									<$loop rsElementAttributesApplied$>
+										<$if rsElementAttributesApplied.ELEMENT_ATTRIBUTE_ID == rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>
+											<$attribStatus = rsElementAttributesApplied.ATTRIBUTE_STATUS$>
+											<$checkedBy = strReplace(rsElementAttributesApplied.LAST_UPDATED_BY,"CCLA\\","")$>
+											<$checkDate = rsElementAttributesApplied.LAST_UPDATED$>
+											<$break$>
+										<$endif$>
+									<$endloop$>
+									
+									
+									<$if attribStatus$>
+										<$overrideAttributeFound=1$>
+										<tr class="account-details-row">
+											<td align=left class="first-col">
+												<$#active.VER_SOURCE_NAME$>
+											</td>
+											
+											<td>
+												<$#local.checkedBy$>&nbsp;
+											</td>
+											
+											<td>
+												<$#local.checkDate$>&nbsp;
+											</td>
+											
+											<td align="center">
+												<img src="images/ccla/tick.gif">
+											</td>	
+										</tr>
+									<$endif$>
+									
+								<$endif$>
+							<$endif$>
+							
+						<$endloop$>
+						
+						<$if not overrideAttributeFound$>
+							<tr class="account-details-row">
+								<td class="first-col" colspan=4>
+									<span class="no-info">None</span>
+								</td>
+							</tr>
+						<$endif$>
+					
+					</tbody>
+				</table>
+				
+				<br/>
+				
+				<div align="right">
+					<input type="button" value="Close" onclick="window.parent.closePopup()" />
+				</div>
+
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

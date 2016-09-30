@@ -1,0 +1,4424 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices query
+</title>
+</head>
+<body>
+
+<@table CCLA_ClientServices_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextProcessId</td>
+	<td>SELECT SEQ_PROCESS.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextElementId</td>
+	<td>SELECT SEQ_ELEMENT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextElementRelationId</td>
+	<td>SELECT SEQ_RELATIONS.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextActivityId</td>
+	<td>SELECT SEQ_ACTIVITY.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextContactId</td>
+	<td>SELECT SEQ_CONTACT_POINT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAddressId</td>
+	<td>SELECT SEQ_ADDRESS.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInteractionId</td>
+	<td>SELECT SEQ_INTERACTION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextInteractionGroupId</td>
+	<td>SELECT SEQ_INTERACTION_GROUP.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextProcessActionId</td>
+	<td>SELECT SEQ_PROCESS_ACTION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextNoteId</td>
+	<td>SELECT SEQ_NOTE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextNoteMappingId</td>
+	<td>SELECT SEQ_NOTE_MAPPING_ID.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextClientAuroraMapId</td>
+	<td>SELECT SEQ_CLIENT_AURORA_MAP.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextPersonAuroraMapId</td>
+	<td>SELECT SEQ_PERSON_AURORA_MAP.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextBankingDetailsId</td>
+	<td>SELECT SEQ_BANKING_DETAILS_ID.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextLoanAccountNumberId</td>
+	<td>SELECT SEQ_LOAN_ACCOUNTNUMBER.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextEnrolmentAttributeAppliedId</td>
+	<td>SELECT SEQ_ENROLMENT_ATTR_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextIdentityCheckAuditId</td>
+	<td>SELECT SEQ_IDENTITY_CHECK_AUDIT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextPublicHolidayId</td>
+	<td>SELECT SEQ_PUBLIC_HOLIDAY.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_AddElement</td>
+	<td>INSERT INTO ELEMENT 
+		(ELEMENT_ID, PREFERRED_CONTACTMETHOD, DO_NOT_CONTACT_FLAG, ELEMENT_TYPE_ID, DATA_SOURCE_ID, NOTES)
+		VALUES (?,?,?,?,?,?)</td>
+	<td>ELEMENT_ID int
+		PREFERRED_CONTACTMETHOD int
+		DO_NOT_CONTACT_FLAG int
+		ELEMENT_TYPE_ID int
+		DATA_SOURCE_ID int
+		NOTES varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateElement</td>
+	<td>UPDATE ELEMENT 
+		SET PREFERRED_CONTACTMETHOD=?, DO_NOT_CONTACT_FLAG=?,
+		NOTES = ?
+		WHERE ELEMENT_ID = ?</td>
+	<td>PREFERRED_CONTACTMETHOD int
+		DO_NOT_CONTACT_FLAG int
+		NOTES varchar
+		ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getNumSigsForAccsInOrg</td>
+	<td>SELECT ACCOUNT_ID, count(*) as NUM_SIGS FROM(
+		select p.person_id, r.element_id1, r.element_id2 as ACCOUNT_ID, r.relation_name_id from relations r
+		right join Person p on (r.element_id1 = p.person_id)
+		where r.relation_name_id = 84 and r.element_id2 in (
+		SELECT ELEMENT_ID2 FROM RELATIONS RE
+		  INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+		  WHERE RE.ELEMENT_ID1 = ?)
+		  ) GROUP BY ACCOUNT_ID </td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFund</td>
+	<td>SELECT * FROM FUND F
+		
+		LEFT JOIN 
+			REF_FUND_STATUS FS ON (F.FUND_STATUS_ID = FS.FUND_STATUS_ID) 
+		LEFT JOIN 
+			REF_FUND_TYPECODE FTC ON (F.FUND_TYPECODE_ID = FTC.FUND_TYPECODE_ID)
+		LEFT JOIN 
+			REF_INCOME_TYPECODE ITC ON (F.INCOME_TYPECODE_ID = ITC.INCOME_TYPECODE_ID)
+		LEFT JOIN 
+			REF_FUND_DEFINITION_CODE FDC ON (F.FUND_DEFCODE_ID = FDC.FUND_DEFCODE_ID)
+		LEFT JOIN
+			REF_COMPANY comp ON (F.COMPANY_ID = comp.COMPANY_ID)
+		
+		WHERE F.FUND_CODE = ?</td>
+	<td>fundCode varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientInfo</td>
+	<td>SELECT * FROM CCLA_CLIENTS
+		WHERE CLIENT_ID = ? AND COMPANY = ?</td>
+	<td>clientId int
+		company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetExtendedClientInfo</td>
+	<td>SELECT * from ccla_client p LEFT JOIN
+		(SELECT * FROM CCLA_CONTACT_MAP cm INNER JOIN 
+		 CCLA_ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)
+         WHERE cm.IS_DEFAULT = 1) cma 		 
+		 ON (cma.ELEMENT_ID = p.entity_id)
+		where p.entity_id =?
+ORDER BY ENTITY_ID</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonDefaultContactDetails</td>
+	<td>SELECT cma.method_id, cma.value, cma.postcode from PERSON p left JOIN
+		(SELECT * FROM CONTACT_POINT cm left JOIN 
+		 ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)
+		left join REF_CONTACT_SUBMETHOD csm on (cm.submethod_id = csm.submethod_id)
+         WHERE cm.IS_DEFAULT = 1 AND (csm.method_id=1 or csm.submethod_id=3)) cma 		 
+		 ON (p.person_id = cma.element_id) 
+		where p.person_id = ?
+	</td>
+	<td>CONTACT_PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOpenClientAccounts</td>
+	<td>SELECT * FROM CCLA_ACCOUNT acc
+		WHERE ACCOUNT_STATUS_ID = 'OPEN' AND ACC_CLIENT_ID = ?
+		ORDER BY FUND_CODE, ACCOUNTNUMBER</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonAccounts</td>
+	<td>SELECT TODO</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccountCorrespondents</td>
+	<td>SELECT acc.ACCOUNT_ID, p.*, rel.RELATION_ID FROM CCLA_ACCOUNT acc
+		LEFT JOIN RELATIONS rel ON 
+		(acc.ACCOUNT_ID = rel.ELEMENT_ID2 AND rel.relation_type_id = 2 AND rel.relationship = 'Correspondent')
+		LEFT JOIN PERSON p ON (p.PERSON_ID = rel.ELEMENT_ID1) 
+		WHERE ACC_CLIENT_ID = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountPersonRelations</td>
+	<td>SELECT pers.*, rship.RELATION_TYPE FROM CCLA_ACCOUNTS acc
+		INNER JOIN CCLA_ACCOUNT_RELATIONSHIPS rship ON (acc.acc_accnumext = rship.acc_accnumext)
+		INNER JOIN CCLA_PERSONS_EXT pers ON (pers.person_id = rship.person_id)
+		WHERE acc.ACCNUMEXT = ?</td>
+	<td>accNumExt varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccountPersonRelations</td>
+	<td>SELECT accpers.RELATION_TYPE, pers.* FROM CCLA_PERSONS_EXT pers
+		INNER JOIN ( 
+
+		  SELECT pers.PERSON_ID, RSHIP.RELATION_TYPE FROM CCLA_CLIENTS cl
+			  INNER JOIN CCLA_ACCOUNTS acc ON (cl.CLIENT_ID = acc.ACC_CLIENTID AND cl.COMPANY = acc.ACC_COMPANY)
+			  INNER JOIN CCLA_ACCOUNT_RELATIONSHIPS rship ON (acc.acc_accnumext = rship.acc_accnumext)
+			  INNER JOIN CCLA_PERSONS_EXT pers ON (pers.person_id = rship.person_id)
+		  WHERE cl.CLIENT_ID = ? AND cl.COMPANY = ?
+		  GROUP BY pers.PERSON_ID, pers.FULL_NAME, rship.RELATION_TYPE
+		) accpers ON (accpers.PERSON_ID = pers.PERSON_ID)</td>
+	<td>clientId int
+	    company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccountCorrespondents</td>
+	<td>SELECT accpers.RELATION_TYPE, pers.* FROM CCLA_PERSONS_EXT pers
+		INNER JOIN ( 
+
+		  SELECT pers.PERSON_ID, 'ACC_CORR' AS RELATION_TYPE FROM CCLA_CLIENTS cl
+			  INNER JOIN CCLA_ACCOUNTS acc ON (cl.CLIENT_ID = acc.ACC_CLIENTID AND cl.COMPANY = acc.ACC_COMPANY)
+			  INNER JOIN CCLA_PERSONS_EXT pers ON (pers.person_id = acc.acc_corcode)
+		  WHERE cl.CLIENT_ID = ? AND cl.COMPANY = ?
+		  GROUP BY pers.PERSON_ID, pers.FULL_NAME
+		) accpers ON (accpers.PERSON_ID = pers.PERSON_ID)</td>
+	<td>clientId int
+	    company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientPersonRelations</td>
+	<td>SELECT rel.relation_type, per.* FROM CCLA_RELATIONSHIPS rel
+		LEFT JOIN CCLA_PERSONS_EXT per ON (rel.PERSON_ID = per.PERSON_ID)
+		WHERE rel.CLIENT_ID = ? AND rel.COMPANY = ?
+		AND rel.PERSON_ID IS NOT NULL</td>
+	<td>clientId int
+		company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientProcesses</td>
+	<td>SELECT * FROM CCLA_PROCESS pr
+		INNER JOIN CCLA_CAMPAIGNS cam ON
+		(pr.CAMPAIGN_ID = cam.CAMPAIGN_ID)
+		WHERE ORGANISATION_ID = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonProcesses</td>
+	<td>SELECT * FROM CCLA_PROCESS pr
+		INNER JOIN CCLA_CAMPAIGNS cam ON
+		(pr.CAMPAIGN_ID = cam.CAMPAIGN_ID)
+		WHERE PERSON_ID = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientActivities</td>
+	<td>SELECT * FROM (
+		SELECT * FROM V_ACTIVITY_NOTE act
+		WHERE ORGANISATION_ID = ?
+		ORDER BY ACTIVITY_ID DESC
+		) WHERE ROWNUM <= ?</td>
+	<td>ORGANISATION_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonActivities</td>
+	<td>SELECT * FROM (
+		SELECT * FROM V_ACTIVITY_NOTE act
+		WHERE PERSON_ID = ?
+		ORDER BY ACTIVITY_ID DESC
+		) WHERE ROWNUM <= ?</td>
+	<td>PERSON_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionActivities</td>
+	<td>SELECT * FROM (
+		SELECT * FROM V_ACTIVITY_NOTE act
+		WHERE INTERACTION_ID = ?
+		ORDER BY ACTIVITY_ID DESC
+		) WHERE ROWNUM <= ?</td>
+	<td>INTERACTION_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAddress</td>
+	<td>SELECT * FROM CCLA_ADDRESSES WHERE ADDRESS_ID = ?</td>
+	<td>addressId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonInfo</td>
+	<td>SELECT * FROM CCLA_PERSONS per
+		WHERE per.PERSON_ID = ? AND per.COMPANY = ?</td>
+	<td>personId int
+		company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetExtendedPersonInfo</td>
+	<td>SELECT * FROM CCLA_PERSONS per
+		LEFT JOIN CCLA_ADDRESSES addr ON
+		(per.ADDRESS_ID = addr.ADDRESS_ID)
+		WHERE per.PERSON_ID = ?</td>
+	<td>personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonAccounts</td>
+	<td>SELECT * FROM CCLA_ACCOUNTS 
+	WHERE ACC_CORCODE=?
+	ORDER BY ACC_CLIENTID, ACCOUNTNUMBER</td>
+	<td>personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActiveClientAccountsBeforeDate</td>
+	<td>SELECT acc.* FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE
+		ACC.ORGANISATION_ID = ?
+		AND ACC.ACCOUNT_STATUS_NAME <> 'CLOS'
+		AND DATE_OPENED < ?
+		ORDER BY ACCOUNTNUMBER</td>
+	<td>ORGANISATION_ID int
+		maxDate date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCampaign</td>
+	<td>SELECT * FROM CCLA_CAMPAIGNS
+		WHERE CAMPAIGN_ID = ?</td>
+	<td>CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCampaigns</td>
+	<td>SELECT * FROM CCLA_CAMPAIGNS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetActiveCampaigns</td>
+	<td>SELECT * FROM CCLA_CAMPAIGNS
+		WHERE END_DATE > ? OR END_DATE IS NULL</td>
+	<td>curDate date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCampaignInfo</td>
+	<td>SELECT * FROM CCLA_CAMPAIGNS
+		WHERE CAMPAIGN_ID = ?</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessStatusCounts</td>
+	<td>SELECT PROCESS_STATUS, COUNT(*) AS COUNT FROM CCLA_PROCESS
+		WHERE CAMPAIGN_ID = ?
+		GROUP BY PROCESS_STATUS</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonProcess</td>
+	<td>SELECT * FROM CCLA_PROCESS
+WHERE CAMPAIGN_ID = ?
+AND PERSON_ID = ?</td>
+	<td>campaignId int
+	    personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActivitiesByProcessId</td>
+	<td>SELECT * FROM V_ACTIVITY_NOTE act 
+		WHERE PROCESS_ID=?
+		ORDER BY ACTIVITY_ID DESC</td>
+	<td>PROCESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteActivitiesByProcessId</td>
+	<td>DELETE FROM CCLA_ACTIVITIES act 
+		WHERE PROCESS_ID=?</td>
+	<td>processId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActivitiesByPersonId</td>
+	<td>SELECT act.*, campr.CAMPAIGN_NAME 
+		FROM V_ACTIVITY_NOTE act
+		LEFT JOIN CCLA_CAMPAIGN_PROCESS campr ON
+		(act.PROCESS_ID = campr.PROCESS_ID)
+		WHERE act.PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActivitiesByEntityId</td>
+	<td>SELECT act.*, campr.CAMPAIGN_NAME 
+		FROM V_ACTIVITY_NOTE act
+		LEFT JOIN CCLA_CAMPAIGN_PROCESS campr ON
+		(act.PROCESS_ID = campr.PROCESS_ID)
+		WHERE act.ENTITY_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddInteraction</td>
+	<td>INSERT INTO INTERACTION
+(INTERACTION_ID, USER_ID, INTERACTION_DATE, ORGANISATION_ID, PERSON_ID, ACCOUNT_ID, CONFIRM_TYPES,
+  CONFIRM_OTHER, INTERACTION_TYPE, SUBJECT_ID, CATEGORY_ID, IS_QUERY, IS_COMPLAINT, IS_BREACH, IS_ERROR, CAMPAIGN_ID, JOB_ID,
+  INTERACTION_STATUS, ASSIGNEE, DEADLINE, LAST_UPDATED, FUND_CODE, OUTCOME_ID, OUTCOME_TYPE_ID, OUTCOME_TEXT, CLOSED_BY)	
+VALUES (?,?,SYSDATE,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,SYSDATE,?,?,?,?,'')
+</td>
+	<td>INTERACTION_ID int
+		USER_ID varchar
+		ORGANISATION_ID int
+		PERSON_ID int
+		ACCOUNT_ID int
+		CONFIRM_TYPES varchar
+		CONFIRM_OTHER varchar
+		INTERACTION_TYPE varchar
+		SUBJECT_ID int
+		CATEGORY_ID int
+		IS_QUERY int
+		IS_COMPLAINT int
+		IS_BREACH int
+		IS_ERROR int
+		CAMPAIGN_ID int
+		JOB_ID varchar
+		INTERACTION_STATUS varchar
+		ASSIGNEE varchar
+		DEADLINE date
+		FUND_CODE varchar
+		OUTCOME_ID int
+		OUTCOME_TYPE_ID int
+		OUTCOME_TEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_AddInteractionGroup</td>
+	<td>INSERT INTO INTERACTION_GROUP (GROUP_ID, INTERACTION_ID, USER_ID, LAST_UPDATED)
+VALUES (?,?,?,SYSDATE)</td>
+	<td>GROUP_ID int
+		INTERACTION_ID int
+		USER_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateInteractionGroup</td>
+	<td>UPDATE INTERACTION_GROUP
+SET GROUP_ID = ?, USER_ID = ?, LAST_UPDATED = SYSDATE WHERE
+INTERACTION_ID = ?</td>
+	<td>GROUP_ID int
+		USER_ID varchar
+		INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteraction</td>
+	<td>SELECT * FROM INTERACTION WHERE INTERACTION_ID=?</td>
+	<td>INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateInteraction</td>
+	<td>UPDATE INTERACTION
+		SET USER_ID=?,
+		ORGANISATION_ID=?,
+		PERSON_ID=?,
+		ACCOUNT_ID=?,
+		CONFIRM_TYPES=?,
+		CONFIRM_OTHER=?,
+		INTERACTION_TYPE=?,
+		SUBJECT_ID=?,
+		CATEGORY_ID=?,
+		JOB_ID=?,
+		CAMPAIGN_ID=?,
+		OUTCOME_ID=?,
+		OUTCOME_TYPE_ID=?,
+		OUTCOME_TEXT=?,
+		INTERACTION_STATUS=?,
+		ASSIGNEE=?,
+		DEADLINE=?,
+		FUND_CODE=?,
+		LAST_UPDATED=SYSDATE
+		WHERE INTERACTION_ID=?</td>
+	<td>USER_ID varchar
+		ORGANISATION_ID int
+		PERSON_ID int
+		ACCOUNT_ID int
+		CONFIRM_TYPES varchar
+		CONFIRM_OTHER varchar
+		INTERACTION_TYPE varchar
+		SUBJECT_ID int
+		CATEGORY_ID int
+		JOB_ID varchar
+		CAMPAIGN_ID int
+		OUTCOME_ID int
+		OUTCOME_TYPE_ID int
+		OUTCOME_TEXT varchar
+		INTERACTION_STATUS varchar
+		ASSIGNEE varchar
+		DEADLINE date
+		FUND_CODE varchar
+		INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateInteractionLite</td>
+	<td>UPDATE INTERACTION
+		SET 
+		INTERACTION_TYPE=?, 
+		SUBJECT_ID=?, 
+		CATEGORY_ID=?, 
+		OUTCOME_ID=?,
+		ASSIGNEE=?,
+		DEADLINE=?,
+		LAST_UPDATED=SYSDATE
+		WHERE INTERACTION_ID = ?</td>
+	<td>INTERACTION_TYPE varchar
+	    SUBJECT_ID int
+	    CATEGORY_ID int
+	    OUTCOME_ID int
+		ASSIGNEE varchar
+		DEADLINE date
+	    INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActivity</td>
+	<td>SELECT * FROM CCLA_ACTIVITY WHERE ACTIVITY_ID=?</td>
+	<td>ACTIVITY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionActivity</td>
+	<td>SELECT * FROM INTERACTION_ACTIVITY WHERE ACTIVITY_ID=?</td>
+	<td>ACTIVITY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddNote</td>
+	<td>INSERT INTO CCLA_NOTES
+		VALUES (?,?,SYSDATE,NULL,NULL,?)</td>
+	<td>NOTE_ID int
+		USER_ID varchar
+		NOTE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNoteByInteraction</td>
+	<td>select * from note cn 
+	inner join interaction_activity ca 
+	on (ca.note_id = cn.note_id) 
+	where ca.interaction_id=?</td>
+	<td>INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNote</td>
+	<td>SELECT * FROM CCLA_NOTES
+		WHERE NOTE_ID = ?</td>
+	<td>NOTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddNoteMapping</td>
+	<td>INSERT INTO CCLA_NOTE_MAPPING
+		VALUES (?,?,?)</td>
+	<td>NOTE_MAPPING_ID int
+		INTERACTION_ID int
+		NOTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAMLChecklistInfo</td>
+	<td>SELECT * FROM CCLA_ENTITY ent INNER JOIN 
+		CCLA_CLIENT_AURORA_MAP cl_map ON (ent.ENTITY_ID = cl_map.CLIENT_ID)
+		INNER JOIN CCLA_AML_CHECKLIST chk
+		ON (cl_map.client_number = chk.client_number AND cl_map.company = chk.company)
+		WHERE ent.ENTITY_ID = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddProcess</td>
+	<td>INSERT INTO CCLA_PROCESS
+VALUES (?,?,?,?,?,?,SYSDATE,SYSDATE)</td>
+	<td>PROCESS_ID int
+		CAMPAIGN_ID int
+	    PERSON_ID int
+		ORGANISATION_ID int
+		CONTACT_ADDRESS_ID int
+	    PROCESS_STATUS varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcess</td>
+	<td>SELECT * FROM CCLA_PROCESS pr
+		INNER JOIN CCLA_CAMPAIGNS cam ON (pr.CAMPAIGN_ID = cam.CAMPAIGN_ID)
+		WHERE PROCESS_ID = ?</td>
+	<td>PROCESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteProcess</td>
+	<td>DELETE FROM CCLA_PROCESS
+		WHERE PROCESS_ID = ?</td>
+	<td>PROCESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateProcess</td>
+	<td>UPDATE CCLA_PROCESS
+		SET PERSON_ID=?,
+		ORGANISATION_ID=?,
+		CONTACT_ADDRESS_ID=?,
+		PROCESS_STATUS=?,
+		LAST_ACTION=SYSDATE
+		WHERE PROCESS_ID=?</td>
+	<td>PERSON_ID int
+		ORGANISATION_ID int
+		CONTACT_ADDRESS_ID int
+		PROCESS_STATUS varchar
+	    PROCESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientProcessByValues</td>
+	<td>SELECT * FROM CCLA_PROCESS pr
+		INNER JOIN CCLA_CAMPAIGNS cam ON (pr.CAMPAIGN_ID = cam.CAMPAIGN_ID)
+		WHERE pr.ORGANISATION_ID = ? AND pr.CAMPAIGN_ID = ?</td>
+	<td>ORGANISATION_ID int
+		CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessNotesByProcessId</td>
+	<td>SELECT * FROM CS_PROCESS_NOTES
+		WHERE PROCESS_ID = ?</td>
+	<td>PROCESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddInteractionActivity</td>
+	<td>INSERT INTO INTERACTION_ACTIVITY 
+		(ACTIVITY_ID,
+	    PERSON_ID,
+		ORGANISATION_ID,
+	    USER_ID,
+		ACTIVITY_DATE,
+	    ACTIVITY_TYPE,
+		ACTIVITY_ACTION,
+		NOTE_ID,
+		ERROR,
+		INTERACTION_ID)
+	VALUES (?,?,?,?,SYSDATE,?,?,?,?,?)</td>
+	<td>ACTIVITY_ID int
+	    PERSON_ID int
+		ORGANISATION_ID int
+	    USER_ID varchar
+	    ACTIVITY_TYPE varchar
+		ACTIVITY_ACTION varchar
+		NOTE_ID int
+		ERROR varchar
+		INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateInteractionActivity</td>
+	<td>UPDATE INTERACTION_ACTIVITY
+		SET PERSON_ID=?,
+		ORGANISATION_ID=?,
+		USER_ID=?,
+		ACTIVITY_DATE=SYSDATE,
+		ACTIVITY_TYPE=?,
+		ACTIVITY_ACTION=?,
+		NOTE_ID=?,
+		ERROR=?,
+		WHERE ACTIVITY_ID=?</td>
+	<td>PERSON_ID int
+		ORGANISATION_ID int
+	    USER_ID varchar
+	    ACTIVITY_TYPE varchar
+		ACTIVITY_ACTION varchar
+		NOTE_ID int
+		ERROR int
+	    ACTIVITY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddActivity</td>
+	<td>INSERT INTO CCLA_ACTIVITY 
+		(ACTIVITY_ID,
+	    PROCESS_ID,
+	    PERSON_ID,
+		ORGANISATION_ID,
+	    USER_ID,
+		ACTIVITY_DATE,
+	    ACTIVITY_TYPE,
+		ACTIVITY_ACTION,
+		NOTE_ID,
+		ERROR,
+		INTERACTION_ID)
+	VALUES (?,?,?,?,?,SYSDATE,?,?,?,?,?)</td>
+	<td>ACTIVITY_ID int
+	    PROCESS_ID int
+	    PERSON_ID int
+		ORGANISATION_ID int
+	    USER_ID varchar
+	    ACTIVITY_TYPE varchar
+		ACTIVITY_ACTION varchar
+		NOTE_ID int
+		ERROR varchar
+		INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateActivity</td>
+	<td>UPDATE CCLA_ACTIVITY
+		SET PROCESS_ID=?,
+		PERSON_ID=?,
+		ORGANISATION_ID=?,
+		USER_ID=?,
+		ACTIVITY_DATE=SYSDATE,
+		ACTIVITY_TYPE=?,
+		ACTIVITY_ACTION=?,
+		NOTE_ID=?,
+		ERROR=?,
+		WHERE ACTIVITY_ID=?</td>
+	<td>PROCESS_ID int
+	    PERSON_ID int
+		ORGANISATION_ID int
+	    USER_ID varchar
+	    ACTIVITY_TYPE varchar
+		ACTIVITY_ACTION varchar
+		NOTE_ID int
+		ERROR int
+	    ACTIVITY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetActivities</td>
+	<td>SELECT * FROM V_ACTIVITY_NOTE act
+INNER JOIN CCLA_PROCESS pr
+ON (act.PROCESS_ID = pr.PROCESS_ID)
+WHERE act.PERSON_ID=?
+ORDER BY ACTIVITY_DATE DESC</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessesByPerson</td>
+	<td>SELECT * FROM CCLA_PROCESS
+		WHERE PERSON_ID=?</td>
+	<td>personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessesByStatus</td>
+	<td>SELECT * FROM CCLA_PROCESS
+WHERE PROCESS_STATUS=?</td>
+	<td>status varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRecentActivities</td>
+	<td>SELECT * FROM 
+(
+	SELECT act.*, cam.NAME AS CAMPAIGN_NAME FROM CCLA_ACTIVITY act 
+	INNER JOIN CCLA_PROCESS pr
+	ON (act.PROCESS_ID = pr.PROCESS_ID)
+	INNER JOIN CCLA_CAMPAIGNS cam
+	ON (cam.CAMPAIGN_ID = pr.CAMPAIGN_ID)
+	ORDER BY act.ACTIVITY_ID DESC
+)  
+WHERE ROWNUM <= 10</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormMap</td>
+	<td>SELECT f.*, pr.*, clmap.client_number, comp.company_code FROM CCLA_FORM f
+		LEFT JOIN CLIENT_AURORA_MAP clmap
+		ON (f.CLIENT_AURORA_MAP_ID = clmap.CLIENT_AURORA_MAP_ID)
+		LEFT JOIN REF_COMPANY comp
+		ON (clmap.COMPANY_ID = comp.COMPANY_ID)
+		INNER JOIN CCLA_PROCESS pr ON (f.PROCESS_ID = pr.PROCESS_ID)
+		WHERE PROCESS_ID=?
+		AND FORM_TYPE=?
+		AND f.ORGANISATION_ID=?
+		AND PERSON_ID=?</td>
+	<td>PROCESS_ID varchar
+		FORM_TYPE varchar
+	    ORGANISATION_ID varchar
+	    PERSON_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormConfigs</td>
+	<td>SELECT * FROM CCLA_FORM_CONFIG
+	WHERE FORM_TYPE=?</td>
+	<td>formType varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_AddForm</td>
+	<td>INSERT INTO CCLA_FORM
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,SYSDATE,?,?,?,?,?,?,?,?,SYSDATE)</td>
+	<td>FORM_ID int
+		FORM_TYPE varchar
+		FORM_SUBTYPE varchar
+		PROCESS_ID int
+	    ORGANISATION_ID int
+		CLIENT_AURORA_MAP_ID int
+	    PERSON_ID int
+	    BASE_DOCNAME varchar
+		BASE_ID int
+		PRINTED varchar
+		GENERATED varchar
+		RETURNED varchar
+		RETURNED_DOCNAME varchar
+		FORM_STATUS varchar
+		PRINT_DATE date
+		GEN_DATE date
+		RETURN_DATE date
+		STATIC_DATA_CHANGE varchar
+		ADDITIONAL_DATA varchar
+		NO_CHANGES varchar
+		VALID varchar
+		INVALID_REASON varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateForm</td>
+	<td>UPDATE CCLA_FORM
+SET FORM_TYPE=?,
+	FORM_SUBTYPE=?,
+	PROCESS_ID=?,
+	ORGANISATION_ID=?,
+	CLIENT_AURORA_MAP_ID=?,
+	PERSON_ID=?,
+	BASE_DOCNAME=?,
+	BASE_ID=?,
+	PRINTED=?,
+	GENERATED=?,
+	RETURNED=?,
+	RETURNED_DOCNAME=?,
+	FORM_STATUS=?,
+	CREATE_DATE=?,
+	PRINT_DATE=?,
+	GEN_DATE=?,
+	RETURN_DATE=?,
+	STATIC_DATA_CHANGE=?,
+	ADDITIONAL_DATA=?,
+	NO_CHANGES=?,
+	VALID=?,
+	INVALID_REASON=?,
+	LAST_UPDATED=SYSDATE
+	WHERE FORM_ID=?
+	</td>
+	<td>FORM_TYPE varchar
+		FORM_SUBTYPE varchar
+		PROCESS_ID int
+	    ORGANISATION_ID int
+		CLIENT_AURORA_MAP_ID int
+	    PERSON_ID int
+	    BASE_DOCNAME varchar
+		BASE_ID int
+		PRINTED varchar
+		GENERATED varchar
+		RETURNED varchar
+		RETURNED_DOCNAME varchar
+		FORM_STATUS varchar
+		CREATE_DATE date
+		PRINT_DATE date
+		GEN_DATE date
+		RETURN_DATE date
+		STATIC_DATA_CHANGE varchar
+		ADDITIONAL_DATA varchar
+		NO_CHANGES varchar
+		VALID varchar
+		INVALID_REASON varchar
+		FORM_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormById</td>
+	<td>SELECT f.*, clmap.*, comp.company_code FROM CCLA_FORM f
+		LEFT JOIN CLIENT_AURORA_MAP clmap
+		ON (f.CLIENT_AURORA_MAP_ID = clmap.CLIENT_AURORA_MAP_ID)
+		LEFT JOIN REF_COMPANY comp
+		ON (clmap.COMPANY_ID = comp.COMPANY_ID)
+		WHERE FORM_ID=?</td>
+	<td>FORM_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormsByProcessId</td>
+	<td>SELECT f.*, clmap.*, comp.company_code FROM CCLA_FORM f
+		LEFT JOIN CLIENT_AURORA_MAP clmap
+		ON (f.CLIENT_AURORA_MAP_ID = clmap.CLIENT_AURORA_MAP_ID)
+		LEFT JOIN REF_COMPANY comp
+		ON (clmap.COMPANY_ID = comp.COMPANY_ID)
+		WHERE PROCESS_ID=?
+		ORDER BY FORM_ID DESC</td>
+	<td>PROCESS_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLatestFormsByProcessId</td>
+	<td>SELECT f.*, clmap.*, comp.company_code FROM CCLA_FORM f
+		LEFT JOIN CLIENT_AURORA_MAP clmap
+		ON (f.CLIENT_AURORA_MAP_ID = clmap.CLIENT_AURORA_MAP_ID)
+		LEFT JOIN REF_COMPANY comp
+		ON (clmap.COMPANY_ID = comp.COMPANY_ID)
+		WHERE FORM_ID IN (
+			SELECT MAX(FORM_ID) AS FORM_ID FROM CCLA_FORM
+			WHERE PROCESS_ID = ?
+			GROUP BY BASE_DOCNAME
+		)
+	</td>
+	<td>PROCESS_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteFormsByProcessId</td>
+	<td>DELETE FROM CCLA_FORM
+WHERE PROCESS_ID=?</td>
+	<td>PROCESS_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetExtendedFormDataById</td>
+	<td>SELECT f.*, pr.*, clmap.*, comp.company_code FROM CCLA_FORM f
+		LEFT JOIN CLIENT_AURORA_MAP clmap
+		ON (f.CLIENT_AURORA_MAP_ID = clmap.CLIENT_AURORA_MAP_ID)
+		LEFT JOIN REF_COMPANY comp
+		ON (clmap.COMPANY_ID = comp.COMPANY_ID)
+		INNER JOIN CCLA_PROCESS pr ON (f.PROCESS_ID = pr.PROCESS_ID)
+		WHERE FORM_ID=?</td>
+	<td>FORM_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_AddFormAccountMap</td>
+	<td>INSERT INTO CCLA_FORM_ACCOUNT_MAP
+VALUES (?,?)</td>
+	<td>FORM_ID int
+	    ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormAccounts</td>
+	<td>SELECT ACCNUMEXT FROM CCLA_FORM_ACCOUNT_MAP
+WHERE FORM_ID = ?</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_RemoveFormAccountMaps</td>
+	<td>DELETE FROM CCLA_FORM_ACCOUNT_MAP
+WHERE FORM_ID=?</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankBySortCode</td>
+	<td>SELECT BB_NAME AS BRANCH_NAME, BG_NAME AS BANK_NAME FROM CCLA_BANKGROUPS gr
+INNER JOIN CCLA_BANKBRANCHES br ON (TO_CHAR(br.bb_groupcode) = gr.bg_code)
+WHERE BB_SORTCODE = ?</td>
+	<td>sortCode int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddProcessAction</td>
+	<td>INSERT INTO CCLA_PROCESS_ACTION_QUEUE
+		VALUES (?,?,?,?,?,?,?)</td>
+	<td>processActionId int
+		processId int
+		action varchar
+		completed varchar
+		errorMsg varchar
+		completeDate date
+		dateAdded date</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateProcessAction</td>
+	<td>UPDATE CCLA_PROCESS_ACTION_QUEUE
+		SET COMPLETED=?, ERROR_MESSAGE=?, COMPLETE_DATE=?
+		WHERE PROCESS_ACTION_ID=?</td>
+	<td>completed varchar
+		errorMsg varchar
+		completedDate date
+		processActionId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextQueuedProcessAction</td>
+	<td>SELECT * FROM
+		(SELECT * FROM CCLA_PROCESS_ACTION_QUEUE
+		WHERE COMPLETED = '0'
+		ORDER BY PROCESS_ACTION_ID ASC)
+		WHERE ROWNUM = 1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_AddBankDetails</td>
+	<td>INSERT INTO CCLA_BANKBRANCHES
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>emptyStr varchar
+	    sortCode int
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    branchName varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    emptyStr varchar
+	    bankName varchar
+	    address varchar
+		curDate date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUncachedSortCodes</td>
+	<td>SELECT * FROM (
+		SELECT * FROM CCLA_SORTCODES WHERE
+		ADDED = '0'
+		ORDER BY SORTCODE_ID ASC)
+		WHERE ROWNUM <= ?</td>
+	<td>numSortCodes int</td>
+</tr>
+<tr>
+	<td>qClientServices_SetSortCodeCached</td>
+	<td>UPDATE CCLA_SORTCODES SET ADDED = '1'
+		WHERE SORTCODE_ID = ?</td>
+	<td>sortCodeId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCachedBankDetails</td>
+	<td>SELECT * FROM CCLA_BANKBRANCHES
+		WHERE BB_SORTCODE = ?</td>
+	<td>sortCode int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccount</td>
+	<td>SELECT * FROM ACCOUNT ACC
+		WHERE ACC.ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountExtended</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		WHERE ACC.ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByAccNumExt</td>
+	<td>SELECT * FROM ACCOUNT ACC
+		WHERE ACC.ACCNUMEXT = ?</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByAccNumExtExtended</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		WHERE ACC.ACCNUMEXT = ?</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByValues</td>
+	<td>SELECT acc.* FROM ACCOUNT ACC
+		INNER JOIN RELATIONS rel ON (ACC.ACCOUNT_ID = rel.element_id2 AND rel.relation_name_id = 20)
+
+		WHERE rel.element_id1 = ?
+		AND   ACC.ACCOUNTNUMBER = ?
+		AND   ACC.FUND_CODE = UPPER(?)</td>
+	<td>ORGANISATION_ID int
+		ACCOUNT_NUMBER int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByValuesExtended</td>
+	<td>SELECT acc.* FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		INNER JOIN RELATIONS rel ON (ACC.ACCOUNT_ID = rel.element_id2 AND rel.relation_name_id = 20)
+
+		WHERE rel.element_id1 = ?
+		AND   ACC.ACCOUNTNUMBER = ?
+		AND   ACC.FUND_CODE = UPPER(?)</td>
+	<td>ORGANISATION_ID int
+		ACCOUNT_NUMBER int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccount_OLD</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		WHERE ACC.ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByAccNumExt_OLD</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		WHERE ACC.ACCNUMEXT = ?</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByValues_OLD</td>
+	<td>SELECT acc.* FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		INNER JOIN RELATIONS rel ON (ACC.ACCOUNT_ID = rel.element_id2 AND rel.relation_name_id = 20)
+
+		WHERE rel.element_id1 = ?
+		AND   ACC.ACCOUNTNUMBER = ?
+		AND   ACC.FUND_CODE = UPPER(?)</td>
+	<td>ORGANISATION_ID int
+		ACCOUNT_NUMBER int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAccount</td>
+	<td>UPDATE ACCOUNT SET
+		MANDATED_ACCOUNT_ID=?,
+		INCOME_DISTRIBUTION_METHOD=?,
+		FUND_CODE=?,
+		ACCOUNT_STATUS_ID=?,
+		DATE_OPENED=?,
+		AURORA_ACCOUNT=?,
+		ACCOUNTNUMBER=?,
+		ACCNUMEXT=?,
+		SUBTITLE=?,
+		SHARE_CLASS_ID=?,
+		REQ_SIGNATURES=?,
+		IS_EXCLUSIVE=?,
+		AML_CHECK_OVERRIDE_USER=?,
+		LAST_UPDATED=SYSDATE,
+		ACCOUNT_TYPE_ID=?,
+		LOAN_TYPE_ID=?,
+		LOAN_TERM=?,
+		AGREEMENT_TYPE_ID=?,
+		ACC_ACCOUNT_CODE=?
+		WHERE ACCOUNT_ID = ?</td>
+	<td>MANDATED_ACCOUNT_ID int
+		INCOME_DISTRIBUTION_METHOD varchar
+		FUND_CODE varchar
+		ACCOUNT_STATUS_ID int
+		DATE_OPENED date
+		AURORA_ACCOUNT int
+		ACCOUNTNUMBER int
+		ACCNUMEXT varchar
+		SUBTITLE varchar
+		SHARE_CLASS_ID int
+		REQ_SIGNATURES int
+		IS_EXCLUSIVE int
+		AML_CHECK_OVERRIDE_USER varchar
+		ACCOUNT_TYPE_ID int
+		LOAN_TYPE_ID int
+		LOAN_TERM int
+		AGREEMENT_TYPE_ID int
+		ACC_ACCOUNT_CODE varchar
+		ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddBankAccount</td>
+	<td>INSERT INTO BANK_ACCOUNT
+		VALUES (?,?,?,?,?,?,?,SYSDATE,?,?)</td>
+	<td>BANK_ACCOUNT_ID int
+		ACCOUNT_NO varchar
+		SORT_CODE varchar
+		ACCOUNT_NAME varchar
+		IBAN varchar
+		SWIFT_CODE varchar
+		BIC_CODE varchar
+		BUILDING_SOCIETY_ROLL_NUMBER varchar
+		ACCOUNT_SHORT_NAME varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccount</td>
+	<td>SELECT * FROM BANK_ACCOUNT
+		WHERE BANK_ACCOUNT_ID = ?</td>
+	<td>BANK_ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateBankAccount</td>
+	<td>UPDATE BANK_ACCOUNT
+		SET ACCOUNT_NO = ?, SORT_CODE = ?, ACCOUNT_NAME = ?, BUILDING_SOCIETY_ROLL_NUMBER = ?,
+		ACCOUNT_SHORT_NAME = ?,
+		LAST_UPDATED=SYSDATE
+		WHERE BANK_ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_NO varchar
+	SORT_CODE varchar
+	ACCOUNT_NAME varchar
+	BUILDING_SOCIETY_ROLL_NUMBER varchar
+	ACCOUNT_SHORT_NAME varchar
+	BANK_ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccountByValues</td>
+	<td>SELECT * FROM BANK_ACCOUNT
+		WHERE ACCOUNT_NO = ? AND SORT_CODE = ? AND BUILDING_SOCIETY_ROLL_NUMBER = ?</td>
+	<td>ACCOUNT_NO varchar
+		SORT_CODE varchar
+		BUILDING_SOCIETY_ROLL_NUMBER varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccountsBySortCodeAndAccountNumber</td>
+	<td>SELECT * FROM BANK_ACCOUNT
+		WHERE ACCOUNT_NO = ? AND SORT_CODE = ?</td>
+	<td>ACCOUNT_NO varchar
+		SORT_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccountsBySubstringValues</td>
+	<td>SELECT * FROM BANK_ACCOUNT
+		WHERE ACCOUNT_NO LIKE ? AND SORT_CODE LIKE ?
+		AND ROWNUM <= ?</td>
+	<td>ACCOUNT_NO varchar
+		SORT_CODE varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccountsByAccountNo</td>
+	<td>SELECT * FROM BANK_ACCOUNT
+		WHERE ACCOUNT_NO like ?
+		AND ROWNUM <= ?</td>
+	<td>ACCOUNT_NO varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOrphanedPcAccounts</td>
+	<td>SELECT DISTINCT ACCOUNT_ID FROM V_ACCOUNT_EXTENDED_CLIENT acc1
+		WHERE FUND_CODE like 'PC'
+		AND ACCOUNTNUMBER NOT IN(
+		  SELECT ACCOUNTNUMBER FROM V_ACCOUNT_EXTENDED_CLIENT acc2 
+		  WHERE FUND_CODE like 'PI' 
+		  AND acc2.ORGANISATION_ID = acc1.ORGANISATION_ID) </td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_AddBankingDetails</td>
+	<td>INSERT INTO CCLA_ACCOUNT_BANKING_DETAILS
+		VALUES (?,?,?,?,?,?,?,?,?)</td>
+	<td>bankingDetailsId int
+		withAccNumber int
+		withSortCode int
+		withAccName varchar
+		incAccNumber int
+		incSortCode int
+		incAccName varchar
+		mandatedCompany varchar
+		mandatedAccNumExt varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityInteractions</td>
+	<td>SELECT inter.*, per.*, i_subj.SUBJECT, i_cat.CATEGORY, CIO.OUTCOME FROM INTERACTION inter
+LEFT JOIN PERSON per ON (inter.PERSON_ID = per.PERSON_ID)
+INNER JOIN REF_INTERACTION_SUBJECT i_subj ON (inter.SUBJECT_ID = i_subj.INTERACTION_SUBJECT_ID)
+LEFT JOIN REF_INTERACTION_CATEGORY i_cat ON (inter.CATEGORY_ID = i_cat.INTERACTION_CATEGORY_ID)
+LEFT JOIN REF_INTERACTION_OUTCOME CIO ON (INTER.OUTCOME_ID = CIO.OUTCOME_ID)
+WHERE inter.ORGANISATION_ID = ?
+ORDER BY inter.INTERACTION_DATE DESC</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityInteractionNotes</td>
+	<td>SELECT mapp.*, notes.* FROM INTERACTION inter 
+INNER JOIN
+CCLA_NOTE_MAPPING mapp ON (INTER.INTERACTION_ID = mapp.interaction_id)
+INNER JOIN 
+NOTE notes ON (mapp.NOTE_ID = notes.NOTE_ID)
+
+WHERE inter.ORGANISATION_ID = ?
+ORDER BY notes.DATE_ADDED ASC</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonInteractions</td>
+	<td>SELECT INTER.*, ORG.ORGANISATION_NAME, SUB.SUBJECT, CAT.CATEGORY, CIO.OUTCOME
+		FROM INTERACTION INTER
+		LEFT JOIN ORGANISATION ORG ON (INTER.ORGANISATION_ID = ORG.ORGANISATION_ID)
+		INNER JOIN REF_INTERACTION_SUBJECT SUB ON (INTER.SUBJECT_ID = SUB.INTERACTION_SUBJECT_ID)
+		LEFT JOIN REF_INTERACTION_CATEGORY CAT ON (INTER.CATEGORY_ID = CAT.INTERACTION_CATEGORY_ID)
+		LEFT JOIN REF_INTERACTION_OUTCOME CIO ON (INTER.OUTCOME_ID = CIO.OUTCOME_ID)
+		WHERE INTER.PERSON_ID=?
+		ORDER BY INTER.INTERACTION_DATE DESC</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionNotes</td>
+	<td>SELECT * FROM INTERACTION_ACTIVITY act 
+		INNER JOIN NOTE notes ON 
+		(act.NOTE_ID = notes.NOTE_ID)
+		WHERE act.INTERACTION_ID = ?
+		ORDER BY notes.DATE_ADDED ASC</td>
+	<td>INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonInteractionNotes</td>
+	<td>SELECT mapp.*, notes.* FROM CCLA_INTERACTION inter 
+INNER JOIN CCLA_NOTE_MAPPING mapp ON (INTER.INTERACTION_ID = mapp.interaction_id)
+INNER JOIN NOTE notes ON (mapp.NOTE_ID = notes.NOTE_ID)
+WHERE inter.PERSON_ID = ?
+ORDER BY notes.DATE_ADDED ASC</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountsAMLStatus</td>
+	<td>SELECT * FROM CCLA_ACCOUNT_AML_STATUS
+		WHERE ENTITY_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteAccountAMLStatus</td>
+	<td>DELETE FROM CCLA_ACCOUNT_AML_STATUS
+		WHERE ACCNUMEXT = ?</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_AddAccountAMLStatus</td>
+	<td>INSERT INTO CCLA_ACCOUNT_AML_STATUS
+		VALUES (?,?,'1')</td>
+	<td>ORGANISATION_ID int
+		ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormTotals</td>
+	<td>SELECT frm.FORM_STATUS, COUNT(*) AS COUNT FROM CCLA_FORM frm INNER JOIN CCLA_PROCESS pr
+ON (frm.PROCESS_ID = pr.PROCESS_ID)
+WHERE pr.CAMPAIGN_ID = ? GROUP BY frm.FORM_STATUS
+ORDER BY frm.FORM_STATUS</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFormTotalsByCompany</td>
+	<td>SELECT refco.COMPANY_NAME AS COMPANY, frm.FORM_STATUS, COUNT(*) AS COUNT FROM CCLA_FORM frm INNER JOIN CCLA_PROCESS pr
+ON (frm.PROCESS_ID = pr.PROCESS_ID)
+INNER JOIN ORGANISATION org on (pr.organisation_id = org.organisation_id)
+INNER JOIN CLIENT_AURORA_MAP cam on (cam.organisation_id = org.organisation_id)
+INNER JOIN REF_COMPANY refco on (cam.company_id = refco.company_id)
+WHERE pr.CAMPAIGN_ID =?
+GROUP BY refco.COMPANY_NAME, frm.FORM_STATUS 
+ORDER BY refco.COMPANY_NAME, frm.FORM_STATUS</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessTotals</td>
+	<td>SELECT RCSS.CAMPSUBJECTSTATUS_NAME AS STATUS, COUNT(*) AS COUNT
+		FROM CAMPAIGN_ENROLMENT CE
+		LEFT JOIN REF_CAMPAIGN_SUBJECT_STATUS RCSS ON (CE.CAMPSUBJECTSTATUS_ID = RCSS.CAMPSUBJECTSTATUS_ID)
+		WHERE CE.CAMPAIGN_ID = ? 
+		GROUP BY RCSS.CAMPSUBJECTSTATUS_NAME
+		ORDER BY RCSS.CAMPSUBJECTSTATUS_NAME
+	</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessIntentionTotals</td>
+	<td>SELECT CES.ENROLMENT_STATUS_NAME, CES.ENROLMENT_STATUS_ID, CSS.CAMPSUBJECTSTATUS_NAME, 
+		CSS.CAMPSUBJECTSTATUS_ID , IIS.INVINTENTSTATUS_NAME,  COUNT(*) AS COUNT, SUM(FII.UNITS) AS TOTAL, SUM(ACCV.ACC_UNITS) AS ACTUAL_TOTAL
+		FROM CAMPAIGN_ENROLMENT CE
+		INNER JOIN REF_CAMPAIGN_ENROLMENT_STATUS CES 
+			ON (CE.ENROLMENT_STATUS_ID = CES.ENROLMENT_STATUS_ID)
+		INNER JOIN REF_CAMPAIGN_SUBJECT_STATUS CSS 
+			ON (CE.CAMPSUBJECTSTATUS_ID = CSS.CAMPSUBJECTSTATUS_ID)
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII 
+			ON (CE.CAMPAIGN_ID = FII.CAMPAIGN_ID AND CE.ORGANISATION_ID = FII.ORGANISATION_ID)
+		LEFT JOIN REF_INVESTMENT_INTENT_STATUS IIS ON (FII.INVINTENTSTATUS_ID = IIS.INVINTENTSTATUS_ID) 
+		LEFT JOIN ACCOUNT_VALUE ACCV ON (FII.ACCOUNT_ID = ACCV.ACCOUNT_ID)
+		WHERE CE.CAMPAIGN_ID=?
+		GROUP BY CES.ENROLMENT_STATUS_NAME, CES.ENROLMENT_STATUS_ID, 
+		CSS.CAMPSUBJECTSTATUS_NAME, CSS.CAMPSUBJECTSTATUS_ID, IIS.INVINTENTSTATUS_NAME</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProcessTotalsByCompany</td>
+	<td>SELECT refco.COMPANY_NAME AS COMPANY, cp.PROCESS_STATUS, COUNT(*) AS COUNT
+FROM CCLA_PROCESS cp 
+INNER JOIN ORGANISATION org on (cp.organisation_id = org.organisation_id)
+INNER JOIN CLIENT_AURORA_MAP cam on (cam.organisation_id = org.organisation_id)
+INNER JOIN REF_COMPANY refco on (cam.company_id = refco.company_id)
+WHERE cp.CAMPAIGN_ID = ? 
+GROUP BY refco.COMPANY_NAME, cp.PROCESS_STATUS
+ORDER BY refco.COMPANY_NAME, cp.PROCESS_STATUS</td>
+	<td>campaignId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRecentOrgDocsByClientNumberAndCompany</td>
+	<td>SELECT * FROM
+(SELECT * FROM Revisions r
+INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+AND dm.xCompany LIKE ?
+AND (dm.xClientNumber = ? OR dm.xClientNumber = ?)
+ORDER BY dInDate DESC)
+WHERE ROWNUM <= ?</td>
+	<td>COMPANY_CODE varchar
+	    CLIENT_NUMBER varchar
+	    CLIENT_NUMBER_PADDED varchar
+		numItems int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRecentOrgDocsByOrgAccountCode</td>
+	<td>SELECT * FROM (
+			SELECT * FROM Revisions r
+			INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND dm.xOrgAccountCode = ?
+			ORDER BY dInDate DESC)
+		WHERE ROWNUM <= ?</td>
+	<td>ORG_ACCOUNT_CODE varchar
+		numItems int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRecentOrgInvoiceDocsByOrgAccountCode</td>
+	<td>SELECT * FROM (
+			SELECT * FROM Revisions r
+			INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+			WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+			AND dm.xOrgAccountCode = ?
+			AND dm.xDocumentClass IN ('INV','INHIST','MULTIINV')
+			ORDER BY dInDate DESC)
+		WHERE ROWNUM <= ?</td>
+	<td>ORG_ACCOUNT_CODE varchar
+		numItems int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionCategories</td>
+	<td>SELECT CATEGORY, COUNT(*) AS TOTAL FROM CCLA_INTERACTIONS
+GROUP BY CATEGORY
+ORDER BY CATEGORY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetIdentityCheck</td>
+	<td>select * from IDENTITY_CHECK where PERSON_ID = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetIdentityCheckHappyScoreByValue</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where HAPPY_SCORE = ?</td>
+	<td>HAPPY_SCORE int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetIdentityCheckUnHappyScoreByValue</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where UNHAPPY_SCORE = ?</td>
+	<td>UNHAPPY_SCORE int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddIdentityCheck</td>
+	<td>insert into IDENTITY_CHECK
+		values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>PERSON_ID int
+	    IS_AUTHENTICATED varchar
+		IS_EXPERIAN_AUTHENTICATED varchar
+	    AUTHENTICATION_INDEX int
+	    DECISION varchar
+		DECISION_TEXT varchar
+		CHECK_DATE date
+		EXPIRY_DATE date
+		RECALCULATE_DATE date
+		RISK_CONDITIONS varchar
+		RISK_CONDITIONS_TEXT varchar
+		REF_NO varchar
+		TOTAL_HAPPY_SCORE int
+		TOTAL_UNHAPPY_SCORE int
+		LEGACY_CHECKED int
+		MANUAL_OVERRIDE int
+		CORE_DATA_CHANGED int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateIdentityCheck</td>
+	<td>UPDATE IDENTITY_CHECK SET
+		IS_AUTHENTICATED=?,
+		IS_EXPERIAN_AUTHENTICATED=?,
+		AUTHENTICATION_INDEX=?,
+		DECISION=?,
+		DECISION_TEXT=?,
+		CHECK_DATE=?,
+		EXPIRY_DATE=?,
+		RECALCULATE_DATE=?,
+		RISK_CONDITIONS=?,
+		RISK_CONDITIONS_TEXT=?,
+		REF_NO=?,
+		TOTAL_HAPPY_SCORE=?,
+		TOTAL_UNHAPPY_SCORE=?,
+		LEGACY_CHECKED=?,
+		MANUAL_OVERRIDE=?,
+		CORE_DATA_CHANGED=?
+		where PERSON_ID = ?</td>
+	<td>IS_AUTHENTICATED int
+		IS_EXPERIAN_AUTHENTICATED int
+		AUTHENTICATION_INDEX int
+		DECISION varchar
+		DECISION_TEXT varchar
+		CHECK_DATE date
+		EXPIRY_DATE date
+		RECALCULATE_DATE date
+		RISK_CONDITIONS varchar
+		RISK_CONDITIONS_TEXT varchar
+		REF_NO varchar
+		TOTAL_HAPPY_SCORE int
+		TOTAL_UNHAPPY_SCORE int
+		LEGACY_CHECKED int
+		MANUAL_OVERRIDE int
+		CORE_DATA_CHANGED int
+		PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAuthenticateRecord</td>
+	<td>update IDENTITY_CHECK set 
+		IS_EXPERIAN_AUTHENTICATED=?, 
+		AUTHENTICATION_INDEX = ?, 
+		DECISION = ?, 
+		DECISION_TEXT=?, 
+		CHECK_DATE=SYSDATE,
+		EXPIRY_DATE=?, 
+		RISK_CONDITIONS=?,
+		RISK_CONDITIONS_TEXT=?,
+		REF_NO=?,
+		CORE_DATA_CHANGED=0
+		where PERSON_ID=?</td>
+	<td>IS_AUTHENTICATED varchar
+	    AUTHENTICATION_INDEX varchar
+	    DECISION varchar
+	    DECISION_TEXT varchar
+		EXPIRY_DATE date
+	    RISK_CONDITIONS varchar
+	    RISK_CONDITIONS_TEXT varchar
+	    REF_NO varchar
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuthenticateRecord</td>
+	<td>select * from IDENTITY_CHECK where PERSON_ID = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetIsAuthenticated</td>
+	<td>select * from IDENTITY_CHECK where PERSON_ID = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_ClearCoreDataAuthenticateRecord</td>
+	<td>update IDENTITY_CHECK set CORE_DATA_CHANGED=0
+where PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_SetExpiryDate_Authenticate</td>
+	<td>update IDENTITY_CHECK set EXPIRY_DATE=?
+where PERSON_ID=?</td>
+	<td>EXPIRY_DATE date
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_InsertAuthenticateRecord</td>
+	<td>insert into IDENTITY_CHECK
+values (?,'',?,?,?,?,SYSDATE,?,SYSDATE,?,?,?,1,1,'','','')</td>
+	<td>PERSON_ID int
+	    IS_AUTHENTICATED varchar
+	    AUTHENTICATION_INDEX varchar
+	    DECISION varchar
+	    DECISION_TEXT varchar
+		EXPIRY_DATE date
+	    RISK_CONDITIONS varchar
+	    RISK_CONDITIONS_TEXT varchar
+	    REF_NO varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateExpireAuthenticationRecalculateDate</td>
+	<td>update IDENTITY_CHECK set RECALCULATE_DATE=SYSDATE-1
+	where PERSON_ID = ?</td>
+	<td>PERSON_ID int
+	    </td>
+</tr>
+<tr>
+	<td>qClientServices_InsertIsAuthenticated</td>
+	<td>insert into IDENTITY_CHECK values
+	(?,'2','','','',SYSDATE,SYSDATE,SYSDATE,'','','',1,1,'','')
+	</td>
+	<td>PERSON_ID int
+	    </td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateIsAuthenticated</td>
+	<td>update IDENTITY_CHECK set IS_AUTHENTICATED = ?, RECALCULATE_DATE=SYSDATE+7
+	where PERSON_ID = ?</td>
+	<td>IS_AUTHENTICATED varchar
+	PERSON_ID int
+	    </td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_Postcode</td>
+	<td>select PERSON.person_id from PERSON, address, contact_point
+ where  ADDRESS.postcode like ? AND address.address_id = contact_point.address_id
+ AND PERSON.person_id = contact_point.element_id
+ and ROWNUM <= ?</td>
+	<td>POSTCODE varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_PostcodeName</td>
+	<td>select PERSON.person_id from PERSON, address, contact_point
+ where  ADDRESS.postcode like ? AND address.address_id = contact_point.address_id
+ AND PERSON.person_id = contact_point.element_id  and (UPPER(PERSON.LAST_NAME) like ? OR UPPER(PERSON.FULL_NAME) like ?) 
+ and ROWNUM <= ?</td>
+	<td>POSTCODE varchar
+	LAST_NAME varchar
+	LAST_NAME varchar
+	numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupClient_Postcode</td>
+	<td>select organisation.organisation_id  from organisation, address, contact_point
+ where  ADDRESS.postcode like ? AND address.address_id = contact_point.address_id
+ AND organisation.organisation_id = contact_point.element_id and ROWNUM <= ?</td>
+	<td>POSTCODE varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupEntity_Postcode</td>
+	<td>select organisation.organisation_id from organisation, address, contact_point
+ where  ADDRESS.postcode like ? AND address.address_id = contact_point.address_id
+ AND organisation.organisation_id = contact_point.element_id and ROWNUM <= ?</td>
+	<td>POSTCODE varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupEntity_PostcodeName</td>
+	<td>select organisation.organisation_id from organisation, address, contact_point
+ where  address.addr_postcode like ? AND address.address_id = contact_point.address_id
+ and upper(organisation.name) like ?
+ AND organisation.organisation_id = contact_point.element_id  and ROWNUM <= ?</td>
+	<td>POSTCODE varchar
+	CLIENT_NAME varchar
+	numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_Name</td>
+	<td>select person_id from PERSON
+ where (UPPER(LAST_NAME) like ? OR UPPER(FULL_NAME) like ?)
+ and ROWNUM <= ?
+ </td>
+	<td>LAST_NAME varchar
+	    FULL_NAME varchar
+		numRows int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupClient_Name</td>
+	<td>select organisation_id from organisation
+ where UPPER(NAME) like ? 
+ </td>
+	<td>ORGANISATION_NAME varchar
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupEntity_Name</td>
+	<td>select organisation_id from organisation
+ where UPPER(organisation_name) like ? 
+ and ROWNUM <= ?
+ </td>
+	<td>CLIENT_NAME varchar
+		numRows int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupEntity_FormId</td>
+	<td>select ent.ENTITY_ID FROM
+		CCLA_FORM frm INNER JOIN CCLA_ENTITY ent ON (frm.ENTITY_ID = ent.ENTITY_ID)
+		WHERE frm.FORM_ID = ?
+		AND ROWNUM <= ?</td>
+	<td>FORM_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_FormId</td>
+	<td>select p.PERSON_ID FROM
+		CCLA_FORM frm INNER JOIN PERSON p ON (frm.PERSON_ID = p.PERSON_ID)
+		WHERE frm.FORM_ID = ?
+		AND ROWNUM <= ?</td>
+	<td>FORM_ID int
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_Address</td>
+	<td>select PERSON.person_id from PERSON, address, contact_point
+ where ADDRESS.postcode like ?
+ AND (ADDRESS.FLAT like ? OR ADDRESS.HOUSENAME like ? or ADDRESS.HOUSENUMBER like ?)
+ AND address.address_id = contact_point.address_id
+ AND PERSON.person_id = contact_point.element_id
+ </td>
+	<td>POSTCODE varchar
+	    FLAT varchar
+	    HOUSENAME varchar
+	    HOUSENUMBER varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupPerson_Detail</td>
+	<td>SELECT p.PERSON_ID, P.PERSON_ACCOUNT_CODE,TITLE_ID, FIRST_NAME, LAST_NAME, FULL_NAME,POSTCODE, DATE_OF_BIRTH from PERSON p LEFT JOIN
+
+		(SELECT cm.ELEMENT_ID, addr.POSTCODE FROM CONTACT_POINT cm INNER JOIN 
+		 ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)
+         WHERE cm.IS_DEFAULT = 1) cma 
+		 
+		 ON (cma.ELEMENT_ID = p.PERSON_ID)	 
+		where p.person_id IN (?)
+ORDER BY p.PERSON_ID</td>
+	<td>PERSON_ID_LIST int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupAccount_Detail</td>
+	<td>select acc.account_id, acc.accnumext, acc.ACCOUNTNUMBER, acc.SUBTITLE, acc.date_opened, acc.FUND_CODE
+
+		FROM account acc 
+			WHERE account_id in (?)
+			</td>
+		<td>ACCOUNT_ID_LIST int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetLookupEntity_Detail</td>
+	<td>SELECT e.ORGANISATION_ID, e.ORG_ACCOUNT_CODE,e.ORGANISATION_NAME as NAME, cma.POSTCODE, CAM.CLIENT_NUMBER from ORGANISATION e LEFT JOIN
+		(SELECT cm.ELEMENT_ID, addr.POSTCODE FROM CONTACT_POINT cm INNER JOIN 
+		 ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)
+         WHERE cm.IS_DEFAULT = 1) cma   
+		 ON (cma.ELEMENT_ID = e.ORGANISATION_ID) 
+        LEFT JOIN (
+          SELECT cli.CLIENT_NUMBER, cli.ORGANISATION_ID FROM CLIENT_AURORA_MAP cli
+          GROUP BY cli.ORGANISATION_ID, cli.CLIENT_NUMBER
+        ) cam on  (cam.ORGANISATION_ID = e.ORGANISATION_ID)
+        
+		 --LEFT JOIN REF_COMPANY com on (cam.COMPANY_ID = com.COMPANY_ID)
+		where e.ORGANISATION_ID IN (?)
+		ORDER BY ORGANISATION_ID</td>
+	<td>CLIENT_ID_LIST int</td>
+</tr>
+<tr>
+	<td>qClientServices_CreateEntityRecord</td>
+	<td>INSERT INTO ORGANISATION (ORGANISATION_ID, ORG_ACCOUNT_CODE, 
+			INCORPORATION_COUNTRY, BUSINESS_DOMICILE, 
+			CATEGORY_ID,ORGANISATION_NAME,DATE_ENROLLED,DATE_ADDED,
+			LAST_UPDATED,GROSS_DISTRIBUTION_NUMBER,CLASSIFICATION_ID,GSS_LOCATION_ID)
+		VALUES(?,?,?,?,?,?,?,SYSDATE,SYSDATE,?,?,?)</td>
+	<td>ORGANISATION_ID int
+		ORG_ACCOUNT_CODE varchar
+		INCORPORATION_COUNTRY int
+		BUSINESS_DOMICILE int
+		CATEGORY_ID int
+		ORGANISATION_NAME varchar
+		DATE_ENROLLED date
+		GROSS_DISTRIBUTION_NUMBER varchar
+		CLASSIFICATION_ID int
+		GSS_LOCATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateEntity</td>
+	<td>UPDATE ORGANISATION
+		SET ORG_ACCOUNT_CODE=?,
+		ORGANISATION_NAME=?,
+		INCORPORATION_COUNTRY=?,
+		BUSINESS_DOMICILE=?,
+		CATEGORY_ID=?,
+		DATE_ENROLLED=?,
+		GROSS_DISTRIBUTION_NUMBER=?,
+		CLASSIFICATION_ID=?,
+		GSS_LOCATION_ID=?,
+		LAST_UPDATED=SYSDATE
+		WHERE ORGANISATION_ID=?</td>
+	<td>ORG_ACCOUNT_CODE varchar
+		ORGANISATION_NAME varchar
+		INCORPORATION_COUNTRY int
+		BUSINESS_DOMICILE int
+		CATEGORY_ID int
+		DATE_ENROLLED date
+		GROSS_DISTRIBUTION_NUMBER varchar
+		CLASSIFICATION_ID int
+		GSS_LOCATION_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntity</td>
+	<td>SELECT * FROM ORGANISATION o
+		WHERE o.ORGANISATION_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityExtended</td>
+	<td>SELECT o.*, catName.ORG_CATEGORY_NAME FROM ORGANISATION o
+		LEFT JOIN REF_ORG_CATEGORY CAT ON (O.CATEGORY_ID = CAT.CATEGORY_ID)
+		LEFT JOIN REF_ORG_CATEGORY_NAME catName ON (cat.CATEGORY_NAME_ID = catName.ORG_CATEGORY_NAME_ID)
+		WHERE o.ORGANISATION_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityByOrgAccountCode</td>
+	<td>SELECT * FROM ORGANISATION O 
+		LEFT JOIN REF_ORG_CATEGORY CAT ON (O.CATEGORY_ID = CAT.CATEGORY_ID)
+		WHERE ORG_ACCOUNT_CODE = ?</td>
+	<td>ORG_ACCOUNT_CODE varchar</td>
+</tr>
+
+<tr>
+	<td>qClientServices_GetOrganisation</td>
+	<td>SELECT * FROM ORGANISATION WHERE ORGANISATION_ID = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraClient</td>
+	<td>SELECT * FROM CLIENT_AURORA_MAP
+		WHERE CLIENT_AURORA_MAP_ID = ?</td>
+	<td>CLIENT_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientByAuroraId</td>
+	<td>SELECT * FROM CCLA_CLIENT_AURORA_MAP acl 
+		INNER JOIN
+		CCLA_ENTITY ent ON (ent.ENTITY_ID = acl.client_id) 
+		LEFT JOIN CCLA_CLIENT cl ON (ent.ENTITY_ID = cl.ENTITY_ID)
+		WHERE acl.client_number = ? AND acl.company = ?</td>
+	<td>AURORA_CLIENT_NUMBER int
+		COMPANY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraClientsByEntityId</td>
+	<td>SELECT ACL.*, 
+		CL.ORGANISATION_NAME, 
+		CM.COMPANY_CODE, CM.COMPANY_NAME, CM.ORG_CODE_PREFIX, CM.CLIENT_NUMBER_PADDING, CM.ACCOUNTNUMBER_PADDING
+		FROM CLIENT_AURORA_MAP ACL
+		INNER JOIN ORGANISATION CL ON (CL.ORGANISATION_ID = ACL.ORGANISATION_ID)
+		INNER JOIN REF_COMPANY CM ON (CM.COMPANY_ID = ACL.COMPANY_ID)
+		WHERE CL.ORGANISATION_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraPerson</td>
+	<td>SELECT * FROM PERSON_AURORA_MAP pmap
+		WHERE PERSON_AURORA_MAP_ID=?</td>
+	<td>PERSON_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraPersonLinkbyId</td>
+	<td>SELECT * FROM PERSON_AURORA_MAP pmap
+		INNER JOIN REF_COMPANY cmp ON (pmap.COMPANY_ID = cmp.COMPANY_ID)
+		WHERE PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraPersonLink</td>
+	<td>SELECT * FROM PERSON_AURORA_MAP
+		WHERE PERSON_AURORA_MAP_ID=?</td>
+	<td>PERSON_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddClientAuroraMap</td>
+	<td>INSERT INTO CLIENT_AURORA_MAP
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,SYSDATE,?)</td>
+	<td>CLIENT_AURORA_MAP_ID int
+		ORGANISATION_ID int
+		COMPANY_ID int
+		CLIENT_NUMBER int
+		CONTRIBUTER_TYPE_CODE int
+		SUBDIVISION_CODE int
+		CONTRIBUTER_CODE int
+		INCOME_DIST_REPORT_IND int              
+		INCOME_DIST_REPORT_PAPER_IND int        
+		DEPOSIT_NO_OF_STATEMENTS int
+		UNITISED_NO_OF_STATEMENTS int
+		STATEMENTS_MONTH_1 int                  
+		STATEMENTS_MONTH_2 int                  
+		STATEMENTS_MONTH_3 int                  
+		STATEMENTS_MONTH_4 int                  
+		STATEMENTS_MONTH_ALL int                
+		BULK_DEPOSIT_STATEMENT_IND int          
+		DEPOSIT_WITHDRAW_BOOKS_IND int          
+		AUTO_STATIONARY_ORDERED_IND int         
+		QUARTERLY_RPT_CLIENT_IND int            
+		QUARTERLY_RPT_MANAGER_INITS varchar
+		MARKETING_GROUP_ID int
+		MARKETING_SUBGROUP_ID int
+		ACCOUNT_GROUP_ID int
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateClientAuroraMap</td>
+	<td>UPDATE CLIENT_AURORA_MAP SET
+		ORGANISATION_ID = ?,
+		COMPANY_ID = ?,
+		CLIENT_NUMBER = ?,
+		CONTRIBUTER_TYPE_CODE = ?,
+		SUBDIVISION_CODE = ?,
+		CONTRIBUTER_CODE = ?,
+		INCOME_DIST_REPORT_IND = ?,             
+		INCOME_DIST_REPORT_PAPER_IND = ?,        
+		DEPOSIT_NO_OF_STATEMENTS = ?,
+		UNITISED_NO_OF_STATEMENTS = ?,
+		STATEMENTS_MONTH_1 = ?,                  
+		STATEMENTS_MONTH_2 = ?,                 
+		STATEMENTS_MONTH_3 = ?,                 
+		STATEMENTS_MONTH_4 = ?,                 
+		STATEMENTS_MONTH_ALL = ?,               
+		BULK_DEPOSIT_STATEMENT_IND = ?,         
+		DEPOSIT_WITHDRAW_BOOKS_IND = ?,          
+		AUTO_STATIONARY_ORDERED_IND = ?,        
+		QUARTERLY_RPT_CLIENT_IND = ?,            
+		QUARTERLY_RPT_MANAGER_INITS = ?,
+		MARKETING_GROUP_ID = ?,
+		MARKETING_SUBGROUP_ID = ?,
+		ACCOUNT_GROUP_ID = ?,
+		LAST_UPDATED = SYSDATE,
+		LAST_UPDATED_BY = ?
+		WHERE CLIENT_AURORA_MAP_ID = ?</td>
+	<td>ORGANISATION_ID int
+		COMPANY_ID int
+		CLIENT_NUMBER int
+		CONTRIBUTER_TYPE_CODE int
+		SUBDIVISION_CODE int
+		CONTRIBUTER_CODE int
+		INCOME_DIST_REPORT_IND int              
+		INCOME_DIST_REPORT_PAPER_IND int        
+		DEPOSIT_NO_OF_STATEMENTS int
+		UNITISED_NO_OF_STATEMENTS int
+		STATEMENTS_MONTH_1 int                  
+		STATEMENTS_MONTH_2 int                  
+		STATEMENTS_MONTH_3 int                  
+		STATEMENTS_MONTH_4 int                  
+		STATEMENTS_MONTH_ALL int                
+		BULK_DEPOSIT_STATEMENT_IND int          
+		DEPOSIT_WITHDRAW_BOOKS_IND int          
+		AUTO_STATIONARY_ORDERED_IND int         
+		QUARTERLY_RPT_CLIENT_IND int            
+		QUARTERLY_RPT_MANAGER_INITS varchar
+		MARKETING_GROUP_ID int
+		MARKETING_SUBGROUP_ID int
+		ACCOUNT_GROUP_ID int
+		LAST_UPDATED_BY varchar
+		CLIENT_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddPersonAuroraMap</td>
+	<td>INSERT INTO PERSON_AURORA_MAP
+		VALUES (?,?,?,?,?,?,?,SYSDATE,?)</td>
+	<td>PERSON_AURORA_MAP_ID int
+		PERSON_ID int
+		COMPANY_ID int
+		CORR_ID int
+		REPORT_USAGE int
+		REPORT_MAIL_INDICATOR int
+		REPORT_EMAIL_INDICATOR int
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdatePersonAuroraMap</td>
+	<td>UPDATE PERSON_AURORA_MAP
+		SET PERSON_ID = ?, COMPANY_ID = ?, CORR_ID = ?,
+		REPORT_USAGE = ?, REPORT_MAIL_INDICATOR = ?, REPORT_EMAIL_INDICATOR = ?,
+		LAST_UPDATED = SYSDATE, LAST_UPDATED_BY = ?
+		WHERE PERSON_AURORA_MAP_ID = ?</td>
+	<td>PERSON_ID int
+		COMPANY_ID int
+		CORR_ID int
+		REPORT_USAGE int
+		REPORT_MAIL_INDICATOR int
+		REPORT_EMAIL_INDICATOR int
+		LAST_UPDATED_BY varchar
+		PERSON_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteClientAuroraMap</td>
+	<td>DELETE FROM CLIENT_AURORA_MAP
+		WHERE CLIENT_AURORA_MAP_ID = ?</td>
+	<td>CLIENT_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeletePersonAuroraMap</td>
+	<td>DELETE FROM PERSON_AURORA_MAP
+		WHERE PERSON_AURORA_MAP_ID = ?</td>
+	<td>PERSON_AURORA_MAP_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraClientsByAccNumExt</td>
+	<td>SELECT acl.* FROM CCLA_ACCOUNT acc
+			INNER JOIN CCLA_ENTITY ent ON (ent.ENTITY_ID = acc.ACC_CLIENT_ID)
+			INNER JOIN CCLA_CLIENT_AURORA_MAP acl ON (ent.ENTITY_ID = acl.CLIENT_ID)
+			WHERE acc.ACCNUMEXT = ?</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraClientsByAccountId</td>
+	<td>SELECT acl.* FROM CCLA_ACCOUNT acc
+			INNER JOIN CCLA_ENTITY ent ON (ent.ENTITY_ID = acc.ACC_CLIENT_ID)
+			INNER JOIN CCLA_CLIENT_AURORA_MAP acl ON (ent.ENTITY_ID = acl.CLIENT_ID)
+			WHERE acc.ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddAccount</td>
+	<td>insert into ACCOUNT
+values (?,?,?,?,?,?,?,?,?,?,?,?,?,'',SYSDATE,?,?,?,?,?)</td>
+	<td>ACCOUNT_ID int
+		MANDATED_ACCOUNT_ID int
+	    INCOME_DISTRIBUTION_METHOD varchar
+	    FUND_CODE varchar
+	    ACCOUNT_STATUS_ID int
+	    AURORA_ACCOUNT int
+		ACCOUNTNUMBER int
+		ACCNUMEXT varchar		
+		SUBTITLE varchar
+		DATE_OPENED date
+		SHARE_CLASS_ID int
+		REQ_SIGNATURES int	
+		IS_EXCLUSIVE int
+		ACCOUNT_TYPE_ID int
+		LOAN_TYPE_ID int
+		LOAN_TERM int
+		AGREEMENT_TYPE_ID int
+		ACC_ACCOUNT_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_CreatePersonRecord</td>
+	<td>insert into PERSON
+values (?,?,?,?,?,?,?,?,?,?,?,?,?,0,SYSDATE,SYSDATE,NULL)</td>
+	<td>PERSON_ID int
+		PERSON_ACCOUNT_CODE varchar
+		SALUTATION varchar
+	    TITLE_ID int
+	    FIRST_NAME varchar
+	    MIDDLE_NAME varchar
+	    LAST_NAME varchar
+		FULL_NAME varchar
+		GENDER_ID int		
+		QUALIFICATIONS varchar
+		JOB_TITLE varchar
+		DATE_OF_BIRTH date
+		CONSENT_TO_AUTH int
+</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdatePersonRecord</td>
+	<td>update PERSON
+	set PERSON_ACCOUNT_CODE = ?,
+		SALUTATION=?,
+		TITLE_ID=?,
+		FIRST_NAME=?,
+		MIDDLE_NAME=?,
+		LAST_NAME=?,
+		FULL_NAME=?,
+		QUALIFICATIONS=?,
+		JOB_TITLE=?,
+		DATE_OF_BIRTH=?,
+		GENDER_ID=?,
+		CONSENT_TO_AUTH=?,
+		IS_DECEASED=?,
+		LAST_UPDATED=SYSDATE
+	where PERSON_ID=?			
+	</td>
+	<td>
+		PERSON_ACCOUNT_CODE varchar
+		SALUTATION varchar
+	    TITLE_ID varchar
+	    FIRST_NAME varchar
+	    MIDDLE_NAME varchar
+	    LAST_NAME varchar
+		FULL_NAME varchar
+		QUALIFICATIONS varchar
+		JOB_TITLE varchar
+		DATE_OF_BIRTH date
+		GENDER_ID varchar
+		CONSENT_TO_AUTH int
+		IS_DECEASED int
+		PERSON_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_CreateAddressRecord</td>
+	<td>INSERT INTO ADDRESS
+values (?,?,?,?,?,?,?,?,?,?,SYSDATE,?)</td>
+	<td>ADDRESS_ID int
+		FLAT varchar
+	    HOUSENAME varchar
+	    HOUSENUMBER varchar
+	    STREET varchar
+		DISTRICT varchar
+	    CITY varchar
+		COUNTY varchar
+		COUNTRY varchar
+		POSTCODE varchar
+		QAS_VALID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCountries</td>
+	<td>SELECT * FROM REF_COUNTRY
+	ORDER BY COUNTRY_NAME</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementIdentifiers</td>
+	<td>SELECT * FROM REF_ELEMENT_IDENTIFIERS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementIdentifiersByType</td>
+	<td>SELECT * FROM REF_ELEMENT_IDENTIFIERS
+		WHERE ELEMENT_TYPE_ID = ?</td>
+	<td>ELEMENT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementIdentifiersApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_IDENTIFIERS elemIds
+		INNER JOIN ELEMENT_IDENTIFIERS_APPLIED idsApplied ON 
+		(elemIds.ELEMENT_IDENTIFIER_ID = idsApplied.ELEMENT_IDENTIFIER_ID AND idsApplied.ELEMENT_ID=?)</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementIdentifierApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_IDENTIFIERS elemIds
+		INNER JOIN ELEMENT_IDENTIFIERS_APPLIED idsApplied ON 
+		(elemIds.ELEMENT_IDENTIFIER_ID = idsApplied.ELEMENT_IDENTIFIER_ID 
+			AND idsApplied.ELEMENT_ID=? AND idsApplied.ELEMENT_IDENTIFIER_ID=?)</td>
+	<td>ELEMENT_ID int
+		ELEMENT_IDENTIFIER_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddElementIdentifierApplied</td>
+	<td>INSERT INTO ELEMENT_IDENTIFIERS_APPLIED 
+		(ELEMENT_ID,ELEMENT_IDENTIFIER_ID,IDENTIFIER_VALUE,DATE_ADDED,LAST_UPDATED,LAST_UPDATED_BY)
+		VALUES(?,?,?,SYSDATE,SYSDATE,?)</td>
+	<td>ELEMENT_ID int
+		ELEMENT_IDENTIFIER_ID int
+		IDENTIFIER_VALUE varchar
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateElementIdentifierApplied</td>
+	<td>UPDATE ELEMENT_IDENTIFIERS_APPLIED
+		SET IDENTIFIER_VALUE=?,
+		LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?
+		WHERE ELEMENT_ID=? AND ELEMENT_IDENTIFIER_ID=?</td>
+	<td>IDENTIFIER_VALUE varchar
+		LAST_UPDATED_BY varchar
+		ELEMENT_ID int
+		ELEMENT_IDENTIFIER_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteElementIdentifierApplied</td>
+	<td>DELETE FROM ELEMENT_IDENTIFIERS_APPLIED
+		WHERE ELEMENT_ID=? AND ELEMENT_IDENTIFIER_ID=?</td>
+	<td>ELEMENT_ID int
+		ELEMENT_IDENTIFIER_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttribute</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES
+		WHERE ELEMENT_ATTRIBUTE_ID = ?</td>
+	<td>ELEMENT_ATTRIBUTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesWithElementType</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN REF_DATA_TYPE dt ON (attribs.ELEMENT_ATTRIBUTE_DATA_TYPE = dt.DATA_TYPE_NAME)
+		INNER JOIN REF_ELEMENT_ATTRIBUTE_TYPE at ON (attribs.ELEMENT_ATTRIBUTE_TYPE_ID = at.ELEMENT_ATTRIBUTE_TYPE_ID)
+		LEFT JOIN REF_VERIFICATION_SOURCE src ON (attribs.VERIFICATION_SOURCE_ID = src.VERIFICATION_SOURCE_ID)
+		WHERE attribs.ELEMENT_TYPE_ID=?
+		ORDER BY attribs.ELEMENT_ATTRIBUTE_TYPE_ID, attribs.ELEMENT_ATTRIBUTE_ID</td>
+	<td>ELEMENT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesWithElementTypeAndAttributeType</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN REF_DATA_TYPE dt ON (attribs.ELEMENT_ATTRIBUTE_DATA_TYPE = dt.DATA_TYPE_NAME)
+		INNER JOIN REF_ELEMENT_ATTRIBUTE_TYPE at ON (attribs.ELEMENT_ATTRIBUTE_TYPE_ID = at.ELEMENT_ATTRIBUTE_TYPE_ID)
+		LEFT JOIN REF_VERIFICATION_SOURCE src ON (attribs.VERIFICATION_SOURCE_ID = src.VERIFICATION_SOURCE_ID)
+		WHERE attribs.ELEMENT_TYPE_ID=? AND attribs.ELEMENT_ATTRIBUTE_TYPE_ID=?
+		ORDER BY attribs.ELEMENT_ATTRIBUTE_TYPE_ID, attribs.ELEMENT_ATTRIBUTE_ID</td>
+	<td>ELEMENT_TYPE_ID int
+		ELEMENT_ATTRIBUTE_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesWithVerificationSource</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN REF_VERIFICATION_SOURCE src ON (attribs.VERIFICATION_SOURCE_ID = src.VERIFICATION_SOURCE_ID)
+		INNER JOIN REF_DATA_TYPE dt ON (attribs.ELEMENT_ATTRIBUTE_DATA_TYPE = dt.DATA_TYPE_NAME)
+		INNER JOIN REF_ELEMENT_ATTRIBUTE_TYPE at ON (attribs.ELEMENT_ATTRIBUTE_TYPE_ID = at.ELEMENT_ATTRIBUTE_TYPE_ID)
+		WHERE attribs.ELEMENT_TYPE_ID=?
+		ORDER BY attribs.ELEMENT_ATTRIBUTE_TYPE_ID, attribs.ELEMENT_ATTRIBUTE_ID</td>
+	<td>ELEMENT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesWithoutVerificationSource</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN REF_DATA_TYPE dt ON (attribs.ELEMENT_ATTRIBUTE_DATA_TYPE = dt.DATA_TYPE_NAME)
+		INNER JOIN REF_ELEMENT_ATTRIBUTE_TYPE at ON (attribs.ELEMENT_ATTRIBUTE_TYPE_ID = at.ELEMENT_ATTRIBUTE_TYPE_ID)
+		WHERE attribs.ELEMENT_TYPE_ID=? AND VERIFICATION_SOURCE_ID IS NULL
+		ORDER BY attribs.ELEMENT_ATTRIBUTE_TYPE_ID, attribs.ELEMENT_ATTRIBUTE_ID</td>
+	<td>ELEMENT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED attribApplied ON 
+		(attribs.ELEMENT_ATTRIBUTE_ID = attribApplied.ELEMENT_ATTRIBUTE_ID AND attribApplied.ELEMENT_ID=?)</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetVerifiedSourceElementAttributesApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED attribApplied ON 
+		(attribs.ELEMENT_ATTRIBUTE_ID = attribApplied.ELEMENT_ATTRIBUTE_ID AND attribApplied.ELEMENT_ID=?)
+		WHERE attribs.VERIFICATION_SOURCE_ID IS NOT NULL</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributesByAttributeTypeApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED attribApplied ON 
+		(attribs.ELEMENT_ATTRIBUTE_ID = attribApplied.ELEMENT_ATTRIBUTE_ID AND attribApplied.ELEMENT_ID=?)
+		WHERE attribs.ELEMENT_ATTRIBUTE_TYPE_ID = ?</td>
+	<td>ELEMENT_ID int
+		ATTRIBUTE_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetVerifiedSourceElementAttributesByAttributeTypeApplied</td>
+	<td>SELECT * FROM REF_ELEMENT_ATTRIBUTES attribs
+		INNER JOIN ELEMENT_ATTRIBUTE_APPLIED attribApplied ON 
+		(attribs.ELEMENT_ATTRIBUTE_ID = attribApplied.ELEMENT_ATTRIBUTE_ID AND attribApplied.ELEMENT_ID=?)
+		WHERE attribs.VERIFICATION_SOURCE_ID IS NOT NULL
+		AND attribs.ELEMENT_ATTRIBUTE_TYPE_ID = ?</td>
+	<td>ELEMENT_ID int
+		ATTRIBUTE_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementAttributeApplied</td>
+	<td>SELECT * FROM ELEMENT_ATTRIBUTE_APPLIED 
+		WHERE ELEMENT_ID = ? 
+		AND ELEMENT_ATTRIBUTE_ID = ?</td>
+	<td>ELEMENT_ID int
+		ELEMENT_ATTRIBUTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddElementAttributeApplied</td>
+	<td>INSERT INTO ELEMENT_ATTRIBUTE_APPLIED 
+		(ELEMENT_ID,ELEMENT_ATTRIBUTE_ID,DATE_ADDED,ATTRIBUTE_STATUS,LAST_UPDATED,LAST_UPDATED_BY,ATTRIBUTE_VALUE,DOC_GUID)
+		VALUES(?,?,SYSDATE,?,SYSDATE,?,?,?)</td>
+	<td>ELEMENT_ID int
+		ELEMENT_ATTRIBUTE_ID int
+		ATTRIBUTE_STATUS int
+		LAST_UPDATED_BY varchar
+		ATTRIBUTE_VALUE varchar
+		DOC_GUID varchar
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateElementAttributeApplied</td>
+	<td>UPDATE ELEMENT_ATTRIBUTE_APPLIED 
+		SET ATTRIBUTE_STATUS=?,
+		ATTRIBUTE_VALUE=?,
+		DOC_GUID=?,
+		LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?
+		WHERE ELEMENT_ID=? AND ELEMENT_ATTRIBUTE_ID=?</td>
+	<td>ATTRIBUTE_STATUS int
+		ATTRIBUTE_VALUE varchar
+		DOC_GUID string
+		LAST_UPDATED_BY varchar
+		ELEMENT_ID int
+		ELEMENT_ATTRIBUTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteElementAttributeApplied</td>
+	<td>DELETE FROM ELEMENT_ATTRIBUTE_APPLIED
+		WHERE ELEMENT_ID=? AND ELEMENT_ATTRIBUTE_ID=?</td>
+	<td>ELEMENT_ID int
+		ELEMENT_ATTRIBUTE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetVerifiedSourceAttributesAppliedForElement</td>
+	<td>SELECT * FROM ELEMENT_ATTRIBUTE_APPLIED attrAppl
+		INNER JOIN REF_ELEMENT_ATTRIBUTES attr ON (attrAppl.ELEMENT_ATTRIBUTE_ID = attr.ELEMENT_ATTRIBUTE_ID)
+		WHERE ELEMENT_ID = ?
+		AND VERIFICATION_SOURCE_ID IS NOT NULL
+		AND ATTRIBUTE_STATUS = 1</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAddressRecord</td>
+	<td>update ADDRESS
+	SET FLAT=?,
+	HOUSENUMBER=?,
+	HOUSENAME=?,
+	STREET=?,
+	DISTRICT=?,
+	CITY=?,
+	COUNTY=?,
+	COUNTRY=?,
+	POSTCODE=?,
+	QAS_VALID=?,
+	LAST_UPDATED=SYSDATE
+	where ADDRESS_ID = ?
+	</td>
+	<td>FLAT varchar
+	    HOUSENUMBER varchar
+	    HOUSENAME varchar
+	    STREET varchar
+		DISTRICT varchar
+	    CITY varchar
+		COUNTY varchar
+		COUNTRY varchar
+		POSTCODE varchar
+		QAS_VALID int
+		ADDRESS_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_AddContact</td>
+	<td>INSERT INTO CONTACT_POINT (
+		CONTACT_ID,
+		SUBMETHOD_ID,
+		RELATION_ID,
+		ELEMENT_ID,
+		VALUE,
+		ADDRESS_ID,
+		IS_DEFAULT,
+		IS_DUBIOUS,
+		IS_EXPERIAN,
+		LAST_UPDATED,
+		DATE_ADDED,
+		DO_NOT_CONTACT_FLAG,
+		AUTH_STATUS_ID)
+		VALUES (?,?,?,?,?,?,?,?,?,SYSDATE,SYSDATE,?,?)</td>
+	<td>CONTACT_ID int
+		SUBMETHOD_ID int
+		RELATION_ID int
+		ELEMENT_ID int
+	    VALUE varchar
+	    ADDRESS_ID int
+		IS_DEFAULT int		
+		IS_DUBIOUS int
+		IS_EXPERIAN int
+		DO_NOT_CONTACT_FLAG int
+		AUTH_STATUS_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetContactMethodIdFromSubmethodId</td>
+	<td>SELECT METHOD_ID 
+		FROM REF_CONTACT_SUBMETHOD 
+		WHERE SUBMETHOD_ID=?</td>
+	<td>SUBMETHOD_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonDetails</td>
+	<td>select * from person p 
+	inner join element e on 
+	(p.person_id=e.element_id) where 
+	p.PERSON_ID = ?</td>
+	<td>PERSON_ID varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetContact</td>
+	<td>SELECT CP.*,CSM.*, AD.* FROM CONTACT_POINT CP 
+		LEFT JOIN ADDRESS AD ON (CP.ADDRESS_ID = AD.ADDRESS_ID)
+		JOIN REF_CONTACT_SUBMETHOD CSM ON (CSM.SUBMETHOD_ID = CP.SUBMETHOD_ID)
+		WHERE CONTACT_ID=?</td>
+	<td>CONTACT_ID</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateContact</td>
+	<td>UPDATE CONTACT_POINT
+		SET SUBMETHOD_ID=?,
+		VALUE=?,
+		ADDRESS_ID=?,
+		IS_DEFAULT=?,
+		IS_DUBIOUS=?,
+		IS_EXPERIAN=?,
+		DO_NOT_CONTACT_FLAG=?,
+		AUTH_STATUS_ID=?,
+		LAST_UPDATED=SYSDATE
+		WHERE CONTACT_ID=?</td>
+	<td>SUBMETHOD_ID int
+	    VALUE varchar
+	    ADDRESS_ID int
+		IS_DEFAULT int		
+		IS_DUBIOUS int
+		IS_EXPERIAN int
+		DO_NOT_CONTACT_FLAG int
+		AUTH_STATUS_ID int
+		CONTACT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_RemoveContact</td>
+	<td>DELETE FROM CONTACT_POINT WHERE CONTACT_ID=?</td>
+	<td>CONTACT_ID</td>
+</tr>
+<tr>
+	<td>qClientServices_GetContactTypes</td>
+	<td>SELECT * FROM REF_CONTACT_METHOD</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetContactSubTypes</td>
+	<td>SELECT * FROM REF_CONTACT_SUBMETHOD</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetContactSubTypesByMethodId</td>
+	<td>SELECT * FROM REF_CONTACT_SUBMETHOD 
+		WHERE METHOD_ID=?</td>
+	<td>METHOD_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementContacts</td>
+	<td>select cm.*, 
+		ct.submethod_id AS TYPE, 
+		ct.SUBMETHOD_NAME AS TYPE_LABEL, 
+		cmeth.method_id as METHOD_TYPE,
+		
+		addr.ADDRESS_ID,
+		addr.FLAT,
+		addr.HOUSENAME,
+		addr.HOUSENUMBER,
+		addr.STREET,
+		addr.DISTRICT,
+		addr.CITY,
+		addr.COUNTY,
+		addr.POSTCODE,
+		addr.COUNTRY,
+		addr.QAS_VALID,
+		addr.LAST_UPDATED AS ADDRESS_LAST_UPDATED
+		
+		from CONTACT_POINT cm
+		INNER JOIN REF_CONTACT_SUBMETHOD ct ON (cm.submethod_id = ct.submethod_id)
+		LEFT JOIN REF_CONTACT_METHOD cmeth ON (ct.METHOD_ID = cmeth.METHOD_ID)
+		LEFT JOIN ADDRESS addr ON (cm.ADDRESS_ID = addr.ADDRESS_ID) where 
+		ELEMENT_ID = ?</td>
+	<td>ELEMENT_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationContacts</td>
+	<td>select cm.*, 
+		ct.submethod_id AS TYPE, 
+		ct.SUBMETHOD_NAME AS TYPE_LABEL, 
+		cmeth.method_id as METHOD_TYPE,
+		
+		addr.ADDRESS_ID,
+		addr.FLAT,
+		addr.HOUSENAME,
+		addr.HOUSENUMBER,
+		addr.STREET,
+		addr.DISTRICT,
+		addr.CITY,
+		addr.COUNTY,
+		addr.POSTCODE,
+		addr.COUNTRY,
+		addr.QAS_VALID,
+		addr.LAST_UPDATED AS ADDRESS_LAST_UPDATED
+		
+		from CONTACT_POINT cm
+		INNER JOIN REF_CONTACT_SUBMETHOD ct ON (cm.submethod_id = ct.submethod_id)
+		LEFT JOIN REF_CONTACT_METHOD cmeth ON (ct.METHOD_ID = cmeth.METHOD_ID)
+		LEFT JOIN ADDRESS addr ON (cm.ADDRESS_ID = addr.ADDRESS_ID) where 
+		RELATION_ID = ?</td>
+	<td>RELATION_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElementContactsByType</td>
+	<td>select * from CCLA_CONTACT_MAP where 
+	ELEMENT_ID = ? AND TYPE = ?</td>
+	<td>ELEMENT_ID int
+		CONTACT_TYPE varchar
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonExperianAddress</td>
+	<td>select addr.*, addr.QAS_VALID as QAS_VALID from CONTACT_POINT cm
+LEFT JOIN ADDRESS addr ON (cm.ADDRESS_ID = addr.ADDRESS_ID) 
+LEFT JOIN REF_CONTACT_SUBMETHOD csub on (cm.SUBMETHOD_ID = csub.SUBMETHOD_ID) where 
+cm.ELEMENT_ID = ? AND csub.METHOD_ID = 1 AND cm.IS_EXPERIAN=1</td>
+	<td>PERSON_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAddressRecord</td>
+	<td>SELECT * FROM ADDRESS WHERE
+	ADDRESS_ID = ?</td>
+	<td>ADDRESS_ID varchar
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateValidationFields</td>
+	<td>update PERSON
+	set DRIVING_LICENCE = ?,
+	DRIVING_LICENCE_NAME = ?,
+	PASSPORT_NUMBER =?,
+	UTILITY_MAILSORT =?
+	where PERSON_ID = ?
+</td>
+	<td>DRIVING_LICENCE varchar
+	DRIVING_LICENCE_NAME varchar
+	PASSPORT_NUMBER varchar
+	UTILITY_MAILSORT varchar
+	PERSON_ID int
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_InsertValidationAuditRecord</td>
+	<td>insert into IDENTITY_CHECK_AUDIT
+	values (NULL,?,?,?,SYSDATE,?,?,?)
+</td>
+	<td>PERSON_ID int
+	CHECK_TYPE varchar
+	USER_ID varchar
+	CHECK_DATA varchar
+	DECISION varchar
+	REF_NO varchar
+		</td>
+</tr>
+<tr>
+	<td>qClientServices_AddIdentityCheckAudit</td>
+	<td>insert into IDENTITY_CHECK_AUDIT
+	values (?,?,?,?,SYSDATE,?,?,?)
+</td>
+	<td>AUDIT_CHECK_ID int
+		PERSON_ID int
+		CHECK_TYPE varchar
+		USER_ID varchar
+		CHECK_DATA varchar
+		DECISION varchar
+		REF_NO varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateLicenceValidation</td>
+	<td>update IDENTITY_VALIDATION_CHECK set
+	DRIVING_LICENCE_VALID = ?, DRIVING_LICENCE=?,
+	DRIVING_LICENCE_NAME=?, DATE_LAST_UPDATED = SYSDATE
+	where PERSON_ID=?</td>
+	<td>result int
+		DRIVING_LICENCE varchar
+		DRIVING_LICENCE_NAME varchar
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateLicenceValue</td>
+	<td>update IDENTITY_VALIDATION_CHECK set
+	DRIVING_LICENCE=?,DRIVING_LICENCE_VALID='',
+	DATE_LAST_UPDATED = SYSDATE
+	where PERSON_ID=?</td>
+	<td>DRIVING_LICENCE varchar
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetValidationRecord</td>
+	<td>select * from IDENTITY_VALIDATION_CHECK
+	where PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_ClearAuthenticationRecord</td>
+	<td>update IDENTITY_CHECK
+	set IS_EXPERIAN_AUTHENTICATED=NULL, DECISION=NULL, 
+	DECISION_TEXT=NULL, RISK_CONDITIONS=NULL, 
+	RISK_CONDITIONS_TEXT=NULL,LEGACY_CHECKED=NULL,
+	MANUAL_OVERRIDE=NULL,CORE_DATA_CHANGED=NULL
+	where PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllValidationRecords</td>
+	<td>select * from IDENTITY_VALIDATION_CHECK</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_InsertValidationRecord</td>
+	<td>insert into IDENTITY_VALIDATION_CHECK (
+	PERSON_ID, DRIVING_LICENCE, DRIVING_LICENCE_NAME, PASSPORT_NUMBER, UTILITY_MAILSORT, UTILITY_MAILSORT_DATE, DATE_LAST_UPDATED,
+	DRIVING_LICENCE_VALID, PASSPORT_VALID, MAILSORT_VALID, CROCKFORDS_ID, CROCKFORDS_VALUE, CROCKFORDS_VALID)
+	values (?,NULL,NULL,NULL,NULL,NULL,SYSDATE,NULL,NULL,NULL,NULL,NULL,NULL)</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateDrivingLicence</td>
+	<td>update IDENTITY_VALIDATION_CHECK
+	set DRIVING_LICENCE =?,
+	DRIVING_LICENCE_NAME = ?,
+	DATE_LAST_UPDATED=SYSDATE,
+	DRIVING_LICENCE_VALID=null
+	where PERSON_ID=?</td>
+	<td>DRIVING_LICENCE varchar
+		DRIVING_LICENCE_NAME varchar
+		PERSON_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdatePassportNumber</td>
+	<td>update IDENTITY_VALIDATION_CHECK
+	set PASSPORT_NUMBER =?,PASSPORT_VALID='',
+	DATE_LAST_UPDATED=SYSDATE
+	where PERSON_ID=?</td>
+	<td>PASSPORT_NUMBER varchar
+		PERSON_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateUtilityMailsort</td>
+	<td>update IDENTITY_VALIDATION_CHECK
+	set UTILITY_MAILSORT =?,
+	DATE_LAST_UPDATED=SYSDATE,
+	UTILITY_MAILSORT_DATE=?
+	where PERSON_ID=?</td>
+	<td>UTILITY_MAILSORT varchar
+		UTILITY_MAILSORT_DATE date
+		PERSON_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateUtilityMailsortValue</td>
+	<td>update IDENTITY_VALIDATION_CHECK
+	set UTILITY_MAILSORT =?,
+	DATE_LAST_UPDATED=SYSDATE,
+	UTILITY_MAILSORT_DATE=?,
+	MAILSORT_VALID=''
+	where PERSON_ID=?</td>
+	<td>UTILITY_MAILSORT varchar
+		UTILITY_MAILSORT_DATE date
+		PERSON_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateMailsortValidation</td>
+	<td>update IDENTITY_VALIDATION_CHECK set
+	MAILSORT_VALID = ?, UTILITY_MAILSORT=?,
+	UTILITY_MAILSORT_DATE=?, DATE_LAST_UPDATED = SYSDATE
+	where PERSON_ID=?</td>
+	<td>result int
+		UTILITY_MAILSORT varchar
+		UTILITY_MAILSORT_DATE date
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdatePassportValidation</td>
+	<td>update IDENTITY_VALIDATION_CHECK
+	set PASSPORT_VALID = ?, PASSPORT_NUMBER =?,
+	DATE_LAST_UPDATED=SYSDATE
+	where PERSON_ID=?</td>
+	<td>result int
+		PASSPORT_NUMBER varchar
+		PERSON_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuthenticationRiskCodes</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where experian_risk_code is not null</td>
+	<td></td>
+</tr>	
+<tr>
+	<td>qClientServices_GetAuthenticationPassConditions</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where pass_condition=1</td>
+	<td></td>
+</tr>	
+<tr>
+	<td>qClientServices_GetAuthenticationFailConditions</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where fail_condition=1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuthenticationAmberConditions</td>
+	<td>select * from IDENTITY_CHECK_LOOKUP where amber_condition=1</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>qClientServices_AddRelation</td>
+	<td>INSERT INTO RELATIONS
+		VALUES (?,?,?,?,SYSDATE,SYSDATE,?)</td>
+	<td>RELATION_ID int
+		RELATION_NAME_ID int
+		ELEMENT_ID1 int
+		ELEMENT_ID2 int
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateRelation</td>
+	<td>UPDATE RELATIONS
+		SET
+		ELEMENT_ID1 = ?,
+		ELEMENT_ID2 = ?,
+		RELATION_NAME_ID = ?,
+		LAST_UPDATED = SYSDATE,
+		LAST_UPDATED_BY = ?
+		WHERE RELATION_ID = ?</td>
+	<td>ELEMENT_ID1 int
+		ELEMENT_ID2 int
+		RELATION_NAME_ID int
+		LAST_UPDATED_BY varchar
+		RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelation</td>
+	<td>SELECT * FROM RELATIONS rel
+		WHERE RELATION_ID = ?</td>
+	<td>RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationExtended</td>
+	<td>SELECT * FROM RELATIONS rel
+		INNER JOIN REF_RELATION_NAMES relNames ON (rel.RELATION_NAME_ID = relNames.RELATION_NAME_ID)
+		INNER JOIN REF_RELATION_TYPES relTypes ON (relNames.RELATION_TYPE_ID = relTypes.RELATION_TYPE_ID)
+		WHERE RELATION_ID = ?</td>
+	<td>RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_RemoveRelation</td>
+	<td>DELETE FROM RELATIONS
+		WHERE RELATION_ID = ?</td>
+	<td>RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationByValues</td>
+	<td>SELECT * FROM RELATIONS
+		WHERE ELEMENT_ID1=? and
+		ELEMENT_ID2=? and 
+		RELATION_NAME_ID = ?
+		</td>
+	<td>ELEMENT_ID1 int
+		ELEMENT_ID2 int
+		RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_RemoveRelationByValues</td>
+	<td>DELETE FROM RELATIONS
+		WHERE ELEMENT_ID1=?, ELEMENT_ID2=?, RELATION_NAME_ID=?</td>
+	<td>ELEMENT_ID1 int
+		ELEMENT_ID2 int
+		RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedPersons</td>
+	<td>select * from RELATIONS er
+		INNER JOIN PERSON p ON (er.ELEMENT_ID2 = p.PERSON_ID)
+		LEFT JOIN IDENTITY_CHECK i on (p.PERSON_ID = i.PERSON_ID)
+		WHERE er.ELEMENT_ID1 = ?
+		ORDER BY p.PERSON_ID ASC</td>
+	<td>parentElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedClientBankAccounts</td>
+	<td>select * FROM BANK_ACCOUNT WHERE BANK_ACCOUNT_ID IN (
+			SELECT ELEMENT_ID2 FROM RELATIONS rel 
+			
+			WHERE rel.RELATION_NAME_ID IN (
+				SELECT RELATION_NAME_ID FROM REF_RELATION_NAMES
+				WHERE RELATION_TYPE_ID = 40
+			)
+			
+			AND rel.ELEMENT_ID1 IN (
+				SELECT ACCOUNT_ID FROM V_ACCOUNT_EXTENDED_CLIENT acc
+				WHERE acc.ORGANISATION_ID = 6001503
+			)
+		)
+		</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedBankAccountAccounts</td>
+	<td>select * FROM V_ACCOUNT_EXTENDED_CLIENT WHERE ACCOUNT_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS rel 
+			
+			WHERE rel.RELATION_NAME_ID IN (
+				SELECT RELATION_NAME_ID FROM REF_RELATION_NAMES
+				WHERE RELATION_TYPE_ID = 40
+			)
+			
+			AND rel.ELEMENT_ID2 = ?
+		) AND ORGANISATION_ID = ?
+		</td>
+	<td>BANK_ACCOUNT_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedChildPersons</td>
+	<td>SELECT p.*, e.*, 
+		
+		-- Must explicitly reference all IDENTITY_CHECK columns to avoid
+		-- including PERSON_ID again, which can mess up references on this
+		-- column.
+		chk.IS_AUTHENTICATED,
+		chk.IS_EXPERIAN_AUTHENTICATED,
+		chk.AUTHENTICATION_INDEX, 
+		chk.DECISION,
+		chk.DECISION_TEXT,
+		chk.CHECK_DATE,
+		chk.EXPIRY_DATE,
+		chk.RECALCULATE_DATE,
+		chk.RISK_CONDITIONS,
+		chk.RISK_CONDITIONS_TEXT,
+		chk.REF_NO,
+		chk.TOTAL_HAPPY_SCORE,
+		chk.TOTAL_UNHAPPY_SCORE,
+		chk.LEGACY_CHECKED,
+		chk.MANUAL_OVERRIDE,
+		chk.CORE_DATA_CHANGED,
+		
+		psig.SIG_DOC_GUID FROM PERSON p
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+		LEFT JOIN IDENTITY_CHECK chk ON (chk.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+		WHERE p.PERSON_ID IN (
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		)
+		ORDER BY p.LAST_NAME ASC
+	</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedParentPersons</td>
+	<td>SELECT p.*, e.*, 
+	
+		-- Must explicitly reference all IDENTITY_CHECK columns to avoid
+		-- including PERSON_ID again, which can mess up references on this
+		-- column.
+		chk.IS_AUTHENTICATED,
+		chk.IS_EXPERIAN_AUTHENTICATED,
+		chk.AUTHENTICATION_INDEX, 
+		chk.DECISION,
+		chk.DECISION_TEXT,
+		chk.CHECK_DATE,
+		chk.EXPIRY_DATE,
+		chk.RECALCULATE_DATE,
+		chk.RISK_CONDITIONS,
+		chk.RISK_CONDITIONS_TEXT,
+		chk.REF_NO,
+		chk.TOTAL_HAPPY_SCORE,
+		chk.TOTAL_UNHAPPY_SCORE,
+		chk.LEGACY_CHECKED,
+		chk.MANUAL_OVERRIDE,
+		chk.CORE_DATA_CHANGED, 
+		
+		psig.SIG_DOC_GUID FROM PERSON p
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+		LEFT JOIN IDENTITY_CHECK chk ON (chk.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+		WHERE p.PERSON_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS er
+			WHERE er.ELEMENT_ID2 = ?
+		)
+		ORDER BY p.LAST_NAME ASC
+	</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedChildPersonsWithRelationNames</td>
+	<td>SELECT p.*, e.*, 
+		
+		-- Must explicitly reference all IDENTITY_CHECK columns to avoid
+		-- including PERSON_ID again, which can mess up references on this
+		-- column.
+		chk.IS_AUTHENTICATED,
+		chk.IS_EXPERIAN_AUTHENTICATED,
+		chk.AUTHENTICATION_INDEX, 
+		chk.DECISION,
+		chk.DECISION_TEXT,
+		chk.CHECK_DATE,
+		chk.EXPIRY_DATE,
+		chk.RECALCULATE_DATE,
+		chk.RISK_CONDITIONS,
+		chk.RISK_CONDITIONS_TEXT,
+		chk.REF_NO,
+		chk.TOTAL_HAPPY_SCORE,
+		chk.TOTAL_UNHAPPY_SCORE,
+		chk.LEGACY_CHECKED,
+		chk.MANUAL_OVERRIDE,
+		chk.CORE_DATA_CHANGED,
+		
+		psig.SIG_DOC_GUID FROM PERSON p
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+		LEFT JOIN IDENTITY_CHECK chk ON (chk.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+		WHERE p.PERSON_ID IN (
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+			AND RELATION_NAME_ID IN (?)
+		)
+		ORDER BY p.LAST_NAME ASC
+	</td>
+	<td>elementId int
+		relationNameIds int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedParentPersonsWithRelationNames</td>
+	<td>SELECT p.*, e.*, 
+		
+		-- Must explicitly reference all IDENTITY_CHECK columns to avoid
+		-- including PERSON_ID again, which can mess up references on this
+		-- column.
+		chk.IS_AUTHENTICATED,
+		chk.IS_EXPERIAN_AUTHENTICATED,
+		chk.AUTHENTICATION_INDEX, 
+		chk.DECISION,
+		chk.DECISION_TEXT,
+		chk.CHECK_DATE,
+		chk.EXPIRY_DATE,
+		chk.RECALCULATE_DATE,
+		chk.RISK_CONDITIONS,
+		chk.RISK_CONDITIONS_TEXT,
+		chk.REF_NO,
+		chk.TOTAL_HAPPY_SCORE,
+		chk.TOTAL_UNHAPPY_SCORE,
+		chk.LEGACY_CHECKED,
+		chk.MANUAL_OVERRIDE,
+		chk.CORE_DATA_CHANGED, 
+		
+		psig.SIG_DOC_GUID FROM PERSON p
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+		LEFT JOIN IDENTITY_CHECK chk ON (chk.PERSON_ID = p.PERSON_ID)
+		LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+		WHERE p.PERSON_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS er
+			WHERE er.ELEMENT_ID2 = ?
+			AND RELATION_NAME_ID IN (?)
+		)
+		ORDER BY p.LAST_NAME ASC
+	</td>
+	<td>elementId int
+		relationNameIds int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedParentAccountTotalsByType</td>
+	<td>SELECT ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.ACCOUNT_TYPE_NAME, COUNT(*) AS NUM_ACCOUNTS 
+		FROM RELATIONS RE
+		INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID1 = ACC.ACCOUNT_ID)
+		WHERE RE.ELEMENT_ID2 = ?
+		GROUP BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.ACCOUNT_TYPE_NAME
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID</td>
+	<td>childElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountTotalsByType</td>
+	<td>SELECT ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.ACCOUNT_TYPE_NAME, COUNT(*) AS NUM_ACCOUNTS 
+		FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ORGANISATION_ID = ?
+		GROUP BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.ACCOUNT_TYPE_NAME
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID</td>
+	<td>parentElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccounts</td>
+	<td>SELECT RE.*, ACC.*, FII.INVESTMENT_INTENTION_ID, FII.CAMPAIGN_ID, FII.CASH, FII.UNITS, FII.INVINTENTSTATUS_ID 
+		FROM RELATIONS RE
+		INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII ON (FII.ACCOUNT_ID = ACC.ACCOUNT_ID)
+		WHERE RE.ELEMENT_ID1 = ?
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.FUND_CODE, ACC.ACCOUNTNUMBER</td>
+	<td>parentElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountsByStatus</td>
+	<td>SELECT RE.*, ACC.*, FII.INVESTMENT_INTENTION_ID, FII.CAMPAIGN_ID, FII.CASH, FII.UNITS, FII.INVINTENTSTATUS_ID
+		FROM RELATIONS RE
+		INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII ON (FII.ACCOUNT_ID = ACC.ACCOUNT_ID)
+		WHERE RE.ELEMENT_ID1 = ? AND ACCOUNT_STATUS_ID=?
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.FUND_CODE, ACC.ACCOUNTNUMBER</td>
+	<td>parentElementId int
+		ACCOUNT_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountsByFund</td>
+	<td>SELECT RE.*, ACC.*, FII.INVESTMENT_INTENTION_ID, FII.CAMPAIGN_ID, FII.CASH, FII.UNITS, FII.INVINTENTSTATUS_ID
+		FROM RELATIONS RE
+		INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII ON (FII.ACCOUNT_ID = ACC.ACCOUNT_ID)
+		WHERE RE.ELEMENT_ID1 = ? 
+		AND ACC.FUND_CODE=?
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.FUND_CODE, ACC.ACCOUNTNUMBER</td></td>
+	<td>parentElementId int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountsByStatusFund</td>
+	<td>SELECT RE.*, ACC.*, FII.INVESTMENT_INTENTION_ID, FII.CAMPAIGN_ID, FII.CASH, FII.UNITS, FII.INVINTENTSTATUS_ID
+		FROM RELATIONS RE
+		INNER JOIN V_ACCOUNT_EXTENDED_CLIENT ACC ON (RE.ELEMENT_ID2 = ACC.ACCOUNT_ID)
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII ON (FII.ACCOUNT_ID = ACC.ACCOUNT_ID)
+		WHERE RE.ELEMENT_ID1 = ? AND ACC.ACCOUNT_STATUS_ID=? AND ACC.FUND_CODE=?
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.FUND_CODE, ACC.ACCOUNTNUMBER</td></td>
+	<td>parentElementId int
+		ACCOUNT_STATUS_ID int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountsByFundType</td>
+	<td>SELECT FII.*, ACC.* FROM V_ACCOUNT_EXTENDED_CLIENT ACC
+		LEFT JOIN FUND_INVESTMENT_INTENTION FII ON (FII.ACCOUNT_ID = ACC.ACCOUNT_ID)
+		WHERE ACC.ORGANISATION_ID = ? 
+		AND ACC.FUND_CODE=?
+		AND ACC.ACCOUNT_TYPE_ID=?
+		ORDER BY ACC.ORGANISATION_ID, ACC.ACCOUNT_TYPE_ID, ACC.FUND_CODE, ACC.ACCOUNTNUMBER</td></td>
+	<td>parentElementId int
+		FUND_CODE varchar
+		ACCOUNT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedChildAccounts</td>
+	<td>SELECT acc.* from V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ACCOUNT_ID IN (
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		)</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedParentAccounts</td>
+	<td>SELECT acc.* from V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ACCOUNT_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS er
+			WHERE er.ELEMENT_ID2 = ?
+		)</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAccountNumberForOrg</td>
+	<td>SELECT MAX(ACCOUNTNUMBER) from V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ACCOUNT_ID IN(
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		) and FUND_CODE = ?</td>
+	<td>ORGANISATION_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetMaxAccountNumberForOrgAndFundAndAccountType</td>
+	<td>SELECT MAX(ACCOUNTNUMBER) AS MAX_ACCOUNTNUMBER from V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ACCOUNT_ID IN(
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		) and FUND_CODE = ?
+		and ACCOUNT_TYPE_ID = ?</td>
+	<td>ORGANISATION_ID int
+		FUND_CODE varchar
+		ACCOUNT_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetMaxAccountNumbersForOrg</td>
+	<td>SELECT FUND_CODE, ACCOUNT_TYPE_ID, MAX(ACCOUNTNUMBER) AS MAX_ACCOUNTNUMBER from V_ACCOUNT_EXTENDED_CLIENT acc
+		WHERE acc.ACCOUNT_ID IN(
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		) GROUP BY FUND_CODE, ACCOUNT_TYPE_ID</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedBankAccounts</td>
+	<td>SELECT bnk.* from BANK_ACCOUNT bnk
+		WHERE bnk.BANK_ACCOUNT_ID IN(
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 = ?
+		)
+		ORDER BY bnk.ACCOUNT_NAME ASC</td>
+	<td>parentElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountBankAccountsWithNominatedAccountFlag</td>
+	<td>SELECT relBnkAccs.*, 
+		DECODE(nomBnkAcc.NOM_BANK_ACCOUNT_ID, relBnkAccs.BANK_ACCOUNT_ID, '1', NULL) AS IS_NOMINATED_ACCOUNT FROM 
+
+		  (SELECT bnk.* from BANK_ACCOUNT bnk 
+			WHERE bnk.BANK_ACCOUNT_ID IN 
+			  (SELECT r.ELEMENT_ID2 FROM RELATIONS r
+			  WHERE r.ELEMENT_ID1 = ? AND r.RELATION_NAME_ID IN (120,121))
+		  ) relBnkAccs
+		  
+		LEFT JOIN
+		  
+		  (SELECT r.element_id2 AS NOM_BANK_ACCOUNT_ID
+		  FROM RELATIONS r 
+		  INNER JOIN RELATION_PROPERTY_APPLIED propAppl ON 
+			(r.RELATION_ID = propAppl.RELATION_ID)
+		  INNER JOIN REF_RELATION_PROPERTY prop ON 
+			(propappl.relation_property_id = prop.relation_property_id 
+			AND prop.PROPERTY_ID = 1)
+		  
+		  WHERE r.element_id1 = ? AND r.RELATION_NAME_ID = ?
+			
+		  ) nomBnkAcc 
+		  
+		ON (relBnkAccs.BANK_ACCOUNT_ID = nomBnkAcc.NOM_BANK_ACCOUNT_ID)
+
+		ORDER BY IS_NOMINATED_ACCOUNT NULLS LAST, ACCOUNT_NAME</td>
+	<td>ACCOUNT_ID int
+		ACCOUNT_ID int
+		nominatedRelationNameId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedBankAccountsWithRelation</td>
+	<td>SELECT 	bnk.*, 
+				er.relation_date, 
+				nomBnkAcc.PROPERTY_STATUS AS IS_NOMINATED_ACCOUNT 
+				from BANK_ACCOUNT bnk 
+				
+		INNER JOIN RELATIONS er ON 
+				(bnk.BANK_ACCOUNT_ID = er.ELEMENT_ID2 
+				AND er.ELEMENT_ID1 = ?
+				AND er.RELATION_NAME_ID = ?)
+		
+		LEFT JOIN 
+				(SELECT propappl.relation_id, propappl.property_status 
+				FROM RELATION_PROPERTY_APPLIED propAppl
+				INNER JOIN REF_RELATION_PROPERTY prop ON 
+					(propappl.relation_property_id = prop.relation_property_id 
+					AND prop.PROPERTY_ID = 1)
+				) nomBnkAcc ON 
+				
+				(er.RELATION_ID = nomBnkAcc.relation_id)
+
+		ORDER BY IS_NOMINATED_ACCOUNT NULLS LAST, RELATION_DATE</td>
+	<td>parentElementId int
+		RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedBankAccounts</td>
+	<td>SELECT bnk.* FROM BANK_ACCOUNT bnk
+		WHERE bnk.BANK_ACCOUNT_ID IN
+			(SELECT r.ELEMENT_ID2 FROM RELATIONS r
+			WHERE r.ELEMENT_ID1 = ?)
+			</td>
+	<td>parentElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNominatedBankAccount</td>
+	<td>SELECT 	bnk.* from BANK_ACCOUNT bnk 
+				
+		INNER JOIN RELATIONS er ON 
+				(bnk.BANK_ACCOUNT_ID = er.ELEMENT_ID2 
+				AND er.ELEMENT_ID1 = ?
+				AND er.RELATION_NAME_ID = ?)
+		
+		INNER JOIN 
+				(SELECT propappl.relation_id, propappl.property_status 
+				FROM RELATION_PROPERTY_APPLIED propAppl
+				INNER JOIN REF_RELATION_PROPERTY prop ON 
+					(propappl.relation_property_id = prop.relation_property_id 
+					AND prop.PROPERTY_ID = 1)
+				) nomBnkAcc ON 
+				
+				(er.RELATION_ID = nomBnkAcc.relation_id)</td>
+	<td>ACCOUNT_ID int
+		RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetBankAccountRelationsByAccount</td>
+	<td>SELECT bnk.* from BANK_ACCOUNT bnk
+ inner join relations er on (bnk.BANK_ACCOUNT_ID = er.ELEMENT_ID2)
+ inner join ref_relation_names rn on (rn.RELATION_NAME_ID = er.relation_name_id)
+ left join relation_property_applied rpa on (rpa.relation_id = er.relation_id)
+    WHERE er.ELEMENT_ID1 = ?
+		ORDER BY bnk.BANK_ACCOUNT_ID ASC</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedEntities</td>
+	<td>select * from RELATIONS er
+		INNER JOIN CCLA_ENTITY en ON (er.ELEMENT_ID1 = en.ENTITY_ID)
+		LEFT JOIN CCLA_CLIENT cl ON (en.ENTITY_ID = cl.ENTITY_ID)
+		WHERE er.ELEMENT_ID2 = ?
+		ORDER BY en.ENTITY_ID ASC</td>
+	<td>childElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationType</td>
+	<td>select * from REF_RELATION_TYPES
+	WHERE RELATION_TYPE_ID=?</td>
+	<td>RELATION_TYPE_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationName</td>
+	<td>select * from REF_RELATION_NAMES
+	WHERE RELATION_NAME_ID=?</td>
+	<td>RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationNameSync</td>
+	<td>select * from REF_RELATION_NAMES_SYNC
+	WHERE RELATION_NAME_SYNC_ID=?</td>
+	<td>RELATION_NAME_SYNC_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedEntities</td>
+	<td>select * from ORGANISATION ent
+		
+		LEFT JOIN (SELECT COUNT(*) AS NUM_VERIFIED_SOURCES, ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED attribAppl
+            INNER JOIN REF_ELEMENT_ATTRIBUTES attribs ON 
+            (attribAppl.ELEMENT_ATTRIBUTE_ID = attribs.ELEMENT_ATTRIBUTE_ID 
+             AND attribs.VERIFICATION_SOURCE_ID IS NOT NULL)
+            WHERE attribappl.attribute_status = 1 GROUP BY ELEMENT_ID) verifiedSourceCount 
+            ON (ent.organisation_id = verifiedSourceCount.ELEMENT_ID)
+	
+		WHERE ORGANISATION_ID IN
+			(
+				SELECT ELEMENT_ID1 FROM RELATIONS er
+				WHERE er.ELEMENT_ID2 = ?
+			)
+		ORDER BY ent.ORGANISATION_NAME ASC</td>
+	<td>childElementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedParentOrgs</td>
+	<td>select * from ORGANISATION ent
+		
+		LEFT JOIN (SELECT COUNT(*) AS NUM_VERIFIED_SOURCES, ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED attribAppl
+            INNER JOIN REF_ELEMENT_ATTRIBUTES attribs ON 
+            (attribAppl.ELEMENT_ATTRIBUTE_ID = attribs.ELEMENT_ATTRIBUTE_ID 
+             AND attribs.VERIFICATION_SOURCE_ID IS NOT NULL)
+            WHERE attribappl.attribute_status = 1 GROUP BY ELEMENT_ID) verifiedSourceCount 
+            ON (ent.organisation_id = verifiedSourceCount.ELEMENT_ID)
+	
+		WHERE ORGANISATION_ID IN
+			(
+				SELECT ELEMENT_ID1 FROM RELATIONS er
+				WHERE er.ELEMENT_ID2 = ?
+			)
+		ORDER BY ent.ORGANISATION_NAME ASC</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedChildOrgs</td>
+	<td>select * from ORGANISATION ent
+		
+		LEFT JOIN (SELECT COUNT(*) AS NUM_VERIFIED_SOURCES, ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED attribAppl
+            INNER JOIN REF_ELEMENT_ATTRIBUTES attribs ON 
+            (attribAppl.ELEMENT_ATTRIBUTE_ID = attribs.ELEMENT_ATTRIBUTE_ID 
+             AND attribs.VERIFICATION_SOURCE_ID IS NOT NULL)
+            WHERE attribappl.attribute_status = 1 GROUP BY ELEMENT_ID) verifiedSourceCount 
+            ON (ent.organisation_id = verifiedSourceCount.ELEMENT_ID)
+	
+		WHERE ORGANISATION_ID IN
+			(
+				SELECT ELEMENT_ID2 FROM RELATIONS er
+				WHERE er.ELEMENT_ID1 = ?
+			)
+		ORDER BY ent.ORGANISATION_NAME ASC</td>
+	<td>elementId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedParentOrgsWithRelationNames</td>
+	<td>select * from ORGANISATION ent
+		
+		LEFT JOIN (SELECT COUNT(*) AS NUM_VERIFIED_SOURCES, ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED attribAppl
+            INNER JOIN REF_ELEMENT_ATTRIBUTES attribs ON 
+            (attribAppl.ELEMENT_ATTRIBUTE_ID = attribs.ELEMENT_ATTRIBUTE_ID 
+             AND attribs.VERIFICATION_SOURCE_ID IS NOT NULL)
+            WHERE attribappl.attribute_status = 1 GROUP BY ELEMENT_ID) verifiedSourceCount 
+            ON (ent.organisation_id = verifiedSourceCount.ELEMENT_ID)
+	
+		WHERE ORGANISATION_ID IN
+			(
+				SELECT ELEMENT_ID1 FROM RELATIONS er
+				WHERE er.ELEMENT_ID2 = ?
+				AND RELATION_NAME_ID IN (?)
+			)
+		ORDER BY ent.ORGANISATION_NAME ASC</td>
+	<td>elementId int
+		relationNameIds int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedChildOrgsWithRelationNames</td>
+	<td>select * from ORGANISATION ent
+		
+		LEFT JOIN (SELECT COUNT(*) AS NUM_VERIFIED_SOURCES, ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED attribAppl
+            INNER JOIN REF_ELEMENT_ATTRIBUTES attribs ON 
+            (attribAppl.ELEMENT_ATTRIBUTE_ID = attribs.ELEMENT_ATTRIBUTE_ID 
+             AND attribs.VERIFICATION_SOURCE_ID IS NOT NULL)
+            WHERE attribappl.attribute_status = 1 GROUP BY ELEMENT_ID) verifiedSourceCount 
+            ON (ent.organisation_id = verifiedSourceCount.ELEMENT_ID)
+	
+		WHERE ORGANISATION_ID IN
+			(
+				SELECT ELEMENT_ID2 FROM RELATIONS er
+				WHERE er.ELEMENT_ID1 = ?
+				AND RELATION_NAME_ID IN (?)
+			)
+		ORDER BY ent.ORGANISATION_NAME ASC</td>
+	<td>elementId int
+		relationNameIds int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetMutualEntityRelations</td>
+	<td>(select * from RELATIONS er
+		INNER JOIN CCLA_ENTITY en ON (er.ELEMENT_ID2 = en.ENTITY_ID)
+		LEFT JOIN CCLA_CLIENT cl ON (en.ENTITY_ID = cl.ENTITY_ID)
+		WHERE (er.ELEMENT_ID1 = ?))
+		UNION
+		(select * from RELATIONS er
+		INNER JOIN CCLA_ENTITY en ON (er.ELEMENT_ID1 = en.ENTITY_ID)
+		LEFT JOIN CCLA_CLIENT cl ON (en.ENTITY_ID = cl.ENTITY_ID)
+		WHERE (er.ELEMENT_ID2 = ?))</td>
+	<td>entityId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetMutualPersonRelations</td>
+	<td>(select * from RELATIONS er
+		INNER JOIN PERSON p ON (er.ELEMENT_ID2 = p.PERSON_ID)
+		WHERE (er.ELEMENT_ID1 = ?))
+		UNION
+		(select * from RELATIONS er
+		INNER JOIN PERSON p ON (er.ELEMENT_ID1 = p.PERSON_ID)
+		WHERE (er.ELEMENT_ID2 = ?))</td>
+	<td>personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllRelatedEntityAccountPersons</td>
+	<td>SELECT P.FULL_NAME, R.ELEMENT_ID1, RRN.RELATION_NAME_ID, CK.CHECK_DATE, CK.IS_AUTHENTICATED
+		FROM RELATIONS R
+		LEFT JOIN PERSON P ON (R.ELEMENT_ID1 = P.PERSON_ID)
+		LEFT JOIN IDENTITY_CHECK CK ON (P.PERSON_ID = CK.PERSON_ID)
+		INNER JOIN REF_RELATION_NAMES RRN ON (R.RELATION_NAME_ID = RRN.RELATION_NAME_ID)
+		INNER JOIN REF_RELATION_TYPES RRT ON (RRN.RELATION_TYPE_ID = RRT.RELATION_TYPE_ID)
+		WHERE R.ELEMENT_ID2 IN ( 
+			SELECT R2.ELEMENT_ID2 
+			FROM RELATIONS R2  
+			INNER JOIN REF_RELATION_NAMES RRN2 ON (R2.RELATION_NAME_ID = RRN2.RELATION_NAME_ID)
+			INNER JOIN REF_RELATION_TYPES RRT2 ON (RRN2.RELATION_TYPE_ID = RRT2.RELATION_TYPE_ID)
+			WHERE R2.ELEMENT_ID1 = ? AND RRT2.RELATION_TYPE_ID = 2
+		)
+		AND RRT.RELATION_TYPE_ID = 20
+		GROUP BY P.FULL_NAME, R.ELEMENT_ID1, RRN.RELATION_NAME_ID,CK.CHECK_DATE, CK.IS_AUTHENTICATED
+		ORDER BY P.FULL_NAME, RRN.RELATION_NAME_ID</td>
+	<td>organisationId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUniqueRelatedEntityAccountPersons</td>
+	<td>SELECT * FROM PERSON p
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+		LEFT JOIN IDENTITY_CHECK chk ON (chk.PERSON_ID = p.PERSON_ID)
+		WHERE p.PERSON_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS er
+			WHERE er.ELEMENT_ID2 IN
+			(SELECT ACCOUNT_ID FROM CCLA_ACCOUNT WHERE ACC_CLIENT_ID = ?)
+		)
+		ORDER BY p.PERSON_ID ASC
+	</td>
+	<td>entityId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelatedAccountEntityLookup</td>
+	<td>SELECT ENTITY_ID FROM CCLA_ENTITY p
+		WHERE p.ENTITY_ID IN (
+			SELECT ELEMENT_ID1 FROM RELATIONS er
+			WHERE er.ELEMENT_ID2 IN
+			(SELECT ACCOUNT_ID FROM CCLA_ACCOUNT WHERE ACCNUMEXT LIKE ?)
+		)
+	</td>
+	<td>ACCNUMEXT varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountByAuroraValues</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT acc 
+		INNER JOIN Relations rel ON 
+			(rel.element_id2 = acc.ACCOUNT_ID AND rel.relation_name_id = 20)
+
+			INNER JOIN CLIENT_AURORA_MAP cl_map
+				ON (cl_map.ORGANISATION_ID = rel.element_id1)
+    
+		WHERE cl_map.client_number = ?
+		AND acc.accountnumber = ? 
+		AND acc.fund_code = ?</td>
+	<td>clientNumber int
+		accountNumber int
+		fundCode varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityByAuroraValues</td>
+	<td>SELECT * FROM CLIENT_AURORA_MAP CL_MAP
+		INNER JOIN ORGANISATION o ON (CL_MAP.ORGANISATION_ID = O.ORGANISATION_ID)
+		WHERE CL_MAP.CLIENT_NUMBER = ?
+		AND CL_MAP.COMPANY_ID=(SELECT C.COMPANY_ID FROM REF_COMPANY C WHERE C.COMPANY_CODE=?)</td>
+	<td>clientNumber int
+		company varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_AddEntityCheck</td>
+	<td>INSERT INTO CCLA_ENTITY_CHECK 
+		VALUES (?,?,?,SYSDATE)</td>
+	<td>ORGANISATION_ID int
+		CHECK_TYPE varchar
+		CHECK_SCORE int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateEntityCheck</td>
+	<td>UPDATE CCLA_ENTITY_CHECK 
+		SET CHECK_TYPE=?,
+		CHECK_SCORE=?,
+		CHECK_DATE=SYSDATE
+		WHERE ORGANISATION_ID=?</td>
+	<td>CHECK_TYPE varchar
+		CHECK_SCORE int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityCheck</td>
+	<td>SELECT * FROM CCLA_ENTITY_CHECK
+		WHERE ORGANISATION_ID=?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAccountIntentionByPerson</td>
+	<td>SELECT * FROM CCLA_ACCOUNT_INTENTION
+		WHERE PERSON_ID=? AND FUND_CODE=?</td>
+	<td>PERSON_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountIntentionByPerson</td>
+	<td>SELECT * FROM CCLA_ACCOUNT_INTENTION
+		WHERE PERSON_ID=? AND FUND_CODE=?</td>
+	<td>PERSON_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountsByAccountIntentions</td>
+	<td>SELECT * FROM V_ACCOUNT_EXTENDED_CLIENT WHERE ACCOUNT_ID IN
+		(SELECT ACCOUNT_ID FROM CCLA_ACCOUNT_INTENTION
+		WHERE ORGANISATION_ID=? AND FUND_CODE=? AND ACCOUNT_ID IS NOT NULL)</td>
+	<td>ORGANISATION_ID int
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAccountIntentionByFund</td>
+	<td>SELECT * FROM CCLA_ACCOUNT_INTENTION
+		WHERE  FUND_CODE=?</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundAccountIntentionByEntity</td>
+	<td>SELECT cai.*,cp.FULL_NAME,cp.FIRST_NAME,cpt.TITLE,cp.LAST_NAME FROM CCLA_ACCOUNT_INTENTION cai
+		INNER JOIN PERSON cp ON (cai.PERSON_ID = cp.PERSON_ID)
+		LEFT JOIN REF_TITLE cpt on (cp.TITLE_ID = cpt.TITLE_ID)
+		WHERE cai.ORGANISATION_ID=? AND cai.FUND_CODE=?</td>
+	<td>ORGANISATION_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_InsertAccountIntention</td>
+	<td>INSERT into CCLA_ACCOUNT_INTENTION values
+	(?,?,?,?,NULL,?,?,NULL,NULL,NULL,SYSDATE,SYSDATE)</td>
+	<td>ACCOUNT_INTENTION_ID int
+	ORGANISATION_ID int
+	PERSON_ID int
+	USER_ID varchar
+	FUND_CODE varchar
+	UNITS int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundAccountIntention</td>
+	<td>SELECT cai.*,cp.FULL_NAME,cp.FIRST_NAME,cpt.TITLE,cp.LAST_NAME FROM CCLA_ACCOUNT_INTENTION cai
+		INNER JOIN PERSON cp ON (cai.PERSON_ID = cp.PERSON_ID)
+		LEFT JOIN REF_TITLE cpt on (cp.TITLE_ID = cpt.TITLE_ID)
+		WHERE ORGANISATION_ID=? AND ACCOUNT_INTENTION_ID=?</td>
+	<td>ORGANISATION_ID int
+	ACCOUNT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteFundAccountIntention</td>
+	<td>delete FROM CCLA_ACCOUNT_INTENTION 
+		WHERE  ACCOUNT_INTENTION_ID=?</td>
+	<td>ACCOUNT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAccountIntention</td>
+	<td>update CCLA_ACCOUNT_INTENTION SET
+		ORGANISATION_ID=?,
+		PERSON_ID=?,
+		USER_ID=?,
+		UPDATE_USER_ID=?, 		
+		FUND_CODE=?,
+		UNITS=?, 
+		CASH=?,
+		ACCOUNT_ID=?,
+		STATUS=?,
+		LAST_UPDATED=SYSDATE
+		WHERE  ACCOUNT_INTENTION_ID=?</td>
+	<td>ORGANISATION_ID int
+		PERSON_ID int
+		USER_ID varchar
+		UPDATE_USER_ID varchar
+		FUND_CODE varchar
+		UNITS int
+		CASH int
+		ACCOUNT_ID int
+		STATUS varchar
+		ACCOUNT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateFundAccountIntention</td>
+	<td>update CCLA_ACCOUNT_INTENTION 
+	set UPDATE_USER_ID=?, UNITS=?, LAST_UPDATED=SYSDATE
+		WHERE  ACCOUNT_INTENTION_ID=?</td>
+	<td>USER_ID varchar
+		UNITS int
+	ACCOUNT_INTENTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getElementType</td>
+	<td>select * from CCLA_ELEMENT
+		WHERE  ELEMENT_ID=?</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElement</td>
+	<td>select * from ELEMENT
+		WHERE  ELEMENT_ID=?</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetElements</td>
+	<td>select * from ELEMENT
+		WHERE  ELEMENT_ID IN (?)</td>
+	<td>ELEMENT_IDS int</td>
+</tr>
+<tr>
+	<td>qClientServices_getElementName</td>
+	<td>SELECT ce.*,cp.FULL_NAME,cp.FIRST_NAME,cp.TITLE,cp.LAST_NAME, ent.NAME as entity_name, cl.name as client_name FROM CCLA_ELEMENT ce
+		LEFT  JOIN PERSON cp ON (cp.PERSON_ID = ce.ELEMENT_ID)
+    LEFT  JOIN CCLA_ENTITY ent ON (ENT.ENTITY_ID = ce.element_id)
+    LEFT  JOIN CCLA_CLIENT cl ON (cl.ENTITY_ID = ce.element_id)
+    WHERE ELEMENT_ID=?</td>
+	<td>ELEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetIncomeDistMethods</td>
+	<td>select * from REF_INCOME_DIST_METHOD</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountDetailsBasic</td>
+	<td>select ACCOUNT_ID,ACCNUMEXT,ENTITY_ID,DATE_OPENED,NAME FROM CCLA_ACCOUNT ca
+		where ca.acc_accnumext like ?
+		and ROWNUM <= ?</td>
+	<td>ACCNUMEXT varchar
+		numRows int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntitybyClientNumber</td>
+	<td>select ce.entity_id from ccla_entity ce left join client_aurora_map cc on 
+(ce.entity_id = cc.client_id) where cc.client_number = ?</td>
+	<td>CLIENT_NUMBER int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonbyCorrespondentNumber</td>
+	<td>select cp.person_id from PERSON cp left join person_aurora_map cm on 
+(cp.person_id = cm.person_id) where cm.corr_id = ?</td>
+	<td>CORRESPONDENT_NUMBER int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraPersonDetails</td>
+	<td>select * from person_aurora_map cm where person_id = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraCorrespondentsByPersonId</td>
+	<td>select cm.*, comp.* from person_aurora_map cm left join ref_company comp 
+	ON (cm.company_id = comp.company_id) where cm.person_id = ?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAuroraCorrespondentsByPersonIdAndCompanyId</td>
+	<td>select cm.*, comp.* from person_aurora_map cm left join ref_company comp 
+	ON (cm.company_id = comp.company_id) where cm.person_id = ? and cm.company_id = ?</td>
+	<td>PERSON_ID int
+		COMPANY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateInteractionJobId</td>
+	<td>UPDATE REF_INTERACTION
+	SET JOB_ID=?, IS_QUERY=?, IS_COMPLAINT=?, IS_BREACH=?, IS_ERROR=?
+	WHERE INTERACTION_ID=?</td>
+	<td>JOB_ID varchar
+		IS_QUERY int
+		IS_COMPLAINT int
+		IS_BREACH int
+		IS_ERROR int
+		INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCompanyById</td>
+	<td>SELECT * FROM REF_COMPANY
+	WHERE COMPANY_ID = ?</td>
+	<td>COMPANY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityAccountPersons</td>
+	<td>SELECT p.*, 
+		relPersons.SIG_DOC_GUID,
+		e.*
+		FROM PERSON p
+
+		INNER JOIN ELEMENT e ON (p.PERSON_ID = e.ELEMENT_ID)
+
+		INNER JOIN (
+		  
+		  SELECT PERSON_ID, SIG_DOC_GUID FROM (
+			SELECT p.PERSON_ID, p.SALUTATION, p.FULL_NAME, p.LAST_NAME, psig.SIG_DOC_GUID 
+			from PERSON p
+			INNER JOIN RELATIONS rel ON 
+			(rel.element_id1 = p.person_id AND rel.element_id2 IN
+			  (SELECT accrel.element_id2 FROM RELATIONS accrel WHERE accrel.element_id1 = ?)
+			)  LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+			  
+			UNION
+			
+			SELECT p.PERSON_ID, p.SALUTATION, p.FULL_NAME, p.LAST_NAME,psig.SIG_DOC_GUID  from PERSON p
+			INNER JOIN RELATIONS rel ON (rel.element_id2 = p.person_id AND rel.element_id1 = ?)
+			LEFT JOIN PERSON_SIGNATURE psig ON (p.PERSON_ID = psig.PERSON_ID)
+		  )
+		  
+		) relPersons ON (relPersons.PERSON_ID = p.PERSON_ID)
+
+		ORDER BY LAST_NAME, FIRST_NAME</td>
+	<td>ORGANISATION_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntityAccountBankAccount</td>
+	<td>SELECT bnk.* from BANK_ACCOUNT bnk
+		WHERE bnk.BANK_ACCOUNT_ID IN(
+			SELECT ELEMENT_ID2 FROM RELATIONS er
+			WHERE er.ELEMENT_ID1 in 
+      (select er2.element_id2 from relations er2
+      where er2.element_id1 = ?)
+		)
+		ORDER BY bnk.BANK_ACCOUNT_ID ASC</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOrgCategory</td>
+	<td>SELECT * FROM REF_ORG_CATEGORY cats 
+		WHERE CATEGORY_ID = ?</td>
+	<td>CATEGORY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOrgCategories</td>
+	<td>SELECT cats.*, catNames.ORG_CATEGORY_NAME 
+		FROM REF_ORG_CATEGORY cats
+		INNER JOIN REF_ORG_CATEGORY_NAME catNames ON (cats.CATEGORY_NAME_ID = catNames.ORG_CATEGORY_NAME_ID)
+		WHERE PARENT_CATEGORY_ID IS NULL
+		ORDER BY ORG_CATEGORY_NAME ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetOrgSubCategories</td>
+	<td>SELECT cats.*, catNames.ORG_CATEGORY_NAME 
+		FROM REF_ORG_CATEGORY cats
+		INNER JOIN REF_ORG_CATEGORY_NAME catNames ON (cats.CATEGORY_NAME_ID = catNames.ORG_CATEGORY_NAME_ID)
+		WHERE PARENT_CATEGORY_ID = ?
+		ORDER BY ORG_CATEGORY_NAME ASC</td>
+	<td>PARENT_CATEGORY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetSelectedOrgCategories</td>
+	<td>SELECT * FROM V_ORG_CATEGORY
+		WHERE CATEGORY_ID = ?
+		ORDER BY CATEGORY_LEVEL DESC</td>
+	<td>CATEGORY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteAccountAuroraUpdate</td>
+	<td>DELETE FROM CCLA_ACCOUNT_AURORA_UPDATES WHERE ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_AddAccountAuroraUpdate</td>
+	<td>INSERT INTO CCLA_ACCOUNT_AURORA_UPDATES 
+	VALUES (?,?)</td>
+	<td>ACCOUNT_ID int
+		UPDATE_TYPE varchar
+	</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountAuroraUpdate</td>
+	<td>SELECT * FROM  CCLA_ACCOUNT_AURORA_UPDATES 
+	WHERE ACCOUNT_ID = ?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAccountAuroraUpdate</td>
+	<td>update CCLA_ACCOUNT_AURORA_UPDATES 
+	set UPDATE_TYPE = ?
+	WHERE ACCOUNT_ID = ?</td>
+	<td>UPDATE_TYPE varchar
+		ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationPropertyByValues</td>
+	<td>SELECT * FROM REF_RELATION_PROPERTY relProp
+		INNER JOIN REF_PROPERTY prop ON (relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		LEFT JOIN REF_VERIFICATION_SOURCE verSource ON (prop.VERIFICATION_SOURCE_ID = verSource.VERIFICATION_SOURCE_ID)
+		WHERE relProp.RELATION_NAME_ID = ? AND relProp.PROPERTY_ID=?</td>
+	<td>RELATION_NAME_ID int
+		PROPERTY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAvailableRelationProperties</td>
+	<td>SELECT * FROM REF_RELATION_PROPERTY relProp
+		INNER JOIN REF_PROPERTY prop ON (relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		LEFT JOIN REF_VERIFICATION_SOURCE verSource ON (prop.VERIFICATION_SOURCE_ID = verSource.VERIFICATION_SOURCE_ID)
+		WHERE relProp.RELATION_NAME_ID = ?</td>
+	<td>RELATION_NAME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddPropertyApplied</td>
+	<td>insert INTO RELATION_PROPERTY_APPLIED
+	VALUES (?,?,?,SYSDATE,?,SYSDATE,?,?)</td>
+	<td>PROPERTY_APPLIED_ID int
+		RELATION_PROPERTY_ID int
+		RELATION_ID int
+		PROPERTY_VALUE varchar
+		LAST_UPDATED_BY varchar
+		PROPERTY_STATUS int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdatePropertyApplied</td>
+	<td>UPDATE RELATION_PROPERTY_APPLIED
+		SET PROPERTY_VALUE=?,
+		LAST_UPDATED_BY=?,
+		LAST_UPDATED=SYSDATE,
+		PROPERTY_STATUS=?
+		WHERE PROPERTY_APPLIED_ID=?</td>
+	<td>PROPERTY_VALUE varchar
+		LAST_UPDATED_BY varchar
+		PROPERTY_STATUS int
+		PROPERTY_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeletePropertyApplied</td>
+	<td>DELETE FROM RELATION_PROPERTY_APPLIED
+		WHERE RELATION_ID = ? and RELATION_PROPERTY_ID=?</td>
+	<td>RELATION_ID int
+		RELATION_PROPERTY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeletePropertiesAppliedByElementId1AndRelation</td>
+	<td>DELETE FROM RELATION_PROPERTY_APPLIED WHERE PROPERTY_APPLIED_ID IN
+		(SELECT PROPERTY_APPLIED_ID FROM RELATION_PROPERTY_APPLIED rpa
+			INNER JOIN REF_RELATION_PROPERTY relProp ON (rpa.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+			WHERE rpa.RELATION_PROPERTY_ID=?
+			AND RELATION_ID IN 
+				(SELECT RELATION_ID FROM RELATIONS rel
+				WHERE rel.ELEMENT_ID1=?
+				AND rel.RELATION_NAME_ID = relProp.RELATION_NAME_ID))
+	</td>
+	<td>RELATION_PROPERTY_ID int
+		ELEMENT_ID1 int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeletePropertiesAppliedByElementId2AndRelation</td>
+	<td>DELETE FROM RELATION_PROPERTY_APPLIED WHERE PROPERTY_APPLIED_ID IN
+		(SELECT PROPERTY_APPLIED_ID FROM RELATION_PROPERTY_APPLIED rpa
+			INNER JOIN REF_RELATION_PROPERTY relProp ON (rpa.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+			WHERE rpa.RELATION_PROPERTY_ID=?
+			AND RELATION_ID IN 
+				(SELECT RELATION_ID FROM RELATIONS rel
+				WHERE rel.ELEMENT_ID2=?
+				AND rel.RELATION_NAME_ID = relProp.RELATION_NAME_ID))
+	</td>
+	<td>RELATION_PROPERTY_ID int
+		ELEMENT_ID2 int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteAllPropertyApplied</td>
+	<td>DELETE FROM RELATION_PROPERTY_APPLIED
+	WHERE RELATION_ID = ?</td>
+	<td>RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetProperty</td>
+	<td>SELECT * FROM REF_PROPERTY WHERE PROPERTY_ID=?</td>
+	<td>PROPERTY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPropertyApplied</td>
+	<td>SELECT * FROM RELATION_PROPERTY_APPLIED propAppl
+		INNER JOIN REF_RELATION_PROPERTY relProp ON 
+		(propAppl.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+		INNER JOIN REF_PROPERTY prop ON 
+		(relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		WHERE propAppl.PROPERTY_APPLIED_ID=?</td>
+	<td>PROPERTY_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qCore_GetRelationPropertiesAppliedByRelationIds</td>
+	<td>SELECT * FROM RELATION_PROPERTY_APPLIED propAppl
+		INNER JOIN REF_RELATION_PROPERTY relProp ON
+		(propAppl.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+		INNER JOIN REF_PROPERTY prop ON 
+		(relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		WHERE propAppl.RELATION_ID IN (?)</td>
+	<td>RELATION_IDS int</td>
+</tr>	
+<tr>
+	<td>qClientServices_GetPropertyAppliedByValues</td>
+	<td>SELECT * FROM RELATION_PROPERTY_APPLIED propAppl
+		INNER JOIN REF_RELATION_PROPERTY relProp ON 
+		(propAppl.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+		INNER JOIN REF_PROPERTY prop ON 
+		(relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		WHERE propAppl.RELATION_ID = ?
+		AND propAppl.RELATION_PROPERTY_ID=?</td>
+	<td>RELATION_ID int
+		RELATION_PROPERTY_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPropertyAppliedByRelationId</td>
+	<td>SELECT * FROM RELATION_PROPERTY_APPLIED propAppl
+		INNER JOIN REF_RELATION_PROPERTY relProp ON 
+		(propAppl.RELATION_PROPERTY_ID = relProp.RELATION_PROPERTY_ID)
+		INNER JOIN REF_PROPERTY prop ON 
+		(relProp.PROPERTY_ID = prop.PROPERTY_ID)
+		
+		LEFT JOIN REF_VERIFICATION_SOURCE verSource 
+		ON (prop.VERIFICATION_SOURCE_ID = verSource.VERIFICATION_SOURCE_ID)
+		
+		WHERE propAppl.RELATION_ID = ?</td>
+	<td>RELATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getInteractionOutcomeTypesByOutcome</td>
+	<td>SELECT * FROM REF_INTERACTION_OUTCOME_TYPE WHERE OUTCOME_ID=?</td>
+	<td>OUTCOME_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getInteractionsByPersonOrg</td>
+	<td>SELECT vie.*,cig.GROUP_ID FROM V_INTERACTIONS_EXT vie 
+	left join INTERACTION_GROUP cig 
+	ON (vie.INTERACTION_ID = cig.INTERACTION_ID)
+	WHERE vie.PERSON_ID = ? OR vie.ORGANISATION_ID=? ORDER BY vie.INTERACTION_DATE DESC</td>
+	<td>PERSON_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getInteractionsByPerson</td>
+	<td>SELECT vie.*,cig.GROUP_ID FROM V_INTERACTIONS_EXT vie 
+	left join INTERACTION_GROUP cig 
+	ON (vie.INTERACTION_ID = cig.INTERACTION_ID)
+	WHERE vie.PERSON_ID = ? ORDER BY vie.INTERACTION_DATE DESC</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetInteractionGroupByInteraction</td>
+	<td>SELECT * FROM INTERACTION_GROUP WHERE INTERACTION_ID = ?</td>
+	<td>INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetGroupedInteractions</td>
+	<td>SELECT * FROM INTERACTION_GROUP WHERE GROUP_ID IN 
+	(SELECT GROUP_ID FROM INTERACTION_GROUP WHERE INTERACTION_ID = ?)</td>
+	<td>INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteInteractionGroupForInteraction</td>
+	<td>DELETE FROM INTERACTION_GROUP WHERE INTERACTION_ID = ?</td>
+	<td>REMOVE_INTERACTION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllInteractionNotes</td>
+	<td>select cn.*,cint.interaction_id from note cn 
+	inner join interaction_activity ca 
+	on (ca.note_id = cn.note_id) 
+	left join interaction cint
+	on (ca.interaction_id = cint.interaction_id)
+  where ca.interaction_id is not null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_CompleteInteractions</td>
+	<td>update INTERACTION set OUTCOME_ID=1, 
+	DEADLINE=NULL, ASSIGNEE=NULL, LAST_UPDATED=SYSDATE,
+	CLOSED_BY=?
+  where INTERACTION_ID IN (?)</td>
+	<td>CLOSED_BY int
+	CLOSE_LIST int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOrganisationQRSAccounts</td>
+	<td>SELECT qrsAcc.* FROM RELATIONS rel 
+		INNER JOIN CCLA_QRS_ACCOUNTS qrsAcc ON 
+		(rel.element_id2 = qrsAcc.ACCOUNT_ID AND rel.element_id1 = ?)</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextPropertyAppliedId</td>
+	<td>SELECT SEQ_RELATION_PROPERTY_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetRelationProperties</td>
+	<td>select relp.*, refp.property_name, relnames.short_name, reltypes.* from ref_relation_property relp
+left join ref_property refp on relp.property_id = refp.property_id
+left join ref_relation_names relnames on relp.relation_name_id = relnames.relation_name_id
+left join ref_relation_types reltypes on relnames.relation_type_id = reltypes.relation_type_id</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllRelationPropertyApplied</td>
+	<td>SELECT * FROM RELATION_PROPERTY_APPLIED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAccountFlagAppliedId</td>
+	<td>SELECT SEQ_ACCOUNT_FLAG_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllAccountFlagApplied</td>
+	<td>SELECT * FROM ACCOUNT_FLAG_APPLIED</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_AddAccountFlagApplied</td>
+	<td>INSERT into ACCOUNT_FLAG_APPLIED
+	VALUES (?,?,?,SYSDATE)</td>
+	<td>ACCOUNT_FLAG_APPLIED_ID int
+	ACCOUNT_ID int
+	ACCOUNT_FLAG_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteAccountFlagApplied</td>
+	<td>DELETE ACCOUNT_FLAG_APPLIED
+	WHERE ACCOUNT_ID=? AND ACCOUNT_FLAG_ID=?</td>
+	<td>ACCOUNT_ID int
+	ACCOUNT_FLAG_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountFlagApplied</td>
+	<td>SELECT * FROM ACCOUNT_FLAG_APPLIED afa
+	INNER JOIN REF_ACCOUNT_FLAG raf on (raf.ACCOUNT_FLAG_ID = afa.ACCOUNT_FLAG_ID)
+	WHERE afa.ACCOUNT_ID=?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountFlagAppliedbyId</td>
+	<td>SELECT * FROM ACCOUNT_FLAG_APPLIED
+	WHERE ACCOUNT_FLAG_APPLIED_ID=?</td>
+	<td>ACCOUNT_FLAG_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountFlagAppliedByFlag</td>
+	<td>SELECT * FROM ACCOUNT_FLAG_APPLIED
+	WHERE ACCOUNT_ID=? AND ACCOUNT_FLAG_ID=?</td>
+	<td>ACCOUNT_ID int
+	ACCOUNT_FLAG_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetHasWatchlistFlag</td>
+	<td>SELECT * FROM ACCOUNT_FLAG_APPLIED afa
+	INNER JOIN REF_ACCOUNT_FLAG raf on (raf.ACCOUNT_FLAG_ID = afa.ACCOUNT_FLAG_ID)
+	WHERE afa.ACCOUNT_ID=? AND raf.ADD_TO_WATCHLIST=1</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPersonFromAddress</td>
+	<td>select * from person where person_id in 
+(select element_id from contact_point where address_id=?)</td>
+	<td>ADDRESS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateCrockfordsValue</td>
+	<td>update IDENTITY_VALIDATION_CHECK set
+	CROCKFORDS_ID=?,CROCKFORDS_VALUE=?,CROCKFORDS_VALID=?,
+	DATE_LAST_UPDATED = SYSDATE
+	where PERSON_ID=?</td>
+	<td>CROCKFORDS_ID int
+		CROCKFORDS_VALUE varchar
+		CROCKFORDS_VALID int
+	    PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountValue</td>
+	<td>select * from ACCOUNT_VALUE where ACCOUNT_ID=?</td>
+	<td>ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextAccountAuditId</td>
+	<td>SELECT SEQ_ACCOUNT_VALUE_AUDIT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountValueAudit</td>
+	<td>SELECT * from ACCOUNT_VALUE_AUDIT 
+	WHERE ACCOUNT_ID=? AND trunc(account_value_date) = trunc(cast (? as date))</td>
+	<td>ACCOUNT_ID int
+	ACCOUNT_VALUE_DATE date</td>
+</tr>
+<tr>
+	<td>qClientServices_addAccountValueAudit</td>
+	<td>insert into ACCOUNT_VALUE_AUDIT values
+	(?,?,?,?,?,?,?)</td>
+	<td>ACCOUNT_VALUE_AUDIT_ID int
+	ACCOUNT_ID int
+	ACCOUNT_VALUE_DATE date
+	OPENING_CASH varchar		
+	OPENING_UNITS varchar
+	CLOSING_CASH varchar
+	CLOSING_UNITS varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAccountValueAudit</td>
+	<td>update ACCOUNT_VALUE_AUDIT set
+	OPENING_CASH=?, OPENING_UNITS=?, CLOSING_CASH=?,
+	CLOSING_UNITS=?
+	WHERE ACCOUNT_VALUE_AUDIT_ID = ?</td>
+	<td>OPENING_CASH varchar
+	OPENING_UNITS varchar
+	CLOSING_CASH varchar
+	CLOSING_UNITS varchar
+	ACCOUNT_VALUE_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetHasAccountAudit</td>
+	<td>select * from ACCOUNT_VALUE_AUDIT 
+where account_id=? and trunc(account_value_date) = trunc(cast (? as date))</td>
+	<td>ACCOUNT_ID int
+	ACCOUNT_VALUE_DATE date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetOpenAccountsByFund</td>
+	<td>SELECT * FROM ACCOUNT WHERE ACCOUNT_STATUS_ID=1 AND FUND_CODE=?</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetSystemConfigVars</td>
+	<td>SELECT * FROM SYSTEM_CONFIG_VAR 
+		ORDER BY CONFIG_VAR_TYPE, CONFIG_VAR_NAME</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>qClientServices_GetSystemConfigVar</td>
+	<td>SELECT * FROM SYSTEM_CONFIG_VAR
+		WHERE CONFIG_VAR_NAME=?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_AddSystemConfigVar</td>
+	<td>INSERT INTO SYSTEM_CONFIG_VAR 
+		(CONFIG_VAR_NAME,CONFIG_VAR_DESCRIPTION,CONFIG_VAR_TYPE,CONFIG_VAR_DATA_TYPE,STRING_VALUE,
+		INT_VALUE,FLOAT_VALUE, DATE_VALUE, BOOL_VALUE,LAST_UPDATED,LAST_UPDATED_BY) 
+		VALUES (?,?,?,?,?,?,?,?,?,SYSDATE,?)</td>
+	<td>CONFIG_VAR_NAME varchar
+		CONFIG_VAR_DESCRIPTION varchar
+		CONFIG_VAR_TYPE varchar
+		CONFIG_VAR_DATA_TYPE varchar
+		STRING_VALUE varchar
+		INT_VALUE int
+		FLOAT_VALUE int
+		DATE_VALUE date
+		BOOL_VALUE int
+		LAST_UPDATED_BY varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateSystemConfigVar</td>
+	<td>UPDATE SYSTEM_CONFIG_VAR SET 
+		CONFIG_VAR_NAME=?,
+		CONFIG_VAR_DESCRIPTION=?,
+		CONFIG_VAR_TYPE=?,
+		CONFIG_VAR_DATA_TYPE=?,
+		STRING_VALUE=?,
+		INT_VALUE=?,
+		FLOAT_VALUE=?,
+		DATE_VALUE=?,
+		BOOL_VALUE=?,
+		LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?
+		WHERE CONFIG_VAR_NAME=?</td>
+	<td>CONFIG_VAR_NAME varchar
+		CONFIG_VAR_DESCRIPTION varchar
+		CONFIG_VAR_TYPE varchar
+		CONFIG_VAR_DATA_TYPE varchar
+		STRING_VALUE varchar
+		INT_VALUE int
+		FLOAT_VALUE int
+		DATE_VALUE date
+		BOOL_VALUE int
+		LAST_UPDATED_BY varchar
+		CONFIG_VAR_NAME varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetSDAuditsByRelationId</td>
+	<td>SELECT * FROM SDAUDIT
+		INNER JOIN SDAUDIT_RELATIONS ON (SDAUDIT.AUDITID = SDAUDIT_RELATIONS.AUDITID)
+		WHERE SDAUDIT_RELATIONS.RELATIONID = ?
+		ORDER BY AUDIT_TIMESTAMP DESC</td>
+	<td>RELATIONID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getUnitTotalByShareClass</td>
+	<td>select sum(av.acc_units) as UNIT_TOTAL from account_value av
+inner join account acc on acc.account_id = av.account_id
+inner join ref_account_status ras on ras.account_status_id = acc.account_status_id
+where ras.account_status_name = 'Open' and acc.share_class_id=?</td>
+	<td>SHARE_CLASS_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getRegionLookup</td>
+	<td>SELECT * FROM REF_REGION_LOOKUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_getPostcodeLookup</td>
+	<td>SELECT * FROM REF_POSTCODE_LOOKUP</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_getRegionPostcodeLookup</td>
+	<td>SELECT P.*, R.REGION FROM REF_POSTCODE_LOOKUP P 
+		LEFT JOIN REF_REGION_LOOKUP R ON (P.REGION_ID = R.REGION_ID)
+		ORDER BY REGION, POSTCODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_getRelatedPersonAddresses</td>
+	<td>SELECT cma.*, p.FULL_NAME from PERSON p INNER JOIN (
+		  SELECT cm.*, addr.FLAT, ADDR.HOUSENAME, ADDR.HOUSENUMBER, ADDR.STREET, ADDR.DISTRICT,ADDR.POSTCODE FROM CONTACT_POINT cm 
+		  INNER JOIN ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)
+		) cma ON (p.person_id = cma.element_id)
+
+		WHERE p.person_id in ( 
+		  SELECT element_id2 from RELATIONS er
+		  INNER JOIN PERSON pers ON (er.ELEMENT_ID2 = pers.PERSON_ID)
+		  WHERE er.ELEMENT_ID1 = ?
+		)
+		ORDER BY p.LAST_NAME ASC</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_getOrganisationAddresses</td>
+	<td>SELECT cma.*, o.organisation_name from organisation o left JOIN
+		(SELECT cm.*, addr.FLAT, ADDR.HOUSENAME, ADDR.HOUSENUMBER, ADDR.STREET, ADDR.DISTRICT,ADDR.POSTCODE FROM CONTACT_POINT cm left JOIN 
+		 ADDRESS addr ON (addr.ADDRESS_ID = cm.ADDRESS_ID)) cma 		 
+		 ON (o.organisation_id = cma.element_id) 
+		where o.organisation_id = ?</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountCompaniesForOrganisation</td>
+	<td>SELECT comp.* FROM REF_COMPANY comp WHERE COMPANY_ID IN (
+		  SELECT f.COMPANY_ID FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		  INNER JOIN FUND f ON (acc.FUND_CODE = f.FUND_CODE)
+		  WHERE ORGANISATION_ID = ?
+		)
+	</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCompaniesForOrganisation</td>
+	<td>SELECT comp.* FROM REF_COMPANY comp WHERE COMPANY_ID IN (
+		  SELECT f.COMPANY_ID FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		  INNER JOIN FUND f ON (acc.FUND_CODE = f.FUND_CODE)
+		  WHERE ORGANISATION_ID = ?
+      
+		  UNION
+		  
+		  SELECT clmap.COMPANY_ID FROM CLIENT_AURORA_MAP clMap
+		  WHERE ORGANISATION_ID = ?
+		)
+	</td>
+	<td>ORGANISATION_ID int
+		ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextShareClassGroupId</td>
+	<td>SELECT SEQ_SHARE_CLASS_GROUP.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetNextShareClassGroupAppliedId</td>
+	<td>SELECT SEQ_SHARE_CLASS_GROUP_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetCountInstrsPerDay</td>
+	<td>SELECT TO_CHAR(DATE_ADDED,'YYYY/MM/DD') AS DATE_ADDED, count(*) AS NUM_INSTRS
+		FROM INSTRUCTION
+		WHERE DATE_ADDED BETWEEN TO_DATE(?, 'DD/MM/YYYY') AND TO_DATE(?, 'DD/MM/YYYY')
+		GROUP BY TO_CHAR(DATE_ADDED,'YYYY/MM/DD')
+		ORDER BY DATE_ADDED</td>
+	<td>FROM_DATE varchar
+		TO_DATE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetShareClassDailyYields</td>
+	<td>SELECT SHARE_CLASS_ID, TO_CHAR(FUND_AUDIT_DATE,'YYYY/MM/DD') AS FUND_AUDIT_DATE, SUM(INCOME_PER_UNIT*365) AS SHARE_TOTAL
+		FROM FUND_AUDIT 
+		WHERE FUND_AUDIT_DATE BETWEEN TO_DATE(?, 'DD/MM/YYYY') AND TO_DATE(?, 'DD/MM/YYYY') 
+		AND INCOME_PER_UNIT IS NOT NULL
+		GROUP BY SHARE_CLASS_ID, TO_CHAR(FUND_AUDIT_DATE,'YYYY/MM/DD')</td>
+	<td>FROM_DATE varchar
+		TO_DATE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAccountCapitalByFund</td>
+	<td>SELECT FUND_CODE, COUNT(*) AS NUM_ACCOUNTS, 
+		
+		TO_CHAR(SUM(ACC_CASH), 'fm999G999G999G990d00') AS TOTAL_CASH, 
+		TO_CHAR(SUM(ACC_UNITS), 'fm999G999G999G990d00') AS TOTAL_UNITS 
+
+		FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		 WHERE FUND_CODE = ?
+		 AND (DATE_LAST_REFRESH IS NOT NULL) 
+		 GROUP BY FUND_CODE</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetPendingAccountIntentionsByFund</td>
+	<td>SELECT invstatus.invintentstatus_id, invstatus.invintentstatus_name, 
+		intent.num_accounts, intent.total_cash, intent.total_units 
+		FROM REF_INVESTMENT_INTENT_STATUS invStatus
+
+		LEFT JOIN (
+		  SELECT intent.FUND_CODE, COUNT(*) AS NUM_ACCOUNTS, intent.invintentstatus_id, 
+		  TO_CHAR(SUM(CASH), 'fm999G999G999G990d00') AS TOTAL_CASH,
+		  TO_CHAR(SUM(UNITS), 'fm999G999G999G990d00') AS TOTAL_UNITS
+
+		  FROM FUND_INVESTMENT_INTENTION intent
+
+		  WHERE intent.CAMPAIGN_ID = ?
+		  AND intent.FUND_CODE = ?
+		  
+		  AND intent.account_id NOT IN 
+			(SELECT ACCOUNT_ID FROM V_ACCOUNT_EXTENDED_CLIENT 
+			WHERE FUND_CODE = ? AND DATE_LAST_REFRESH IS NOT NULL) 
+		  
+		  GROUP BY intent.FUND_CODE, intent.invintentstatus_id
+		  
+		) intent ON (intent.invintentstatus_id = invStatus.invintentstatus_id)
+		ORDER BY invstatus.invintentstatus_id</td>
+	<td>CAMPAIGN_ID int
+		FUND_CODE varchar
+		FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetEnrolmentTotalsBySubjectStatus</td>
+	<td>SELECT RCSS.CAMPSUBJECTSTATUS_NAME, COUNT(*) AS TOTAL_SUBJECTS
+		FROM CAMPAIGN_ENROLMENT CE
+		LEFT JOIN REF_CAMPAIGN_SUBJECT_STATUS RCSS ON 
+		(CE.CAMPSUBJECTSTATUS_ID = RCSS.CAMPSUBJECTSTATUS_ID)
+		WHERE CE.CAMPAIGN_ID = ? 
+		GROUP BY RCSS.CAMPSUBJECTSTATUS_NAME
+		ORDER BY RCSS.CAMPSUBJECTSTATUS_NAME
+	</td>
+	<td>CAMPAIGN_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetNumClientDocsWithType</td>
+	<td>SELECT COUNT(*) AS NUM_DOCS FROM Revisions r 
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+		
+		WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+		
+		AND dm.xDocumentClass = ?
+		AND dm.xClientNumber = ?
+		AND dm.xCompany = ?</td>
+	<td>xDocumentClass varchar
+		xClientNumber varchar
+		xCompany varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetIdentityChecksRequiringRecalculation</td>
+	<td>SELECT * FROM PERSON p 
+		INNER JOIN IDENTITY_CHECK idCheck ON (p.PERSON_ID = idCheck.PERSON_ID)
+		WHERE RECALCULATE_DATE < SYSDATE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetCFPrincipalFundChildDocuments</td>
+	<td>Select *
+		FROM Revisions
+		INNER JOIN DocMeta ON Revisions.dID = DocMeta.dID 
+		INNER JOIN Documents ON Revisions.dID = Documents.dID 
+		WHERE (Revisions.dRevRank = 0)  
+		AND (NOT (Revisions.dStatus = 'DELETED')) 
+		AND (NOT (Revisions.dStatus = 'EXPIRED')) 
+		AND Documents.dIsWebFormat = 1 
+		AND Revisions.dDocType = 'ChildDocument'
+		AND DocMeta.xBundleRef=?
+		AND DocMeta.xParentDocName=?
+		AND DocMeta.xFund=?
+		AND DocMeta.xDocumentClass=?</td>
+	<td>xBundleRef varchar
+		xParentDocName varchar
+		xFund varchar
+		xDocumentClass varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCFDestinationFundChildDocuments</td>
+	<td>Select *
+		FROM Revisions
+		INNER JOIN DocMeta ON Revisions.dID = DocMeta.dID 
+		INNER JOIN Documents ON Revisions.dID = Documents.dID 
+		WHERE (Revisions.dRevRank = 0)  
+		AND (NOT (Revisions.dStatus = 'DELETED')) 
+		AND (NOT (Revisions.dStatus = 'EXPIRED')) 
+		AND Documents.dIsWebFormat = 1 
+		AND Revisions.dDocType = 'ChildDocument'
+		AND DocMeta.xBundleRef=?
+		AND DocMeta.xParentDocName=?
+		AND DocMeta.xFund=?
+		AND DocMeta.xDocumentClass=?
+		AND DocMeta.xDestinationFund=?</td>
+	<td>xBundleRef varchar
+		xParentDocName varchar
+		xFund varchar
+		xDocumentClass varchar
+		xDestinationFund varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCFChildDocuments</td>
+	<td>Select *
+		FROM Revisions
+		INNER JOIN DocMeta ON Revisions.dID = DocMeta.dID 
+		INNER JOIN Documents ON Revisions.dID = Documents.dID 
+		WHERE (Revisions.dRevRank = 0)  
+		AND (NOT (Revisions.dStatus = 'DELETED')) 
+		AND (NOT (Revisions.dStatus = 'EXPIRED')) 
+		AND Documents.dIsWebFormat = 1 
+		AND Revisions.dDocType = 'ChildDocument'
+		AND DocMeta.xBundleRef=?
+		AND DocMeta.xParentDocName=?</td>
+	<td>xBundleRef varchar
+		xParentDocName varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccountWithoutMandates<td>
+	<td>with 
+orgs AS (
+    SELECT o.organisation_id, o.organisation_name, org_account_code
+          ,voc.category_path category, clmap.client_number as client_number
+          ,LISTAGG(element_attribute_name, ',') WITHIN GROUP (ORDER BY element_attribute_name)AS verification_sources
+      FROM ccla.organisation o
+      LEFT JOIN ccla.element_attribute_applied eaa on (o.organisation_id = eaa.element_id)
+      LEFT JOIN ccla.ref_element_attributes rea on (eaa.element_attribute_id = rea.element_attribute_id AND verification_source_id is not null)
+      INNER JOIN ccla.v_org_category voc on ( o.category_id = voc.category_id)
+      INNER JOIN ccla.client_aurora_map clmap on (clmap.organisation_id = o.organisation_id)
+      INNER JOIN ccla.ref_company rc on (rc.company_id = clmap.company_id)
+      WHERE o.organisation_id = ? 
+      GROUP BY o.organisation_id, o.organisation_name, voc.category_path, clmap.client_number, org_account_code)   
+,accs AS (
+    SELECT acc.account_id, acc.subtitle, acc.income_distribution_method, acc.fund_code, acc.accountnumber, acc.accnumext
+          ,p.person_account_code, p.full_name, t.title, p.salutation, p.first_name, p.last_name
+          ,ad.address_id, ad.flat, ad.housename, ad.housenumber, ad.street, ad.district, ad.city, ad.postcode
+      FROM CCLA.Account acc
+     INNER JOIN CCLA.relations r on (r.element_id2 = acc.account_id  )
+     INNER JOIN CCLA.person p on (p.person_id = r.element_id1)
+     INNER JOIN CCLA.Relation_Property_Applied rpa on (rpa.relation_id = r.relation_id)
+     INNER JOIN ccla.ref_relation_property rrp on (rrp.relation_property_id = rpa.relation_property_id)
+     INNER JOIN ccla.contact_point cp on (cp.element_id = p.person_id)
+     INNER JOIN ccla.address ad on (ad.address_id = cp.address_id)
+     INNER JOIN ccla.ref_title t on (t.title_id = p.title_id)
+     WHERE   rrp.relation_property_id = 32
+       AND (cp.is_default = 1
+           OR
+            1 = (SELECT count(*) 
+                   FROM ccla.contact_point cp2 
+                  WHERE address_id is not null 
+                    AND element_id = p.person_id 
+                    AND is_default = 1))),
+                   
+docs AS ( 
+    SELECT COMPANY_CODE, CLIENT_NUMBER,xAccountNumber, last_doc_date
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then REGEXP_SUBSTR(xAccountNumber, '[A-Z]{1,2}$') else NULL end AS  DOC_FUNDCODE
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then TO_NUMBER(SUBSTR(xAccountNumber, 0, REGEXP_INSTR(xAccountNumber, '[A-Z]{1,2}$')-1))else NULL end AS DOC_ACCOUNTNUMBER
+      FROM 
+         (
+          SELECT xCompany AS COMPANY_CODE, TO_NUMBER(xClientNumber) AS CLIENT_NUMBER,dm.xAccountNumber, max(r.dInDate) last_doc_date, count(*) no_of_mandates
+            FROM  wc11gprod_ocs.Revisions r
+           INNER JOIN  wc11gprod_ocs.DocMeta dm ON (r.dID = dm.dID)
+           WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+             AND dm.xDocumentClass IN ('MAND','AUTOMAND','APP','AUTOAPP')
+             AND r.dInDate > TO_DATE('01/01/2007','dd/mm/yyyy')
+             AND dm.xCompany IS NOT NULL
+             AND dm.xClientNumber IS NOT NULL AND REGEXP_LIKE(dm.xClientNumber, '^\d+$')
+           GROUP BY xCompany, TO_NUMBER(xClientNumber)    ,dm.xAccountNumber) ),         
+withdrawal_accounts AS (
+          SELECT ba_r.ELEMENT_ID1 AS ACCOUNT_ID, ba_rrn.relation, ba.bank_account_id, ba.account_no, ba.sort_code, ba.account_name, ba.account_short_name, ba.iban, ba.building_society_roll_number  
+            FROM ccla.RELATIONS ba_r
+           INNER JOIN ccla.RELATION_PROPERTY_APPLIED ba_rpa ON (ba_r.RELATION_ID = ba_rpa.RELATION_ID)
+           INNER JOIN ccla.REF_RELATION_PROPERTY ba_rrp ON (ba_rpa.RELATION_PROPERTY_ID = ba_rrp.RELATION_PROPERTY_ID)
+           INNER JOIN ccla.REF_PROPERTY ba_rp ON (ba_rrp.PROPERTY_ID = ba_rp.PROPERTY_ID)
+           INNER JOIN ccla.bank_account ba on (ba.bank_account_id = ba_r.element_id2)
+           INNER JOIN ccla.ref_relation_names ba_rrn on (ba_rrn.relation_name_id = ba_r.relation_name_id)
+           WHERE ba_r.RELATION_NAME_ID  =120
+             AND ba_rp.PROPERTY_ID = 1),
+income_accounts AS (    
+         SELECT ba_r.ELEMENT_ID1 AS ACCOUNT_ID, ba_rrn.relation, ba.bank_account_id, ba.account_no, ba.sort_code, ba.account_name, ba.account_short_name, ba.iban, ba.building_society_roll_number  
+           FROM ccla.RELATIONS ba_r
+          INNER JOIN ccla.RELATION_PROPERTY_APPLIED ba_rpa ON (ba_r.RELATION_ID = ba_rpa.RELATION_ID)
+          INNER JOIN ccla.REF_RELATION_PROPERTY ba_rrp ON (ba_rpa.RELATION_PROPERTY_ID = ba_rrp.RELATION_PROPERTY_ID)
+          INNER JOIN ccla.REF_PROPERTY ba_rp ON (ba_rrp.PROPERTY_ID = ba_rp.PROPERTY_ID)
+          INNER JOIN ccla.bank_account ba on (ba.bank_account_id = ba_r.element_id2)
+          INNER JOIN ccla.ref_relation_names ba_rrn on (ba_rrn.relation_name_id = ba_r.relation_name_id)
+          WHERE ba_r.RELATION_NAME_ID  =121
+          AND ba_rp.PROPERTY_ID = 1) 
+SELECT *
+FROM 
+(
+SELECT orgs.organisation_id, org_account_code, organisation_name, orgs.category, orgs.client_number, verification_sources
+,accs.*
+,ia.bank_account_id Inc_BA_ID, ia.account_no Inc_BA_Num, ia.sort_code Inc_BA_Sort, ia.account_name Inc_BA_AccName, ia.account_short_name Inc_BA_ShortName, ia.iban Inc_BA_IBAN, ia.building_society_roll_number Inc_BA_BSRN
+,wa.bank_account_id Wth_BA_ID, wa.account_no Wth_BA_Num, wa.sort_code Wth_BA_Sort, wa.account_name Wth_BA_AccName, wa.account_short_name Wth_BA_ShortName, wa.iban Wth_BA_IBAN, wa.building_society_roll_number Wth_BA_BSRN
+,last_doc_date 
+  FROM orgs
+INNER JOIN ccla.relations r on (r.element_id1 = orgs.organisation_id)
+INNER JOIN accs on (r.element_id2 = accs.account_id)
+  LEFT JOIN docs on (docs.CLIENT_NUMBER = orgs.client_number AND doc_fundcode = accs.fund_code AND doc_accountnumber = accs.accountnumber) 
+  LEFT JOIN income_accounts ia on (ia.account_id = accs.account_id)
+  LEFT JOIN withdrawal_accounts wa on (ia.account_id = wa.account_id)
+)
+WHERE last_doc_date is null</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccountMandatedDocs</td>
+	<td>    SELECT COMPANY_CODE, CLIENT_NUMBER, max(dInDate) last_doc_date
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then REGEXP_SUBSTR(xAccountNumber, '[A-Z]{1,2}$') else NULL end AS  DOC_FUNDCODE
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then TO_NUMBER(SUBSTR(xAccountNumber, 0, REGEXP_INSTR(xAccountNumber, '[A-Z]{1,2}$')-1)) else NULL end AS DOC_ACCOUNTNUMBER
+      FROM 
+         (
+         SELECT * 
+           FROM (         
+                 SELECT COMPANY_CODE, CLIENT_NUMBER, dInDate,
+                       substr(
+                       xAccountNumber,
+                       instr(','||xAccountNumber,',',1,seq),              
+                       instr(','||xAccountNumber||',',',',1,seq+1) - instr(','||xAccountNumber,',',1,seq)-1)  xAccountNumber
+                  FROM (
+                       SELECT xCompany AS COMPANY_CODE, TO_NUMBER(xClientNumber) AS CLIENT_NUMBER,dm.xAccountNumber, 
+                              r.dInDate--max(r.dInDate) last_doc_date, count(*) no_of_mandates
+                         FROM  Revisions r
+                        INNER JOIN  DocMeta dm ON (r.dID = dm.dID)
+                        WHERE r.dRevRank = 0 AND r.dStatus = 'RELEASED'
+                          AND dm.xDocumentClass IN ('MAND','AUTOMAND','APP','AUTOAPP')
+                          AND r.dInDate > TO_DATE('15/12/2007','dd/mm/yyyy')
+                          AND dm.xCompany IS NOT NULL
+                          AND dm.xClientNumber IS NOT NULL AND REGEXP_LIKE(dm.xClientNumber, '^\d+$')
+                          AND xClientNumber = ?
+                       ) d, 
+                       (SELECT level seq FROM dual connect by level <= 20) sequence_gen
+                  WHERE instr(','||xAccountNumber,',',1,seq) > 0) 
+         )
+     GROUP BY COMPANY_CODE, CLIENT_NUMBER
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then REGEXP_SUBSTR(xAccountNumber, '[A-Z]{1,2}$') else NULL end 
+          ,CASE WHEN REGEXP_LIKE(xAccountNumber, '^\d{1,5}[A-Z]{1,2}$') then TO_NUMBER(SUBSTR(xAccountNumber, 0, REGEXP_INSTR(xAccountNumber, '[A-Z]{1,2}$')-1))else NULL end
+</td>
+	<td>clientNumber varchar</td>
+</tr>
+</table>
+<@end@>
+</body></html>

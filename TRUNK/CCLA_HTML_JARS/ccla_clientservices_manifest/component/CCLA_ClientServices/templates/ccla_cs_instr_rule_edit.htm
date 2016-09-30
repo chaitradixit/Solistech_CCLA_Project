@@ -1,0 +1,175 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Instruction Rule Edit
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	<script type="text/javascript">
+		function setIdcService(formValue, formName) {
+			var formToUse = document.forms[formName];
+			if (formToUse) {	
+				if (formValue=='Delete') {
+					formToUse.IdcService.value='CCLA_CS_DELETE_INSTR_RULE';
+					formToUse.RedirectUrl.value='<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_ADMIN<$include add_idc_token_to_url$>';
+				} else {
+					var ruleId = formToUse.INSTRUCTION_RULE_ID.value;
+					window.location.href = "?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=" + ruleId;
+				}			
+			}
+		}	
+		
+		function doAddMultipleConditionsCallBack(ruleConditions) {
+			document.addMultipleConditions.INSTRUCTION_CONDITIONS.value=ruleConditions;
+			document.addMultipleConditions.submit();
+		}
+	</script>
+
+<script type="text/javascript">
+	//function to update the operators from the select list.
+	function updateFormValues(dataType) {
+			
+		alert(dataType);
+		//update operators
+		document.addCondition.InstructionDataType.value="";
+		
+		//update check data field
+		
+		//update check data value
+		document.addCondition.InstructionDataType.value=dataType;
+		return false;
+		
+	}
+</script>	
+
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+
+			<!------------ Start Current Rule  ------------->			
+			<$include orangeContainer_top$>
+
+			<div class='ccla_cs_panel_header'>
+				CCLA Instruction Rule Edit
+			</div>
+			<div class='ccla_cs_panel_content'>
+				<p>You can update current rule by change the data and select "Update".</p>
+				<$include ccla_instruction_rule_form$>
+			</div>
+			<$include orangeContainer_bottom$>
+			<!------------ End Current Rule  ------------->			
+
+			<br />
+			<!------------ Start Current Rule Condition ------------->			
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_header'>
+				Current Conditions
+			</div>
+			<div class='ccla_cs_panel_content'>
+				<$if rsInstrConditions$>
+				<p>You can remove conditions for this rule by selecting "Remove".</p>
+				<table class="ccla-table">
+					<tr>
+						<th width="25%">Description</th>
+						<th width="20%">Data Field</th>
+						<th width="10%">Operator</th>
+						<th width="15%">Check Value</th>
+						<th width="20%">Check Data Field</th>
+						<th width="10%">Action</th>
+					</tr>
+						<$loop rsInstrConditions$>
+						<$datafieldId = #active.INSTRUCTION_DATA_ID$>
+						<$checkdatafieldId = #active.CHECK_INSTRUCTION_DATA_ID$>
+						<$operatorId = #active.OPERATOR_ID$>
+						
+						<form id="removeCond<$#active.INSTRUCTION_CONDITION_ID$>" name="removeCond<$#active.INSTRUCTION_CONDITION_ID$>" method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_REMOVE_INSTR_CONDITION_FROM_RULE" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+						<input type="hidden" id="INSTRUCTION_CONDITION_ID" name="INSTRUCTION_CONDITION_ID" value="<$#active.INSTRUCTION_CONDITION_ID$>" />
+						<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#local.INSTRUCTION_RULE_ID$>" />
+			
+						<tr>
+							<td align="center"><$#active.DESCRIPTION$></td>
+							<td align="center">
+								<$exec rsFirst(rsInstrData)$>
+								<$loop rsInstrData$>
+									<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), datafieldId)$>
+											<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+									<$endif$>
+								<$endloop$>
+							</td>
+							<td align="center">
+								<$exec rsFirst(rsOperator)$>
+								<$loop rsOperator$>
+									<$if strEquals(getValue("rsOperator", "OPERATOR_ID"), operatorId)$>
+										<$getValue("rsOperator", "OPERATOR_NAME")$>
+									<$endif$>
+								<$endloop$>
+							</td>
+							<td align="center"><$#active.CHECK_VALUE$>&nbsp;</td>
+							<td align="center">
+								<$exec rsFirst(rsInstrData)$>
+								<$loop rsInstrData$>
+									<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), checkdatafieldId)$>
+										<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+									<$endif$>
+								<$endloop$>
+								&nbsp;
+							</td>
+							<td align="center"><input type="submit" id="removeCondtion" name="removeCondition" value="Remove"></td>
+						</tr>
+						</form>
+						<$endloop$>
+				</table>
+				<$else$>
+					<b>N/A</b>
+				<$endif$>
+			</div>
+			<$include orangeContainer_bottom$>
+			<!------------ End Current Rule Condition ------------->		
+			<br/>
+			<!------------ Start Search Condition ------------->
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_header'>
+				Add Condition
+			</div>
+			<div class='ccla_cs_panel_content'>
+				<p>Fill in the form below to add or search a condition</p>				
+				<$include ccla_instruction_rule_condition_search_form$>
+			</div>
+			<$include orangeContainer_bottom$>
+			<!------------ End Search Condition ------------->
+			<br/>
+		</div>
+	</div>
+	
+	<form name="addMultipleConditions" id="addMultipleConditions" method="POST">
+		<input type="hidden" name="IdcService" value="CCLA_CS_ADD_INSTR_CONDITIONS_TO_RULE" /><$include add_idc_token_to_form$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+		<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#local.INSTRUCTION_RULE_ID$>" />
+		<input type="hidden" id="INSTRUCTION_CONDITIONS" name="INSTRUCTION_CONDITIONS" value="" />
+	</form>
+	
+</body></html>

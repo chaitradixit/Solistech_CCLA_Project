@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+		
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if PERSON_ID$>
+			Add Aurora Link
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ccla_cs_aurora_person_map_error_handling_js$>
+	
+	<script type="text/javascript">
+		
+		// Determines whether a new contact detail was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;
+	
+		$(document).ready( function () {
+				
+			if (added)
+				window.parent.refreshAuroraLinkDetails();
+		});
+
+	
+	</script>
+	
+</head>
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+	<div id="errorMessage" style="height:30px">
+	
+			</div>
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$if PERSON_ID$>
+					Add aurora link
+				<$endif$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<$if added$>
+					<div class="message_panel info_icon">
+						Link added.	
+					</div>
+				<$endif$>
+				
+				<form name="frmAddAuroraMap" id="frmAddAuroraMap" method="POST">
+					<input type="hidden" name="PERSON_ID" 	value="<$#local.PERSON_ID$>" />
+					<input type="hidden" name="IdcService" value="CCLA_CS_ADD_AURORA_PERSON_MAP"/><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_EDIT_AURORA_PERSON_MAP<$include add_idc_token_to_url$>&PERSON_ID=<$#local.PERSON_ID$>&added=1"/>
+					<$if not PERSON_ID$>
+					
+					There was an error retrieving the Person ID.  Please refresh the page and try again.
+						
+					<$else$>
+
+						<$include ccla_cs_aurora_person_company_add$>
+				
+					<$endif$>
+				</form>
+			
+			</div>
+
+			
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

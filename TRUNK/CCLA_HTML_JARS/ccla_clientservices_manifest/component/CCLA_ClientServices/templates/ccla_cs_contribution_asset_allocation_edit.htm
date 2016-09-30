@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Edit Contribution Asset Allocations
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ccla_common_js$>
+	<$include ccla_cs_contribution_asset_allocation_js$>
+	
+	<script type="text/javascript">
+		$(document).ready( function() {
+			<$if #local.updated$>
+
+				if (window.parent) {
+					// Refresh the donor subscription display to reflect
+					// any TTLA allocation changes.
+					window.parent.refreshSubscriptionDonorsDisplay();
+					
+					// Refresh the Subscription Fund Allocation display to
+					// reflect any fund allocation changes.
+					window.parent.refreshSubscriptionFundAllocationDisplay();
+				}
+			<$endif$>
+		});
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Edit Contribution Asset Allocations
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<$if #local.updated$>
+				
+					<div class="message_panel info_icon">
+						Allocations updated.
+					</div>
+				<$endif$>
+							
+				<p>
+					Set the Fund Allocations for this donation below. If entering cash amounts, they must add up to the full donation amount. If entering percentages, they must add up to 100.
+				<p>
+				
+				<$if getSystemConfigVar('CommunityFirst_CalculateExpectedGovMatchAmounts') like "1"$>
+					<p>
+						Expected Government Match amounts are calculated automatically after you update.
+					</p>
+				<$endif$>
+				
+				<form method="POST" id="assetAllocationsForm" name="assetAllocationsForm">
+
+					<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_CONTRIBUTION_ASSET_ALLOCATIONS" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_CONTRIBUTION_ASSET_ALLOCATION_EDIT<$include add_idc_token_to_url$>&CONTRIBUTION_ID=<$#local.CONTRIBUTION_ID$>&updated=1" />
+	
+					<input type="hidden" name="CONTRIBUTION_ID" value="<$#local.CONTRIBUTION_ID$>"/>
+				
+					<!-- Copy the PRODUCT_ID from the Contribution record. -->
+					<input type="hidden" name="PRODUCT_ID" value="<$rsContribution.PRODUCT_ID$>" />
+				
+					<table width="100%">
+						<tr>
+							<td width="15%"><b>Allocation method:</b></td>
+							<td width="35%">
+								<input type="radio" id="valueType" name="valueType" value="percentage" /> Percentages
+								<input type="radio" id="valueType" name="valueType" value="amount" checked /> Cash Amounts
+							</td>
+						
+							<td width="15%"><b>Gov. match rate:</b></td>
+							<td>
+								<select name="GOV_MATCH_RATE_ID" id="GOV_MATCH_RATE_ID">
+									<$selGovMatchRateId=""$>
+									
+									[[% Determine selected Gov. Match Rate. %]]
+									<$selGovMatchRateId=rsContributionAssetAllocations.GOV_MATCH_RATE_ID$>
+									
+									<$loop rsGovMatchRates$>
+										<$isSelected=""$>
+										
+										<$if selGovMatchRateId like #active.GOV_MATCH_RATE_ID$>
+											<$isSelected=1$>
+										<$elseif (not selGovMatchRateId) and (parseDate(dateCurrent()) > parseDate(#active.GOV_MATCH_START_DATE)) and (parseDate(dateCurrent()) < parseDate(#active.GOV_MATCH_END_DATE))$>
+											<$isSelected=1$>
+										<$endif$>
+										
+										<option value="<$#active.GOV_MATCH_RATE_ID$>" <$if isSelected$>selected<$endif$>>
+											<$#active.GOV_MATCH_PERCENTAGE$>% (<$formatDateWithPattern(#active.GOV_MATCH_START_DATE, "d MMM yyyy")$> - <$formatDateWithPattern(#active.GOV_MATCH_END_DATE, "d MMM yyyy")$>)
+										</option>
+									<$endloop$>
+								</select>
+								
+							</td>
+							
+						</tr>
+					</table>
+
+					<div style="padding: 5px; border: 0px inset;">
+						
+						<!-- New table of Fund allocs -->
+						<table cellspacing="0" cellpadding="0" width="100%" class="accounts-table">			
+							<tr>
+								<th class="first-col" width="40">
+									Code
+								</th>
+								<th>
+									Name
+								</th>
+								<th width="100">
+									Account
+								</th>
+								<th width="115">
+									% Percent
+								</th>
+								<th width="95">
+									£ Amount
+								</th>
+								<th width="95">
+									Exp. Gov. Match
+								</th>
+								
+								<th width="95">
+									Act. Gov. Match
+								</th>
+							</tr>
+							
+							<$isFirst=1$>
+							
+							<$loop rsFunds$>
+								
+								<$exec rsFirst("rsContributionAssetAllocations")$>
+										
+								<$thisFund = #active.FUND_CODE$>
+								
+								<$thisContributionAmount = ""$>
+								<$thisContributionPercent = ""$>
+								<$thisGovMatchExpected = ""$>
+								<$thisGovMatchActual = ""$>
+								
+								<$loop rsContributionAssetAllocations$>
+									<$if #active.FUND_CODE like thisFund$>
+										<$thisContributionAmount = #active.CONTRIBUTION_AMOUNT$>
+										<$thisContributionPercent = #active.CONTRIBUTION_PERCENT$>
+										<$thisGovMatchExpected = #active.GOV_RECOVERY_AMT_EXPECTED$>
+										<$thisGovMatchActual = #active.GOV_RECOVERY_AMT_ACTUAL$>
+									<$endif$>
+								<$endloop$>
+								
+								[[% Determine if a Donor Account already exists for this Fund. %]]
+								<$exec rsFirst("rsDonorAccounts")$>
+								
+								<$thisAccountId = ""$>
+								<$thisAccNumExt = ""$>
+								
+								<$loop rsDonorAccounts$>
+									<$if #active.FUND_CODE like thisFund$>
+										<$thisAccountId = #active.ACCOUNT_ID$>
+										<$thisAccNumExt = #active.ACCNUMEXT$>
+									<$endif$>
+								<$endloop$>
+								
+								<tr class="account-details-row<$if #local.thisContributionAmount$> account-row-open<$endif$>">
+				
+									<td class="first-col">
+										<$#active.FUND_CODE$>
+									</td>
+									<td>
+										<$if isFirst==1$>
+											<b><$strReplace(#active.DISPLAYNAME,"|","<br/>")$></b>
+											<$isFirst=0$>
+										<$else$>
+											<$strReplace(#active.DISPLAYNAME,"|","<br/>")$>
+										<$endif$>
+									</td>
+									
+									<td>
+										<$if thisAccountId$>
+											<a style="font-family: Courier; font-size:1.2em;" href="?IdcService=CCLA_CS_ACCOUNT_INFO&ACCOUNT_ID=<$thisAccountId$>" target="_BLANK"><$thisAccNumExt$></a>
+										<$elseif thisContributionAmount$>
+											<span class="no-info">Pending</span>
+										<$else$>
+											&nbsp;
+										<$endif$>
+									</td>
+									
+									<td>
+										<input 	type="text" 
+												style="width:8em"
+												class="alloc_percentage_field"
+												
+												name="CONTRIBUTION_PERCENT_<$thisFund$>"
+												id="CONTRIBUTION_PERCENT_<$thisFund$>"
+												value="<$#local.thisContributionPercent$>" />
+									</td>
+									
+									<td>
+										
+										
+										<input 	type="text" 
+												style="width:6.5em; text-align: right;"
+												class="alloc_amount_field"
+												
+												
+												name="CONTRIBUTION_AMOUNT_<$thisFund$>"
+												id="CONTRIBUTION_AMOUNT_<$thisFund$>"
+												value="<$#local.thisContributionAmount$>" />
+										
+									</td>
+									
+									
+									
+									<td>
+										<input 	type="text" 
+												style="width:6.5em; text-align: right;"
+												class="alloc_gov_match_expected_field"
+												<$if getSystemConfigVar('CommunityFirst_CalculateExpectedGovMatchAmounts') like "1"$>disabled="disabled"<$endif$>
+												name="GOV_RECOVERY_AMT_EXPECTED_<$thisFund$>"
+												id="GOV_RECOVERY_AMT_EXPECTED_<$thisFund$>"
+												value="<$#local.thisGovMatchExpected$>" />
+									</td>
+									
+									<td>
+										<input 	type="text" 
+												style="width:6.5em; text-align: right;"
+												class="alloc_gov_match_actual_field"
+												
+												name="GOV_RECOVERY_AMT_ACTUAL_<$thisFund$>"
+												id="GOV_RECOVERY_AMT_ACTUAL_<$thisFund$>"
+												value="<$#local.thisGovMatchActual$>" />
+									</td>
+								</tr>
+							
+							<$endloop$>
+							
+									<$if false$>
+										<tr class="account-details-row">
+											<td class="first-col" colspan="2" align="right">Total</td>
+											
+											<td align="right">
+												&nbsp;
+												<span id="fundAllocationTotal" style="font-family:Courier; font-weight: bold">0.00</span>
+											</td>
+											
+										</tr>
+										
+										<tr class="account-details-row">
+											<td class="first-col" colspan="2" align="right">Target</td>
+											
+											<td align="right">
+												&nbsp;
+												<$if rsSubscription.SUBSCRIPTION_AMOUNT$>
+													<span style="font-family:Courier"><$formatCurrency(rsSubscription.SUBSCRIPTION_AMOUNT)$></span>
+												<$endif$>
+											</td>
+											
+										</tr>
+									<$endif$>
+							
+						</table>
+						
+					</div>
+
+					<br/>
+					
+					<$loop rsContribution$>
+						<$contributionAmount = #active.CONTRIBUTION_AMOUNT$>
+					<$endloop$>
+					
+					<div>
+						Target amount: £<$formatCurrency(contributionAmount)$> <$if false$>| <span id="numSelectedTTLAs">?</span><$endif$> | <span id="totalAllocPercentage">?</span>
+					</div>
+
+					<div align="right">
+						<input type="button" value="Update" onclick="updateAssetAllocations()" />
+					</div>
+				</form>				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+</body>
+</html>

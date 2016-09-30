@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<script type="text/javascript">
+		// Validates document metadata.
+		//
+		// Returns true if all fields are valid, false otherwise.
+		function overrideAuthentication() {
+			
+			// remove any previously-displayed error messages
+			clearFieldErrorMsgs();
+	
+			var hasErrors = false;
+	
+							
+			// Use this include for custom validation checks.
+			if (document.override.REASON.value.length <=10) {
+			displayFieldErrorMsg("REASON","Reason","Please give a reason for overriding the authentication (must be more than 10 characters long)");
+			hasErrors = true;
+			}	
+			
+			
+			if (!hasErrors)
+			{
+				document.override.submit();
+				window.parent.location.reload();
+				window.parent.closePopup();
+				
+			}
+			return !hasErrors;
+		}
+		
+		// Creates and returns an error message DIV element. It must
+		// be inserted into the DOM afterwards.
+		//
+		// The given msgTitle, msgBody variables determine the content
+		// of the error message.
+		function createErrorMsg(msgId, msgTitle, msgBody) {
+			
+			// create the divs which hold the error message
+			var errorMsgTitle = document.createElement("span");
+			errorMsgTitle.className = "validation_error_title";
+			errorMsgTitle.innerHTML = msgTitle + ': ';
+			
+			if (msgBody && msgBody.length > 0) {
+				var errorMsgBody = document.createElement("span");
+				errorMsgBody.innerHTML = msgBody;
+			}
+			
+			var errorMsgDiv = document.createElement("div");
+			errorMsgDiv.id				= "err_" + msgId;
+			errorMsgDiv.className = "validation_error error_icon";
+			
+			errorMsgDiv.appendChild(errorMsgTitle);
+			
+			if (errorMsgBody)
+				errorMsgDiv.appendChild(errorMsgBody);
+			
+			return errorMsgDiv;
+		}
+				// Displays a validation error message below the given field
+		// on the document indexing panel.
+		//
+		// The field element itself will also be re-styled to show it
+		// is in error.
+		function displayFieldErrorMsg(fieldName, msgTitle, msgBody) {
+			
+			// re-style field input element
+			var fieldElem = document.override[fieldName];
+			$(fieldElem).addClass("validation_error_field");
+		
+			// build the error message div
+			var errorMsg = createErrorMsg(fieldName, msgTitle, msgBody);
+			
+			// clicking the error msg div will highlight the offending field.
+			errorMsg.onclick = function() {
+				var thisField = this.id.substring(4);
+				
+				document.override[thisField].focus();
+				document.override[thisField].select();
+			}
+		// create the table cell/row to hold the div and insert
+			// it after the document field row.
+			var errorMsgDiv = document.createElement("div");
+			
+			errorMsgDiv.appendChild(errorMsg);
+	
+			errorMsgDiv.id = "FieldError_" + fieldName;
+			errorMsgDiv.className = "doc_field_error_row";
+			
+			// find the div for the error message
+			var errorMessageContainer = $("#errorMessage");
+		
+			
+			$(errorMessageContainer).append(errorMsgDiv);
+		}
+		
+		// Deletes any existing field error messages spawned by 
+		// function above.
+		function clearFieldErrorMsgs() {
+			// remove error styling on invalid fields
+			$("#override input, #override select, #override textarea").removeClass("validation_error_field");
+			
+			// delete rows used for displaying validation errors
+			$(".doc_field_error_row").remove();
+		}
+
+
+
+
+</script>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Override Authentication
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Override PEP Authentication
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				<div id="errorMessage" style="height:20px; padding: 5px">
+				</div>
+			<form name="override" id="override" method="POST">
+			<input type="hidden" name="IdcService" value="CCLA_CS_DO_OVERRIDE"><$include add_idc_token_to_form$>
+			<input type="hidden" name="PERSON_ID" value="<$#active.PERSON_ID$>">
+			
+			<table>
+			<tr>
+			<td>
+			User:</td><td><$dUser$></<td>
+			</tr>
+			<tr>
+			<td>Reason:</td><td><textarea name="REASON" id="REASON" cols="40" rows="4"></textarea></td>
+			</tr>
+			<tr>
+			<td colspan="2" align="right">
+				<input type="button" value="Override" onclick="overrideAuthentication()"/>	
+			</td>
+			</tr>
+			</table>	
+			</form>			
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

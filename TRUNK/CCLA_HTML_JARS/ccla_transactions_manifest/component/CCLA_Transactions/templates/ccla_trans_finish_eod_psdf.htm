@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		
+
+
+		
+		<title>
+			Finish EOD
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+
+		function enterExpenses()
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_CONFIRM_EXPENSES<$include add_idc_token_to_url$>" 
+		}
+		
+		
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+						<$include orangeContainer_top$>
+	
+							<div class='ccla_cs_panel_header'>
+								End of Day Completed
+							</div>
+														
+							<br>
+							<br>
+							<a href="?IdcService=CCLA_TRANS_EOD_COMPLETED_LISTING<$include add_idc_token_to_url$>">View All Completed End of Days</a>
+							
+							<br>
+							<br>
+					<$include orangeContainer_bottom$>
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html></body></html>

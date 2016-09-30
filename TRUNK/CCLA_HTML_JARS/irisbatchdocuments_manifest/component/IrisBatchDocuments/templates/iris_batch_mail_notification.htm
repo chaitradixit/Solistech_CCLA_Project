@@ -1,0 +1,144 @@
+<$include MailHeader$>
+
+<head>
+<style type="text/css">
+body{
+	font-family: verdana;
+	font-size: 9pt;
+}
+
+a{
+	color: #F29303;
+	font-weight: bold;
+}
+
+b{
+	font-size: 0.8em;
+}
+
+b.heading{
+	font-size: 1.1em;
+}
+
+td{
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 9pt;
+	color: #000000;
+}
+
+
+div.header{
+	height: 90px;
+
+
+}
+	div.header h3 {
+		height: 22px;
+		background-color: #F29303;
+		color: #FFF;
+		margin: 12px 0 0 0;
+		padding: 1px 0px 2px 4px;
+	}
+
+
+div.message{
+
+	background-color: #EEEEEE;
+	padding: 10px 0px 10px 10px;
+
+}
+
+div.notes{
+	margin: 5px 10px 0px 0px;
+	padding: 5px 0px 5px 5px;
+	font-size: 9pt;
+	background-color: #FFF6D4;
+	border: 1px solid #B3B3B3;
+}
+</style>
+</head>
+
+<body>
+
+<$if requiredAction like 'fyi'$>
+	<$mailTitle = "For Information: Bundle " & bundleRef$>
+<$else$>
+	<$mailTitle = "Information Request: Bundle " & bundleRef$>
+<$endif$>
+
+<div class="header">
+	<img src="<$HttpImagesRoot$>iris_batchdocuments/images/iris logo email.gif"/>
+	<h3><$mailTitle$></h3>
+</div>
+
+<$executeService("GET_USER_INFO")$>
+
+<$if requiredAction like 'fyi'$>
+	<$dFullName$> has sent you this email to inform you of the contents of a mail bundle.
+	<br/>
+	To view the mail bundle <a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=<$bundleDocName$>&bundleRef=<$bundleRef$>">click here</a>.
+<$else$>
+	<$dFullName$> has sent you this email because they require you to provide information before responding to a mail bundle.
+	<br/>
+	To view the mail bundle <a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=<$bundleDocName$>&bundleRef=<$bundleRef$>">click here</a>.
+<$endif$>
+
+
+<br/>
+<br/>
+
+<$if extraNotes$>
+<div class="message">
+	<b class="heading">Additional notes </b>
+	<br/>
+	<div class="notes">
+	<$extraNotes$>
+	</div>
+</div>
+<$endif$>
+
+<br/>
+
+<div class="message">
+<b class="heading">Bundle details</b>
+<br/>
+<table border=0>
+	<tr>
+		<td>
+			<b>Type:</b>
+		</td>
+		<td>
+			<$bundleType$>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<b>Received date:</b>
+		</td>
+		<td>
+			<$formatDateWithPattern(bundleScanDate,#env.Iris_shortDatePattern)$>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<b>Due date:</b>
+		</td>
+		<td>
+			<$formatDateWithPattern(bundleDueDate,#env.Iris_shortDatePattern)$>
+		</td>
+	</tr>
+</table>
+</div>
+
+<br/>
+<br/>
+
+<hr/>
+
+<$if isAlias$>
+	<small>This email was sent to the group <$recipient$></small>
+<$endif$>
+
+</body>
+
+<$include MailFooter$>

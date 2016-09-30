@@ -1,0 +1,3264 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices service
+</title>
+</head>
+<body>
+
+<@table CCLA_ClientServices_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+
+
+<tr>
+	<td>CCLA_CS_GET_CAMPAIGNS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCampaigns,rsCampaigns::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACTIVE_CAMPAIGNS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetActiveCampaigns,rsCampaigns::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CAMPAIGN_INFO</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCampaignInfo,rsCampaign::null
+		3:createResultSetFromPooledConnection:qClientServices_GetProcessStatusCounts,rsProcessStatusCounts::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CLIENT_LOOKUP</td>
+	<td>Service
+		0
+		CCLA_CS_CLIENT_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CORRESPONDENT_ACCOUNTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getCorrespondentAccounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_EXTENDED_CLIENT_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getExtendedClientData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_CORRESPONDENT_QUESTION</td>
+	<td>Service
+		0
+		CCLA_CS_ADD_CORRESPONDENT_QUESTION
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACTIVITIES_BY_PROCESS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getActivitiesByProcess:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACTIVITIES_BY_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getActivitiesByPerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_FUND_TRANSFERS_BY_PROCESS_ID</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getFundTransfersByProcessId:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PROCESSES_BY_PERSON</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetProcessesByPerson,rsPersonProcesses::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REVIEW_FUND_TRANSFERS</td>
+	<td>Service
+		0
+		CCLA_CS_REVIEW_FUND_TRANSFERS
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REVIEW_PERSON_ACTIVITIES</td>
+	<td>Service
+		0
+		CCLA_CS_REVIEW_PERSON_ACTIVITIES
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CLIENT_AML_STATUS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getClientAMLStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_ETHICAL_FUND_TRANSFER_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:checkinEthicalFundForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PROCESSES_BY_STATUS</td>
+	<td>Service
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetProcessesByStatus,rsProcesses::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_PROCESS_STATUS</td>
+	<td>Service
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:executeQueryFromPooledConnection:qClientServices_UpdateProcessStatus::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PRINT_ETHICAL_FUND_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:printEthicalFundForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PROCESS_LISTING</td>
+	<td>Service
+		32
+		CCLA_CS_PROCESS_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENROLMENT_LISTING</td>
+	<td>Service
+		32
+		CCLA_CS_ENROLMENT_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCampaignSubjectStatus,rsCampaignSubjectStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCampaignEnrolmentStatus,rsCampaignEnrolmentStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllCampaigns,rsCampaigns::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_AND_PRINT_ETHICAL_FUND_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createAndPrintEthicalFundForm:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_FORM_BY_ID</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getFormData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_DOCMETA_BY_FORM_ID</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getDocMetaByFormId:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INCLUDE</td>
+	<td>Service
+		32
+		CCLA_CS_GET_INCLUDE
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACTIVITY_LISTING</td>
+	<td>Service
+		32
+		CCLA_CS_ACTIVITY_LISTING
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_TARGET_SELECTION</td>
+	<td>Service
+		3
+		CCLA_CS_CAMPAIGN_TARGET_SELECTION
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_getAllOrganisationCategories,rsCategories::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_SELECTED_CLIENTS_TO_CAMPAIGN</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		3
+		CCLA_CS_ADD_SELECTED_CLIENTS_TO_CAMPAIGN
+		null
+		null<br>
+		null</td>
+	<td>3:addSelectedClientsToCampaign:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_SELECTED_CLIENTS_TO_CAMPAIGN_NEW</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		CCLA_CS_ADD_SELECTED_CLIENTS_TO_CAMPAIGN
+		null
+		null<br>
+		null</td>
+	<td>3:addSelectedClientsToCampaign:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_CLIENT_TO_CAMPAIGN_NEW</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addClientToCampaign:::null</td>
+</tr>
+
+<tr>
+	<td>CCLA_CS_CLIENT_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetFunds,rsFunds::null
+		3:getEntityExtended:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PERSON_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		CCLA_CS_PERSON_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getPersonExtended:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PROCESS_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.ProcessService
+		3
+		CCLA_CS_PROCESS_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getProcess:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_PROCESS_RECIPIENT</td>
+	<td>com.ecs.stellent.ccla.clientservices.ProcessService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateProcessRecipient:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_CAMPAIGN_ENROLMENT_RECIPIENT</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateCampaignEnrolmentRecipient:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_AML_SUMMARY_REPORT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AMLService
+		3
+		CCLA_CS_AML_SUMMARY
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_MANDATE_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.ClientServicesService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkinMandateForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CLIENT_AML_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.AMLService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getClientAMLInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_APPLY_PROCESS_ACTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:applyProcessAction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_APPLY_ENROLMENT_ACTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:applyEnrolmentAction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PRINT_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:printForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SEARCH</td>
+	<td>Service
+		3
+		CCLA_CS_SEARCH
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_PROCESS_ACTION_QUEUE</td>
+	<td>com.ecs.stellent.ccla.clientservices.ProcessActionService
+		15
+		CCLA_CS_PROCESS_ACTION_QUEUE
+		null
+		null<br>
+		null</td>
+	<td>3:getQueueMonitorStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SET_QUEUE_MONITOR_ENABLED</td>
+	<td>com.ecs.stellent.ccla.clientservices.ProcessActionService
+		15
+		CCLA_CS_PROCESS_ACTION_QUEUE
+		null
+		null<br>
+		null</td>
+	<td>3:setQueueMonitorEnabled:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ITEMS_TO_ACTION_QUEUE</td>
+	<td>com.ecs.stellent.ccla.clientservices.ProcessActionService
+		0
+		CCLA_CS_PROCESS_ACTION_QUEUE
+		null
+		null<br>
+		null</td>
+	<td>3:addQueryItemsToQueue:::null
+		3:getQueueMonitorStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_CLIENT_TO_CAMPAIGN</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		15
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addClientToCampaign:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ORGS_TO_CAMPAIGN</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		15
+		CCLA_CS_CAMPAIGN_ENROLMENT_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:addOrgsToCampaign:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ACTIVITY</td>
+	<td>com.ecs.stellent.ccla.clientservices.ActivityService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addActivity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ACTIVITY_NOTE</td>
+	<td>com.ecs.stellent.ccla.clientservices.ActivityService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addActivityNote:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_ACTIVITIES</td>
+	<td>com.ecs.stellent.ccla.clientservices.ActivityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityActivities:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PERSON_ACTIVITIES</td>
+	<td>com.ecs.stellent.ccla.clientservices.ActivityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getPersonActivities:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTION_ACTIVITIES</td>
+	<td>com.ecs.stellent.ccla.clientservices.ActivityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getInteractionActivities:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_CAMPAIGNS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityProcessData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_PROCESS_NOTE</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addNote:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_FORM_STATUS</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateFormStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UNLINK_FORM_DOCUMENT</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:unlinkFormDocument:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_FORM_DATA_FLAGS</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateFormDataFlags:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_FORM_INFO_POPUP</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		CCLA_CS_FORM_INFO_POPUP
+		null
+		null<br>
+		null</td>
+	<td>3:getFormInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_ACCOUNT_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetRelationProperties,rsRelationProperties::null
+		3:getAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACCOUNT_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_ACCOUNT_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getAccountData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_NEW</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		CCLA_CS_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetIncomeDistMethods,rsIncomeDistMethods::null
+		3:createResultSetFromPooledConnection:qClientServices_GetFunds,rsFunds::null
+		3:createResultSetFromPooledConnection:qClientServices_GetOrganisation,rsOrganisation::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAuroraClientsByEntityId,rsAuroraClient::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllAccountFlags,rsAccountFlags::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllAgreementTypes,rsAgreementTypes::null
+		3:getNewDonorAccountData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_COMPANIONS_FOR_ORPHANED_PC_FUNDS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createCompanionAccountsForOphanedPcAccounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAccountStatuses,rsAccountStatuses::null
+		3:createResultSetFromPooledConnection:qClientServices_GetIncomeDistMethods,rsIncomeDistMethods::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllAgreementTypes,rsAgreementTypes::null		
+		3:getAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		CCLA_CS_UPDATE_ACCOUNT
+		null
+		null<br>
+		null</td>
+	<td>3:updateAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACCOUNT_ONLY_BASIC</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getAccountOnlyBasic:::null
+	3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACCOUNT_BASIC</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getAccountBasic:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INTERACTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addInteraction:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PERSON_INTERACTIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetPersonInteractions,rsInteractions::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_INTERACTIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetEntityInteractions,rsInteractions::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ACCOUNTS_AML_STATUS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AMLService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateAccountsAMLStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_SUMMARY</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetProcessTotals,rsProcessTotals::null
+		3:createResultSetFromPooledConnection:qClientServices_GetProcessTotalsByCompany,rsProcessTotalsByCompany::null
+		3:createResultSetFromPooledConnection:qClientServices_GetFormTotals,rsFormTotals::null
+		3:createResultSetFromPooledConnection:qClientServices_GetFormTotalsByCompany,rsFormTotalsByCompany::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_LISTING</td>
+	<td>Service
+		32
+		CCLA_CS_INTERACTION_LISTING
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RECENT_ORG_DOCS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getRecentOrgDocs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CLIENT_ACCOUNTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getClientAccounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTION_SUBJECT_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getInteractionSubjectInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_INTERACTION_JOB_ID</td>
+	<td>Service
+		32
+		CCLA_CS_INTERACTION_QUICK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:executeQueryFromPooledConnection:qClientServices_UpdateInteractionJobId::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_LEGACY_AML_SUMMARY</td>
+	<td>com.ecs.stellent.ccla.clientservices.AMLService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getAMLSummary:::null
+		3:getExcludedAMLSummary:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTION_CATEGORIES</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetInteractionSubjectCategories,rsInteractionSubjectCategories::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_ADDRESS_LOOKUP</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		3
+		CCLA_CS_EXPERIAN_ADDRESS_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:searchAddress:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_GET_ADDRESS</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		3
+		CCLA_CS_EXPERIAN_ADDRESS_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:getAddress:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_GET_ADDRESS_TREE</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		35
+		CCLA_CS_EXPERIAN_ADDRESS_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:searchAddressTree:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_GET_REFINED_ADDRESS_TREE</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		35
+		CCLA_CS_EXPERIAN_ADDRESS_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:refineSearchAddress:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_TEST</td>
+	<td>Service
+		3
+		CCLA_CS_EXPERIAN_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_EXPERIAN_AUTHENTICATE</td>
+	<td>com.ecs.ucm.ccla.experian.Authenticate
+		3
+		CCLA_CS_EXPERIAN_TEST
+		null
+		null<br>
+		null</td>
+	<td>3:doAuthenticate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_AUTHENTICATE_GET_RECORD</td>
+	<td>Service
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:executeQueryFromPooledConnection:qClientServices_GetAuthenticateRecord::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CONTACT_LOOKUP</td>
+	<td>com.ecs.ucm.ccla.experian.ContactLookup
+		32
+		CCLA_CS_CONTACT_LOOKUP
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_JSON_CONTACT_LOOKUP_SUBMIT</td>
+	<td>com.ecs.ucm.ccla.experian.ContactLookup
+		32
+		CCLA_CS_GET_JSON_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:doJSONContactLookup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_TEST_JSON_CONTACT_LOOKUP_SUBMIT</td>
+	<td>com.ecs.ucm.ccla.experian.ContactLookup
+		32
+		CCLA_CS_GET_JSON_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:doTestJSONContactLookup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CONTACT_LOOKUP_SUBMIT</td>
+	<td>com.ecs.ucm.ccla.experian.ContactLookup
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:findContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_QAS_LOOKUP_SUBMIT</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:searchAddress:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getPerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_PERSON_BASIC</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getPersonBasic:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_QAS_ADDRESS</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getQASData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.person.CreatePerson
+		3
+		CCLA_CS_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createPerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		3
+		CCLA_CS_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:addPerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		3
+		CCLA_CS_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updatePerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PERSON_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		32
+		CCLA_CS_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getPerson:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllTitles,rsAllTitles::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllGenders,rsGenders::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_GetContactSubTypes,rsContactSubTypes::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCrockfords,rsCrockfords::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PERSON_NEW</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		3
+		CCLA_CS_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getQASData:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllTitles,rsAllTitles::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllGenders,rsGenders::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_AUTHENTICATE_PERSON</td>
+	<td>com.ecs.ucm.ccla.experian.Authenticate
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doAuthenticate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PERSON_VALIDATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.person.ValidatePerson
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doValidate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CONTACT_DETAIL</td>
+	<td>Service
+		0
+		CCLA_CS_CONTACT_DETAIL
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetContactTypes,rsContactTypes::null
+		3:createResultSetFromPooledConnection:qClientServices_GetContactSubTypes,rsContactSubTypes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ADDRESS_METHODS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetContactSubTypesByMethodId,rsAddressMethods::null</td>
+</tr>
+
+<tr>
+	<td>CCLA_CS_ADD_CONTACT_DETAIL</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_CONTACT_ADDRESS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAddressContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_CONTACT_DETAIL</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ELEMENT_CONTACTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateElementContacts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_CONTACT_DETAIL</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADDRESS_ADD</td>
+	<td>DocService
+		3
+		CCLA_CS_ADDRESS_ADD
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_NEW</td>
+	<td>com.ecs.ucm.ccla.experian.AddressLookup
+		3
+		CCLA_CS_ENTITY_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCountries,rsCountries::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementIdentifiers,rsElementIdentifiers::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_GetMarketingGroups,rsMarketingGroups::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAccountGroups,rsAccountGroups::null
+		3:getQASData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		3
+		CCLA_CS_ENTITY_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCountries,rsCountries::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getEntity:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_GetContactSubTypes,rsContactSubTypes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ENTITY</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addEntity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getEntity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_ENTITY_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCountries,rsCountries::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getEntityExtended:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementIdentifiers,rsElementIdentifiers::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_ENTITY_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_BASIC</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getEntityBasic:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ENTITY</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateEntity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CONTACT_DETAILS</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementContacts,rsContactDetails::null
+		3:createResultSetFromPooledConnection:qClientServices_GetContactSubTypes,rsContactSubTypes::null
+		3:createResultSetFromPooledConnection:qCore_GetAllAuthStatuses,rsAuthStatuses::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CONTACT_DETAIL</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetContact,rsContactDetail::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_NUM_SIGS_IN_ACCOUNTS_FOR_ORG</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getNumSigsForAccsInOrg,rsNumSigsInAccounts::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RELATION_TOTALS</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetRelationTotals,rsRelationTotals::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADDRESS_PREFERENCES</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		CCLA_CS_ADDRESS_PREFERENCES
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementContacts,rsContactDetails::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ADDRESS_PREFERENCES</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateAddressPreferences:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SHOW_AUTHENTICATION_DETAILS</td>
+	<td>com.ecs.stellent.ccla.clientservices.IdentityCheckService
+		3
+		CCLA_CS_AUTHENTICATION_DETAILS
+		null
+		null<br>
+		null</td>
+	<td>3:getIdentityCheck:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_FORCE_RECALCULATE_IDENTITY_CHECK</td>
+	<td>com.ecs.stellent.ccla.clientservices.IdentityCheckService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:forceRecalculate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_RECALCULATE_ALL_IDENTITY_CHECKS</td>
+	<td>com.ecs.stellent.ccla.clientservices.IdentityCheckService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:recalculateAll:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_OVERRIDE_AUTHENTICATION</td>
+	<td>DocService
+		3
+		CCLA_CS_OVERRIDE_AUTHENTICATION
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_VERIFICATION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		3
+		CCLA_CS_ENTITY_VERIFICATION
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityVerificationDetails:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_DO_OVERRIDE</td>
+	<td>com.ecs.ucm.ccla.experian.Authenticate
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:overrideAuthentication:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ELEMENT_RELATIONS_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		0
+		CCLA_CS_ELEMENT_RELATIONS_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getRelations:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationTypes,rsElementRelationTypes::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ELEMENT_RELATION</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ELEMENT_RELATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateElementRelations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ALL_RELATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateAllRelations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACCOUNT_AML_STATUS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getAccountAMLStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_HOME</td>
+	<td>com.ecs.ucm.ccla.commproc.DocumentBundleService
+		32
+		HOME_PAGE
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:getUserWorkGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_HOME_OLD</td>
+	<td>com.ecs.stellent.spp.service.BundleServices
+		3
+		HOME_PAGE
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:isMandateBundleUser:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SELECT_PERSON_ENTITY</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		3
+		CCLA_CS_SELECT_PERSON_ENTITY
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getPerson:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_NEW</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		3
+		CCLA_CS_INTERACTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getInteractionSubjectInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ELEMENT_RELATION_NAMES</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null</td>
+</tr>
+
+<tr>
+	<td>CCLA_CS_ADD_CLIENT_PERSON_RELATION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_AURORA_CLIENT_MAP</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetAuroraClientsByEntityId,rsAuroraClientMap::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompaniesForOrganisation,rsOrganisationCompanies::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_AURORA_PERSON_MAPS</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:getPersonAuroraMaps:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_AURORA_PERSON_MAP</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetAuroraPersonLinkbyId,rsPersonAuroraMap::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_CLIENT_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeAuroraLink:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_PERSON_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removePersonAuroraMap:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EDIT_AURORA_PERSON_MAP</td>
+	<td>Service
+		35
+		CCLA_CS_EDIT_AURORA_PERSON_MAP
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_EDIT_AURORA_CLIENT_MAP</td>
+	<td>Service
+		35
+		CCLA_CS_EDIT_AURORA_CLIENT_MAP
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_AURORA_PERSON_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		35
+		CCLA_CS_EDIT_AURORA_PERSON_MAP
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraLink:::null
+	3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_AURORA_CLIENT_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_EDIT_AURORA_CLIENT_MAP
+		null
+		null<br>
+		null</td>
+	<td>3:addAuroraLink:::null
+	3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SELECT_ENTITY_PERSON</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		3
+		CCLA_CS_SELECT_ENTITY_PERSON
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getEntity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RELATED_PERSONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getRelatedPersons:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RELATED_ENTITIES</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getRelatedEntities:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RELATED_BANK_ACCOUNTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getRelatedBankAccounts:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_RELATED_ENTITY_ACCOUNTS_PERSONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getRelatedEntityAccountPersons:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ALL_RELATED_ENTITY_ACCOUNTS_PERSONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getAllRelatedEntityAccountPersons:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENROLL_TO_EVENT</td>
+	<td>DocService
+		3
+		CCLA_CS_ENROLL_TO_EVENT
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_EDIT</td>
+	<td>DocService
+		35
+		CCLA_CS_ACCOUNT_INTENTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInvestmentIntentionStatus,rsIntentionStatus::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_ADD</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountIntentionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAcountIntention:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_GET</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountIntentionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getFundAccountIntentionByEntity:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_DETAIL</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountIntentionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getFundAccountIntention:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_DELETE</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountIntentionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteFundAccountIntention:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_INTENTION_UPDATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountIntentionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateFundAccountIntention:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ELEMENT_NAME</td>
+	<td>com.ecs.stellent.ccla.clientservices.ElementService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getElementName:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_RELATIONS_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		CCLA_CS_BANK_ACCOUNT_RELATIONS_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:addRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_BANK_ACCOUNT_RELATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateBankAccountRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ORG_RELATION</td>
+	<td>DocService
+		35
+		CCLA_CS_ADD_ORG_RELATION
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_PERSON_RELATION</td>
+	<td>DocService
+		35
+		CCLA_CS_ADD_PERSON_RELATION
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_QUICK_PERSON</td>
+	<td>DocService
+		35
+		CCLA_CS_ADD_QUICK_PERSON
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetAllTitles,rsAllTitles::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllGenders,rsGenders::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_MANDATED_ACCOUNT</td>
+	<td>DocService
+		35
+		CCLA_CS_ADD_MANDATED_ACCOUNT
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		CCLA_CS_BANK_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getBankAccount:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		CCLA_CS_BANK_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getBankAccount:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_ADD</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		CCLA_CS_BANK_ACCOUNT_RELATION_ADD
+		null
+		null<br>
+		null</td>
+	<td>3:addBankAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_UPDATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateBankAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_RELATION_ADD</td>
+	<td>Service
+		3
+		CCLA_CS_BANK_ACCOUNT_RELATION_ADD
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_BANK_ACCOUNT_RELATION</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_JSON_BANK_ACCOUNT_LOOKUP_SUBMIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		3
+		CCLA_CS_GET_JSON_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:doJsonBankAccountSearch:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_SUMMARY_REPORT</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignReportService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getCampaignSummary:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_PSDF_SUMMARY_REPORT</td>
+	<td>Service
+		3
+		CCLA_CS_PSDF_SUMMARY
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_DATA_FOR_INSTRUCTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityDataForInstruction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ENTITY_ACCOUNTS_FOR_INSTRUCTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEntityAccountsForInstruction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SET_PROCESS_CONTACT_METHOD</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getRelatedPersonAddresses,rsPersonAddresses::null
+	3:createResultSetFromPooledConnection:qClientServices_getOrganisationAddresses,rsOrgAddresses::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_BULK_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_ENTITY_BULK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllTitles,rsAllTitles::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getEntityBulkUpdate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_OR_REMOVE_RELATIONS_BULK</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		CCLA_CS_ENTITY_BULK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:addOrRemoveRelations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_OR_REMOVE_ACCOUNT_FLAGS_BULK</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_ENTITY_BULK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:addOrRemoveAccountFlags:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SET_MULTIPLE_ACCOUNTS_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_ENTITY_BULK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:setMultipleAccountsData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_BULK_UPDATE_RELATIONSHIP</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		CCLA_CS_ENTITY_BULK_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:doEntityBulkUpdate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_BULK_BANK_ACCOUNT_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_ENTITY_BULK_BANK_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetEntityAccountBankAccount,rsRelatedBankAccounts::null
+		3:getEntityBulkUpdate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENTITY_BULK_UPDATE_BANK_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountRelationService
+		35
+		CCLA_CS_ENTITY_BULK_BANK_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetEntityAccountBankAccount,rsRelatedBankAccounts::null
+		3:bulkUpdateBankAccountRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_REL_BULK_ADD</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountRelationService
+		35
+		CCLA_CS_ENTITY_BULK_BANK_ACCOUNT_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:createResultSetFromPooledConnection:qClientServices_GetEntityAccountBankAccount,rsRelatedBankAccounts::null
+		3:bulkAddBankAccountRelation:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_PERSON_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		CCLA_CS_ACCOUNT_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:getEntityBulkUpdate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_PERSON_ADD</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		CCLA_CS_ACCOUNT_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:doEntityBulkUpdate:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ACCOUNT_PERSON_SWITCH</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		35
+		CCLA_CS_ACCOUNT_PERSON_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+		3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+		3:switchRelatedPersonBulk:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ENTITY_RELATIONS</td>
+	<td>Service
+		3
+		CCLA_CS_ADD_ENTITY_RELATIONS
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CALL_AURORA_WEB_SERVICE</td>
+	<td>com.ecs.ucm.ccla.aurora.AuroraWebServiceHandler
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:callAuroraWebService:::null</td>
+</tr>
+<tr>
+	<td>CCLA_AURORA_WEB_SERVICES</td>
+	<td>Service
+		0
+		CCLA_AURORA_WEB_SERVICES
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_ST_AML_CHECK_OVERRIDE_USER</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:setAmlCheckOverrideUser:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		32
+		CCLA_CS_INTERACTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getInteraction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_LINK_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionGroupService
+		32
+		CCLA_CS_INTERACTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateInteractionsGroup:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_GET_BY_ID</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetInteraction,rsInteraction::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INTERACTION_UPDATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InteractionService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateInteraction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_TEST_AUDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuditTestService
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:testAudit:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REFRESH_ALL_CACHES</td>
+	<td>com.ecs.ucm.ccla.CacheManager
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshAllCaches:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REFRESH_CACHE</td>
+	<td>com.ecs.ucm.ccla.CacheManager
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:refreshCache:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_DEBUG_CACHE</td>
+	<td>com.ecs.ucm.ccla.CacheManager
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:debugCache:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_DEBUG_CACHES</td>
+	<td>com.ecs.ucm.ccla.CacheManager
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:debugAllCaches:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_OUTCOME_TYPES</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getInteractionOutcomeTypes,rsOutcomeTypesById::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTIONS_BY_PERSON</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getInteractionsByPerson,rsIntListingByPersonOrg::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTIONS_BY_PERSON_ORG</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getInteractionsByPersonOrg,rsIntListingByPersonOrg::null
+		3:createResultSetFromPooledConnection:qClientServices_GetAllInteractionNotes,rsAllNotes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_GROUPED_INTERACTIONS</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetInteractionGroupByInteraction,rsInteractionGroups::null
+		3:createResultSetFromPooledConnection:qClientServices_GetGroupedInteractions,rsGroupedInteractions::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INTERACTION_GROUP</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetInteractionGroupByInteraction,rsInteractionGroups::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_COMBINED_NEW</td>
+	<td>Service		
+		3
+		CCLA_CS_COMBINED_NEW	
+		null
+		null<br>		
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CLIENT_QRS_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService		
+		3
+		null	
+		null
+		null<br>		
+		null</td>
+	<td>3:getClientQRSData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_UPDATE_DEFAULT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_BANK_ACCOUNT_UPDATE_DEFAULT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+	3:getAccount:::null
+	3:createResultSetFromPooledConnection:qClientServices_GetBankAccountRelationsByAccount,rsAllRelatedBankAccounts::null
+	3:createResultSetFromPooledConnection:qClientServices_GetElementRelationNames,rsElementRelationTypeNames::null
+	3:createResultSetFromPooledConnection:qClientServices_GetRelationProperties,rsRelationProperties::null
+	3:createResultSetFromPooledConnection:qClientServices_GetAllRelationPropertyApplied,rsAllRelationProperties::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BANK_ACCOUNT_DEFAULT_UPDATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_BANK_ACCOUNT_UPDATE_DEFAULT
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null
+	3:updateDefaultBankAccounts:::null
+	3:getAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ORG_CATEGORY_LISTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getOrganisationCategoryLists:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ACCOUNT_ID_FROM_INDEXING_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getAccountIDAndReqSigsFromIndexingData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ELEMENT_ATTRIBUTES_APPLIED</td>
+	<td>com.ecs.stellent.ccla.clientservices.ElementAttributeService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateElementAttributesApplied:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_RELATION_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		3
+		CCLA_CS_RELATION_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getRelationInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_APPLIED_RELATION_PROPERTIES</td>
+	<td>com.ecs.stellent.ccla.clientservices.RelationService
+		3
+		CCLA_CS_UPDATE_APPLIED_RELATION_PROPERTIES
+		null
+		null<br>
+		null</td>
+	<td>3:updateAppliedRelationProperties:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_SEARCH</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignSearchService		
+		35
+		CCLA_CS_CAMPAIGN_SEARCH
+		null
+		null<br>		
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_getRegionPostcodeLookup,rsRegionPostcodes::null
+		3:createResultSetFromPooledConnection:qClientServices_getPostcodeLookup,rsPostcodes::null
+		3:createResultSetFromPooledConnection:qClientServices_getRegionLookup,rsRegions::null
+		3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:getSearchResults:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CAMPAIGN_L2_SEARCH_RESULTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignSearchService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getSearchResultsL2:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INSTR_RULE_ADMIN</td>
+	<td>Service
+		3
+		CCLA_CS_INSTR_RULE_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInstructionRulesWithoutPriority,rsRules::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INSTR_RULE_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		CCLA_CS_INSTR_RULE_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getInstructionRule:::null
+		3:getAllConditionsForRules:::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionData,rsInstrData::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionConditionOP,rsOperator::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INSTR_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addInstructionRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_INSTR_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateInstructionRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_DELETE_INSTR_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteInstructionRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INSTR_CONDITION</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addInstructionCondition:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_INSTR_CONDITION_FROM_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeInstructionConditionFromRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INSTR_CONDITIONS_TO_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addConditionIdsToRule:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INSTR_RULE_CONDITION_SEARCH</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		32
+		CCLA_CS_INSTR_RULE_CONDITION_SEARCH
+		null
+		null<br>
+		null</td>
+	<td>3:searchConditions:::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionData,rsInstrData::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionConditionOP,rsOperator::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_SEARCH_BASIC</td>
+	<td>Service		
+		3
+		CCLA_CS_CAMPAIGN_SEARCH_BASIC
+		null
+		null<br>		
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCompanyList,rsCompanyList::null
+		3:createResultSetFromPooledConnection:qClientServices_getAllOrganisationCategories,rsCategories::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_DO_BASIC_CAMPAIGN_SEARCH_RESULTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignSearchService		
+		35
+		null
+		null
+		null<br>		
+		null</td>
+	<td>3:getBasicCampaignSearchResults:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_ENROLMENT_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		CCLA_CS_CAMPAIGN_ENROLMENT_INFO
+		null
+		null<br>
+		null</td>
+	<td>3:getEnrolmentInfo:::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInvestmentIntentionStatus,rsIntentionStatus::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_INVESTMENT_INTENTIONS</td>
+	<td>Service
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getInvestmentIntentions:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ENROLMENT_NOTE</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addNote:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ENROL_FORM_INFO_POPUP</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		CCLA_CS_ENROL_FORM_INFO_POPUP
+		null
+		null<br>
+		null</td>
+	<td>3:getFormInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_AURORA_CLIENT_NUMBER</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateAuroraClientNumberMapping:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_FUNDS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetFunds,rsFunds::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SHARE_CLASS_OVERRIDE</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_SHARE_CLASS_OVERRIDE
+		null
+		null<br>
+		null</td>
+	<td>3:getShareClassDetails:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_SHARE_CLASS_OVERRIDE</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		35
+		CCLA_CS_SHARE_CLASS_OVERRIDE
+		null
+		null<br>
+		null</td>
+	<td>3:updateShareClassOverride:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_PSDF_WELCOME_PACK</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generatePSDFWelcomePack:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_PSDF_ADDITIONAL_ACCOUNT_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generatePSDFAdditionalAccountForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_PSDF_ADDITIONAL_BANK_ACCOUNT_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generatePSDFAdditionalBankAccountForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CHECK_FOR_NOMINATED_BANK_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:isNominatedBankAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INSTR_RULE_PRIORITY_ADMIN</td>
+	<td>Service
+		3
+		CCLA_CS_INSTR_RULE_PRIORITY_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllInstructionRulesWithPriority,rsRules::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_INSTR_RULE_PRIORITY_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		CCLA_CS_INSTR_RULE_PRIORITY_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getInstructionRuleWithPriority:::null
+		3:getAllConditionsForRules:::null
+		3:getAllPriorityConditionsForRules:::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionData,rsInstrData::null
+		3:createResultSetFromPooledConnection:qCore_GetAllInstructionConditionOP,rsOperator::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_INSTR_PRIORITY_CONDITION_FROM_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeInstructionRulePriority:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INSTR_PRIORITY_CONDITION</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addInstructionConditionPriority:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_INSTR_PRIORITY_CONDITIONS_TO_RULE</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addConditionIdsToRuleWithPriority:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_INSTR_PRIORITY_CONDITION</td>
+	<td>com.ecs.stellent.ccla.clientservices.InstructionRuleService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateInstructionRulePriority:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_COUNT_INTRS_PER_DAY</td>
+	<td>Service
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetCountInstrsPerDay,rsIntrsCount::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_SHARE_CLASS_DAILY_YIELD</td>
+	<td>Service
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetShareClassDailyYields,rsDailyYields::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GEN_PSDF_CHANGE_OF_DIVIDEND_PAYMENT_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generatePSDFChangeOfDividendPaymentForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GEN_PSDF_ADDITIONAL_BANK_ACCOUNT_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generatePSDFAdditionalBankAccountForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CACHABLES_ADMIN</td>
+	<td>com.ecs.ucm.ccla.CacheManager
+		0
+		CCLA_CACHABLES_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getCachables:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_FORM_TYPES_BY_ELEMENT</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		CCLA_CS_GENERATE_ELEMENT_FORMS
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllElementTypes,rsElementTypes::null
+		3:createResultSetFromPooledConnection:qCore_GetAllFormTypes,rsFormTypes::null
+		3:getAvailableElementFormTypes:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_ELEMENT_FORMS</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		3
+		CCLA_CS_GENERATE_ELEMENT_FORMS
+		null
+		null<br>
+		null</td>
+	<td>3:generateFormsByElementId:::null</td>
+</tr>
+<tr>
+	<td>CCLA_HELP_ADMIN</td>
+	<td>com.ecs.stellent.ccla.clientservices.HelpService
+		35
+		CCLA_HELP_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:helpAdminLanding:::null</td>
+</tr>
+<tr>
+	<td>CCLA_ADD_HELP</td>
+	<td>com.ecs.stellent.ccla.clientservices.HelpService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addHelpReference:::null</td>
+</tr>
+<tr>
+	<td>CCLA_UPDATE_HELP</td>
+	<td>com.ecs.stellent.ccla.clientservices.HelpService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateHelpReference:::null</td>
+</tr>
+<tr>
+	<td>CCLA_REMOVE_HELP</td>
+	<td>com.ecs.stellent.ccla.clientservices.HelpService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeHelpReference:::null</td>
+</tr>
+<tr>
+	<td>CCLA_DISPLAY_HELP_DOCUMENT</td>
+	<td>com.ecs.stellent.ccla.clientservices.HelpService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getHelpUrl:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_COPY_CONTACT</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContactService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:copyContact:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_PERSON_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addPersonAuroraMap:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_PERSON_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.PersonService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updatePersonAuroraMap:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_CLIENT_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addClientAuroraMap:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_CLIENT_AURORA_MAP</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateClientAuroraMap:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_MARKETING_SUBGROUPS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getMarketingSubgroups:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ENROLMENT_ATTRIBUTE</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateEnrolmentAttribute:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_ENROLMENT_ATTRIBUTES</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateEnrolmentAttributes:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_CLIENT_ENROLMENT_ATTRIBUTE_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getClientEnrolmentAttributeInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_APPLY_BULK_ENROLMENT_ACTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		CCLA_CS_CAMPAIGN_ENROLMENT_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:applyBulkEnrolmentAction:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BULK_GENERATE_AND_PRINT_FORMS</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		32
+		CCLA_CS_CAMPAIGN_ENROLMENT_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:bulkGenerateAndPrintForms:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CAMPAIGN_ENROLMENT_ADMIN</td>
+	<td>com.ecs.stellent.ccla.clientservices.EnrolmentService
+		32
+		CCLA_CS_CAMPAIGN_ENROLMENT_ADMIN
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_BANK_DETAILS</td>
+	<td>com.ecs.stellent.ccla.clientservices.BankAccountService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getBankDetails:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SUBSCRIPTION_NEW</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllProducts,rsProducts::null
+		3:createResultSetFromPooledConnection:qCore_GetAllSubscriptionStatuses,rsSubscriptionStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllRetailPriceIndexes,rsRetailPriceIndexes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_SUBSCRIPTION_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		35
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllProducts,rsProducts::null
+		3:createResultSetFromPooledConnection:qCore_GetAllSubscriptionStatuses,rsSubscriptionStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllRetailPriceIndexes,rsRetailPriceIndexes::null
+		3:getSubscriptionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_SUBSCRIPTION_INFO</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllProducts,rsProducts::null
+		3:createResultSetFromPooledConnection:qCore_GetAllSubscriptionStatuses,rsSubscriptionStatuses::null
+		3:createResultSetFromPooledConnection:qCore_GetAllRetailPriceIndexes,rsRetailPriceIndexes::null
+		3:getSubscriptionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_SUBSCRIPTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:addSubscription:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_SUBSCRIPTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateSubscription:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CANCEL_SUBSCRIPTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:cancelSubscription:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_SUBSCRIPTION_FUND_ALLOCATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateSubscriptionFundAllocations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_SUBSCRIPTION_CONTRIBUTIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContributionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateSubscriptionContributions:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_CONTRIBUTION_TTLA_ALLOCATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContributionService
+		3
+		CCLA_CS_SUBSCRIPTION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateContributionTTLAAllocations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CONTRIBUTION_TTLA_ALLOCATION_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContributionService
+		3
+		CCLA_CS_CONTRIBUTION_TTLA_ALLOCATION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getContributionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CONTRIBUTION_ASSET_ALLOCATION_EDIT</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContributionService
+		3
+		CCLA_CS_CONTRIBUTION_ASSET_ALLOCATION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:getContributionInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_CONTRIBUTION_ASSET_ALLOCATIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.ContributionService
+		3
+		CCLA_CS_CONTRIBUTION_ASSET_ALLOCATION_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:updateContributionAssetAllocations:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_TTLA_ORGS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		15
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createTTLAOrgs:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_ANONYMOUS_DONOR</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addAnonymousDonor:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_DONOR_SUBSCRIPTION_FORM</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateDonorSubscriptionForm:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_SUBSCRIPTION_DONORS_AND_CONTRIBUTIONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getDonorsAndContributionsInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_DONOR_ACCOUNTS_FOR_SUBSCRIPTION</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createDonorAccountsForSubscription:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CREATE_CF_CHILD_DOCS</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateChildDocuments:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_BULK_ADD_OR_REMOVE_ACCOUNT_FLAGS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:bulkAddOrRemoveAccountFlags:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ELEMENT_LOCK_INFO</td>
+	<td>com.ecs.ucm.ccla.ElementLockService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getElementLockInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_CLEAR_ELEMENT_LOCKS</td>
+	<td>com.ecs.ucm.ccla.ElementLockService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:clearElementLocks:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_REMOVE_ELEMENT_LOCK</td>
+	<td>com.ecs.ucm.ccla.ElementLockService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeElementLock:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_TEST_ELEMENT_LOCK</td>
+	<td>com.ecs.ucm.ccla.ElementLockService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:addTestElementLock:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ELEMENT_LOCK_ADMIN</td>
+	<td>com.ecs.ucm.ccla.ElementLockService
+		3
+		CCLA_CS_ELEMENT_LOCK_ADMIN
+		null
+		null<br>
+		null</td>
+	<td>3:getElementLockInfo:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_ORGS_WITH_ATTRIBUTE_STATUS</td>
+	<td>com.ecs.stellent.ccla.clientservices.EntityService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getOrgsWithAttributeStatus:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_TEST_SERVICEHANDLER</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qCore_GetAllSubscriptionTypes,rsSubscriptionTypes::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_LEGACY_CAMPAIGNS</td>
+	<td>com.ecs.stellent.ccla.clientservices.CampaignService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getCampaignResultSet:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_VALIDATE_AURORA_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AccountService
+		32
+		CCLA_CS_GET_JSON_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:validationAuroraAccount:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_DOCMETA_BY_PAYMENT_REF</td>
+	<td>com.ecs.stellent.ccla.clientservices.PaymentService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getDocMetaByPaymentRef:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_UPDATE_FORM_VALIDITY_STATE</td>
+	<td>com.ecs.stellent.ccla.clientservices.FormService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateFormValidityState:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_TEST_AURORA_ENTITY_COMPARISONS</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuroraEntityComparisonService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:runTest:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_AURORA_COMPARISON_REPORT</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuroraEntityComparisonService
+		32
+		CCLA_CS_AURORA_COMPARISON_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:getComparisonReport:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GET_AURORA_COMPARISON_SUMMARY</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuroraEntityComparisonService
+		32
+		CCLA_CS_AURORA_COMPARISON_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:getComparisonSummary:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuroraEntityComparisonService
+		32
+		CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qClientServices_GetAllTitles,rsAllTitles::null
+		3:extractPersonNamesFromAuroraSignatoryData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_ADD_PERSONS_FROM_SIGNATORY_DATA</td>
+	<td>com.ecs.stellent.ccla.clientservices.AuroraEntityComparisonService
+		32
+		CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA
+		null
+		null<br>
+		null</td>
+	<td>3:addPersonsFromAuroraSignatoryData:::null</td>
+</tr>
+<tr>
+	<td>CCLA_CS_GENERATE_CF_DONOR_ACCOUNTS</td>
+	<td>com.ecs.stellent.ccla.clientservices.SubscriptionService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateDonorAccounts:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

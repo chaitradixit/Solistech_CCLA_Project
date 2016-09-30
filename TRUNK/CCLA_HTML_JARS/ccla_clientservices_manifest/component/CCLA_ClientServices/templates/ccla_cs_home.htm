@@ -1,0 +1,174 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA - Home
+</title>
+<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<script type="text/javascript">
+	function loadSearchScreen(screenType,searchScope,buttonName,clientScreenType,pageTitle)
+	{
+		window.location.href='?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&openLinksNewWindow=true&searchScope=' + searchScope + '&callbackFunction=' + screenType + '&searchResultsButtonValue='+buttonName + '&callbackFunctionClient=' + clientScreenType + '&pageTitle=' + pageTitle;
+	}
+	
+	</script>
+</head>
+<body <$include iris_body_def_internal$>>
+		
+<$include ecs_popup_div_header$>
+	
+<$include iris_header$>
+	
+<div  id="cs_page_container" class="cs-page-container">
+		<!--
+		//Possible new SPP-style homepage-
+		[Unfinished - requires Links and Icons]
+		<div class="ccla-home-panel">
+			<a>Answer a call</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Get next pending bundle</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Search - Static Data</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Search -  Entities</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Search - People</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Search - Accounts</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Documents</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Interactions</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Queues - Scanned Envelopes</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Queues - Mandate parking lot</a>
+		</div>
+		
+		<div class="ccla-home-panel">
+			<a>Queues - Client follow-ups</a>
+		</div>
+		-->
+	<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+		<div id='ccla_cs_content' class='cs-content-container white_border'>
+			
+			<$include orangeContainer_top$>
+			
+				<div class='ccla_cs_panel_header'>
+					CCLA - Home
+				</div>
+				
+				<div class='ccla_cs_panel_content' style="width:780px;">
+					
+					<br/>
+					
+					<div style="float: left; width: 46%; padding-right: 0% 1%; overflow: auto;">
+						
+						<h3 class="ccla_data_panel_header">Actions</h3>
+						
+						<ul class="ccla-home-list">
+							<li><a href="?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&interactionTarget=interaction">Answer a call</a></li>
+					
+							<li><a href="?IdcService=CCLA_GET_NEXT_BUNDLE<$include add_idc_token_to_url$>">Get next pending bundle</a> <$if #local.MandateBundleUser$>(Mandates only)<$endif$></li>
+							
+						</ul>
+						
+						<h3 class="ccla_data_panel_header">Search</h3>
+						
+						<ul class="ccla-home-list">
+							<li>
+								<a href="?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>">Static data</a>
+								
+								<ul class="ccla-home-list">
+									<li><a href="?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&searchScope=organisation">Entities</a></li>
+									<li><a href="?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&searchScope=person">People</a></li>
+									<li><a href="?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&searchScope=account">Accounts</a></li>
+								</ul>
+								
+								<li>Documents</li>
+								<li>Interactions</li>
+								
+							</li>
+							
+							<li>
+								<a href="?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>">Documents</a>
+							</li>
+							
+						</ul>
+						
+					</div>
+					
+					<div style="float: left; width: 48%; padding-right: 2%; overflow: auto;">
+					
+						<h3 class="ccla_data_panel_header">Work queues</h3>
+						
+						<ul class="ccla-home-list">
+							<li><a href="?IdcService=DOC_LISTING<$include add_idc_token_to_url$>">Scanned envelopes</a></li>
+							<li><a href="?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&status=Parking Lot">Mandate parking lot</a></li>
+							<li><a href="?IdcService=CCLA_CS_INTERACTION_LISTING<$include add_idc_token_to_url$>">Client follow-ups</a></li>
+							
+						</ul>
+						
+					</div>
+					
+				</div>
+			
+			<$include orangeContainer_bottom$>
+			
+		</div>
+		
+	</div>
+</div>
+	
+	<$if false$>
+	
+		<br>
+		
+		<input type="button" value="Get next piece of work">
+		<br>
+		<br>
+		<input type="button" value="Start Search" onclick="loadSearchScreen('','all','Select','','')">
+		<br>
+		<br>
+		<input type="button" value="Record Interaction" onclick="loadSearchScreen('loadInteraction','all','Use','loadInteractionClient','Record Interaction')">	
+		<br>
+		<br>
+		<input type="button" value="PSDF Enrolment" onclick="loadSearchScreen('loadPSDF','all','Use','loadPSDFClient','PSDF Enrolment')">	
+		<br>
+		<br>
+		<input type="button" value="Complaint" onclick="loadSearchScreen('Complaint')">	
+		<br>
+		<br>
+		<input type="button" value="Attend Event Inquiry" onclick="loadSearchScreen('addEvent','person','Use','','Attend Event')">		
+	
+	<$endif$>
+	
+</body></html>

@@ -1,0 +1,1 @@
+See: http://docs.jquery.com/UI/Slider

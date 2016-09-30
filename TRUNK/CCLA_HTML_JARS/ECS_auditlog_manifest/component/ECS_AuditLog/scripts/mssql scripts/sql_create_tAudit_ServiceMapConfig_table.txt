@@ -1,0 +1,5 @@
+CREATE TABLE tAudit_ServiceMapConfig
+(AC_SERVICE nvarchar(64),
+AC_BINDER_FIELD nvarchar(32),
+AC_BINDER_VALUE nvarchar(64),
+AC_ACTION nvarchar(64))

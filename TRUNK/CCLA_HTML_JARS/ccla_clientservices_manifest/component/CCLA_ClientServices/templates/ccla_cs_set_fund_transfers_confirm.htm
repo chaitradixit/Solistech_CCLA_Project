@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Step 4: Confirm Fund Transfers
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$if not #env.CCLA_CS_ManualDataEntry$>
+			<!-- Fetch all correspondent accounts via Aurora web service -->
+			<$methodName="GetAccountsByCorrespondentCode"$>
+			<$correspondentId = personId$>
+			<$fundFilter="R,T"$>
+			<$filterClosedAccounts=1$>
+			<$filterEmptyAccounts=1$>
+			<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+		<$endif$>
+		
+		<script type="text/javascript">
+			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin-top: 20px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+		
+				<$include ccla_cs_activity_details$>
+		
+				<$include orangeContainer_top$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					Step 4: Confirm Fund Transfers
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<p>
+						Confirm with the correspondent that all fund transfers are correct before continuing.
+					</p>
+					
+					<$include ccla_cs_display_correspondent_details$>
+					
+					<br/>
+					
+					<form 	method="post" action="<$HttpCgiPath$>?IdcService=CCLA_CS_SET_FUND_TRANSFERS_SUBMIT"
+							name="fundTransfers" id="fundTransfers" >
+						<input type="hidden" name="IdcService" value="CCLA_CS_SET_FUND_TRANSFERS_SUBMIT" /><$include add_idc_token_to_form$>
+						
+						<$loop rsProcess$>
+							<input type="hidden" name="processId"	value="<$#active.PROCESS_ID$>" />
+							<input type="hidden" name="processName" value="<$#active.PROCESS_NAME$>" />
+						<$endloop$>
+						
+						<input type="hidden" name="activityId" value="<$#local.activityId$>" />
+						
+						<input type="hidden" name="clientId" value="<$#local.clientId$>" />
+						<input type="hidden" name="personId" value="<$#local.personId$>" />
+						<input type="hidden" name="company" value="<$#local.company$>" />
+						
+						<input type="hidden" name="confirmTypes" id="confirmTypes" value="<$#local.confirmTypes$>" />
+						<input type="hidden" name="confirmOther" id="confirmOther" value="<$#local.confirmOther$>" />
+						
+						<!-- Updates the activity action field, if the user submits the transfers with any updates -->
+						<input type="hidden" name="activityAction" value="Transfers updated" />
+						
+						<input 	type="hidden" name="redirectOnSuccessUrl" 
+								value="<$HttpCgiPath$>?IdcService=CCLA_CS_SET_FUND_TRANSFERS_COMPLETED<$include add_idc_token_to_url$>&processId=<$#local.processId$>&activityId=<$#local.activityId$>&personId=<$#local.personId$>" />
+						
+						<$if #env.CCLA_CS_ManualDataEntry$>
+							<!-- 	The rowIndexes var will contain a comma-separated list of all the
+									account row indexes which contain accounts data. Create a
+									ResultSet out of these indexes for later use. -->
+							<input type="hidden" name="rowIndexes" value="<$#local.rowIndexes$>" />
+		
+							<$exec rsMakeFromString("rsRowIndexes",#local.rowIndexes,"rowIndex")$>
+							
+						<$else$>
+							<!-- 	Build comma-separated list of all correspondent account numbers -->
+							<$numAccountsForTransfer = 0$>
+							<$fullAccountNumberList = ""$>
+														
+							<$loop rsCorrespondentAccounts$>
+								<$thisTransferType = getValue("#local","transferType_" & #active.accountNumberExternal)$>
+								<$if not (thisTransferType like "none")$>
+									<$numAccountsForTransfer = numAccountsForTransfer + 1$>
+								<$endif$>
+							
+								<$if fullAccountNumberList$>
+									<$fullAccountNumberList = fullAccountNumberList & ","$>
+								<$endif$>
+								
+								<$fullAccountNumberList = #local.fullAccountNumberList & #active.accountNumberExternal$>
+							<$endloop$>
+						
+							<!-- Store all full account numbers here. -->
+							<input type="hidden" name="fullAccountNumberList" value="<$#local.fullAccountNumberList$>" />
+							
+						<$endif$>
+						
+						<$if false$>
+							<div class="ccla_data_panel">
+								<input type="hidden" name="AMLCheck" value="<$if #local.AMLCheck$>on<$endif$>" />
+								
+								<input type="checkbox" name="AMLCheck" <$if #local.AMLCheck$>checked="checked"<$endif$> disabled="disabled" />
+								Correspondent requires AML check
+							</div>
+							
+							<br/>
+						<$endif$>
+						
+						
+						<$if #env.CCLA_CS_ManualDataEntry$>
+							<h3 class="ccla_data_panel_header">Correspondent accounts marked for transfer (<$getValue("rsRowIndexes","#numRows")$>)</h3>
+						<$else$>
+							<h3 class="ccla_data_panel_header">Correspondent accounts marked for transfer (<$numAccountsForTransfer$>/<$getValue("rsCorrespondentAccounts","#numRows")$>)</h3>
+						<$endif$>
+						
+						<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+							<tr>
+								<$if #env.CCLA_CS_ManualDataEntry$>
+									<th class="first-col">Client no.</th>
+									<th>Acc. no.</th>
+									<th>Fund</th>
+									<th>Units to transfer</th>
+								<$else$>
+									<th class="first-col">Client no.</th>
+									<th>Acc. no.</th>
+									<th>Acc. name</th>
+									<th>No. units</th>
+									<th>Units to transfer</th>
+								<$endif$>
+							</tr>
+							
+							<$accountFieldPrefixes = "company,clientId,accountNumber,fund,transferType,transferAmount"$>
+							<$exec rsMakeFromString("rsAccountFieldPrefixes",accountFieldPrefixes,"fieldPrefix")$>
+							
+							<$if #env.CCLA_CS_ManualDataEntry$>
+								
+								<$loop rsRowIndexes$>
+									<$rowIndex = #active.rowIndex$>
+								
+									<tr id="" class="account-details-row">
+														
+										<td class="first-col"><$getValue("#local","clientId_" & rowIndex)$></td>
+										<td><$getValue("#local","accountNumber_" & rowIndex)$></td>
+										<td><$getValue("#local","fund_" & rowIndex)$></td>
+										
+										<td>
+											<$if getValue("#local","transferType_" & rowIndex) like "all"$>
+												All
+											<$else$>
+												<$getValue("#local","transferAmount_" & rowIndex)$>
+											<$endif$>
+											
+											<$loop rsAccountFieldPrefixes$>
+												<input 	type="hidden" name="<$#active.fieldPrefix$>_<$rowIndex$>" 
+														value="<$getValue("#local",#active.fieldPrefix & "_" & rowIndex)$>" />
+											<$endloop$>
+										</td>
+										
+									</tr>
+								
+								<$endloop$>
+								
+							<$else$>
+								
+								<$loop rsCorrespondentAccounts$>
+									<$fullAccNo = #active.accountNumberExternal$>
+									
+									<input type="hidden" name="accountStatus_<$fullAccNo$>" 
+										value="<$getValue("#local","accountStatus_" & fullAccNo)$>"/>
+									
+									<tr id="" class="account-details-row">
+									
+										<td class="first-col"><$#active.clientNumber$></td>
+										<td><$#active.accountNumber$></td>
+										<td>
+											<$if #active.subtitle$><$#active.subtitle$><$else$>[Unnamed account]<$endif$>
+										</td>
+										<td><$#active.units$></td>
+										
+										<td>
+											<$transferType = getValue("#local","transferType_" & fullAccNo)$>
+										
+											<$if transferType like "none" or  transferType like "not_interested"$>
+												None
+											<$elseif transferType like "undecided"$>
+												Undecided
+											<$elseif transferType like "all"$>
+												All
+											<$elseif transferType like "amount"$>
+												<$getValue("#local","transferAmount_" & fullAccNo)$>
+											<$else$>
+												Error: unknown transfer type
+											<$endif$>
+											
+											<$loop rsAccountFieldPrefixes$>
+												<input 	type="hidden" name="<$#active.fieldPrefix$>_<$#active.fullAccNo$>" 
+														value="<$getValue("#local",#active.fieldPrefix & "_" & #active.fullAccNo)$>" />
+											<$endloop$>
+										</td>
+										
+									</tr>
+			
+								<$endloop$>
+								
+							<$endif$>
+							
+						</table>
+						
+						<$if false$>
+							<h3 class="ccla_data_panel_header">Other accounts</h3>
+							
+							<div class="ccla_data_panel">
+								
+								<table width="100%" cellpadding=0 cellspacing=2>
+									<tr>
+										<td>
+											<select name="activityType">
+												<option value=""></option>
+												
+												<$activityTypes = "Client call,Callback,Email,Other"$>
+												<$exec rsMakeFromString("rsActivityTypes",activityTypes,"type")$>
+												
+												<$loop rsActivityTypes$>
+													<option value="<$#active.type$>"><$#active.type$></option>
+												<$endloop$>
+											</select>
+										</td>
+								</table>
+								
+							</div>
+						<$endif$>
+						
+						<br/>
+						
+						<div style="text-align: right">
+							<input type="submit" name="submitType" value="Back" />
+							<input type="submit" name="submitType" value="Submit" />
+						</div>
+					</form>
+					
+				</div>
+				
+				<br/>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$include ccla_cs_previous_activity_details$>
+				
+			</div>
+		</div>
+		
+		<br/>
+		
+	</body>
+</html>

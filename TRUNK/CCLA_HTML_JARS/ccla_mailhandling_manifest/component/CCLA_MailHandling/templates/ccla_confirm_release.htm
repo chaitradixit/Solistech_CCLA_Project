@@ -1,0 +1,823 @@
+﻿<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Confirm envelope release
+	</title>
+	
+	<$include iris_styles$>
+	
+	<$include iris_common_js$>
+	
+	<script type="text/javascript">
+		
+		/** List of checking functions, in the order they will be executed on
+		  * the initial checking screen.
+		 */
+		var checkingFunctions;
+		
+		/** Tracks the current check function */
+		var checkingFunctionIndex = 0;
+
+		/** Execute the next checking/validation function in the checkingFunctions sequence.
+		 */
+		var executeNextCheckFunction = function() {
+			checkingFunctions[checkingFunctionIndex++]();
+		}
+		
+		// Determines whether a Doc->Instruction conversion check takes place.
+		var doInstructionConversion = <$if #env.CCLA_CommProc_EnableDocBundleConversion$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			//When the pop up has loaded, re-enable the approve button
+			$(".sidepanel_button_holder [name=approve_btn]", window.parent.document).removeAttr("disabled");
+			
+			// Build the checking function sequence
+			checkingFunctions = new Array(
+				checkLockUser,
+				checkFlagUser,
+				checkinChildDocs,
+				initCheckDualIndexData,
+				checkInstructionDataIntegrity,
+				verifyNominatedContactPoints,
+				checkDuplicates
+			);
+			
+		});
+		
+		// Ensures the bundle is locked to the current user.
+		var checkLockUser = function() {
+			window.parent.setWorkflowStatusText("");
+			
+			$.getJSON('<$HttpCgiPath$>?IdcService=IRIS_GET_ITEM_LOCK_INFO<$include add_idc_token_to_url$>',
+						{dDocName: '<$dDocName$>',
+						 ts: new Date().getTime(), // forces server request in IE
+						 IsJson: "1"},
+						function(data) { checkLockUserCompleted(data); });
+		}
+		
+		/** Callback function after bundle lock user checking completes.
+		 *  
+		 *  If there was a service error, it will be displayed to the user and the
+		 *  release is aborted.
+		 *
+		 *  If the bundle is not locked to the current user, they will be informed 
+		 *  and the release is aborted.
+		 *
+		 *  If the service completes successfully, the child doc checkin is kicked 
+		 *  off.
+		 */
+		var checkLockUserCompleted = function(jsonData) {
+			
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during lock checking. Display error
+				// message.
+				$("#checkLockUser").removeClass("loading").addClass("failed");
+				$("#checkLockUser").html(jsonErrorMsg);
+				
+			} else {
+				var lockUser = jsonData.LocalData.Iris_itemLockUser;
+				 
+				if (lockUser && (lockUser === "<$js(dUser)$>")) {
+					// Current user has the bundle lock - continue.
+					//$("#checkLockUser").removeClass("loading").addClass("completed");
+					
+					executeNextCheckFunction();
+					//checkinChildDocs();
+				} else {
+					$("#checkLockUser").removeClass("loading").addClass("failed");
+					var msg = "Unable to submit bundle, you don't have the lock. ";
+				
+					if (lockUser) {
+						msg += "The bundle is currently locked to " + lockUser;
+					} else {
+						msg += "Close this window and refresh the bundle screen before trying again.";
+					}
+					
+					$("#checkLockUser").html(msg);
+				}
+			}
+		}
+				
+		// Ensures the bundle isn't being processed by the last flag user.
+		var checkFlagUser = function() {
+			$.getJSON('<$HttpCgiPath$>?IdcService=CCLA_GET_LAST_FLAG_USER<$include add_idc_token_to_url$>',
+						{dDocName: '<$dDocName$>',
+						 ts: new Date().getTime(), // forces server request in IE
+						 IsJson: "1"},
+						function(data) { checkFlagUserCompleted(data); });
+		}
+		
+		var checkFlagUserCompleted = function(jsonData) {
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during flag user checking. Display error
+				// message.
+				$("#checkLockUser").removeClass("loading").addClass("failed");
+				$("#checkLockUser").html(jsonErrorMsg);
+				
+			} else {
+				//var lastFlagUser = jsonData.LocalData.lastFlagUser;
+				//var isFlagOverrideUser = jsonData.LocalData.isFlagOverrideUser;
+				 
+				if (jsonData.LocalData.userEligibleToProcess == 1) {
+					// Current user is OK to continue
+					$("#checkLockUser").removeClass("loading").addClass("completed");
+					
+					executeNextCheckFunction();
+					//checkinChildDocs();
+				} else {
+					$("#checkLockUser").removeClass("loading").addClass("failed");
+					var msg = "Unable to submit bundle, you were the last person responsible for flagging it.";
+					
+					$("#checkLockUser").html(msg);
+				}
+			}
+		}
+		
+		// Dispatches AJAX request to generate any pending child documents 
+		// for all items in this bundle.
+		var checkinChildDocs = function() {
+			$("#genChildDocs").addClass("loading");
+		
+			var action = '<$#local.action$>';
+			
+			$.getJSON('<$HttpCgiPath$>?IdcService=SPP_INT_CHECKIN_CHILDDOCS_BY_ENVELOPE<$include add_idc_token_to_url$>',
+						{bundleRef: '<$bundleRef$>',
+						 dDocName: '<$dDocName$>',
+						 action: action,
+						 ts: new Date().getTime(), // forces server request in IE
+						 IsJson: "1"},
+						function(data) { checkinChildDocsCompleted(data, action); });
+		}
+		
+		/** Callback function after Child Document creation/checkin completes.
+		 *  
+		 *  If there was a service error, it will be displayed to the user and the
+		 *  release is aborted.
+		 *
+		 *  If the service completes successfully, the dual index check is kicked off.
+		 */
+		var checkinChildDocsCompleted = function(jsonData, action) {
+			
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during child document generation. Display error
+				// message.
+				$("#genChildDocs").removeClass("loading").addClass("failed");
+				
+				$("#genChildDocs").html(jsonErrorMsg);
+				
+			} else {
+				$("#genChildDocs").removeClass("loading").addClass("completed");
+				
+				executeNextCheckFunction();
+				//initCheckDualIndexData();
+			}
+			
+		}
+		
+		/** Runs an AJAX request which checks/compares all dual index data for the
+		 *  bundle.
+		 */
+		var initCheckDualIndexData = function() {
+			$("#checkingDualIndexData").addClass("loading");
+			
+			checkDualIndexData(false, false, function(data) { 
+				checkDualIndexDataCompleted(data); 
+			});
+		}
+		
+		/** Calls the Dual Index bundle comparison service.
+		 *  
+		 *  If the saveComparisonOutcome flag is set, the dual index
+		 *  commparison outcomes are persisted and the documents won't
+		 *  be presented for dual indexing again.
+		 *
+		 */
+		var checkDualIndexData = function(saveComparisonOutcome, flagBundle, myFunc) {
+			
+			var ts = new Date().getTime(); // forces server request in IE
+			
+			var saveComparisonStr = "";
+			if (saveComparisonOutcome)
+				saveComparisonStr = "1";
+			
+			$.getJSON('<$HttpCgiPath$>?IdcService=IRIS_DUAL_INDEX_COMPARE_BUNDLE_DATA<$include add_idc_token_to_url$>',
+						{bundleRef: '<$bundleRef$>',
+						 dDocName: '<$dDocName$>',
+						 saveComparisonOutcome: saveComparisonStr,
+						 ts: ts,
+						 IsJson: "1"},
+						function(data) { 
+							if (myFunc)
+								myFunc(data);
+						}
+			);
+		}
+		
+		/** Callback function after Dual Index checking/comparison completes.
+		 *  
+		 *  If the checks pass, a form on the page is submitted which invokes the
+		 *  second release confirmation step. This includes a duplicate check.
+		 *
+		 *  If the checks fail, the bundle will be flagged and the release is 
+		 *  aborted.
+		 *
+		 *  A new 'warning' state is now available, depending on which Dual Indexing
+		 *  fields were mismatched. If a failure is detected only on these fields,
+		 *  the user will be prompted to re-check the values they entered (essentially
+		 *  being given another chance to correct then!)
+		 */
+		var checkDualIndexDataCompleted = function(jsonData) {
+			
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during dual index data comparison. Display error
+				// message.
+				$("#checkingDualIndexData").removeClass("loading").addClass("failed");
+				$("#checkingDualIndexData").html(jsonErrorMsg);
+				
+			} else {
+				//  Search for the flag which indicates a dual index check pass.
+				var checksPassed = jsonData.LocalData.bundleDualIndexChecksPassed;
+				
+				if (!checksPassed) {
+					// There was a dual index mismatch.
+					
+					var rsDualIndexFailedDocNames = jsonData.ResultSets.rsDualIndexFailedDocNames;
+
+					var docName="";
+					var messageToDisplay="";
+					var field = "";
+					var fieldValue = "";
+					
+					// List of fields in which a dual index mismatch won't flag the bundle immediately -
+					// the user is warned and given a chance to correct them.
+					var dualIndexFinalCheck = "<$#env.CCLA_DualIndexFinalCheck$>";
+					
+					var messageStart = "Mismatch found in:";
+					var messageEnd = "Press 'OK' to flag bundle, 'Cancel' to re-enter the values.";
+					var containOtherFields = false; 
+					
+					if (rsDualIndexFailedDocNames) {
+						var numRows = getJsonResultSetNumRows(rsDualIndexFailedDocNames);
+						
+						for (var i=0; i<numRows; i++) 
+						{
+							fieldValue="";
+							docName = getJsonResultSetValue(rsDualIndexFailedDocNames, "DOCNAME", i);
+							if (docName.length>0) {
+								var rsMismatchedFields = jsonData.ResultSets["rsMismatchedFields_"+docName];
+								if (rsMismatchedFields) {
+									var numFieldRows = getJsonResultSetNumRows(rsMismatchedFields);
+									for (var x=0; x<numFieldRows; x++) {
+										field = getJsonResultSetValue(rsMismatchedFields, "FIELD_NAME", x);
+										
+										// One of the warning fields was mismatched. Build a comma-separated list
+										// of these.
+										if (dualIndexFinalCheck.indexOf(field)>=0) {
+											if (fieldValue.length>0)
+												fieldValue+=",";
+											fieldValue+=" "+field;
+										} 
+										else {
+											// One of the other fields was mismatched - user doesn't get a second
+											// chance here and the bundle will be auto-flagged.
+											containOtherFields = true;
+										}
+									}
+										
+									if (fieldValue.length>0) {
+										messageToDisplay+=docName+": "+fieldValue+"\n";
+									}
+								}
+							}
+						}
+					}
+					
+					if (messageToDisplay.length>0 && !containOtherFields) {		
+						// User gets a warning and chance to correct their input!
+						
+						// Confirmation prompt to allow the user to re-check the mismatched fields.
+						var answer = confirm(messageStart+"\n"+messageToDisplay+"\n"+messageEnd);
+						if (answer){
+							// User has chosen to continue anyway. Flag the bundle
+							$("#checkingDualIndexData").removeClass("loading").addClass("failed");
+							$("#checkingDualIndexData").html("Dual Index validation failed! Flagging bundle...");
+							
+							// Execute the check again to persist the comparison result in the database, 
+							// before auto-flagging the bundle.
+							checkDualIndexData(true, true, 	function(data) { 
+																	persistFailDualIndexDataCompleted(data); 
+															});
+						} else {
+							window.parent.closePopup();
+						}
+						
+					} else {
+							// Dual indexing check failed. 
+							$("#checkingDualIndexData").removeClass("loading").addClass("failed");
+							$("#checkingDualIndexData").html("Dual Index validation failed! Flagging bundle...");
+							
+							// Execute the check again to persist the comparison result in the database, 
+							// before auto-flagging the bundle.
+							checkDualIndexData(true, true, 	function(data) { 
+								persistFailDualIndexDataCompleted(data); 
+							});
+					}
+				} else {
+					$("#checkingDualIndexData").removeClass("loading").addClass("completed");
+					
+					executeNextCheckFunction();
+					//checkInstructionDataIntegrity();
+				}
+			}
+		}
+		
+		/** Checks that the Mand/App items in the bundle have the correct Nominated Contact Points
+		 *  set.
+		 *  If not, the bundle is flagged.
+		 */
+		var verifyNominatedContactPoints = function() {
+			$("#verifyNominatedContactPoints").addClass("loading");
+			
+			// Check the system config var flag to see if they need verification.
+			var verifyContactPoints = "<$getSystemConfigVar('DocValidation_VerifyNominatedContactPoints')$>";
+
+			if (verifyContactPoints != "" && verifyContactPoints == "0") {
+				// Skip the check, if the config var is explicitly set to zero.
+				verifyNominatedContactPointsCompleted({
+					"LocalData": ""
+				});
+			} else {
+				var ts = new Date().getTime(); // forces server request in IE
+			
+				$.getJSON('?IdcService=CCLA_CP_VERIFY_NOMINATED_CONTACT_POINTS<$include add_idc_token_to_url$>',
+					{
+						bundleRef: '<$bundleRef$>',
+						ts: ts,
+						IsJson: "1"
+					},
+					function(data) { 
+						verifyNominatedContactPointsCompleted(data);
+					}
+				);
+			}
+		}
+		
+		/** Return data from the nominated content point verification check.
+		 *  
+		 *  If there is a failure, auto-flag the bundle.
+		 */
+		var verifyNominatedContactPointsCompleted = function(jsonData) {
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg || jsonData.LocalData.failedDocName) {
+				var failedItemDocName = jsonData.LocalData.failedDocName;
+			
+				// something went wrong during Comm/Instruction translation. Display error
+				// message.
+				$("#verifyNominatedContactPoints").removeClass("loading").addClass("failed");
+				
+				$("#verifyNominatedContactPoints").html
+				 ("Nominated Contact Point check failed! Flagging bundle...");
+				 
+				// Flag the bundle.
+				flagBundle(12,failedItemDocName);
+				
+			} else {
+				$("#verifyNominatedContactPoints").removeClass("loading").addClass("completed");
+
+				executeNextCheckFunction(); 
+				//checkDuplicates();
+			}
+		}
+		
+		/** Runs a test method to see if the Comm/Instruction Registers will accept the
+		 * 	translated bundle data
+		 */
+		var checkInstructionDataIntegrity = function() {
+			$("#checkingInstructionDataIntegrity").addClass("loading");
+		
+			if ("<$#env.CCLA_CommProc_EnableDocBundleConversion$>" == "") {
+				// Comm/Instruction conversion isn't enabled, skip to next step.
+				$("#checkingInstructionDataIntegrity").removeClass("loading").addClass("completed");
+		
+				executeNextCheckFunction();
+				//verifyNominatedContactPoints();
+				
+			} else {
+				var ts = new Date().getTime(); // forces server request in IE
+				
+				$.getJSON('?IdcService=CCLA_CP_ADD_DOC_BUNDLE<$include add_idc_token_to_url$>',
+					{bundleRef: '<$bundleRef$>',
+					 ts: ts,
+					 IsJson: "1"},
+					function(data) { 
+						checkInstructionDataIntegrityCompleted(data);
+					}
+				);
+			}
+		}
+		
+		var checkInstructionDataIntegrityCompleted = function(jsonData) {
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg || jsonData.LocalData.BundleTranslateException) {
+				// something went wrong during Comm/Instruction translation. Display error
+				// message.
+				$("#checkingInstructionDataIntegrity").removeClass("loading").addClass("failed");
+				
+				$("#checkingInstructionDataIntegrity span").html
+				 ("Instruction data integrity check failed!");
+				
+				// Display a link so the user can check the conversion error in detail.
+				$("#testBundleConversionLink").css("display","");
+				 
+			} else {
+				$("#checkingInstructionDataIntegrity").removeClass("loading").addClass("completed");
+			
+				executeNextCheckFunction();
+				//verifyNominatedContactPoints();
+			}
+		}
+		
+		/** Called after running the Dual Index check in 'persist' mode, after a dual index
+		 *  validation failure is detected.
+		 *
+		 */
+		var persistFailDualIndexDataCompleted = function(jsonData) {
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during dual index data comparison. Display error
+				// message.
+				$("#checkingDualIndexData").removeClass("loading").addClass("failed");
+				$("#checkingDualIndexData").html(jsonErrorMsg);
+				return;
+			}
+		
+			// First determine the reason for failure. If it was an item mismatch, the
+			// rsDualIndexMismatchedItems ResultSet will be present in the response.
+			//
+			// Otherwise it must have been a field-value mismatch, and the 
+			// rsDualIndexFailedDocNames ResultSet will be present instead.
+			var rsMismatchedItems = jsonData.ResultSets.rsDualIndexMismatchedItems;
+			var firstFailedItemDocName;
+			
+			if (rsMismatchedItems) {
+				// Isolate the dDocName for the first returned mismatched item.
+				firstFailedItemDocName = getJsonResultSetValue(rsMismatchedItems, "DOCNAME", 0);
+				
+			} else {
+				var rsFailedItems = jsonData.ResultSets.rsDualIndexFailedDocNames;
+		
+				// Isolate the dDocName for the first returned item that failed Dual Indexing.
+				firstFailedItemDocName = getJsonResultSetValue(rsFailedItems, "DOCNAME", 0);
+			}
+			
+			// Flag the bundle
+			flagBundle(10,firstFailedItemDocName);
+		}
+		
+		/** Called after running the Dual Index check in 'persist' mode, after a bundle has
+		 *  passed initial dual indexing checks and just before the bundle is submitted to SPP.
+		 */
+		var persistPassDualIndexDataCompleted = function(jsonData) {
+			var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+			
+			if (jsonErrorMsg) {
+				// something went wrong during dual index data comparison. Display error
+				// message.
+				alert("Failed to save Dual Indexing pass result: " + jsonErrorMsg);
+
+				return;
+			} else {
+				// Ensure pass flag is present.
+				// Search for the flag which indicates a dual index check pass.
+				var checksPassed = jsonData.LocalData.bundleDualIndexChecksPassed;
+				
+				if (!checksPassed) {
+					alert("The second dual index check failed. This should never happen. " +
+					 "Please contact an administrator.");
+					 return;
+				}
+			}
+			
+			submitEnvelope();
+		}
+		
+		// Check the bundle for duplicates - this doesn't use AJAX, we just post a form on
+		// the page which checks for duplicates. This marks the end of the sequential AJAX checks.
+		var checkDuplicates = function() {
+			
+			$("#checkingDuplicates").addClass("loading");
+			document.forms['continueReleaseForm'].submit();
+		}
+		
+		/** Submits the flag-bundle form, with the given attributes set.
+		  * 
+		  * Aborts the current checking/submission process.
+		  */
+		var flagBundle = function(flagReasonId, docName) {
+			
+			var flagForm = document.forms["flagBundleForm"];
+			
+			// Assign flagging data before submitting the 'Flag Bundle' form
+			flagForm.elements["FLAG_REASON_ID"].value = flagReasonId;
+			flagForm.elements["selDocName"].value = docName;
+			
+			flagForm.submit();
+		}
+		
+	</script>
+	
+	<!-- Functions used on the final confirmation page. -->
+	<script type="text/javascript">
+		var wfFormShared = null;
+		
+		// Flags to prevent double submissions occurring
+		var isReleasingEnvelope = false;
+		var isSubmittingViaAjax = false;
+		
+		// User has acknowledged effects, submit workflow
+		// form.
+		function releaseEnvelope()
+		{
+			if (isReleasingEnvelope)
+				return; // Guard to prevent double submissions.
+		
+			isReleasingEnvelope = true;
+		
+			var releaseEnvButton = document.getElementById("releaseEnvButton");
+			var cancelReleaseButton = document.getElementById("cancelRelease");
+			
+			// Disable both page buttons
+			releaseEnvButton.disabled = true;
+			cancelReleaseButton.disabled = true;
+			
+			if (document.getElementById("ignoreMissingChildDocs")) {
+				var isChecked = document.getElementById("ignoreMissingChildDocs").checked;
+				
+				if (!isChecked) {
+					alert("Confirm you are ignoring the missing child documents by ticking the checkbox first");
+					
+					releaseEnvButton.disabled = false;
+					cancelReleaseButton.disabled = false;
+					
+					isReleasingEnvelope = false;
+					
+					return;
+				} else {
+					document.location.replace(document.location + "&ignoreMissingChildDocs=1");
+					
+					releaseEnvButton.disabled = false;
+					cancelReleaseButton.disabled = false;
+					return;
+				}
+			}
+		
+			// Check for a lock again.
+			$.getJSON('<$HttpCgiPath$>?IdcService=IRIS_GET_ITEM_LOCK_INFO<$include add_idc_token_to_url$>',
+			{dDocName: '<$dDocName$>',
+			 ts: new Date().getTime(), // forces server request in IE
+			 IsJson: "1"},
+			function(jsonData) { 
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+				
+				if (jsonErrorMsg) {
+					// something went wrong during lock checking. Display error
+					// message.
+					alert("Failed to check the bundle lock.\n\n" + jsonErrorMsg);
+					isReleasingEnvelope = false;
+					return;
+				} else {
+					var lockUser = jsonData.LocalData.Iris_itemLockUser;
+					 
+					if (lockUser && (lockUser === "<$js(dUser)$>")) {
+						// Current user has the bundle lock - continue.
+					} else {
+						alert("The bundle is unlocked, or locked to somebody else - " +
+						 "you can't submit it at this time.\n\nTry closing this window " +
+						 "and refreshing the bundle view.");
+						isReleasingEnvelope = false;
+						return;
+					}
+				}
+				
+				// Persist (positive) dual index outcome
+				checkDualIndexData(true, false, function(data) {
+					persistPassDualIndexDataCompleted(data);
+				});
+			});
+		}
+		
+		/** Submits the form that will apply the workflow Approve action to the current bundle.
+		 *
+		 */
+		function submitEnvelope() {
+			// TM: Added this line as action=Approve is getting dropped off the URL
+			// somewhere along the way.
+			var wfAction = "Approve";
+		
+			<$if isTrue(#active.CCLA_USE_AJAX_SPP_SUBMISSION)$>
+				submitEnvelopeUsingAjax(wfAction);
+			<$else$>
+				window.parent.submitWfAction(wfAction);
+			<$endif$>
+		}
+		
+		function submitEnvelopeUsingAjax(wfAction) {
+			
+			if (isSubmittingViaAjax)
+				return;
+			
+			isSubmittingViaAjax = true;
+			
+			//Use existing code to populate the wfForm on the parent page
+			var wfForm = window.parent.document.getElementById("approve_reject_form");
+			var redirectURL = wfForm.elements['RedirectUrl'].value;
+			window.parent.prepareWfFormForSubmission(wfForm,wfAction);
+			
+			// Now use jquery to serialize the form and submit it.
+			$('#evelopeReleaseDiv').html
+			 ("<p><img src='<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif'> <b>Submitting Envelope.....</b></p>");
+		
+			$.getJSON(
+				'<$HttpCgiPath$>'
+				, 
+				$('#approve_reject_form', window.parent.document).serialize() + "&ts="+new Date().getTime()+"&IsJson=1"
+				,
+				function(jsonData){
+				
+					var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+					if (jsonErrorMsg){
+						$('#evelopeReleaseDiv').html
+						 ("<p><div class='validation_error error_icon'>Error submitting envelope: "+jsonErrorMsg+"</div></p>");
+						 
+						isSubmittingViaAjax = false; 
+					} else {
+						$('#evelopeReleaseDiv').html("<p><b>Successfully submitted envelope</b></p>");
+						performRedirectAfterAjaxSPPSubmission(redirectURL);
+					}
+				}
+			);
+			
+		}
+		
+		function doneBgSppSubmission(redirectURL){
+			performRedirectAfterAjaxSPPSubmission(redirectURL)
+		}
+		
+		//Method used by bgSppSubmission and the AJAX submission form
+		function performRedirectAfterAjaxSPPSubmission(redirectURL){
+			if (redirectURL)
+					window.parent.closePopupAndRedirect(redirectURL);
+				else
+					window.parent.closePopupAndRedirect('?IdcService=DOC_LISTING<$include add_idc_token_to_url$>');
+		}
+		
+		function getWfForm(){
+			return wfFormShared;
+		}
+
+		// User opted to cancel workflow release.
+		function cancel()
+		{
+			window.parent.closePopup();
+			window.parent.setWorkflowPanelEnabled(true);
+		}
+		
+		function openSupportingDocManager(bundleRef){
+			var url = "?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_DEP_DOCS_MANAGER&bundleRef=" + bundleRef;
+			window.open(url, "dep_docs_mgr", "status=0,toolbar=0,width=850,height=550,resizable=1,scrollbars=1");
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+		
+		<!-- Special flagging form, automatically flags the bundle if certain
+			validation checks fail. -->
+		<form id="flagBundleForm" name="flagBundleForm">
+			<input type="hidden" name="IdcService" 	value="CCLA_FLAG_BUNDLE_SUBMIT" />
+			<$include add_idc_token_to_form$>
+			<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_FLAG_BUNDLE<$include add_idc_token_to_url$>&bundleRef=<$#local.bundleRef$>&flagged=1" />
+			
+			<input type="hidden" name="bundleDocName" value="<$#local.dDocName$>" />
+			<input type="hidden" name="bundleRef"	  value="<$#local.bundleRef$>" />
+			
+			<!-- Completed via JavaScript -->
+			<input type="hidden" name="selDocName"	  	id="selDocName"		value="" />
+			<input type="hidden" name="FLAG_REASON_ID" 	id="FLAG_REASON_ID" value="" />	
+		</form>
+		
+		<$if isTrue(performReleaseChecks)$>
+		
+			<!--The child docs now need to get created here, before the job is submitted to SPP. This needs to happen here
+				so that: 
+				
+				a) child documents go through the same processs as non child documents,
+				b) the duplicate checker will know if new items were added
+				c) so that they can be marked as supporting and 
+				d) so that they go through duplicate checking
+			-->
+			
+			<$include orangeContainer_top$>
+	
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Envelope pre-submit: <span class='docname'><$bundleRef$></span></b>
+				</div>
+				
+				<div style="margin: 5px">
+					<p class="load_section loading" id="checkLockUser">				
+						Checking lock user
+					</p>
+				
+					<p class="load_section" id="genChildDocs">				
+						Generating child documents
+					</p>
+					
+					<p class="load_section" id="checkingDualIndexData">
+						Checking dual index data
+					<p>
+					
+					<p class="load_section" id="checkingInstructionDataIntegrity">
+						<span>Checking instruction integrity</span>
+						
+						<a 	id="testBundleConversionLink" style="display: none" 
+							href="?IdcService=CCLA_TEST_BUNDLE_CONVERSION<$include add_idc_token_to_url$>&bundleRef=<$#local.bundleRef$>">Click here for more info</a>
+					</p>
+					
+					<p class="load_section" id="verifyNominatedContactPoints">
+						Checking nominated contact points
+					<p>
+
+					<p class="load_section" id="checkingDuplicates">
+						Checking for duplicate items
+					</p>
+					
+					<br/>
+				</div>
+
+			<$include orangeContainer_bottom$>
+		
+			<!-- 	This form is submitted after child docs have been checked in
+					via AJAX call -->
+			<form name="continueReleaseForm" id="continueReleaseForm" method="POST">
+				<input type="hidden" name="IdcService" value="GET_DOC_PAGE" />
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="Action" value="GetTemplatePage" />
+				<input type="hidden" name="Page"	value="CCLA_CONFIRM_RELEASE" />
+				
+				<input type="hidden" name="bundleRef" value="<$bundleRef$>" />
+				<input type="hidden" name="dDocName" value="<$dDocName$>" />
+				<input type="hidden" name="performReleaseChecks" />
+			</form>
+			
+			<script type="text/javascript">
+				$(document).ready( function() {
+				
+					// Kick off the validation checks.
+					executeNextCheckFunction();
+					
+					//checkLockUser();
+				});
+			</script>
+		<$else$>
+			
+			<$if #local.doDuplicateCheck$>
+			<$else$>
+				<$doDuplicateCheck=#env.SPP_INT_DO_DUPLICATE_CHECK$>
+			<$endif$>
+			
+			<$if isTrue(doDuplicateCheck)$>
+				<$include ccla_duplicate_resolve_panel$>
+			<$else$>
+				<$include ccla_final_release_checks$>	
+			<$endif$>
+			
+		<$endif$>
+			
+		</div>	
+		
+	</div>
+
+</body>
+</html>

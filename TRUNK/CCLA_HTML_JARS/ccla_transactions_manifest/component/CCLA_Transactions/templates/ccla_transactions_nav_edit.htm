@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+	
+	<$include iris_jquery_js$>
+		
+		<$if strIndexOf(#local.IdcService,"CCLA_TRANS_EXPENSE_NEW") > -1$>
+			<$isNew=1$>
+			<$if #local.SHARE_CLASS_ID$>
+			<$isShareClassExpense=1$>
+			<$else$>
+			<$isGeneral=1$>
+			<$endif$>
+		<$else$>		
+			<$isEdit=1$>
+				<$if #local.SHARE_CLASS_ID$>
+					<$isShareClassExpense=1$>
+					<$executeService("CCLA_TRANS_SHARE_CLASS_SIMPLE")$>
+					<$loop rsShareClass$>
+						<$expenseName=rsShareClass.SHARE_CLASS_NAME$>
+					<$endloop$>
+				<$else$>
+				<$loop rsExpense$>
+					<$expenseName=rsExpense.INCOME_EXPENSE_NAME$>
+				<$endloop$>
+					<$isGeneral=1$>
+				<$endif$>
+		<$endif$>
+
+		
+		<title>
+			<$if isNew$>
+				 Add Income for  TODO add date
+			<$else$>
+				Edit Income for 
+			<$endif$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+
+		<script type="text/javascript">
+		var updated = <$if isUpdated$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			
+			if (updated){
+				window.parent.updateIncomeValue();
+				window.parent.closePopup();
+			}
+		});
+		
+		
+		</script>
+		
+	</head>
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+						<$include orangeContainer_top$>
+						
+
+							<div class='ccla_cs_panel_header'>
+								Income Value
+							</div>
+							
+							<form name="frmIncomeUpdate" >
+								<input type="hidden" name="INCOME_EXPENSE_ID" value="<$#local.INCOME_EXPENSE_ID$>">
+								<input type="hidden" name="INCOME_EXPENSE_NAME" value="PSDF Fund Income">
+								<input type="hidden" name="INCOME_EXPENSE_TYPE_ID" value="3">
+								<input type="hidden" name="IdcService" value="CCLA_TRANS_INCOME_UPDATE">
+								<$include add_idc_token_to_form$>
+								<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_TRANS_INCOME_EDIT<$include add_idc_token_to_url$>&isUpdated=1&INCOME_EXPENSE_ID=<$#local.INCOME_EXPENSE_ID$>">								
+								<input type="hidden" name="FUND_CODE" value="<$#env.PSDF_FUND_CODE$>">
+								<input type="hidden" name="FREQUENCY_ID" value="">
+								<input type="hidden" name="SHARE_CLASS_ID" value="">
+								<input type="hidden" name="IS_PERSIST" value="">
+								<input type="hidden" name="DEFAULT_VALUE" value="">
+								<input type="hidden" name="DESCRIPTION" value="">
+								
+								<strong>Total Fund Income:</strong>&nbsp;&nbsp;<input type="text" name="DAILY_VALUE" value="<$#active.dailyIncomeNoFormat$>"/>
+								<br>
+								<div align="right">
+									<input type="submit" value="Add">
+								</div>
+								<br>
+								<$include orangeContainer_bottom$>
+									<br/>	
+							</form>
+
+	</div>	
+	
+	</body>
+</html></body></html>

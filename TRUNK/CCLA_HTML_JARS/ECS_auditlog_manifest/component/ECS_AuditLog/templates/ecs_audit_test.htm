@@ -1,0 +1,74 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_AuditLog - Test Page
+</title>
+</head>
+<body style="font-family: Verdana, Arial, Sans-Serif; font-size: 10pt;">
+
+<h1>ECS_AuditLog - Test Page</h1>
+
+	<hr/>
+	
+	<h2>Field Descriptions</h2>
+	All fields marked with a * must have a value, or an error will be thrown when attempting to add the audit entry.
+	<br/>
+	<br/>
+	
+	<table width=500 border=1>
+		<tr>
+			<td><b>lApp*</b></td>
+			<td>The Stelllent component/application where the audit entry is coming from.</td>				
+		</tr>
+		<tr>
+			<td><b>lAction*</b></td>
+			<td>The action being audited. Use short, unique codes for each action type.</td>				
+		</tr>
+		<tr>
+			<td><b>lRef*</b></td>
+			<td>Generally refers to the dDocName of the item being audited.</td>				
+		</tr>
+		<tr>
+			<td><b>lTitle*</b></td>
+			<td>Generally refers to the title of the item being audited.</td>				
+		</tr>
+		<tr>
+			<td><b>lUser*</b></td>
+			<td>Name of the user performing the action</td>				
+		</tr>
+		<tr>
+			<td><b>lMessage</b></td>
+			<td>A description of the action. 500 character limit.</td>				
+		</tr>
+		<tr>
+			<td><b>lParam1 - lParam6</b></td>
+			<td>A set of optional data parameters that provide extra information for the audit action. 100 character limits.</td>				
+		</tr>
+	</table>
+	
+	<h2>Test form</h2>
+	<form method="get">
+		<input type="hidden" name="doAudit" value="1" />
+	
+		<input type="hidden" name="IdcService" value="ECS_ADD_AUDIT_ENTRY" />
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=ECS_AUDIT_TEST" />
+		
+		<$fields="lApp,lAction,lRef,lTitle,lUser,lMessage,lParam1,lParam2"$>
+		<$exec rsMakeFromString("auditFields",fields,"field")$>
+		
+		<table>
+			<$loop auditFields$>
+				<tr>
+					<td><$field$>:</td>
+					<td><input type="text" name="<$field$>" /></td>
+				</tr>
+			<$endloop$>
+		</table>
+		
+		<input type="submit" value="Add audit note" />
+		
+	</form>		
+
+
+</body></html>

@@ -1,0 +1,847 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+isSyncTableDesign=true
+primaryKeysTAUDITCONFIG_BINDERMAP=schPrimaryKey
+tableName=TAUDITCONFIG_BINDERMAP
+blFieldTypes=schCreateTimestamp date,schModifyTimestamp date
+numRows=116
+fullQueryString=SELECT *  FROM TAUDITCONFIG_BINDERMAP WHERE ((TAUDITCONFIG_BINDERMAP.schCreateTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'})  OR (TAUDITCONFIG_BINDERMAP.schModifyTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'}) )
+beginDate={ts '2009-01-01 17:04:31.900'}
+useParentTS=false
+numFieldsTAUDITCONFIG_BINDERMAP=7
+useSourceID=0
+modifyTimeStamp=schModifyTimestamp
+archiveDate={ts '2009-05-09 17:43:11.561'}
+removeExistingChildren=0
+createTimeStamp=schCreateTimestamp
+allowDeleteParentRows=0
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+endDate={ts '2009-05-09 17:43:11.561'}
+isTableArchive=1
+removeOnlyWhenNoChild=0
+timeZone=Europe/London
+instanceName=idcxe
+@end
+@ResultSet ExportResults
+7
+schPrimaryKey 6 20
+schCreateTimestamp 5 20
+schModifyTimestamp 5 20
+schSourceID 6 50
+AC_BINDERFIELD 6 64
+AC_FIELD 6 32
+AC_ACTION 6 32
+102
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+transitionName
+AFIELD2
+COMPLETE-TASK
+103
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+UNLOCK-DOC
+104
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+processId
+AREF_ID
+ACCEPT-TASK
+105
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskId
+AREF_ID2
+ACCEPT-TASK
+106
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+processId
+AREF_ID
+RELEASE-TASK
+107
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskId
+AREF_ID2
+RELEASE-TASK
+108
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+processId
+AREF_ID
+ADD-TASK-COMMENT
+109
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskName
+AREF_TITLE
+ADD-TASK-COMMENT
+110
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskId
+AREF_ID2
+ADD-TASK-COMMENT
+111
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+processId
+AREF_ID
+COMPLETE-SIGNED-TASK
+112
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskDescription
+AFIELD1
+COMPLETE-SIGNED-TASK
+113
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+transitionComment
+AFIELD3
+COMPLETE-TASK
+114
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskDescription
+AFIELD1
+RELEASE-TASK
+115
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+LOCK-DOC
+116
+{ts '2009-04-27 19:19:19.236'}
+{ts '2009-04-27 19:19:19.236'}
+idcxe
+xCM_Ref
+APARENT_ID
+VIEW-DOCUMENT
+1
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+ACCEPT-TASK
+2
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskName
+AREF_TITLE
+ACCEPT-TASK
+3
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskDescription
+AFIELD1
+ACCEPT-TASK
+4
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+RELEASE-TASK
+5
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+COMPLETE-SIGNED-TASK
+6
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+ADD-TASK-COMMENT
+7
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskName
+AREF_TITLE
+RELEASE-TASK
+8
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskComment
+AFIELD1
+ADD-TASK-COMMENT
+9
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskId
+AREF_ID2
+COMPLETE-SIGNED-TASK
+10
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskName
+AREF_TITLE
+COMPLETE-SIGNED-TASK
+11
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+transitionComment
+AFIELD3
+COMPLETE-SIGNED-TASK
+12
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+
+AREF_ID2
+ADD-TEAM-MEMBER
+13
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+
+AREF_ID2
+REMOVE-TEAM-MEMBER
+14
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+
+AREF_ID2
+REMOVE-ROLE
+15
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+transitionName
+AFIELD2
+COMPLETE-SIGNED-TASK
+16
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+SAVE-DOC
+17
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+
+AREF_ID2
+CREATE-ROLE
+18
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-DISCUSSION
+19
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-DOC
+20
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseReference
+APARENT_ID
+
+21
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+DELETE-REF-DOC
+22
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberName
+AREF_ID
+ADD-TEAM-MEMBER
+23
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocName
+APARENT_ID
+CREATE-CASE
+24
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-NOTE
+25
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+DELETE_URL
+26
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-URL
+27
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-REF-DOC
+28
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocName
+AREF_ID
+
+29
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dID
+AREF_ID2
+
+30
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_TITLE
+
+31
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+DELETE-DOC
+32
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberFullName
+AREF_TITLE
+ADD-TEAM-MEMBER
+33
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+roleName
+AFIELD1
+ADD-TEAM-MEMBER
+34
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocType
+AREF_TYPE
+
+35
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberType
+AFIELD2
+ADD-TEAM-MEMBER
+36
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Type
+AFIELD1
+ADD-HEADLINE-NOTE
+37
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Type
+AFIELD1
+ADD-NOTE
+38
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xComments
+AFIELD2
+ADD-NOTE
+39
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xComments
+AFIELD2
+ADD-HEADLINE-NOTE
+40
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+ADD-DOC
+41
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+ADD-REF-DOC
+42
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+UPDATE-DOC
+43
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status_old
+AFIELD2
+UPDATE-DOC
+44
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Type
+AFIELD1
+UPDATE-NOTE
+45
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+UPDATE-URL
+46
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status_old
+AFIELD2
+UPDATE-URL
+47
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Category
+AFIELD3
+UPDATE-DOC
+48
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+UPDATE-CASE
+49
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status_old
+AFIELD2
+UPDATE-CASE
+50
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+CREATE-CASE
+51
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+ADD-NEW-DOC-VERSION
+52
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dRevLabel
+AFIELD2
+ADD-NEW-DOC-VERSION
+53
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+ADD-NEW-REF-DOC-VERSION
+54
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dRevLabel
+AFIELD2
+ADD-NEW-REF-DOC-VERSION
+55
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Priority
+AFIELD2
+CREATE-CASE
+56
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+discussionPosts!itemTitle
+AREF_TITLE
+ADD-DISCUSSION-POST
+57
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+ADD-DISCUSSION-POST
+58
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AFIELD1
+ADD-DISCUSSION-POST
+59
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+roleName
+AREF_TITLE
+REMOVE-ROLE
+60
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+DELETE-REV
+61
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+CHECKIN-SEL
+62
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+CHECKIN-NEW
+63
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+CHECKOUT
+64
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+UNDO-CHECKOUT
+65
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+roleName
+AFIELD1
+REMOVE-TEAM-MEMBER
+66
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status
+AFIELD1
+UPDATE-REF-DOC
+67
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Status_old
+AFIELD2
+UPDATE-REF-DOC
+68
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+UPDATE-DOCINFO-BYFORM
+69
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+SUBSCRIBE
+70
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+UNSUBSCRIBE
+71
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+CHECKIN-UNIVERSAL
+72
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+CHECKIN-BYNAME
+73
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_ID
+NEW-FOLDER
+74
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_ID
+UPDATE-FOLDER
+75
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+folderID
+AREF_ID2
+NEW-FOLDER
+76
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+folderID
+AREF_ID2
+UPDATE-FOLDER
+77
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+color
+AFIELD1
+NEW-FOLDER
+78
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+color
+AFIELD1
+UPDATE-FOLDER
+79
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+oldFolderName
+AFIELD2
+UPDATE-FOLDER
+80
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_ID
+DELETE-CASE-FOLDER
+81
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+folderID
+AREF_ID2
+DELETE-CASE-FOLDER
+82
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberName
+AREF_ID
+REMOVE-TEAM-MEMBER
+83
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberType
+AFIELD2
+REMOVE-TEAM-MEMBER
+84
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+memberFullName
+AREF_TITLE
+REMOVE-TEAM-MEMBER
+85
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_ID
+CREATE-ROLE
+86
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+dDocTitle
+AREF_ID
+UPDATE-ROLE
+87
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+role_rating
+AFIELD1
+CREATE-ROLE
+88
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+role_rating
+AFIELD1
+UPDATE-ROLE
+89
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+previousRoleName
+AFIELD2
+UPDATE-ROLE
+90
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+roleName
+AREF_ID
+REMOVE-ROLE
+91
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+discussionPosts!originalID
+AFIELD2
+ADD-DISCUSSION-POST
+92
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_URL
+AFIELD1
+ADD-URL-TO-CASE
+93
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+JBPM_processId
+AREF_ID
+CREATE-PROCESS
+94
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+CREATE-PROCESS
+95
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+JBPM_processName
+AREF_TITLE
+CREATE-PROCESS
+96
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+xCM_Ref
+APARENT_ID
+EDIT-DOCUMENT
+97
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+processId
+AREF_ID
+COMPLETE-TASK
+98
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+caseName
+APARENT_ID
+COMPLETE-TASK
+99
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskId
+AREF_ID2
+COMPLETE-TASK
+100
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskName
+AREF_TITLE
+COMPLETE-TASK
+101
+{ts '2009-03-30 15:58:47.589'}
+{ts '2009-03-30 15:58:47.589'}
+idcxe
+taskDescription
+AFIELD1
+COMPLETE-TASK
+@end
+

@@ -1,0 +1,107 @@
+#set defaults - there should be no need to change this
+log4j.rootLogger=ERROR,mainlogfile
+
+# console logging settings
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{dd MMM yy - HH:mm:ss:SSS} %c:[%t] %-5p - %m %x %n
+
+# set output file configurations for general logging
+log4j.appender.mainlogfile=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mainlogfile.File=D:\\LOGS\\ECS.log
+#11g linux
+log4j.appender.mainlogfile.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS.log
+log4j.appender.mainlogfile.DatePattern='.'yyyy-MM-dd
+log4j.appender.mainlogfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.mainlogfile.layout.ConversionPattern=%d{dd MMM yy - HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+
+# log message level settings for your classes - see example below.
+#
+# EXAMPLE 
+# If you want to save all log messages for class com.ecs
+# to c:\ECS.log then use the following settings
+
+log4j.appender.mylogfile2=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile2=D:\\LOGS\\ECS_AUDIT.log
+#11g linux
+log4j.appender.mylogfile2.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_AUDIT.log
+log4j.appender.mylogfile2.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile2.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile2.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.auditlog=DEBUG,mylogfile2
+
+# jBPM/hibernate library logging (warning: very dense logging!)
+#
+log4j.appender.mylogfile3=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile3=D:\\LOGS\\JBPM.log
+#11g linux
+log4j.appender.mylogfile3.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/JBPM.log
+log4j.appender.mylogfile3.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile3.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile3.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.org.jbpm=ERROR,mylogfile3          
+log4j.logger.org.hibernate=ERROR,mylogfile3
+
+log4j.appender.mylogfile4=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile4=D:\\LOGS\\ECS_IRIS.log
+#11g linux
+log4j.appender.mylogfile4.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_IRIS.log
+log4j.appender.mylogfile4.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile4.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile4.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.iris=DEBUG,mylogfile4
+
+log4j.appender.mylogfile5=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile5=D:\\LOGS\\ECS_SPP.log
+#11g linux
+log4j.appender.mylogfile5.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_SPP.log
+log4j.appender.mylogfile5.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile5.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile5.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.spp=DEBUG,mylogfile5
+
+log4j.appender.mylogfile6=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile6=D:\\LOGS\\ECS_CCLA.log
+#11g linux
+log4j.appender.mylogfile6.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_CCLA.log
+log4j.appender.mylogfile6.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile6.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile6.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.ccla=DEBUG,mylogfile6
+log4j.logger.com.ecs.ucm.ccla=DEBUG,mylogfile6
+
+log4j.appender.mylogfile7=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile7=D:\\LOGS\\ECS_AURORA.log
+#11g linux
+log4j.appender.mylogfile7.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_AURORA.log
+log4j.appender.mylogfile7.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile7.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile7.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.aurora.webservice=DEBUG,mylogfile7
+
+log4j.appender.mylogfile8=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile8=D:\\LOGS\\AXIS_ERROR.log
+#11g linux
+log4j.appender.mylogfile8.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/AXIS_ERROR.log
+log4j.appender.mylogfile8.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile8.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile8.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.org.apache.axis=ERROR,mylogfile8
+
+log4j.appender.mylogfile11=org.apache.log4j.DailyRollingFileAppender
+#10g window
+#log4j.appender.mylogfile11=D:\\LOGS\\ECS_TRANSACTIONS.log
+#11g linux
+log4j.appender.mylogfile11.File=/u01/oracle/Middleware/user_projects/domains/CCLAWCPROD_domain/ECS_LOGS/ECS_TRANSACTIONS.log
+log4j.appender.mylogfile11.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile11.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile11.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.ucm.ccla.transactions=DEBUG,mylogfile11

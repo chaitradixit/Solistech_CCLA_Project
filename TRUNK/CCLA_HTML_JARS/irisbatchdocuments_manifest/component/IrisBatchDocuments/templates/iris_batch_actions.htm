@@ -1,0 +1,108 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<style type="text/css">
+				tr.batchresultrow {
+					background-color: #FFFFFF; /* #DCDCDC; */
+	
+				}
+	
+	</style>
+
+	<$if not #local.tp$>
+		<$tp = "Bundle"$>
+	<$endif$>
+
+	<$if #local.mDN$>
+		<$dDocName = mDN$>
+		<$executeService("DOC_INFO_LATESTRELEASE")$>
+		
+		<!-- Retrieve data for item to be moved -->
+		<$loop DOC_INFO$>
+			<$mdID = dID$>
+			<$mRL = dRevLabel$>
+			<$mSG = dSecurityGroup$>
+			<$mDA = #active.dDocAccount$>
+			<$thisBundle = getValue("#active",#env.Iris_batchIdField)$>
+			
+			<$itemName = dDocTitle$>
+		<$endloop$>
+		
+		<!-- Retrieve dDocName for current bundle  -->
+		<$if thisBundle$>
+			
+			<$bundleRef=thisBundle$>
+			<$matchParentOnly=1$>
+			<$include iris_build_batch_item_query$>
+				
+			<$QueryText = batchItemQuery$>
+			
+			<$executeService("GET_SEARCH_RESULTS")$>
+			<$loop SearchResults$>
+				<$bDN = SearchResults.dDocName$>
+			<$endloop$>
+
+		<$endif$>		
+	<$endif$>
+
+	<title>
+		Move item '<$itemName$>'
+	</title>
+
+	<$include doc_listing_styles$>
+		
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include action_doc_listing_js$>
+
+	<$include float_menu_header$>
+
+	<!-- Display/result list behaviour -->
+ 	<$hideLineBreak="1"$>
+
+  <$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='1' width='100%' border='0' bgcolor='#F6F6F4'"$>
+  <$custRowAttrs_OLD="class='resultrow' onmouseover='setRowHighlight(this);' onmouseout='remRowHighlight(this);' onclick='toggleRow(this);'"$>
+  <$custRowAttrs="class='batchresultrow' "$>
+  <$custRowEval="<$'id=\"' & dDocName & '_row\"'$>"$>
+  <$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+	<$onLoadStr=""$>
+
+	<!-- Actions page S&F config. -->
+	<$include batch_doc_actions_listing_pre$>
+
+</head>
+
+<body marginwidth="0" marginheight="0" topmargin="5" leftmargin="5">
+<$c="to allow S&F sort arrows functionality"$>
+<$parameters = "&Action=GetTemplatePage&Page=IRIS_BATCH_ACTIONS&"$>
+  <!-- Form used for operations from actions menu -->
+  <$include batch_actions_forms$>
+
+  <!-- Viewable layout -->
+  <$include iris_styles$>
+
+  <$include batch_actions_panel_header$>
+
+<$if debug$>
+  DEBUG<br>
+  tp-type:<$#active.tp$><br>
+  dDocName:<$#active.mDN$><br>
+  dID:<$#active.mdID$><br>
+  dRevLabel:<$#active.mRL$><br>
+  security group:<$#active.mSG$><br>
+  doc account:<$#active.mDA$><br>
+<$endif$>
+
+  <div style="margin:5px; width=100%; height=100%">
+		<$include ecsSearchAndFilter$>
+	</div>
+
+	<$include std_page_end$>
+
+</body>
+
+
+</html>

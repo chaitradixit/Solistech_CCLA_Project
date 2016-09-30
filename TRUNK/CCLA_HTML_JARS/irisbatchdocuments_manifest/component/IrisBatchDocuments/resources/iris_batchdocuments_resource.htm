@@ -1,0 +1,4385 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>
+ThumbsExample htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml iris_doc_approval_title@>
+	<$if not bundleRef$>
+		Document Approval: <$DOC_INFO.dDocTitle$>
+	<$else$>
+		Bundle Approval: <$getValue("DOC_INFO",#env.Iris_batchIdField)$>
+	<$endif$>
+<@end@>
+
+<!-- Overrides standard menu bar. Changes menu option labels
+     and adds an additional link to the 'Filing cabinet' -->
+<@dynamichtml iris_menubar@>
+
+	<script type="text/javascript">
+		function glowMenuItem(entry) {
+			entry.className="glowMenuItem"
+		}
+
+		function fadeMenuItem(entry) {
+			entry.className="menuItem"
+		}
+	</script>
+
+	<$menu_events = "class='menuItem' onmouseover='glowMenuItem(this)' onmouseout='fadeMenuItem(this)' "$>
+	<$menu_current = "class='glowMenuItem'"$>
+
+	<div class="menuBar">
+
+		<$homeLink = HttpCgiPath & "?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=IRIS_HOME_PAGE"$>
+		<$bundleListingLink = HttpCgiPath & "?IdcService=DOC_LISTING"$>
+		<$itemListingLink = HttpCgiPath & "?IdcService=IRIS_CLASSIFIED_ITEMS"$>
+		<$userProfileLink = HttpCgiPath & "?IdcService=IRIS_USER_PROFILE"$>
+		<$addNewItemLink = HttpCgiPath & "?IdcService=IRIS_NEW_ITEM"$>
+		<$stellentHomeLink = HttpCgiPath & "?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=HOME_PAGE&Auth=Internet"$>
+		<$irisProfilesLink = HttpCgiPath & "?IdcService=IRIS_PROFILE_LISTING"$>
+		<$IBLink = "http://monet/ImageBank/index.htm"$>
+		<$adminServerLink  = CgiFileName & "/cs-admin/pxs?IdcService=GET_ROOT_IDC_ADMIN_PAGE"$>
+		
+		<ul class="menuItems">
+
+		<$if IsLoggedIn$>
+
+			<li <$if strEqualsIgnoreCase(#active.IdcService,"DOC_LISTING")$><$menu_current$><$else$><$menu_events$><$endif$>>
+				<a class="menuLink" href="<$bundleListingLink$>">Mail Bundles</a>
+			</li>
+
+			<li <$if strEqualsIgnoreCase(#active.IdcService,"IRIS_CLASSIFIED_ITEMS")$><$menu_current$><$else$><$menu_events$><$endif$>>
+				<a class="menuLink" href="<$itemListingLink$>">Filing Cabinet</a>
+			</li>
+
+			<li <$if strEqualsIgnoreCase(#active.IdcService,"IRIS_USER_PROFILE")$><$menu_current$><$else$><$menu_events$><$endif$>>
+				<a class="menuLink" href="<$userProfileLink$>">User Profile</a>
+			</li>
+
+		<$else$>
+			<li <$menu_events$>>
+				<a class="menuLink" href="<$homeLink$>">Home</a>
+			</li>
+		<$endif$>
+
+			<$if userCanWrite$>
+				<!-- 	Ensure user has read access on Public security group
+							before displaying 'new item' link -->
+				<li <$if strEqualsIgnoreCase(#active.IdcService,"IRIS_NEW_ITEM")$><$menu_current$><$else$><$menu_events$><$endif$>>
+
+					<a class="menuLink" href="<$addNewItemLink$>">Add new item</a>
+				</li>
+
+				<$if UserIsAdmin$>
+
+					<li <$if strEqualsIgnoreCase(#active.IdcService,"IRIS_PROFILE_LISTING")$><$menu_current$><$else$><$menu_events$><$endif$>>
+						<a class="menuLink" href="<$irisProfilesLink$>">Configuration</a>
+					</li>
+					<li <$menu_events$>>
+						<a class="menuLink" href="<$adminServerLink$>">Admin Server</a>
+					</li>
+
+				<$endif$>
+
+			<$endif$>
+
+			<$if IsLoggedIn$>
+			<li <$menu_events$>>
+				<a class="menuLink" href="images/iris/IrisUserGuide.pdf">Help</a>
+			</li>
+			<$endif$>
+
+		</ul>
+
+	</div>
+
+<@end@>
+
+<!-- Overriden from core resource std_page.htm.
+
+		 Used to ensure the bundle ref field is displayed
+		 as a link back to Iris on standard Stellent pages -->
+<@dynamichtml std_value_label@>
+
+	<$if hasOptionList and useSchema and not noSchema and not spanTitle$><$spanTitle="<$fieldValue$>"$><$endif$>
+	<span class="<$fieldValueStyle$>" <$if spanTitle$>title="<$xml(fieldValue)$>"<$endif$>>
+		<$if hasOptionList and useSchema and not noSchema$>
+			<$if not viewName and optionListName$>
+				<$viewName = optionListName$>
+			<$endif$>
+			
+			<$if isTrue(#active.UseTreeControl) and TreeDefinition$>
+				<$getTreeDisplayValue(fieldName, fieldValue)$>
+			<$else$>
+				<$getFieldViewDisplayValue(fieldName, #active.viewName, fieldValue)$>
+			<$endif$>
+		<$else$>
+			<$if fieldName like #env.Iris_batchIdField$>
+				<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&bundleRef=<$fieldValue$>"><$fieldValue$></a>
+			<$else$>
+				<$fieldValue$>
+			<$endif$>
+		<$endif$></span><!--'"-->
+	<$spanTitle=""$>
+	
+<@end@>
+
+<!-- Staging and configuration for the Filing Cabinet S&F display. -->
+<@dynamichtml iris_filing_cabinet_listing_pre@> 
+
+	<!-- Display/result list behaviour -->
+ 	<$hideLineBreak="1"$>
+  
+  <$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='1' width='100%' border='0' bgcolor='#F6F6F4'"$>
+  <$custRowAttrs="class='resultrow' onmouseover='setRowHighlight(this);' onmouseout='remRowHighlight(this);' onclick='toggleRow(this);'"$>
+  <$custRowEval="<$'id=\"' & dDocName & '_row\"'$>"$>
+  <$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+	<$onLoadStr="clearChecks();"$>	
+
+	<$calendarSelectFields="DATE_ADV"$>
+  <$include epoch_calendar_header$>
+  
+  <$suppressSortLinks = "CHECKBOX,ACTIONS"$>
+  	
+  <$nodeFilterFieldWidth="1,3,20,10,13,10,20,20"$>
+  <$nodeFilterFieldNames="CHECKBOX,TITLE,BUNDLEREF,BUNDLEDOCTYPE,QUICKDATE,DEPARTMENT,SUBDEPT"$>
+  <$advSearchFieldList="EVERYTHING,GAP,DATE_ADV"$>
+  <$moreAdvSearchFieldList=""$>
+  
+  <$SF_TITLE_caption="Title"$>
+  <$SF_EVERYTHING_caption="Full Text"$>
+ 	<$SF_QUICKDATE_caption="Date Added"$>
+ 	<$SF_DATE_ADV_caption="Date Added"$>
+  	
+ 	<$CHECKBOX_CustomIncludeScript="CHECKBOX_CustomIncludeScript"$>
+ 	<$TITLE_CustomIncludeScript="TITLE_CustomIncludeScript"$>
+ 	<$QUICKDATE_CustomIncludeScript="QUICKDATE_long_CustomIncludeScript"$>
+ 	<$BUNDLEREF_CustomIncludeScript="BUNDLEREF_cabinet_display"$>
+  <$IRIS_STATUS_CustomIncludeScript="IRIS_STATUS_CustomIncludeScript"$>
+  <$DEPARTMENT_CustomIncludeScript="DEPARTMENT_CustomIncludeScript"$>
+  <$SUBDEPT_CustomIncludeScript="SUBDEPT_CustomIncludeScript"$>
+  <$ACTIONS_CustomIncludeScript="DocActions_CustomIncludeScript"$>
+	
+	<$hideInfoLink="N"$>
+  <$displaySearchButton="Y"$>
+  	
+	<$displayPagingOptions="N"$>
+	<$displayPaginator="Y"$>
+	<$SF_CustomPaginator="iris_sf_paginator"$>
+
+  <$customIncludeResultsHeader = "group_action_controls"$>
+  
+  <$advSearchBackgroundColour="#FFFFFF"$>
+  <$advSearchDisplay_pre='orangeContainer_top'$>
+  <$advSearchDisplay_after='orangeContainer_bottom'$>
+  
+  <!-- Search customizations -->
+  <$PARAMETERSLIST="showCompleted"$>
+  <$QueryFieldList="TITLE,BUNDLEREF,BUNDLEDOCTYPE,QUICKDATE,DATE_ADV,DEPARTMENT,SUBDEPT"$>
+  	
+  <$DISPLAYTHUMBNAILS=1$>
+  <$THUMBNAILWIDTH=30$>
+  <$THUMBNAILHEIGHT=30$>	
+	  
+  <$nodeSortField="dInDate"$>
+	<$nodeSortOrder="DESC"$>
+		
+  <!-- Verity search -->  
+  <$nodeSearchQuery = "((dDocType <matches> `MailItem`) <or> (dDocType <matches> `Document`))"$>
+
+	<$if selDocs$>
+		<$exec rsMakeFromString("rsSelDocs",selDocs,"docName")$>
+		
+		<$loop rsSelDocs$>
+			<$if appendQuery$>
+				<$appendQuery = appendQuery & " <or> "$>
+			<$endif$>
+			
+			<$appendQuery = #local.appendQuery & "(dDocName <matches> `" & docName & "`)"$>
+		<$endloop$>
+		
+		<$nodeSearchQuery  = nodeSearchQuery & " <and> (" & appendQuery & ")"$>
+	<$endif$>
+
+<@end@>
+
+<!-- Controls S&F display on the List View tab while in batch doc mode. -->
+<@dynamichtml iris_batch_docs_listing_pre@> 
+
+	<$include iris_sf_sort_images$>
+	
+  <$isDocSearchAndFilter = 1$>
+
+	<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='1' border='0' bgcolor='#F6F6F4'"$>
+  <$custRowAttrs="class='resultrow_linked'"$>
+  <$custRowEval="<$'id=\"' & dDocName & '_row\"'$>"$>
+  <$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+  <$hideLineBreak="1"$>
+  <$displayColumnHeaderSortOptions="Y"$>
+  <$suppressSortLinks="CHECKBOX,DOCACTIONS"$>
+
+  <$nodeFilterFieldWidth="1,64,10,15,15,5"$>
+  <$nodeFilterFieldNames="CHECKBOX,FILE,BUNDLEDOCTYPE,DATE,AUTHOR,DOCACTIONS"$>
+	<$QueryFieldList="FILE,BUNDLEDOCTYPE,DATE,AUTHOR"$>
+	
+	<$displayPagingOptions="N"$>
+	<$displayPaginator="Y"$>
+	<$SF_CustomPaginator="iris_sf_paginator"$>
+	
+	<$SF_DATE_caption="Date Added"$>
+	<$SF_AUTHOR_caption="Contributor"$>
+	
+	<$PARAMETERSLIST="dDocName,bundleRef,isAssignee"$>
+	
+  <$overrideFirstColumn="Y"$>
+  <$overrideResultsLink_DEFAULT="mailto:<$getValueForSpecifiedUser(dDocAuthor,'dEmail')$>"$>
+
+	<$if not sf$>
+		<$sf = "dDocName"$>
+	<$endif$>
+	
+	<$if not so$>
+		<$so = "ASC"$>
+	<$endif$>
+
+  <$include iris_build_batch_item_query$>	
+	<$nodeSearchQuery = batchItemQuery$>
+	  	
+  <$c="SL:set sort order to match thumbnail display. earliest first."$>
+  <$ssSortOrder="Asc"$>
+  <$ssSortField="dInDate"$>
+
+   <$c="SL: used to temporarily stop the deleted doc re-appearing in the S&F list when the page is refreshed"$>
+  <$if #active.deleted_dDocName$>
+  	<$nodeSearchQuery = nodeSearchQuery & " <and> <NOT> (dDocName <matches> `" & #active.deleted_dDocName & "`)"$>
+  <$endif$>
+
+  <$SF_DISPLAYADVSEARCHLINK=""$>
+
+  <$displayCountSummary="N"$>
+  <$displayPagingOptions="N"$>
+  <$displaySearchButton="N"$>
+  <$displayFilterOptions="N"$>
+  <$useAdvancedSearch="N"$>
+  <$advSearchFieldList=""$>
+	<$allowContentTypeLinkOverride="Y"$>
+	<$hideInfoLink="Y"$>
+
+	<$CHECKBOX_CustomIncludeScript="CHECKBOX_CustomIncludeScript"$>
+  <$FILE_CustomIncludeScript="FILE_batchitem_CustomIncludeScript"$>
+  <$BUNDLEDOCTYPE_CustomIncludeScript="BUNDLEDOCTYPE_CustomIncludeScript"$>
+  <$SF_BUNDLEDOCTYPE_caption="Type/Classification"$>
+  <$AUTHOR_CustomIncludeScript="AUTHOR_CustomIncludeScript"$>
+  <$DOCACTIONS_CustomIncludeScript="BATCHDOCACTIONS_CustomIncludeScript"$>
+  
+  <$customIncludeResultsHeader = "batch_item_controls"$>
+
+  <$linkedDocType = "LinkedDoc"$>
+  <$customSearchScript = "performLinkedItemSearch"$>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource.
+		 Adds a select element to the doc listing screen
+		 to control the types of documents being displayed -->
+<@dynamichtml iris_doc_listing_inline_header@>
+
+  <div style="margin-top: 10px">
+
+		<$if IdcService like 'DOC_LISTING'$>
+			Showing types:&nbsp;
+
+			<select name="tp" onChange="this.form.submit()">
+				<option value="all">All types</option>
+				<option value="all">----------------</option>
+
+				<$exec rsMakeFromString("rsDocTypes",Iris_documentListingTypes,"row")$>
+				<$loop rsDocTypes$>
+				  <option value="<$row$>" <$if strEquals(#active.tp,row)$>SELECTED<$endif$>><$exec rsNext("rsDocTypes")$><$row$></option>
+				<$endloop$>
+			</select>
+		<$endif$>
+
+		&nbsp;
+		<input type=checkbox name="showCompleted" <$if showCompleted$>checked=true<$endif$> onclick="toggleShowCompleted(this)">Show completed
+		<input type="submit" class="submitLink" value="Search" style="margin-left: 10px"/>
+
+	</div>
+
+<@end@>
+
+<!-- Document listing configuration. Overrides default include. -->
+<@dynamichtml iris_doc_listing_pre@>
+
+		<$if #env.Iris_enableBatchLocking$>
+			<$executeService("IRIS_GET_ITEM_LOCKS")$>
+		<$endif$>
+
+  	<$calendarSelectFields="DATE_ADV,SCANDATE,ACKDATE,RESPDATE,DUEDATE,SCANDATE_ADV,DUEDATE_ADV"$>
+	  <$include epoch_calendar_header$>
+
+	  <$overrideResultsLink_DEFAULT="<$HttpCgiPath & '?IdcService=DOC_APPROVAL&dDocName=' & dDocName$>"$>
+	  <$suppressSortLinks = "CHECKBOX,ACTIONS"$>
+
+	  <$if not tp$>
+	  	<$tp = "Bundle"$>
+	 	<$endif$>
+
+	 	<$advSearchFieldList="SCANDATE_ADV,GAP,DUEDATE_ADV"$>
+		<$moreAdvSearchFieldList=""$>
+
+		<$if strEquals(#active.tp,"Invoice")$>
+
+			<$nodeSearchQuery = "(dDocType <matches> `Invoice`)"$>
+		  <$nodeFilterFieldWidth="1,3,9,7,18,10,10,15,10"$>
+		  <$nodeFilterFieldNames="CHECKBOX,REF,QUICKDATE,TITLE,IRIS_STATUS,APPROVER,VENDORNAME,TOTALAMOUNT"$>
+		  <$SF_VENDORNAME_caption="Vendor"$>
+
+	  <$elseif strEquals(#active.tp,"MailItem")$>
+
+	  	<$nodeSearchQuery = "(dDocType <matches> `MailItem`)"$>
+	  	<$nodeFilterFieldWidth="1,3,7,9,18,10,8,15,15"$>
+		  <$nodeFilterFieldNames="CHECKBOX,REF,SCANDATE,TITLE,MAILTYPE,IRIS_STATUS,PRIORITY,DUEDATE,APPROVER"$>
+
+	  <$elseif strEquals(#active.tp,"Bundle")$>
+
+	  	<$nodeSearchQuery = "(dDocType <matches> `Bundle`)"$>
+	  	<$nodeFilterFieldWidth="1,1,8,13,14,8,8,8,8,7,12"$>
+		  <$nodeFilterFieldNames="CHECKBOX,REF,MAILTYPE,SENDER,SCANDATE,ACKDATE,RESPDATE,DUEDATE,IRIS_STATUS,PRIORITY,APPROVER"$>
+
+	 <$else$>
+
+			<$nodeSearchQuery = "(dDocType <matches> `Invoice` or dDocType <matches> `Bundle`)"$>
+		  <$nodeFilterFieldWidth="1,3,7,7,10,18,10,15,6,15"$>
+		  <$nodeFilterFieldNames="CHECKBOX,REF,SCANDATE,DOCTYPE,TITLE,IRIS_STATUS,PRIORITY,DUEDATE,APPROVER"$>
+
+		  <$advSearchFieldList="EVERYTHING,TITLE,AUTHOR,VENDORNAME"$>
+
+		<$endif$>
+
+	 	<$CHECKBOX_CustomIncludeScript="CHECKBOX_CustomIncludeScript"$>
+
+	 	<$REF_CustomIncludeScript="REF_CustomIncludeScript"$>
+	 	<$SF_REF_idcname=#env.Iris_batchIdField$>
+	 	
+	 	<$if (#local.tp	like 'Invoice')$>
+	 		<$SF_REF_idcname="dDocName"$>
+	 	<$endif$>
+
+	 	<!-- Bundle status config -->
+	  <$IRIS_STATUS_CustomIncludeScript="IRIS_STATUS_CustomIncludeScript"$>
+	  <$IRIS_STATUS_CustomFilterScript="BUNDLESTATUS_CustomFilterScript"$>
+	  <$SF_IRIS_STATUS_type="custom"$>
+
+	  <$SCANDATE_CustomIncludeScript="SCANDATE_CustomIncludeScript"$>
+	  <$ACKDATE_CustomIncludeScript="ACKDATE_CustomIncludeScript"$>
+	  <$RESPDATE_CustomIncludeScript="RESPDATE_CustomIncludeScript"$>
+	  <$DUEDATE_CustomIncludeScript="DUEDATE_CustomIncludeScript"$>
+
+	  <$TOTALAMOUNT_CustomIncludeScript="TOTALAMOUNT_CustomIncludeScript"$>
+
+	  <$SF_APPROVER_caption="Assigned to"$>
+	  <$SF_APPROVER_type="custom"$>
+
+	  <$APPROVER_CustomIncludeScript="APPROVER_batch_CustomIncludeScript"$>
+	  <$APPROVER_CustomFilterScript="APPROVER_batch_CustomFilterScript"$>
+
+	  <$ACTIONS_CustomIncludeScript="DocActions_CustomIncludeScript"$>
+
+		<$hideInfoLink="N"$>
+	  <$displaySearchButton="N"$>
+
+		<$displayPagingOptions="N"$>
+		<$displayPaginator="Y"$>
+		<$SF_CustomPaginator="iris_sf_paginator"$>
+
+	  <$inlineHeaderInclude = "iris_doc_listing_inline_header"$>
+	  <$customIncludeResultsHeader = "group_action_controls"$>
+
+	  <$advSearchBackgroundColour="#FFFFFF"$>
+	  <$advSearchDisplay_pre='orangeContainer_top'$>
+	  <$advSearchDisplay_after='orangeContainer_bottom'$>
+
+	  <!-- Special search customization: assignee field.
+	  		 
+	  		 If no value is specified, the %CURRENT_USER%
+	  		 value is added by default. This will return all
+	  		 bundles which are assigned to one of the
+	  		 current user's aliases or to their name directly.
+	  		 
+	  		 If a user is a member of the mail handling role,
+	  		 all incomplete bundles with no assignee are also
+	  		 returned.	 
+	   -->  
+	  <$if not sel_assignee$>
+	  	<$sel_assignee="%NONE%"$>
+	  <$endif$>
+	  
+	  <$if not (sel_assignee like "%NONE%")$>
+	  	<$if sel_assignee like "%CURRENT_USER%"$>
+
+	  		<!-- Search against all groups that the current user is member of,
+	  				 as well as their own username. -->
+	  		<$executeService("IRIS_GET_USER_ALIASES")$>
+
+	  		<$if rsAliasMemberships$>
+	  			<$loop rsAliasMemberships$>
+	  				<$if rsAliasMemberships.ALIASNAME like #env.Iris_MailHandlingGroup$>
+	  					<$isMailHandlingUser=1$>
+	  				<$endif$>
+
+	  				<$if userAliasFilter$>
+	  					<$userAliasFilter  = userAliasFilter & " <or> (xApprover <matches> `a:" & rsAliasMemberships.ALIASNAME & "`)"$>
+	  				<$else$>
+	  					<$userAliasFilter  = "(xApprover <matches> `a:" & rsAliasMemberships.ALIASNAME & "`)"$>
+	  				<$endif$>
+	  			<$endloop$>
+
+					<!-- Any members of the mail handling group will
+		 					 be assigned to bundles with an 'Open' status as well. -->
+	  			<$if isMailHandlingUser$>
+	  				<$if userAliasFilter$>
+	  					<$userAliasFilter  = userAliasFilter & " <or> (xStatus <matches> `Open`)"$>
+	  				<$else$>
+	  					<$userAliasFilter = "(xStatus <matches> `Open`)"$>
+	  				<$endif$>
+	  			<$endif$>
+	  		<$endif$>
+
+	  		<$if userAliasFilter$>
+	  			<$nodeSearchQuery =
+	  				nodeSearchQuery & " <and> (" & userAliasFilter & " <or> (xApprover <matches> `" & dUser & "`)) "$>
+	  		<$else$>
+	  			<$nodeSearchQuery  =
+	  				nodeSearchQuery & " <and> (xApprover <matches> `" & dUser & "`) "$>
+	  		<$endif$>
+
+	  	<$else$>
+	  		<!-- Standard single user/alias assignee search -->
+	  		<$nodeSearchQuery = nodeSearchQuery & " <and> (xApprover <matches> `" & xApprover & "`) "$>
+	  	<$endif$>
+
+	  <$endif$>
+
+	  <!-- Misc search customizations -->
+	  <$PARAMETERSLIST=PARAMETERSLIST & ",sel_assignee,showCompleted,tp"$>
+	  <$QueryFieldList="REF,QUICKDATE,SCANDATE,DUEDATE,SCANDATE_ADV,DUEDATE_ADV,AUTHOR,IRIS_STATUS,APPROVER,TITLE,VENDORNAME,CURRENCY,DOCTYPE,DATE_ADV,MAILTYPE,SENDER"$>
+
+	  <$DISPLAYTHUMBNAILS=1$>
+	  <$THUMBNAILWIDTH=30$>
+	  <$THUMBNAILHEIGHT=30$>
+
+	  <$nodeSortField="dInDate"$>
+  	<$nodeSortOrder="DESC"$>
+
+	  <!-- Verity search -->
+	  <$if #active.amt$>
+	  	<$trueAmt = amt * 100$>
+	  	<$nodeSearchQuery = nodeSearchQuery & " <and> ((xTotalAmount <= " & trueAmt & ") <and> (xTotalAmount >= " & trueAmt & ")) "$>
+	  <$endif$>
+
+	  <$if not #active.showCompleted$>
+	  	<$nodeSearchQuery = nodeSearchQuery & " <and> <not> (xStatus <matches> `Completed`) "$>
+	  <$endif$>
+
+<@end@>
+
+<!-- Increases the width of the side panels when in batch doc 
+		 editing mode, and batch updates are enabled.
+		 -->
+<@dynamichtml iris_compute_panels_width@>
+
+	<$if #env.Iris_batchEditMode like 'document' and #env.Iris_enableBatchUpdates$>
+		<!-- Checkboxes must be placed adjacent to each editable field. -->
+		<$panelWidth = "335"$>
+	<$else$>
+		<!-- use default panel width -->
+		<$panelWidth = #env.Iris_defaultPanelWidth$>
+	<$endif$>
+ 			
+<@end@>
+
+<!-- Used to display extra cells adjacent to metadata fields
+		 while in Edit mode. 
+		 
+		 Currently supports a checkbox column when in batch doc
+		 edit mode.
+		 -->
+<@dynamichtml iris_meta_fields_extra_columns@> 
+	
+	<$if isBatchDoc and #env.Iris_enableBatchUpdates$>
+		<$if #env.Iris_preventBatchUpdateFields and strIndexOf(#env.Iris_preventBatchUpdateFields,dName) > -1$>
+		
+		<$else$>
+			
+			<td valign="top" class="field_checkbox">
+				<input type="checkbox" name="<$dName$>_checkbox" class="doc_meta_checkbox" onclick="batchUpdateCheckboxChanged(this)" tabIndex="1000" />
+			</td>
+		
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+<!-- Displays lock status for the currently-loaded batch.
+ 		 Intended for placement in the bundle details panel. -->
+<@dynamichtml iris_batch_lock_display@> 
+	
+	<$if #env.Iris_enableBatchLocking$>
+		<tr>
+			<td colspan=2>
+				<br/>
+			</td>
+		</tr>		
+		<tr>	
+			<td colspan=2 id="iris_batch_lock_text">
+				<div class="lock_display_box">
+				
+					<$if Iris_itemLockUser$>
+						<p id="iris_batch_lock_panel" class="item_locked">
+						
+							<span id="iris_batch_lock_info">
+								<$if Iris_itemLockUser like dUser$>
+									You have the lock on this bundle.
+									
+									<script type="text/javascript">
+										// TM: if the bundle was locked to the user when the page
+										// was loaded, send another lock request to ensure the
+										// bundle remains locked and won't get auto-unlocked by a
+										// pending request on page unload (only occurs for a page
+										// refresh/reload action)
+										$(document).ready( function() {
+											getItemLock('<$dDocName$>');
+										});
+										
+									</script>
+								
+								<$else$>
+									<$enableWorkflowForm=""$>
+									Locked for editing by <strong><$Iris_itemLockUser$></strong> 
+									<br/><$formatDateWithPattern(Iris_itemLockTime,"dd MMM HH:mm")$>
+								<$endif$>
+							</span>
+							
+							<$if userCanUnlock$>
+								<br/>
+								<a id="iris_batch_lock_link" href="javascript:removeItemLock('<$dDocName$>')">Remove lock</a>
+							<$endif$>
+								
+					<$else$>
+						<p id="iris_batch_lock_panel" class="item_unlocked">
+							
+							<$enableWorkflowForm=""$>
+							
+							<$if userCanLock$>
+							
+								<span id="iris_batch_lock_info">
+									You must have the lock before you can edit.
+								</span>
+							
+								<br/>
+								<a id="iris_batch_lock_link" href="javascript:getItemLock('<$dDocName$>')">Acquire lock</a>
+							
+							<$else$>		
+									
+								<span id="iris_batch_lock_info">
+									You don't have sufficient rights to lock this item for editing.
+								</span>
+									
+							<$endif$>
+								
+					<$endif$>
+						
+					</p>
+				</div>
+			</td>
+		</tr> 
+		
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml iris_update_form_header@>
+
+<$if not bundleRef$>
+	<$include super.iris_update_form_header$>
+<$else$>
+
+	<form name="doc_fields" id="doc_fields" action="<$HttpCgiPath$>" method="POST" style="margin: 0px; padding: 0px">
+
+		<input type=hidden name=isIris					value="1">
+
+		<input type=hidden name=IdcService 			value="IRIS_UPDATE_DOCINFO">
+		<input type=hidden name=dID							value="<$dID$>">
+		<input type=hidden name=dSecurityGroup	value="<$dSecurityGroup$>">
+		<input type=hidden name=dRevLabel				value="<$dRevLabel$>">
+		<input type=hidden name=dDocName				value="<$dDocName$>">
+		<input type=hidden name=dInDate					value="<$dInDate$>">
+
+		<$include iris_document_extra_hidden_fields$>
+		
+		<$if dDocType like 'Bundle'$>
+			<!-- Bundle items are metadata-only -->
+			<input type="hidden" name="createPrimaryMetaFile" value="1" />
+		<$endif$>
+
+		<input type=hidden name=RedirectUrl			value="<$HttpCgiPath & '?IdcService=DOC_APPROVAL&dDocName=' & dDocName & #local.urlparams$>">
+
+		<$numMissingFields = 0$>
+
+		<!-- table containing metadata fields -->
+		<table width="100%" cellpadding=0 cellspacing=2>
+
+			<!-- Display standard information fields at the top -->
+
+			<!-- Assignee field (xApprover) -->
+			<tr>
+
+				<$if xApprover$>
+
+					<$if strIndexOf(xApprover,"a:") == 0$>
+						<$thisApprover = strSubstring(xApprover,2)$>
+						<$approverIsAlias=1$>
+					<$else$>
+						<$thisApprover = getValueForSpecifiedUser(xApprover,"dFullName")$>
+					<$endif$>
+
+					<$if isInfo$>
+
+						<td valign=center class="field_caption_info">Assigned to:</td>
+						<td valign=center class="field_value_info"><$thisApprover$></td>
+
+					<$else$>
+
+						<td valign=center class="field_caption">Assigned to:</td>
+						<td valign=center class="field_value_info"><$thisApprover$></td>
+
+					<$endif$>
+
+				<$endif$>
+
+			</tr>
+
+			<!-- Document Type field (dDocType) -->
+			<tr>
+				<$if false$>
+					<$if isInfo$>
+
+						<td valign=center class="field_caption_info">Type:</td>
+						<td valign=center class="field_value_info"><$dDocType$></td>
+
+					<$else$>
+
+						<td valign=center class="field_caption">Type:</td>
+						<td valign=center class="field_value_info"><$dDocType$></td>
+
+					<$endif$>
+				<$endif$>
+
+				<input type="hidden" name="dDocType" value="<$dDocType$>" />
+				<input type="hidden" name="dDocType_old" value="<$dDocType$>" />
+
+			</tr>
+
+			<!-- Title field (dDocTitle) -->
+			<input type="hidden" name="dDocTitle" value="<$dDocTitle$>" />
+			<input type="hidden" name="dDocTitle_old" value="<$dDocTitle$>" />
+
+			<!-- 	Code req. for AJAX requests used in finding lists of
+						approvers after account is changed -->
+			<!--include account_update_js-->
+
+			<!-- Account field (dDocAccount) -->
+			<$include iris_document_account_field$>
+
+			<$if dDocType like 'MailItem'$>
+				<tr>
+					<$if isInfo$>
+
+						<td valign=center class="field_caption_info">Date added:&nbsp;</td>
+						<td valign=center class="field_value_info"><$dInDate$></td>
+
+					<$else$>
+
+						<td valign=center class="field_caption">Date added:&nbsp;</td>
+						<td valign=center class="field_value_info"><$dInDate$></td>
+
+					<$endif$>
+				</tr>
+
+				<$include iris_document_title_field$>
+
+				<tr>
+
+					<$if isInfo$>
+
+						<td valign=center class="field_caption_info">Bundle ref:&nbsp;</td>
+						<td valign=center class="field_value_info"><$include iris_bundle_ref_display$></td>
+
+					<$else$>
+
+						<td valign=center class="field_caption">Bundle ref:&nbsp;</td>
+						<td valign=center class="field_value_info"><$include iris_bundle_ref_display$></td>
+
+					<$endif$>
+
+				</tr>
+
+			<$endif$>
+
+<$endif$>
+
+<@end@>
+
+<!-- Hook from IrisCore.
+
+		 This may force on the isInfo flag, if batch locking is
+		 enabled and another user holds the lock for the current
+		 item. -->
+<@dynamichtml doc_approval_resolve_action_extra_OLD@> 
+	
+	<$if bundleRef$>
+		<$if #env.Iris_enableBatchLocking$>
+			
+			<$if not #active.xIrisLockUser or (not (#active.xIrisLockUser like dUser))$>
+				<$isInfo="1"$>
+			<$endif$>
+			
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+<!-- Override from IrisCore.
+
+		 When in bundle item edit mode, update calls are done
+		 via AJAX calls. -->
+<@dynamichtml doc_approval_fields_actions@>
+
+	<$if not isInfo$>
+
+		<tr>
+			<td colspan=3 align="left">
+				<div class="sidepanel_button_holder">
+					<$if batchEditMode like 'document'$>
+						<!-- bind to AJAX functions -->
+						<$saveEvent 		= "saveDocInfo()"$>
+						<$discardEvent 	= "reloadDocInfo()"$>
+						<$disableButtons = ""$>
+					<$else$>
+						<!-- bind to standard form submission functions -->
+						<$saveEvent 		= "saveChanges()"$>
+						<$discardEvent 	= "discardChanges()"$>
+					<$endif$>
+					
+					<input type=button name="submitbtn" id="submitbtn" value="Save" 
+								 onclick="<$saveEvent$>;" 
+								 class="doc_panel_submit_button"
+								 <$#local.disableButtons$> 
+								 tabindex="<$include iris_get_next_tabindex$>" />
+					
+								 <$tabIndex = tabIndex + 1$>	
+									
+					<input type=button name="discardbtn" id="discardbtn" value="Reload" 
+								 onclick="<$discardEvent$>;" 
+								 class="doc_panel_submit_button"
+								 tabindex="<$include iris_get_next_tabindex$>"
+								 <$#local.disableButtons$> />
+								 	
+					<$if batchEditMode like 'document' and #env.Iris_enableBatchUpdates$>
+						<!-- Display batch update button -->
+						<input type="button" name="batchUpdateBtn" id="batchUpdateBtn" value="Batch update"
+									 onclick="applyBatchUpdate()"
+									 class="doc_panel_submit_button"
+									 tabindex="<$include iris_get_next_tabindex$>"
+									 disabled />	 
+						
+					<$endif$>			 	
+					
+					<$if batchEditMode like 'document'$>
+						
+						<script type="text/javascript">
+							// send a list of the displayed fields so their
+							// values can be cached.
+							collectDocFieldValues('<$fields$>');
+						</script>
+			
+					<$endif$>
+								 	
+				</div>
+			</td>
+		</tr>
+
+	<$else$>
+					
+		<tr><td colspan=2 align="right">
+			<br/>
+			<a href="<$HttpCgiPath$>?IdcService=DOC_INFO&dID=<$dID$>&dDocName=<$dDocName$>">View standard info</a>
+		</td></tr>
+
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml iris_bundle_ref_display@>
+	<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&bundleRef=<$getValue("#active","#env.Iris_batchIdField")$>"><$getValue("#active","#env.Iris_batchIdField")$></a>
+<@end@>
+
+<!-- Overrides standard Iris checkin metadata -->
+<@dynamichtml iris_checkin_metadata@>
+
+	<$calendarSelectFields="xStartDate"$>
+	<$include Iris_prepareEpochCalendars$>
+
+	<script type="text/javascript">
+
+		window.onload=prepareCalendars;
+
+		// triggered via change event to the document type selector
+		function changeType(sel) {
+
+			var frm = document.forms['newdocform'];
+			
+			if (sel.value == "MailItem") {
+				frm.xBundleRef.disabled = false;
+				frm.dSecurityGroup.value = "Mail";
+			} else {
+				frm.xBundleRef.value = "";
+				frm.xBundleRef.disabled = true;
+				frm.dSecurityGroup.value = "Public";
+			}
+		}
+
+  </script>
+
+	<input type="hidden" name="dDocAccount" value="">
+	<input type="hidden" name="xBundleDocType" value="Mail item">
+
+	<tr>
+		<td><span class=infoLabel>Title:</span></td>
+		<td><input type=text name=dDocTitle style="width: 100%"></td>
+	</tr>
+	<tr>
+		<td><span class=infoLabel>Scan date:</span></td>
+		<td>
+			<input type=text name=xStartDate id=xStartDate style="width: 30%">
+			<input type="button" src="epoch/images/epoch_calendar.gif" name="xStartDate_picker" id="xStartDate_picker"
+						 style="height: 22px; width: 23px; background-image: url(epoch/images/epoch_calendar.gif)" value="..."/>
+		</td>
+	</tr>
+
+	<tr><td><br></td></tr>
+
+	<tr>
+		<td><span class=infoLabel>Bundle ref:</span></td>
+		<td><input type=text name=xBundleRef id=xBundleRef style="width: 50%"></td>
+	</tr>
+
+	<tr>
+		<td>
+			<$if false$>
+			<input type="hidden" name="contentCategory" value="Image Asset" />
+			<input type="hidden" name="xPackagedConversions" value="AC_Formal_Renditions" />
+			<$endif$>
+
+			<input type="hidden" name="xStatus" value="Pending" />
+		</td>
+	</tr>
+
+<@end@>
+
+<!-- Overrides standard Iris doctype list -->
+<@dynamichtml iris_doctype_list@>
+
+	<tr>
+			<td width='40%'><span class=infoLabel>Type:</span></td>
+			<td width='60%'>
+
+	<$typeList = getValue("#env", "Iris_batch_doctypes")$>
+
+	<$if not typeList$>
+		No default type list.
+	<$else$>
+
+		<$rsMakeFromString('DocTypeList', typeList, 'type')$>
+
+		<select name=dDocType onChange="changeType(this);">
+
+			<$loop DocTypeList$><$DocTypeList.type$>
+				<option value='<$DocTypeList.type$>'><$DocTypeList.type$></option>
+			<$endloop$>
+
+		</select>
+
+	<$endif$>
+</td>
+</tr>
+<@end@>
+
+<!-- Overrides default header for doc info/update panel -->
+<@dynamichtml iris_doc_panel_header@>
+
+	<$if dDocType like #env.Iris_batchDocType$>
+		Bundle Details - <span class='docname'><$getValue("#active",#env.Iris_batchIdField)$></span>
+	<$else$>
+		Item Details - <span class='docname'><$dDocName$></span>
+	<$endif$>
+
+<@end@>
+
+<!-- 	Hooks into the start of the approval page.
+			
+			Checks for a 'bundleRef' local variable. This will
+			generally be passed in the page URL and indicates
+			we are looking at a document bundle.
+			
+			If the bundleRef is present, but a dDocName isn't,
+			the dDocName must be resolved before continuing.
+			
+			If the thumbnailMode flag is switched on, this indicates
+			the preview panel will be showing a set of documents.
+			
+			The Iris_batchEditMode variable is also resolved: this
+			determines whether the user will be updating the data
+			for each bundle item, or just the parent bundle item.
+			
+			Finally, some custom JavaScript includes are loaded 
+			to support bundle-related tasks.
+ -->
+<@dynamichtml doc_approval_pre@>
+
+	<$if bundleRef$>
+		
+		<$if bundleRef and (not dDocName)$>
+			<!-- bundleRef was supplied but no dDocName. Resolve dDocName now. -->
+			
+			<$matchParentOnly=1$>
+			<$include iris_build_batch_item_query$>
+			
+			<$QueryText		= batchItemQuery$>
+			<$ResultCount	= 1$>
+			<$executeService("GET_SEARCH_RESULTS")$>
+	
+			<$if not SearchResults$>
+				<$noParentBundleItem=1$>
+			<$else$>
+	
+				<$loop SearchResults$>
+					<$dDocName = SearchResults.dDocName$>
+				<$endloop$>
+			
+			<$endif$>
+				
+		<$endif$>
+		
+		<$thumbnailMode=1$>
+	<$endif$>
+	
+	<$if thumbnailMode$>
+		<!-- Determine whether the bundle item itself is available for update,
+		     or its composite documents. --> 
+		<$if #env.Iris_batchEditMode$>
+			<$batchEditMode = #env.Iris_batchEditMode$>
+		<$else$>
+			<$batchEditMode="parent"$>	
+		<$endif$>
+	<$endif$>
+			
+	<$include iris_batch_mail_js$>
+	<$include iris_batch_routing_js$>
+	<$include iris_batch_extra_js$>
+	
+<@end@>
+
+<!-- Depending on how batch locking has been implemented, this
+ 		 include can automatically 'lock' a bundle item to the
+ 		 current user before the indexing panels are rendered.
+ 		 
+ 		 Sets 2 flags:
+ 		 -userCanLock
+ 		 -userCanUnlock
+ 		 
+ 		  -->
+<@dynamichtml doc_approval_resolve_item_locking@>
+		
+	<$if bundleRef and #env.Iris_enableBatchLocking and #env.Iris_enableAutoBatchLocking$>
+		<$executeService("IRIS_GET_ITEM_LOCK_INFO")$>
+		<$trace("resolved batch lock user as: " & #local.Iris_itemLockUser)$>
+		
+		<$if Iris_itemLockUser and not (#local.Iris_itemLockUser like dUser)$>
+			<!-- Bundle already locked by someone else - carry on. -->
+					
+		<$else$>
+			<!-- 	Bundle currently unlocked, or locked by current user. -->
+			
+			<$if userCanWrite$>	
+				<$if (not isWorkflowItem) or (isWorkflowItem and allowWorkflowActions)$>
+					<$lockBatchToUser = 1$>
+				<$endif$>
+					
+				<$if lockBatchToUser$>
+					<$trace("locking batch to current user")$>
+					<$dDocName = DOC_INFO.dDocName$>
+					<$executeService("IRIS_ACQUIRE_ITEM_LOCK")$>
+						
+					<$if itemLockAcquired$>
+						<!-- 	Success flag found in binder.
+									Update Iris_itemLockUser to reflect new lock user -->
+						<$Iris_itemLockUser = dUser$>
+						<$userCanUnlock=1$>
+							
+					<$endif$>
+						
+				<$else$>
+					<$userCanLock=""$>
+				<$endif$>
+			
+			<$endif$>
+		<$endif$>
+			
+		<$if not Iris_itemLockUser or (not (#local.Iris_itemLockUser like dUser))$>
+			<$isInfo="1"$>
+		<$endif$>
+		
+	<$endif$>
+		
+	<$if (#local.Iris_itemLockUser like dUser) or userHasRole("admin")$>
+		<$userCanUnlock=1$>
+	<$endif$>
+	
+<@end@>
+
+<!-- Error handling script for bundle references without a parent item -->
+<@dynamichtml iris_batch_no_parent_item_error@> 
+	
+	<!-- 	Search for child items with the current reference. If any exist, offer to generate
+				the parent item now. -->
+	<$include iris_build_batch_item_query$>
+	<$QueryText		= batchItemQuery$>				
+	<$executeService("GET_SEARCH_RESULTS")$>
+		
+	<$if SearchResults$>
+		Parent bundle item is missing.
+		<br/>
+		<br/>
+		There are <a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS&ref=<$bundleRef$>"><$SearchResults.#numRows$> items</a> with the bundle reference '<$bundleRef$>'.
+		Would you like to generate the parent item now?
+	<$else$>
+		No items exist with the bundle reference '<$bundleRef$>'.
+	<$endif$>	
+
+<@end@>
+
+<!-- Contains JavaScript functions for mail notification panel -->
+<@dynamichtml iris_batch_mail_js@>
+
+	<script type="text/javascript">
+
+			// Triggered after clicking Submit button on Email Nofication panel
+			function sendNotification() {
+
+				var form = document.getElementById("mail_notification_form");
+
+				// form validation
+				var selRecipient = form.elements['selRecipient'].value;
+
+				if (selRecipient == '') {
+					alert("Please select an email recipient.");
+					return;
+				} else {
+					if (selRecipient.indexOf("a:") == 0) {
+						form.elements['recipient'].value = selRecipient.substring(2);
+						form.elements['isAlias'].value = "1";
+					} else {
+						form.elements['recipient'].value = selRecipient;
+					}
+				}
+
+				// Set mail subject, based on selected action
+				var action = form.elements['requiredAction'].value;
+
+				if (action == 'fyi') {
+					form.elements['subject'].value = form.elements['subject_fyi'].value;
+				} else {
+					form.elements['subject'].value = form.elements['subject_rfi'].value;
+				}
+
+				var userNotes = form.elements['extraNotes'].value;
+				var auditMsgLimit = <$ECS_AuditLog_MessageSize$>;
+
+				// Ensure user message is capped by maximum size of audit message
+				if (userNotes.length > auditMsgLimit)
+					userNotes = userNotes.substring(0,(auditMsgLimit-3)) + "...";
+
+				form.elements['lMessage'].value = userNotes;
+
+				// Set audit parameter fields to store selected recipient and action
+				form.elements['lParam1'].value = selRecipient;
+				form.elements['lParam2'].value = action;
+
+				form.submit();
+			}
+	</script>
+
+<@end@>
+
+<!-- Contains workflow-related batch JavaScript -->
+<@dynamichtml iris_batch_routing_js@>
+
+	<script type="text/javascript">
+
+		// Triggered by click event to Bundle Action radio buttons
+		function setBundleAction(radio) {
+			var action = radio.value;
+			document.getElementsByName("approve_btn")[0].disabled = false;
+
+			var form = document.getElementById("change_approver_form");
+			var selApprover = document.getElementById("newApprover");
+
+			if (action == 'assign') {
+				selApprover.disabled = false;
+			} else {
+				form.elements['xApprover'].value = "";
+				selApprover.selectedIndex = 0;
+				selApprover.disabled = true;
+			}
+		}
+
+		// Peforms approve/reject workflow action
+		function processBundle()
+		{
+			changes = checkForChanges();
+
+			// ensure there are no recent changes
+			if (changes == true) {
+				conf = confirm("You have unsaved changes to this item. Continue without saving?");
+				if (conf == false) {
+					return;
+				} else {
+					isSaved = true;
+				}
+			}
+
+			var form = document.getElementById("change_approver_form");
+
+			var actionRadios = document.getElementsByName("bundleAction");
+			var action = "";
+
+			// check which 'bundle action' radio button is selected
+			for (var i=0; i<actionRadios.length; i++) {
+				var thisRadio = actionRadios[i];
+
+				if (thisRadio.checked)
+					action = thisRadio.value;
+			}
+
+			if (action == "") {
+				alert("You don't have any action selected.");
+				return;
+			}
+
+			// Copy the comment box contents into the hidden xAuditParams
+			// field
+			var actionComments = document.getElementById('actionComments').value;
+			form.elements['xAuditParams'].value = actionComments;
+
+			// Complete action: Ensure the assignee field is blank before update.
+			// This is detected in update event and causes the doc to exit workflow.
+			if (action == 'complete') {
+				form.elements['xApprover'].value = "%COMPLETED%";
+				form.submit();
+			}
+
+			// Assign action: Requires the 'newApprover' select list to have a selected
+			// option to use as the new assignee. The new assignee is copied into the
+			// xApprover field before the update. This is detected in update event
+			// and causes the doc to re-enter the Assigned step with the new approver set.
+			if (action == 'assign') {
+				var newApprover = document.getElementById("newApprover");
+
+				if (newApprover.value == '') {
+					alert("You haven't selected a new assignee.");
+				} else {
+					form.elements['xApprover'].value = newApprover.value;
+					form.submit();
+				}
+			}
+
+			// Send back action: Places a special string into the
+			// approver field, this is picked up by the workflow update event.
+			// When the string is detected in workflow, the companion file
+			// is checked to find the last approver. The last approver is placed
+			// into the xApprover field.
+			if (action == 'sendback') {
+				form.elements['xApprover'].value = "%SEND_BACK%";
+				form.submit();
+			}
+		}
+	</script>
+<@end@>
+
+<!-- Misc batch JavaScript goes here. -->
+<@dynamichtml iris_batch_extra_js@>
+	
+	<script type="text/javascript">
+		// Reloads the page to display a specific item in the bundle.
+		function displayBundleDoc(docName) {
+		
+			var newUrl = "?IdcService=DOC_APPROVAL&dDocName=<$dDocName$>&bundleRef=<$bundleRef$>";
+			var urlHash	= "#_image," + docName;
+			
+			var currentUrl = window.location.href;
+			
+			window.location.href = (newUrl + urlHash);
+			
+			if (currentUrl.indexOf(newUrl) > -1) {
+				// Reload the page if only the hash portion of the URL was changed,
+				// otherwise there will be no effect.
+				window.location.reload();
+			}
+		}
+		
+		function viewBatchDualIndexResults() {
+			var w = window.open("?IdcService=IRIS_BATCH_DUAL_INDEX_RESULTS&dDocName=<$dDocName$>&bundleRef=<$bundleRef$>", 
+			 "dualIndexResults_<$dDocName$>", "height=400,width=500");
+		}
+		
+	</script>
+
+<@end@>
+
+<!-- JavaScript to control batch tab switching -->
+<@dynamichtml iris_batch_tab_js@>
+<script type="text/javascript">
+
+	var curTab = "tab_image";
+	
+	function openBatchTab(sel) {
+		// Context frame - the contents change depending on which tab is clicked
+		contextFrame = frames['contextFrame'];
+	
+		switchTabs(curTab,sel);
+		curTab = sel;
+	
+		var recentNotes = document.getElementById('recentnotes');
+		var iFrameTable = document.getElementById('previewtable');
+		var recentNotesHeader = document.getElementById('recentnotes_span');
+	
+		// now change the source of the context iframe
+		if (sel == 'tab_notes') {
+	
+			// display notes for this record. The Recent notes table below the iframe must be
+			// hidden so we do not show redundant information
+			recentNotes.style.display = "none";
+			iFrameTable.style.height = "94%";
+			recentNotesHeader.style.display = "inline";
+	
+			// Switch contents of iframe
+			contextFrame.location.href = 
+				"<$HttpCgiPath & '?IdcService=IRIS_LINKED_AUDIT_ENTRIES&dDocName=' & dDocName$>&ts=" + new Date().getTime();
+			
+			try{
+			document.getElementById('thumbsTd').style.width="0px";
+			}catch(err){}
+		} else {
+	
+			// Recent notes area must be restored
+			recentNotes.style.display = "block";
+			iFrameTable.style.height = "85%";
+			recentNotesHeader.style.display = "inline";
+		}
+	
+		if (sel == 'tab_image') {
+			if (thumbnailMode) {			
+				// display the thumbnail template
+				//contextFrame.location.href = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_PREVIEW&parentDocName=<$dDocName$>&bundleRef=<$#local.bundleRef$>";
+				
+				try{
+					loadThumbsFrame();
+				}catch(err){}
+			
+			} else {
+				// display the scanned image (content item)
+				contextFrame.location.href = "<$DocUrl$>";
+			}
+	
+			setHeights();
+	
+		} else if (sel == 'tab_docs') {
+			
+			// display related documents
+			contextFrame.location.href = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_LISTING&parentDocName=<$dDocName$>&bundleRef=<$bundleRef$>" +
+				"<$if allowWorkflowActions$>&allowWorkflowActions=1<$endif$>";
+			
+			try{
+				document.getElementById('thumbsTd').style.width="0px";
+			}catch(err){}
+			
+			setHeights();
+		}
+		
+		// set the URL hash to the current tab name.
+		// i.e. 'tab_docs' will be converted to the hash: #_docs.
+		document.location.hash = sel.substr(3);
+	}
+						
+</script>
+<@end@>
+
+<@dynamichtml doc_approval_extra@>
+	<$include iris_batch_tab_js$>
+<@end@>
+
+<!-- Hook in the header of the batch audit log template. -->
+<@dynamichtml iris_linked_audit_entries_extra@>
+
+	<script type="text/javascript">
+		// Triggered by clicking a batch document link
+		// on the batch audit logs template.
+		function displayBundleDoc(docName) {
+			if (window.parent) {
+				window.parent.displayBundleDoc(docName);
+			}
+		}
+		
+		function viewBatchDualIndexResults() {
+			if (window.parent) {
+				window.parent.viewBatchDualIndexResults();
+			}
+		}
+	</script>
+	
+<@end@>
+
+<!-- Overriden from iriscore_resource. 
+		 Changes tab labels and links. -->
+<@dynamichtml doc_approval_tabs@>
+
+	<$if not thumbnailMode$>
+		<$include super.doc_approval_tabs$>
+	<$else$>
+	
+		<table width='522' cellpadding=0 cellspacing=0>
+			<tr height='25'>
+				<td width='172' align='center' class="tabOff" id='tab_image'>
+					<a href="javascript:openBatchTab('tab_image')"><span class="tab_text" id="tab_text_caption">
+						<$if thumbnailMode$>
+							Thumbnails <$if false$>(<$numDocs$>)<$endif$>
+						<$else$>
+							Image
+						<$endif$>
+					</span></a>
+				</td>
+
+				<td width='172' align='center' class="tabOff" id='tab_docs'>
+
+					<a href="javascript:openBatchTab('tab_docs')"><span class="tab_text" id="tab_docs_caption">
+						List View
+					</span></a>
+
+				</td>
+
+				<td width='172' align='center' class="tabOff" id='tab_notes'>
+					<a href="javascript:openBatchTab('tab_notes')">
+						<span class="tab_text" id="tab_notes_caption">Notes/Activity (<$numNotes$>)</span>
+					</a>
+				</td>
+
+			</tr>
+		</table>		
+		
+		<script type="text/javascript">
+			// This piecee of script is used to highlight the 
+			// currently-selected tab when the page loads.
+			
+			// Check the # of the current URL
+			if (window.location.hash) {
+				
+				var curHash = window.location.hash;
+				curHash = curHash.substring(1,curHash.length);
+				
+				var hashValues = curHash.split(",");
+				
+				var newTab = "";
+				
+				if (hashValues.length > 1) {
+					// current tab will be held in the first portion of the
+					// # string
+					newTab = "tab" + hashValues[0];
+					
+					// selected dDocName will appear after the first comma
+					// in the # string.
+					var selDoc = hashValues[1];
+				} else {
+					newTab = "tab" + curHash;
+				}
+				
+				if (newTab != "") {
+					if (newTab == "tab_image" | newTab == "tab_docs" | newTab == "tab_notes")
+						curTab = newTab;
+				}
+			}
+			
+			var tabElem = document.getElementById(curTab);
+			tabElem.className = "tabOn";
+			
+		</script>
+		
+	<$endif$>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource
+		 Displays the 3 most recent notes/activities, plus some useful links.
+		 This refers to the newer table-based audit notes.
+ -->
+<@dynamichtml doc_approval_recent_notes@>
+
+	<table id="recentnotes_region" border=0>
+
+		<$auditRef = dDocName$>
+		<$auditApp = "IRIS"$>
+		<$executeService("ECS_GET_AUDIT_ENTRIES_BY_REF")$>
+		
+		<$getViewValuesResultSet("vDepartments","","")$>
+		<$getViewValuesResultSet("vSubDepts","","")$>
+
+		<tr>
+			<td valign="top">
+
+				<!-- Link strings -->
+				<$moreNotes = 'javascript:openTab("tab_notes")'$>
+
+				<div class="subheader">
+					<span id="recentnotes_span">
+						Recent notes/activity<$if numNotes gt 3$> (<a href='<$moreNotes$>'>more..</a>) <$endif$>
+					</span>
+
+					<span id="recentnotes_links">
+						
+						<$if thumbnailMode$>
+							<$newNoteLink = "?IdcService=IRIS_NEW_NOTE&parentId=" & dDocName & "&bundleRef=" & bundleRef$>
+						<$else$>
+							<$newNoteLink = "?IdcService=IRIS_NEW_NOTE&parentId=" & dDocName & "&dDocName=" & dDocName$>
+							<$getFileUrl = HttpCgiPath & "?IdcService=GET_FILE&dID=" & dID$>
+						<$endif$>
+						
+						<$if userCanWrite$>
+						<!-- 	Open popup link used to contain: &hashString=' + window.location.hash, 
+									this caused issues with new popup window code so its been removed. -->
+						| <a href="<$HttpCgiPath & newNoteLink$>" target="_blank" onclick='openPopup("<$newNoteLink$>&viaPopUp=1",470,170);return false;'>Add new note</a>
+						<$endif$>
+						
+						<$if not thumbnailMode$>
+							| <a href='<$getFileUrl$>'>Download item</a>
+						<$endif$>
+					</span>
+				</div>
+
+			<!-- This div element acts like an iframe, containing a table of recent notes -->
+			<div id="recentnotes" name='recentnotes'>
+				<table width="100%" cellpadding=2 cellspacing=1>
+					<$num = 0$>
+
+					<$if not rsAuditEntries$>
+						<tr><td>There are no recent notes/activities for this item.</td></tr>
+					<$endif$>
+
+					<$loop rsAuditEntries$>
+						<$num = num+1$>
+
+						<$auditText = "(Unknown action)"$>
+
+						<tr class="recentnotes_row" cellspacing=2 cellpadding=3>
+							<td name="recentnotes_cell" id='recentnotes_cell' valign=top>
+								<span><$lDate$></span>
+							</td>
+
+							<td class="recentnotes_cell1" valign=top>
+								<$include iris_compute_audit_text$>
+								<$auditText$>
+							</td>
+
+							<td class="recentnotes_cell2" valign=top>
+								<$#active.lUser$>
+							</td>
+						</tr>
+
+						<$if num ge 3$>
+							<$break$>
+						<$endif$>
+
+					<$endloop$>
+
+				</table>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<@end@>
+
+<!-- Standard new item checkin panel.
+
+		 Overriden from iriscore_resource -->
+<@dynamichtml iris_new_item_panel@>
+
+	<$include orangeContainer_top$>
+
+	<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+		<b>Add new item<b>
+	</div>
+
+	<div>
+
+	<br/>
+
+	<$if not dSecurityGroup$>
+		<$dSecurityGroup = "Public"$>
+	<$endif$>
+
+	<$if not (userCanWrite)$>
+	<!--if not (userHasGroupPrivilege(dSecurityGroup,"W") or userHasGroupPrivilege(dSecurityGroup,"D") or userHasGroupPrivilege(dSecurityGroup,"A"))-->
+		<!-- 	Ensure user has read access on Public security group
+					before displaying 'new item' form -->
+
+		Sorry, you do not have sufficient access rights to add new documents.
+		<br/>
+		<br/>
+
+	<$else$>
+
+		<table width="100%" cellpadding=0 cellspacing=2>
+			<!-- Form used for content item checkin -->
+			<form name="newdocform" id="newdocform" enctype="multipart/form-data" action="<$HttpCgiPath$>" method="POST">
+				
+				<input type=hidden name="IdcService" value="CHECKIN_NEW">
+				<input type=hidden name="dDocAuthor" value="<$dUser$>">
+				<input type=hidden name="dSecurityGroup" value="Public">
+			
+				<input type=hidden name="RedirectUrl" value="<$HttpCgiPath & "?IdcService=DOC_LISTING"$>">
+
+				<$c="audit fields used to record new checkin"$>
+				<input type=hidden name="doAudit" value="1">
+				
+				<input type=hidden name="lApp" value="IRIS" />
+				<input type=hidden name="lAction" value="ADD-DOC" />
+				<input type=hidden name="lRef" value="" /> <!-- Bundle dDocName, added via js -->
+				<input type=hidden name="lTitle" value="" /> <!-- Bundle ref, added via js -->
+				<input type=hidden name="lUser" value="<$dUser$>" />
+				
+				<!-- Audit parameters are: (must be added after checkin via Java):
+						1. dDocName of new item 
+						2. title of new item 
+						-->
+				<input type=hidden name="lParam1" value="" />
+				<input type=hidden name="lParam2" value="" />
+
+				<$include iris_doctype_list$>
+
+			<$allowsFileUpload="1"$>
+			<$isEditMode="1"$>
+
+			<tr>
+				<td><span class=infoLabel>File:</span></td>
+				<td><input name="primaryFile" size="30" maxlength="250" type="file" onChange="addFileName(this.form)"></td>
+			</tr>
+
+			<tr><td><br></td></tr>
+
+			<$include iris_checkin_metadata$>
+
+			<tr><td><br></td></tr>
+
+			<tr>
+				<td colspan=2 align=center>
+					<input type=button value=Submit onClick="addNewItem(this.form)">
+				</td>
+			</tr>
+
+			</form>
+		</table>
+
+		<$endif$>
+
+	</div>
+
+	<$include orangeContainer_bottom$>
+		
+<@end@>
+
+
+<!-- Displays a single batch thumbnail, with the doc title
+		 displayed underneath. Clicking the thumbnail will load
+		 the content into the iframe below the thumnail strip. -->
+<@dynamichtml iris_thumbnail_batch@>
+  <$useThumbnails="1"$>
+
+  <$ImageWidth=Iris_thumbWidth$>
+  <$ImageHeight=Iris_thumbHeight$>
+
+  <$if strEqualsIgnoreCase(SearchResults.dDocName,#local.selDoc)$>
+  	<$selIndex = SearchResults.#row$>
+  <$endif$>
+
+	<div 	class="iris_thumb_container<$if verticalThumbs$> iris_thumb_container_vertical<$else$> iris_thumb_container_horizontal<$endif$>" 
+			id="thumb_<$dDocName$>">
+		
+		<!-- Absolutely-position icon overlays thumbnail -->
+		<$if (not xBundleDocType) or (xBundleDocType like 'Mail item')$>
+			<img src="<$HttpImagesRoot$>iris_batchdocuments/images/incoming.gif" style="left: 64px; position: absolute;" />
+		<$elseif (xBundleDocType like 'Acknowledgement')$>
+			<img src="<$HttpImagesRoot$>iris_batchdocuments/images/ack.gif" style="left: 64px; position: absolute;" />
+		<$elseif (xBundleDocType like 'Response')$>
+			<img src="<$HttpImagesRoot$>iris_batchdocuments/images/resp.gif" style="left: 64px; position: absolute;" />
+		<$elseif (xBundleDocType like 'Info request')$>
+			<img src="<$HttpImagesRoot$>iris_batchdocuments/images/info.gif" style="left: 64px; position: absolute;" />
+		<$endif$>
+
+		<$previewUrl = HttpCgiPath & "?IdcService=IRIS_BATCH_DOCS_PREVIEW"$>
+		<$previewUrl = previewUrl & "&loadContentUrl=" & URL$>
+		<$previewUrl = previewUrl & "&selDoc=" & SearchResults.dDocName$>
+		<$previewUrl = previewUrl & "&parentDocName=" & parentDocName$>
+		<$previewUrl = previewUrl & "&bundleRef=" & #active.bundleRef$>
+
+  	<a href="<$previewUrl$>" onclick="setSelThumb('<$dDocName$>');"  target="contextFrame" title="<$dDocTitle$>"><$include searchapi_result_table_content_begin_img$></a>
+
+		<div class="iris_thumb_details<$if verticalThumbs$> iris_thumb_details_vertical<$else$> iris_thumb_details_horizontal<$endif$>">
+			<$c="Cap document title at 13 characters"$>
+			<$picTitle=strConfine(dDocTitle, 13)$>
+
+			<a href="<$previewUrl$>" title="<$dDocTitle$>" onclick="setSelThumb('<$dDocName$>');" target="contextFrame" id="thumbTitle_<$SearchResults.dDocName$>" ><$picTitle$></a>
+		</div>
+		
+	</div>
+
+<@end@>
+
+<!-- Javascript functions required for filmstrip-style
+		 thumbnail browsing. Include must be placed AFTER
+		 thumbnails and scroller have been drawn -->
+<@dynamichtml iris_thumbnail_scroll_js@>
+
+<script type="text/javascript">
+
+	// Thumbnail scrolling
+	var scroller = document.getElementById("iris_scroller");
+	var scrollContainer = document.getElementById("iris_thumbset_container");
+
+	var scrollLeft = document.getElementById("scroll_left");
+	var scrollRight = document.getElementById("scroll_right");
+
+	var isScrolling=false;
+	var scrollTimer;
+	
+	// Whether vertical thumbs are being used, as opposed to horizontal
+	var verticalThumbs = <$if verticalThumbs$>true<$else$>false<$endif$>;
+
+	var infoPanel = document.getElementById("batchitem_panel");
+
+	function scrollThumbsUp(){
+		commenceScroll('up');
+	}
+
+	function scrollThumbsDown(){
+		commenceScroll('down');
+	}
+
+	function scrollThumbsLeft() {
+		commenceScroll('left');
+	}
+
+	function scrollThumbsRight() {
+		commenceScroll('right');
+	}
+
+	function commenceScroll(dir) {
+		
+		isScrolling=true;
+		var numCalls = 8;
+
+		scrollTimer=setTimeout("scrollThumbs('" + dir + "'," + numCalls + ")",2);
+
+		if (dir == 'left' || dir == 'up')
+			scrollLeft.style.border="1px inset";
+		else
+			scrollRight.style.border="1px inset";
+	}
+
+	function stopScroll() {
+		isScrolling = false;
+
+		scrollLeft.style.border="1px outset";
+		scrollRight.style.border="1px outset";
+	}
+
+	// Called via timeout events. Moves the scroll pane left/right by a given
+	// amount before calling itself again, if remainingCalls > 1
+	function scrollThumbs(dir, remainingCalls) {
+		var change;
+
+		if (dir == 'left' || dir == 'up')
+			change = <$if verticalThumbs$>-24.5<$else$>-20;<$endif$>
+		else
+			change = <$if verticalThumbs$>24.5<$else$>20;<$endif$>
+
+		<$if verticalThumbs$>
+			scroller.scrollTop = scroller.scrollTop + change;
+		<$else$>
+			scroller.scrollLeft = scroller.scrollLeft + change;
+		<$endif$>
+
+		if (remainingCalls > 1) {
+			scrollTimer=setTimeout("scrollThumbs('" + dir + "'," + (--remainingCalls) + ")",2);
+		} else {
+			setScrollButtons();
+
+			if (isScrolling) {
+				var numCalls = 8;
+				scrollTimer=setTimeout("scrollThumbs('" + dir + "'," + numCalls + ")",2);
+			}
+		}
+	}
+
+	// Called on page load. Ensures that the thumbnail display
+	// will load up so that the selected item is visible on the
+	// scroll display.
+	function initScrollButtons() {
+
+		<$if selIndex and verticalThumbs$>
+			var selPos = <$selIndex$> * 98;
+			
+			// TODO: ensure scroller can never be scrolled too far on
+			// initialization, e.g. if the last thumb is selected.
+			scroller.scrollTop = selPos;
+		<$elseif selIndex$>
+			var selPos = <$selIndex$> * 80;
+			scroller.scrollLeft = selPos;
+		<$endif$>
+		
+		setScrollButtons();
+	}
+
+	// Checks the scroll position and updates the state of
+	// the scroll buttons accordingly.
+	function setScrollButtons() {
+		if (verticalThumbs) {
+		
+			if (scroller.scrollTop == 0) {
+				$(scrollLeft).removeClass("scroll_left").addClass("scroll_left_inactive");
+			} else {
+				$(scrollLeft).addClass("scroll_left").removeClass("scroll_left_inactive");
+			}
+			
+			if ((scroller.scrollTop + scroller.offsetHeight) >= (scroller.scrollHeight)) {
+				$(scrollRight).removeClass("scroll_right").addClass("scroll_right_inactive");
+			} else {
+				$(scrollRight).addClass("scroll_right").removeClass("scroll_right_inactive");
+			}
+			
+		} else {
+		
+			if (scroller.scrollLeft == 0) {
+				$(scrollLeft).removeClass("scroll_left").addClass("scroll_left_inactive");
+			} else {
+				$(scrollLeft).addClass("scroll_left").removeClass("scroll_left_inactive");
+			}
+			
+			if ((scroller.scrollLeft + scroller.offsetWidth) >= (scroller.scrollWidth)) {
+				$(scrollRight).removeClass("scroll_right").addClass("scroll_right_inactive");
+			} else {
+				$(scrollRight).addClass("scroll_right").removeClass("scroll_right_inactive");
+			}
+			
+		}
+ 
+		//alert("scrollLeft= " + scroller.scrollLeft + ", offsetWidth= " +
+		// scroller.offsetWidth + ", scrollWidth = " + scroller.scrollWidth);
+	}
+
+	// Used to adjust the size of the scoll pane, so it uses space
+	// in an optimal way to prevent scrolling.
+	//
+	// This function is triggered by onload and onresize events.
+	function setScrollSize() {
+		
+		if (verticalThumbs) {
+			var winHeight = document.body.clientHeight;
+
+			// Subtract 60 (scroll buttons plus padding)
+			var scrollHeight = winHeight - 60;
+	
+			// Now ensure width is a multiple of 90, so that
+			// there are no partial thumbnail displays
+	
+			var numVisibleThumbs = Math.floor(scrollHeight / 98);
+			
+			// TM: commented out the lines below to ensure the scroller
+			// occupies the entire vertical space.
+			//scrollHeight = numVisibleThumbs * 98;
+			
+			//if (scrollHeight < scrollContainer.clientHeight)
+				scroller.style.height = scrollHeight + "px";
+			//else 
+			//	scroller.style.height = scrollContainer.clientHeight + "px";
+				
+			//alert('win height:' + winHeight + '\nscrollHeight:' + scrollHeight + '\nheight set to:' + scroller.style.height);
+		} else {
+			var winWidth = document.body.clientWidth;
+	
+			// Subtract 250 (info panel) and 60 (scroll buttons)
+			var scrollWidth = winWidth - 250 - 60;
+	
+			// Now ensure width is a multiple of 80, so that
+			// there are no partial thumbnail displays
+	
+			var numVisibleThumbs = Math.floor(scrollWidth / 80);
+			scrollWidth = numVisibleThumbs * 80;
+	
+			if (scrollWidth < scrollContainer.clientWidth)
+				scroller.style.width = scrollWidth + "px";
+			else
+				scroller.style.width = scrollContainer.clientWidth + "px";
+		}
+	}
+	
+	// Adds high-light class to thumbnail related to given dDocName
+	function highlightDocThumbnail(docName){
+		
+		//Clear previously selected thumb
+		$('.iris_thumb_select').removeClass("iris_thumb_select");
+
+		$('#thumb_' + docName).addClass("iris_thumb_select");
+	}
+</script>
+
+<@end@>
+
+<@dynamichtml FILE_batchitem_CustomIncludeScript@>
+
+	<div style="float: left; margin: 2px">
+
+		<$fileUrl = HttpCgiPath & "?IdcService=GET_FILE&dID=" & dID$>
+		<a href="<$fileUrl$>&Rendition=Web"><$dDocTitle$></a>
+		<br>
+		[<a href="<$fileUrl$>&Rendition=Primary"><$dExtension$></a>] | <$(WebFileSize / 1000)$>kb
+
+	</div>
+
+<@end@>
+
+<@dynamichtml BUNDLEDOCTYPE_CustomIncludeScript@>
+
+	<$if xBundleDocType$>
+		<$xBundleDocType$>
+	<$else$>
+		(none)
+	<$endif$>
+
+	<$if xDepartment$>
+		<br/>
+		<div style="color: 343434;margin-top: 5px">
+			<i><$getViewDisplayValue("vDepartments",xDepartment)$> <$if xSubDept$>> <$getViewDisplayValue("vSubDepts",xSubDept)$><$endif$></i>
+		</div>
+	<$endif$>
+
+<@end@>
+
+<!-- ------------------
+Displays a form allowing submission of new batch documents,
+and another that allows the currently selected set of items
+to be tagged with classification data.
+----------------------- -->
+<@dynamichtml batch_SandF_add_doc_header@>
+
+	<div style="width: 600px; overflow-x: hidden">
+		<div style='width: 290px;float:left;margin:5px;display:inline;'>
+			<$include iris_add_batch_doc_panel$>
+		</div>
+
+		<div style='width: 290px;float:left;margin:5px 5px 5px 0px;display:inline'>
+			<$include iris_classify_batch_docs_panel$>
+		</div>
+	</div>
+
+	<div style="clear:both"></div>
+	<$include batchdocs_display_processing_count$>
+
+<@end@>
+
+<!-- Panel used for adding new batch documents.  Displayed
+     on IRIS_BATCH_DOCS_LISTING template -->
+<@dynamichtml iris_add_batch_doc_panel@>
+
+	<$include orangeContainer_top$>
+	<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px;">
+
+		<table width="90%" cellpadding=0 cellspacing=0>
+			<tr>
+				<td>
+				<b>Add new document<b>
+				</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div style="padding:2px;">			
+		<table width="100%" cellpadding=0 cellspacing=2 style="height:120px">
+			
+			<form name="newdocform" enctype="multipart/form-data" action="<$HttpCgiPath$>" method="POST" style="height: 0px; margin: 0px;">
+				<input type=hidden name="IdcService" value="CHECKIN_NEW">
+				<input type=hidden name="dDocAuthor" value="<$UserName$>">
+				<input type=hidden name="<$#env.Iris_batchIdField$>" value="<$#local.bundleRef$>">
+				<input type=hidden name="dSecurityGroup" value="Public"> <!-- <$parentSecurityGroup$> -->
+				<input type=hidden name="xDocumentType" value="<$#local.parentDocumentType$>">
+				<$c="currently, all bundle child docs will be 'Document'"$>
+				<input type=hidden name="dDocType" value="Document">
+				<input type=hidden name="dDocAccount" value="<$#local.parentDocAccount$>">
+
+				<$c="audit fields used to record new checkin"$>
+				<input type=hidden name="doAudit" value="1">
+
+				<input type=hidden name="lApp" value="IRIS" />
+				<input type=hidden name="lAction" value="ADD-DOC" />
+				<input type=hidden name="lRef" value="<$parentDocName$>" />
+				<input type=hidden name="lTitle" value="<$bundleRef$>" />
+				<input type=hidden name="lUser" value="<$dUser$>" />
+
+				<!-- Audit parameters are (must be added after checkin via Java):
+						1. dDocName of new item
+						2. title of new item
+						-->
+				<input type=hidden name="lParam1" value="" />
+				<input type=hidden name="lParam2" value="" />
+
+				<input type=hidden name="RedirectUrl" value="<$HttpCgiPath & "?IdcService=IRIS_BATCH_DOCS_LISTING" & "&parentDocName=" & parentDocName & "&bundleRef=" & #local.bundleRef$>&isAssignee=<$#local.isAssignee$>">
+
+				<$allowsFileUpload="1"$>
+				<$isEditMode="1"$>
+				<$c="get doc info from parent doc to set on new doc"$>
+				<$dDocName=#active.parentDocName$>
+				<$executeService("DOC_INFO_LATESTRELEASE")$>
+				<$if DOC_INFO$>
+					<$parentDocAccount=DOC_INFO.dDocAccount$>
+					<$parentSecurityGroup=DOC_INFO.dSecurityGroup$>
+					<$parentDocumentType=DOC_INFO.xDocumentType$>
+				<$endif$>
+				<$dDocName=''$>
+					
+				<tr>
+					<td><span class=infoLabel>File:</span></td>
+					<td><input name="primaryFile" maxlength="250" type="file" onChange="addFileName(this.form)" ></td>
+				</tr>
+
+				<tr>
+					<td><span class=infoLabel>Title:</span></td>
+					<td><input type=text name=dDocTitle style="width: 234px"></td>
+				</tr>
+				<tr>
+					<td><span class=infoLabel>Type:</span></td>
+					<td>
+						<$if isAssignee$>
+							<select name=xBundleDocType style="width: 234px">
+								<option value="Mail item">Mail item</option>
+								<option value="Info request">Info request</option>
+								<option value="Acknowledgement">Acknowledgement</option>
+								<option value="Response">Response</option>
+							</select>
+						<$else$>
+							<b>Document</b>
+						<$endif$>
+
+					</td>
+				</tr>
+
+				<tr><td><br></td></tr>
+
+				<tr>
+					<td colspan=2 align=right style="padding-right:4px">
+						<input type=button value=Submit onClick="addNewItem(this.form)">
+					</td>
+				</tr>
+
+			</form>
+
+		</table>
+	</div>
+
+	<$include orangeContainer_bottom$>
+		
+<@end@>
+
+<@dynamichtml iris_classify_batch_docs_panel@>
+
+	<$include orangeContainer_top$>
+	<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px;">
+
+		<table width="90%" cellpadding=0 cellspacing=0>
+			<tr>
+				<td>
+					<b>File selected items<b>
+				</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div style="padding:2px;">
+
+		<form id="classification_form" style="margin:0px">
+			<input type="hidden" name="IdcService" value="IRIS_CLASSIFY_ITEMS" />
+			<input type="hidden" name="batchFields" value="xDepartment,xSubDept" />
+			<input type="hidden" name="batchDocNames" value="" />
+
+			<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_LISTING&parentDocName=<$parentDocName$>&bundleRef=<$bundleRef$><$if isAssignee$>&isAssignee=1<$endif$>&batchUpdated=1" />
+
+			<input type=hidden name="doAudit" value="1" />
+			<input type=hidden name="lApp" value="IRIS" />
+			<input type=hidden name="lAction" value="CLASSIFY-DOCS" />
+			<input type=hidden name="lRef" value="<$#active.parentDocName$>" />
+			<input type=hidden name="lTitle" value="<$#active.bundleRef$>" />
+			<input type=hidden name="lUser" value="<$dUser$>" />
+			
+			<!-- Completed via javascript -->
+			<input type=hidden name="lMessage" value="" />
+
+			<!-- Audit parameters are:
+					1. List of dDocNames with added classification info
+					2. Top-level classification applied
+					3. Sub-level classification applied
+					-->
+			<input type=hidden name="lParam1" value="" />
+			<input type=hidden name="lParam2" value="" />
+			<input type=hidden name="lParam3" value="" />
+
+			<table width="100%" cellpadding=0 cellspacing=2 style="height:120px">
+				<tr>
+					<td colspan=2>
+						<span id="numSelected">0</span> items selected.
+					<div style="height:10px"></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class='infoLabel'>Department:</span></td>
+					<td>
+						<select name="xDepartment" id="xDepartment" style="width: 190px" disabled="disabled">
+							<option value=""></option>
+
+							<$getViewValuesResultSet("vDepartments","","")$>
+							<$loop SchemaData$>
+								<option value="<$SchemaData.DepartmentID$>"><$SchemaData.DepartmentName$></option>
+							<$endloop$>
+
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><span class='infoLabel'>Sub dept:</span></td>
+					<td>
+						<select name="xSubDept" id="xSubDept" style="width: 190px" disabled="disabled">
+							<option value=""></option>
+
+							<$getViewValuesResultSet("vSubDepts","","")$>
+							<$loop SchemaData$>
+								<option value="<$SchemaData.SubDeptID$>"><$SchemaData.SubDeptName$></option>
+							<$endloop$>
+
+						</select>
+					</td>
+				</tr>
+
+				<tr><td><br></td></tr>
+				<tr>
+					<td colspan=2 align=right style="padding-right:4px">
+						<input type=button value=Submit id="classification_submit" disabled="disabled" onClick="classifySelected(this.form)">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+	<$include orangeContainer_bottom$>
+<@end@>
+
+<@dynamichtml iris_display_assignee@>
+
+	<$if xApprover$>
+		<$if strIndexOf(xApprover,"a:") == 0$>
+			<$thisApprover = strSubstring(xApprover,2)$>
+		<$else$>
+			<$thisApprover = getValueForSpecifiedUser(thisApprover,"dFullName")$>
+		<$endif$>
+	<$endif$>
+	
+	<$thisApprover$>
+	
+<@end@>
+
+<!-- Used on the bundle routing panel to display
+		 a list of assignees. -->
+<@dynamichtml iris_batch_routing_assign_field@>
+
+	<$if (not rsUsers) and (not rsAliases)$>
+		<$executeService("IRIS_GET_USERS_AND_ALIASES")$>
+	<$endif$>
+
+	<select name="newApprover" id="newApprover" class="input_option_field" disabled="disabled" style="margin-top:2px;width:98%" >
+		<option value=""></option>
+
+		<$if rsAliases$>
+			<optgroup label="Groups">
+				<$loop rsAliases$>
+					<option value="a:<$dAlias$>" <$if xApprover like ("a:" & dAlias)$>style="color:#CCCCCC;"<$endif$> ><$dAlias$></option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+
+		<$if rsUsers$>
+			<optgroup label="Users">
+				<$loop rsUsers$>
+					<option value="<$rsUsers.dName$>" <$if xApprover like (rsUsers.dName)$>style="color:#CCCCCC;"<$endif$> ><$rsUsers.dFullName$></option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+
+	</select>
+
+<@end@>
+
+<!-- Used on the mail notification panel to display a list
+		 of recipients --> 
+<@dynamichtml iris_batch_notification_recipient_field@>
+	<$if (not rsUsers) and (not rsAliases)$>
+		<$executeService("IRIS_GET_USERS_AND_ALIASES")$>
+	<$endif$>
+
+	<select name="selRecipient" class="input_option_field" style="width:95%" >
+		<option value=""></option>
+
+		<$if rsAliases$>
+			<optgroup label="Groups">
+				<$loop rsAliases$>
+					<option value="a:<$dAlias$>"><$dAlias$></option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+
+		<$if rsUsers$>
+			<optgroup label="Users">
+				<$loop rsUsers$>
+					<option value="<$rsUsers.dName$>"><$rsUsers.dFullName$></option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+	</select>
+	
+<@end@>
+
+<!-- Overidden from iriscore_resource. Adds an
+		 extra validation check to ensure the user
+		 specified a bundle ref, if the 'MailItem'
+		 doctype is selected -->
+<@dynamichtml iris_checkin_js@>
+
+	<script type="text/javascript">
+
+	// Called before submitting the Add new item form
+	function addNewItem(form)
+	{
+		var fileVal = form.primaryFile.value;
+		var titleVal = form.dDocTitle.value;
+
+		var accountVal = form.dDocAccount.value;
+
+		if (fileVal == '') {
+			alert("Please select a file for this item.");
+			return false;
+		} else if (titleVal == '') {
+			alert("Please enter a title for this item.");
+			return false;
+		} else if (accountVal == '') {
+
+			<$if #active.requireAccount$>
+				alert("You must specify an account for this item.");
+				return false;
+			<$endif$>
+		}
+
+		var docType = form.dDocType.value;
+
+		if (docType == 'MailItem') {
+			var bundleRef = form.xBundleRef.value;
+	
+			if (bundleRef == '') {
+				alert("You must specify a bundle reference for this item.");
+				return false;
+			}
+		}
+
+		form.submit();
+	}
+
+	<$include add_filename_script$>
+
+</script>
+
+<@end@>
+
+<!-- Displays a list of items still being processed and
+     not yet available in standard search listings. -->
+<@dynamichtml batchdocs_display_processing_count@>
+
+	<$bundleRef = #active.bundleRef$>
+
+	<$executeService("IRIS_BATCH_GET_WIP_ITEMS")$>
+
+	<$if rsWIPBatchItems$>
+		<div class="iris_user_note" style="margin: 5px">
+			<$getValue("rsWIPBatchItems","#numRows")$> item(s) in process queue:
+			
+			<ul style="list-style-type:square; margin: 5px 0px 15px 0px; padding-left:30px;" >
+				<$loop rsWIPBatchItems$>
+					<li><$rsWIPBatchItems.dDocTitle$></li>
+				<$endloop$>
+			</ul>
+			
+			<a href="javascript:window.location.reload(true)">Click here</a> to refresh the list.
+		</div>
+	<$endif$>
+
+<@end@>
+
+<!-- Used to display the controls required to perform operations on
+		 a selected group of batch items -->
+<@dynamichtml batch_item_controls@>
+
+	<div style="margin-top: 5px">
+		<input type="button" class="searchbtn_small" value="Sel. all" onClick="checkAll()">
+		<input type=button class="searchbtn_small" value="Clear sel." onClick="clearChecks()">
+	</div>
+
+<@end@>
+
+<@dynamichtml REF_CustomIncludeScript@>
+	<$c="overriding from iriscore_resource.htm"$>
+	<$c="added include to display number of attached items in the bundle"$>
+	<$c="added lock notification text"$>
+	
+	<$c="For displaying bundle ref/dDocName on Item Listing page."$>
+
+	<$thisBundleRef=""$>
+
+	<$if dDocType like #env.Iris_batchDocType$>
+		
+		<$thisBundleRef = getValue("#active",#env.Iris_batchIdField)$>
+
+		<$if strEquals(#local.noLink,"y")$>
+			<$thisBundleRef$>
+		<$else$>
+
+			<$if isActionListing$>
+				<$c="Open bundle link in new window when displaying action listing"$>
+				<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=<$dDocName$>&bundleRef=<$thisBundleRef$>" target="_blank"><$thisBundleRef$></a>
+							
+			<$else$>
+
+				<$if xPaymentDate$>
+					<$if not (xStatus like 'Completed') and (parseDate(xPaymentDate) < parseDate(dateCurrent()))$>
+			  		<!-- This bundle is incomplete and past its due date! -->
+			  		<$bundleIsOverdue=1$>
+			  	<$else$>
+			  		<$bundleIsOverdue=''$>
+			  	<$endif$>
+			  <$else$>
+			 		<$bundleIsOverdue=''$>
+				<$endif$>
+
+				<a <$if bundleIsOverdue$>style="color: #FF0000;"<$endif$> id="<$SearchResults.dDocName$>_BundleRef_Col" onClick="openBundle('<$dDocName$>','<$thisBundleRef$>',event)"><$thisBundleRef$></a>
+				
+			<$endif$>
+			
+			<span name="<$thisBundleRef$>_item_count" class="bundle-item-count"></span>
+			
+			<$if #env.Iris_enableBatchLocking and rsItemLocks$>
+				<$if rsFindRowPrimary("rsItemLocks",#active.dDocName)$>
+					<p class="item_locked">locked by <$rsItemLocks.LOCKUSER$></p>
+				<$endif$>
+				
+				<$exec rsFirst("rsItemLocks")$>
+			<$endif$>
+				
+		<$endif$>
+
+	<$else$>
+		<$include super.REF_CustomIncludeScript$>
+	<$endif$>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource -->
+<@dynamichtml doc_approval_count_totals@>
+	
+	<$if not thumbnailMode$>
+		<$include super.doc_approval_count_totals$>
+	<$else$>
+	
+		<$numNotes = 0$>
+		<$numDocs = 0$>
+	
+		<$c="used as flag to place arrow for extending/contracting list"$>
+		<$checkLSR = 0$>
+	
+		<$newResults = ""$>
+	
+		<$origDocName = dDocName$>
+	
+		<$hasRecentNotes = ''$>
+	
+		<!-- find number of bundle docs -->
+		<$if false$>
+			<$executeService("IRIS_BATCH_GET_ITEM_COUNT")$>
+			<$if batchItemCount$>
+				<$numDocs = batchItemCount$>
+			<$endif$>
+		<$endif$>
+	
+		<!-- find number of associated audit entries -->
+		<$executeService("IRIS_GET_AUDIT_ENTRY_COUNT")$>
+		<$numNotes = getValue("rsEntryCount", "AUDITENTRYCOUNT")$>
+	
+		<$if numNotes > 0$>
+			<$hasRecentNotes = 1$>
+		<$else$>
+			<$showRecentNotes = ''$>
+		<$endif$>
+	
+		<!-- Restore parent dDocName -->
+		<$dDocName = origDocName$>
+	
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml makeSearchResultsUrl@>
+
+	<$if strEqualsIgnoreCase(dDocType,"bundle")$>
+		onClick="openBundle('<$SearchResults.dDocName$>','<$getValue("SearchResults",#env.Iris_batchIdField)$>',event);"
+	<$elseif strEqualsIgnoreCase(dDocType,"mailitem")$>
+		onClick="openDoc('<$SearchResults.dDocName$>',event);"
+	<$else$>
+		<$include super.makeSearchResultsUrl$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml displaySearchFields@>
+	<$c="overridding from ECS_SearchAndFilter"$>
+	<$c="This was the shortest include to override.  The final closing </tr> tag for the new row is located after this include"$>
+	<$c="Which can be located within include createSearchForm in ECS_SearchAndFilter"$>
+	
+	
+	<$include super.displaySearchFields$>
+	
+	</tr>
+	
+	<$c="New functionality to list children within search list"$>
+	<$include iris_batchdocuments_showchilddocs$>
+
+<@end@>
+
+<@dynamichtml iris_batchdocuments_showchilddocs@>
+
+	<$if #local.checkLSR and (checkLSR > 0)$>
+		<tr>
+		<td class="togglelist" colspan="6">
+			<table class="supportdoclist" cellpadding=0 cellspacing=0 border=0 width='100%'>
+			 <tbody>
+		<$loop savedLinkedSearchResults$>
+			<tr><td width="80px">&nbsp;</td><td width="30px">&nbsp;<$CURRENT_ROW + 1$>.</td><td colspan="3">&nbsp;&nbsp;<$savedLinkedSearchResults.dDocTitle$></td>
+		<$endloop$>
+			 </tbody>
+			</table>
+		</td>
+		</tr>
+	<$endif$>
+
+<@end@>
+
+<!-- Retrieves and displays batch doc thumbnails. -->
+<@dynamichtml iris_batchdocuments_thumbcontainer@>
+
+	<$Iris_thumbWidth=60$>
+	<$Iris_thumbHeight=60$>
+	
+	<$useBundleRef="Y"$>
+	
+	<$if #env.Iris_useBatchItemSearchResults$>
+	
+		<$ResultCount=100$>
+
+		<$SortField = "dDocName"$>
+		<$SortOrder = "ASC"$>
+	
+		<$include iris_build_batch_item_query$>
+		<$QueryText		= batchItemQuery$>
+		
+		<$executeService("GET_SEARCH_RESULTS")$>
+	<$else$>
+		<$releasedBundleItemsOnly=1$>
+		<$executeService("IRIS_BATCH_GET_ITEMS")$>
+		
+		<$exec rsRename("rsBatchItems","SearchResults")$>
+	<$endif$>
+	
+	<div style="<$if verticalThumbs$>float: left; width:100% <$else$>margin: 5px 0px; <$endif$>">
+
+		<$if SearchResults$>
+			<!-- Determine currently-selected item from bundle. -->
+			<$if not selDoc$>
+				<$c="If not document was selected, select the first one by default."$>
+				<$exec rsFirst("SearchResults")$>
+				<$selDoc = SearchResults.dDocName$>
+				<$selIndex = 0$>
+				<!--loadContentUrl = SearchResults.URL-->
+			<$endif$>
+			
+			<$if #env.Iris_enableSelectedBatchItemPanel$>
+				<$loop SearchResults$>
+					<$if selDoc like dDocName$>
+						<$selIndex = SearchResults.#row$>
+						
+						<$selDocName = selDoc$>
+						<$selDocTitle = dDocTitle$>
+						<$selRevLabel = dRevLabel$>
+						<$selSecurityGroup = dSecurityGroup$>
+						<$selDocAccount = #active.dDocAccount$>
+						<$selID = dID$>
+						<$selExtension = dExtension$>
+						<$selURL = URL$>
+						<$loadContentUrl = URL$>
+					<$endif$>
+				<$endloop$>
+				
+				<$include iris_sel_batch_item_panel$>
+			<$endif$>
+
+		<$endif$>
+			
+		<div class="iris_scroll<$if enableThumbScroll$> iris_scroll_enabled<$else$> iris_scroll_disabled<$endif$><$if verticalThumbs$> iris_scroll_vertical<$else$> iris_scroll_horizontal<$endif$> scroll_left_inactive" id="scroll_left" onmousedown="<$if verticalThumbs$>scrollThumbsUp()<$else$>scrollThumbsLeft()<$endif$>" onmouseout="stopScroll()" onmouseup="stopScroll()" >
+		</div>
+
+		<div class="iris_thumbset_scroller<$if enableThumbScroll$> iris_thumbset_scroller_enabled<$else$> iris_thumbset_scroller_disabled<$endif$><$if verticalThumbs$> iris_thumbset_scroller_vertical<$else$> iris_thumbset_scroller_horizontal<$endif$>" id="iris_scroller">
+			<div class="iris_thumbset_container<$if verticalThumbs$> iris_thumbset_container_vertical<$else$> iris_thumbset_container_horizontal<$endif$>" id="iris_thumbset_container" style="<$include iris_thumbset_container_extra_style$>" >
+				<$include iris_batchdocuments_paginationsimple$>
+			</div>
+		</div>
+
+		<div class="iris_scroll<$if enableThumbScroll$> iris_scroll_enabled<$else$> iris_scroll_disabled<$endif$><$if verticalThumbs$> iris_scroll_vertical<$else$> iris_scroll_horizontal<$endif$> scroll_right_inactive" id="scroll_right" onmousedown="<$if verticalThumbs$>scrollThumbsDown()<$else$>scrollThumbsRight()<$endif$>" onmouseout="stopScroll()" onmouseup="stopScroll()" >
+		</div>
+			
+		<script type="text/javascript">
+			 // Code used for collecting all batch items into an array.	
+			  var previewUrlPrefix = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_PREVIEW" +
+				 "&parentDocName=<$#local.parentDocName$>&bundleRef=<$#local.bundleRef$>";
+						
+				var selIndex = <$if selIndex$><$selIndex$><$else$>0<$endif$>;
+						
+				// build array of batch items. this is used to expose the items
+				// to various JavaScript functions, such as prev/next item.
+				var count = 0;
+				
+				<$loop SearchResults$>
+					batchItems[count] = new batchItem('<$dDocName$>','<$URL$>');count++;
+				<$endloop$>
+							   
+			  function batchItem(docName, contentUrl) {
+				this.docName = docName;
+				this.contentUrl = contentUrl;
+			  }
+		
+			// Auto-loading function, used to select the currently-selected
+			// item thumbnail and load its associated content in the preview
+			// frame.
+			$(document).ready( function() {
+				<$if selDoc$>
+					selectThumbByDocName('<$selDoc$>');
+				<$else$>
+					// If the IDOC selDoc parameter is null, this indicates that no
+					// items were found in the batch. Load the preview frame without
+					// any parameters set.
+					var contentFrame = window.parent.document.getElementById("contextFrame");
+					contentFrame.src = previewUrlPrefix;
+				<$endif$>
+				
+				// Update the Thumbnails tab caption
+				window.parent.setThumbnailDisplayCount(batchItems.length);
+			});
+		
+		</script>
+			
+	</div>
+	
+<@end@>
+
+<!-- Used in the header of the content preview iframe. -->
+<@dynamichtml iris_batchdocuments_preview_pre@>
+						
+	<$if loadContentUrl$>
+	
+		<script type="text/javascript">
+			
+			// Page-load event handler, used to refresh doc info panel and batch
+			// indexing label, with data relating to currently-selected thumbnail.
+			$(document).ready(function() {
+				window.parent.getDocPanel('<$selDoc$>');
+				window.parent.frames['thumbsFrame'].updateBatchIndexLabelByDocName('<$selDoc$>');
+			});
+		
+		</script>
+	
+	<$elseif selDoc$>
+		
+		<div style="margin: 5px">
+		
+			<div class="error">
+				<p>Error</p>
+				<br/>
+				Could not resolve link to item <$selDoc$>.
+			</div>
+			
+		</div>
+		
+	<$else$>
+		<!-- 	No items returned by GET_SEARCH_RESULTS. First check for any
+					work-in-progress documents, if that also turns up empty then
+					display an error message to the user. -->
+		
+		<div style="margin: 5px">
+		
+			<$bundleRef = #active.bundleRef$>
+			<$executeService("IRIS_BATCH_GET_WIP_ITEMS")$>
+			
+			<$if rsWIPBatchItems$>
+				<!-- Displays a list of items still being processed and
+						not yet available in standard search listings. -->
+				<div class="iris_user_note" style="margin: 5px">
+				
+					The following <$getValue("rsWIPBatchItems","#numRows")$> item(s) are still being processed:
+					
+					<ul style="list-style-type:square; margin: 5px 0px 15px 0px; padding-left:30px;" >
+						<$loop rsWIPBatchItems$>
+							<li><$rsWIPBatchItems.dDocTitle$></li>
+						<$endloop$>
+					</ul>
+					
+					<a href="javascript:window.parent.location.reload(true);">Click here</a> to refresh.
+				</div>
+			<$else$>
+				<div class="error">
+					<p>Error</p>
+					<br/>
+					There doesn't appear to be any documents in this bundle. They may have been moved or deleted.
+				</div>
+			<$endif$>
+			
+		</div>
+	<$endif$>
+	
+<@end@>
+
+<@dynamichtml iris_thumbset_container_extra_style@>
+	<$if verticalThumbs$>
+		height:<$SearchResults.#numRows * 98$>px;
+	<$else$>
+		width:<$SearchResults.#numRows * 80$>px;
+	<$endif$>
+<@end@>
+
+<@dynamichtml iris_sel_batch_item_panel@>
+
+<$if #env.Iris_enableSelectedBatchItemPanel$>
+
+	<div class="iris_batchitem_info" id="batchitem_panel" >
+		<$include orangeContainer_top$>
+
+			<div class="iris_batchitem_info_header" >
+
+					<div style="float:left">
+						Sel. item: <span style="font-weight:bold;color:#DC143C;"><$selDocName$></span>
+					</div>
+
+					<$if selDocName$>
+						<div style="float:right;">
+							<$actionMenu_CustomInclude = "DOCACTIONS_menu"$>
+							<$menu_style_prefix="iris"$>
+							<$menu_justify="top window"$>
+							<$include action_menu$>
+						</div>
+					<$endif$>
+
+					<div style="clear:both"></div>
+
+			</div>
+
+			<div class="iris_batchitem_info_body" >
+
+				<label for="dDocName">
+					Quick rename:
+				</label>
+				<input type="text" name="dDocTitle" id="dDocTitle" value="<$selDocTitle$>" class="item_name" />
+				<input type="button" value="Save" id="saveButton" onclick="updateItemName();" <$if not selDocTitle$>disabled="disabled"<$endif$> />
+
+			</div>
+
+
+		<$include orangeContainer_bottom$>
+	</div>
+
+<$endif$>
+	
+<@end@>
+
+<!-- Piece of JavaScript used for updating the currently-selected
+     thumbnail dDocTitle (via AJAX request) -->
+<@dynamichtml iris_ajax_update_docinfo_js@>
+
+<script type="text/javascript">
+
+	var thumbTitle = document.getElementById("thumbTitle_<$selDoc$>");
+
+	var docTitle = document.getElementById("dDocTitle");
+	var saveButton = document.getElementById("saveButton");
+
+	var newTitle = '';
+
+	function updateItemName() {
+
+		if (docTitle.value.length > 90) {
+
+			alert("The item name cannot exceed 90 characters. Please choose a shorter name.");
+
+		} else if (docTitle.value.length > 0) {
+
+			newTitle = trim(docTitle.value);
+			docTitle.value = newTitle;
+
+			var queryText =  "&dDocTitle=" + newTitle;
+			queryText 		+= "&dDocName=<$selDoc$>";
+			queryText 		+= "&dID=<$selID$>";
+			queryText			+= "&dRevLabel=<$selRevLabel$>";
+			queryText			+= "&dSecurityGroup=<$selSecurityGroup$>";
+
+			if ('<$#local.selDocAccount$>' != '') {
+				queryText			+= "&dDocAccount=<$selDocAccount$>";
+			}
+
+			queryText			+= "&IsJava=1";
+
+			docTitle.disabled = true;
+			saveButton.disabled = true;
+
+			sendReq(queryText);
+
+		} else {
+			alert("The item name cannot be empty. Please enter a valid item name.");
+		}
+	}
+
+	function trim(str) {
+		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	}
+
+	function createRequestObject() {
+    var ro;
+    var browser = navigator.appName;
+    if(browser == "Microsoft Internet Explorer"){
+        ro = new ActiveXObject("Microsoft.XMLHTTP");
+    }else{
+        ro = new XMLHttpRequest();
+    }
+    return ro;
+	}
+
+	var http = createRequestObject();
+
+	function sendReq(queryText) {
+    http.open('get', 'idcplg?IdcService=UPDATE_DOCINFO' + queryText);
+    http.onreadystatechange = handleResponse;
+    http.send(null);
+	}
+
+	function handleResponse() {
+    if(http.readyState == 4){
+      var response = http.responseText;
+
+      if (newTitle.length > 13) {
+      	newTitle = newTitle.substring(0,10) + "...";
+    	}
+
+      thumbTitle.innerHTML = newTitle;
+
+      docTitle.disabled = false;
+			saveButton.disabled = false;
+
+    } else {
+    }
+	}
+
+</script>
+
+<@end@>
+
+<@dynamichtml iris_checkout_and_open@>
+
+	<$comment="Start includes for COAO"$>
+
+	<$this_webdavbaseurl=getValue("#active","webdavbaseurl") $>
+	<$this_webdavbaseurlstartdelimiter=getValue("#active","webdavbaseurlstartdelimiter") $>
+	<$this_webdavbaseurlenddelimiter=getValue("#active","webdavbaseurlenddelimiter") $>
+
+	<$include checkoutandopen_calc_this_cgiurl$>
+	<$include checkoutandopen_javascript$>
+	<$include checkoutandopen_applet$>
+	<$checkoutandopen_one_time_script_included='true'$>
+
+	<$comment="End includes for COAO"$>
+
+<@end@>
+
+<!-- Displays all batch document thumbnails -->
+<@dynamichtml iris_batchdocuments_paginationsimple@>
+		
+			
+<$if SearchResults$>
+
+	<$selIndex = 0$>
+
+	<$loop SearchResults$>
+		<$c="display thumbnail for each item"$>
+		<$include iris_thumbnail_batch$>
+	<$endloop$>
+
+<$endif$>
+
+<@end@>
+
+<@dynamichtml action_doc_listing_js@>
+	<script type="text/javascript">
+
+		// Show/hide documents with 'Released' status
+		function toggleShowCompleted(chk)
+		{
+			document.forms['SEARCHFILTER'].submit();
+		}
+
+	</script>
+
+<@end@>
+
+<@dynamichtml doc_approval_preview@>
+
+<$if not bundleRef$>
+	<$include super.doc_approval_preview$>
+<$else$>
+
+	<table id="previewtable" width="100%" height="85%" cellpadding="0" cellspacing="0" valign="top">
+		
+			<$if isTrue(#env.Iris_enableThumbnailScroll)$>
+				<tr>
+				<td <$if not isTrue(#env.Iris_enableVerticalThumbnails)$>height="100px"<$else$>width="1px"<$endif$> id="thumbsTd">
+					<iframe bgcolor='white' 
+									style="border: none; overflow-x: hidden;" 
+									name='thumbsFrame' id="thumbsFrame" height="100%" width=100%" frameborder="0"></iframe>
+					
+					<script type="text/javascript">
+						try{
+							loadThumbsFrame();
+						}catch(err){}
+						
+						function loadThumbsFrame(){
+							var iframe = document.getElementById("thumbsFrame");
+							var thumbSrc;
+						
+							if (curTab == 'tab_image') {							
+								var thumbSrc = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_THUMBS&parentDocName=<$dDocName$>&bundleRef=<$#active.bundleRef$>";
+								var isiPad = navigator.userAgent.match(/iPad/i) != null;
+								if (!isiPad){
+									thumbSrc = thumbSrc + "isiPad=1";
+								}
+								if (selDoc)
+									thumbSrc += "&selDoc=" + selDoc;
+								
+								iframe.src = thumbSrc;
+								
+								try{
+									document.getElementById('thumbsTd').style.width="100px";
+								}catch(err){}
+							}					
+						}
+					</script>
+				</td>
+				<$if not isTrue(#env.Iris_enableVerticalThumbnails)$>
+				</tr>
+				<tr>
+				<$endif$>
+			<$endif$>
+
+			<td id="preview_region" name="colored_region" align="center" valign="top" style="border:1px solid white;">
+
+				<iframe bgcolor='white' 
+								style="border: none;overflow-x: hidden;" 
+								name='contextFrame' id="contextFrame" height="100%" width=100%" frameborder="0"></iframe>
+				
+				<script type="text/javascript">
+
+					// This piece of script is used to set the source URL of the above iframe
+					// when the page is first loaded. This allows the URL to be changed to
+					// show a certain tab, based on the # portion of the parent URL.
+				
+					var iframe = document.getElementById("contextFrame");
+					var thumbSrc;
+				
+					if (curTab == 'tab_image') {							
+						var thumbSrc = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_PREVIEW&parentDocName=<$dDocName$>&bundleRef=<$#active.bundleRef$>";
+						
+						if (selDoc)
+							thumbSrc += "&selDoc=" + selDoc;
+							
+						// TM: Preview iframe src is set by the thumbnail strip.
+						thumbSrc = "";
+
+					} else if (curTab == 'tab_docs') {
+						var thumbSrc = "<$HttpCgiPath$>?IdcService=IRIS_BATCH_DOCS_LISTING&parentDocName=<$dDocName$>" +
+						 "&bundleRef=<$bundleRef$><$if allowWorkflowActions$>&allowWorkflowActions=1<$endif$>";
+					} else {
+						var thumbSrc = 
+						 "<$HttpCgiPath & '?IdcService=IRIS_LINKED_AUDIT_ENTRIES&dDocName=' & dDocName$>&ts=" + 
+						  new Date().getTime();
+					}
+					
+					if (thumbSrc != "")
+						iframe.src = thumbSrc;	
+					
+				</script>
+
+			</td>
+		</tr>
+	</table>
+
+<$endif$>
+	
+<@end@>
+
+<@dynamichtml batch_doc_actions_listing_pre@>
+  	<$calendarSelectFields="SCANDATE"$>
+	  <$include epoch_calendar_header$>
+
+	  <$overrideResultsLink_DEFAULT="<$HttpCgiPath & '?IdcService=DOC_APPROVAL&dDocName=' & dDocName$>"$>
+
+	  <$suppressSortLinks = "CHECKBOX,ACTIONS"$>
+
+		<$nodeSearchQuery = "(dDocType <matches> `Bundle`)"$>
+		<$nodeFilterFieldWidth="1,3,15,15,25,10"$>
+		<$nodeFilterFieldNames="CHECKBOX,BUNDLEREF,SCANDATE,MAILTYPE,SENDER,IRIS_STATUS"$>
+
+		<$if not tp$>
+			<$tp="bundle"$>
+		<$endif$>
+
+	  <$CHECKBOX_CustomIncludeScript="BATCHDOC_ACTIONS_RADIO_CustomIncludeScript"$>
+	  <$SCANDATE_CustomIncludeScript="SCANDATE_CustomIncludeScript"$>
+
+	  <$isActionListing=1$>
+	  <$REF_CustomIncludeScript="REF_CustomIncludeScript"$>
+	  <$BUNDLEREF_CustomIncludeScript="REF_CustomIncludeScript"$>
+	  <$IRIS_STATUS_CustomIncludeScript="IRIS_STATUS_CustomIncludeScript"$>
+	  <$TOTALAMOUNT_CustomIncludeScript="TOTALAMOUNT_CustomIncludeScript"$>
+
+		<$hideInfoLink="N"$>
+	  <$displaySearchButton="N"$>
+
+		<$displayPagingOptions="N"$>
+		<$displayPaginator="Y"$>
+		<$SF_CustomPaginator="iris_sf_paginator"$>
+
+	  <$c="removing below from page"$>
+	  <$inlineHeaderInclude = "iris_doc_listing_inline_header"$>
+	  <$customIncludeResultsHeader = "group_action_controlsX"$>
+
+	  <!-- Search customizations -->
+	  <$PARAMETERSLIST="tp,mDN,thisBundle,itemName,mdID,mRL,mSG,mDA,bDN,showCompleted"$>
+	  <$PARAMETERSLIST="tp,mDN,showCompleted"$>
+	  <$QueryFieldList="REF,BUNDLEREF,QUICKDATE,SCANDATE,DUEDATE,AUTHOR,IRIS_STATUS,APPROVER,TITLE,VENDORNAME,CURRENCY,DOCTYPE,DATE_ADV,MAILTYPE"$>
+
+	  <$DISPLAYTHUMBNAILS=''$>
+	  <$THUMBNAILWIDTH=30$>
+	  <$THUMBNAILHEIGHT=30$>
+	  <$ssResultCount=5$>
+	  <$SF_DISPLAYADVSEARCHLINK=N$>
+				
+		<$paginationParamString= "&mDN=" & #active.mDN & "&showCompleted=" & #active.showCompleted$>
+
+	  <$pn_link_prefix= HttpCgiPath & "?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=IRIS_BATCH_ACTIONS" & paginationParamString & "&SR="$>
+
+	  <$nodeSortField="dInDate"$>
+  	<$nodeSortOrder="DESC"$>
+
+	  <!-- Verity search -->
+
+	  <$if #active.amt$>
+	  	<$trueAmt = amt * 100$>
+	  	<$nodeSearchQuery = nodeSearchQuery & " <and> ((xTotalAmount <= " & trueAmt & ") <and> (xTotalAmount >= " & trueAmt & ")) "$>
+	  <$endif$>
+
+	  <$if not #active.showCompleted$>
+	  	<$nodeSearchQuery = nodeSearchQuery & " <and> <not> (xStatus <matches> `Completed`) "$>
+	  <$endif$>
+
+	  <$customIncludeFieldScript = "actions_SandF_formextras"$>
+
+<@end@>
+
+<@dynamichtml actions_SandF_formextras@>
+	<input type="hidden" name="Action" value="GetTemplatePage" />
+	<input type="hidden" name="Page" value="IRIS_BATCH_ACTIONS" />
+	<input type="hidden" name="noLink" value="" />
+
+	<input type="hidden" name="mDN" value="<$mDN$>" />
+
+<@end@>
+
+<!-- select button column used for selecting single items for moving documents too -->
+<@dynamichtml BATCHDOC_ACTIONS_RADIO_CustomIncludeScript@>
+
+	<input type=hidden name="selCheckBox" id="<$dDocName$>" >
+	<$if #active.docmoved or strEqualsIgnoreCase(#active.thisBundle,getValue("SearchResults",#env.Iris_batchIdField))$>
+		<input DISABLED type=button value=Select onClick="batchdocsMoveItem('move_actions','<$dDocName$>','<$getValue("SearchResults",#env.Iris_batchIdField)$>','<$dDocName$>')">
+	<$else$>
+		<input type=button value=Select style="cursor: pointer;" onClick="batchdocsMoveItem('move_actions','<$dDocName$>','<$getValue("SearchResults",#env.Iris_batchIdField)$>','<$dDocName$>')">
+	<$endif$>
+
+<@end@>
+
+<!-- Panels displayed at the top of the IRIS_BATCH_ACTIONS template -->
+<@dynamichtml batch_actions_panel_header@>
+
+		<script type="text/javascript">
+
+			// Called before submitting the UPDATE form, used for 'moving' a
+			// document from one bundle to another by updating its bundle ref
+			// field.
+			function batchdocsMoveItem(formname,item,bundleRef,bundleDocName){
+				frm = document.getElementsByName(formname)[0];
+
+				frm.xBundleRef.value = bundleRef;
+
+				frm.elements['lMessage'].value += bundleRef;
+
+				//TM: Append info to audit parameters
+				frm.elements['lParam4'].value = bundleRef;
+
+				if (bundleDocName != null && bundleDocName.length > 0)
+					frm.elements['lParam5'].value = bundleDocName;
+
+				//Call back the parent window to update the displayed total no. of docs
+				//window.parent.adjustNumDocs(1);
+
+				frm.submit();
+			}
+
+			function closeActionsWindow(){
+				window.opener.parent.location.href = window.opener.parent.location.href;
+				self.close();
+			}
+
+		</script>
+
+	<div style='width: 320px;float:left;margin:10px'>
+
+		<$include orangeContainer_top$>
+
+		<!-- Title for the user profile: displays the dDocName for this item -->
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px;">
+
+			<table width="100%" cellpadding=0 cellspacing=0>
+				<tr>
+					<td>
+					<b>Move document to another bundle.<b>
+					</td>
+				</tr>
+			</table>
+
+		</div>
+
+		<div style="padding:2px;">
+			<$if not #active.docmoved$><br />Current bundle - <div style="color:#DC143C; display:inline;"><b><$#active.thisBundle$></b></div><$endif$>
+
+			<table width="100%" height="78px" cellpadding=0 cellspacing=0>
+				<tr>
+				<$if #active.docmoved$>
+					<td>
+						<b><div style="color:#DC143C; display:inline;">Your document has been moved.</div>
+						<br />Please close the window with the button below.</b>
+						</br>
+						</br>
+						<input type=button value="Close window" style="cursor: pointer;" onClick="closeActionsWindow();">
+					</td>
+				<$else$>
+					<td>
+						Moving item - <div style="color:#DC143C; display:inline;"><$#active.itemName$></div>
+						<br />
+						<br />
+						Press the 'Select' button next to the bundle you wish to move the document into.
+					</td>
+				<$endif$>
+				</tr>
+			</table>
+		</div>
+
+		<$include orangeContainer_bottom$>
+
+	</div>
+
+	<$c="SL: Panel for moving a doc into a new bundle.  Or if an existing bundle ref is entered, move into there."$>
+	<div style='width: 300px;float:left;margin:10px;'>
+
+	<$include orangeContainer_top$>
+
+		<!-- Title for the user profile: displays the dDocName for this item -->
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px;">
+
+			<table width="100%" cellpadding=0 cellspacing=0>
+				<tr>
+					<td>
+					<b>Quick action<b>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div style="padding:2px;">
+
+			<br/>
+			Move into a new or existing bundle.
+			<br/>
+
+			<form name="move_actions" action="<$HttpCgiPath$>" method="POST">
+				<input type=hidden name="IdcService" value="IRIS_UPDATE_DOCINFO">
+				<input type=hidden name="dDocName" value="<$#active.mDN$>">
+				<input type=hidden name="dID" value="<$#active.mdID$>">
+				<input type=hidden name="dRevLabel" value="<$#active.mRL$>">
+				<input type=hidden name="dSecurityGroup" value="<$#active.mSG$>">
+				<input type=hidden name="dDocAccount" value="<$#active.mDA$>">
+
+				<input type=hidden name="doAudit" value="1">
+
+				<input type=hidden name="lApp" value="IRIS" />
+				<input type=hidden name="lAction" value="MOVE-TO" />
+				<input type=hidden name="lRef" value="<$#active.bDN$>" />
+				<input type=hidden name="lTitle" value="<$#active.thisBundle$>" />
+				<input type=hidden name="lUser" value="<$dUser$>" />
+				<!-- Completed via javascript -->
+				<input type=hidden name="lMessage" value="Document '<$itemName$>' moved to bundle " />
+
+				<!-- Audit parameters are:
+						1. Document dDocName
+						2. Document title
+						3. Originating bundle ref.
+
+						added via js:
+						4. destination bundle ref.
+						5. destination bundle dDocName
+						-->
+				<input type=hidden name="lParam1" value="<$#active.mDN$>" />
+				<input type=hidden name="lParam2" value="<$#active.itemName$>" />
+				<input type=hidden name="lParam3" value="<$#active.thisBundle$>" />
+				<input type=hidden name="lParam4" value="" />
+				<input type=hidden name="lParam5" value="" />
+
+				<$c="SL: refresh back to itself"$>
+				<input type=hidden name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=IRIS_BATCH_ACTION_CONFIRM&tp=bundle&docmoved=y">
+
+				<table width="100%" height="65px" cellpadding=0 cellspacing=2>
+					<tr>
+						<td>
+
+							<$c="xBundleRef to be a hidden field set via JS.  This prevents the name briefly appearing in the field when selected from the list"$>
+							<input type="text" name="xBundleRef_display" /> Mail Bundle
+							<input type="hidden" name="xBundleRef" />
+
+						</td>
+					</tr>
+
+					<tr>
+						<td>
+							<$if #active.docmoved$>
+								<input DISABLED type=button value=Submit onClick="batchdocsMoveItem('move_actions','temp',this.form.xBundleRef_display.value,'');">
+							<$else$>
+								<input type=button value=Submit onClick="batchdocsMoveItem('move_actions','temp',this.form.xBundleRef_display.value,'');">
+							<$endif$>
+						</td>
+					</tr>
+
+				</table>
+
+			</form>
+		</div>
+
+		<$include orangeContainer_bottom$>
+
+	</div>
+
+	<div style="clear:both;"></div>
+
+	<br/>
+
+	<$include iris_display_doc_processing_count$>
+<@end@>
+
+<!-- Used on the IRIS_BATCH_ACTIONS template. -->
+<@dynamichtml batch_actions_forms@>
+<form action="<$HttpCgiPath$>" name="move_actions_old" method="POST" style="display: none">
+		<$c="SL: UPDATE_DOCINFO service to change the bundle ref to the bundle which it should be moved to"$>
+		<input type=hidden name="IdcService" value="UPDATE_DOCINFO">
+
+		<!-- These 3 form fields are filled using javascript calls -->
+		<input type=hidden id="selected" name="sel">
+		<input type=hidden name="action">
+		<$c="This field is changed in the javascript function to the new bundle ref"$>
+		<input type=hidden name="<$#env.Iris_batchIdField$>" value="">
+
+		<input type=hidden name="dDocName" value="<$#active.mDN$>">
+		<input type=hidden name="dID" value="<$#active.mdID$>">
+		<input type=hidden name="dRevLabel" value="<$#active.mRL$>">
+		<input type=hidden name="dSecurityGroup" value="<$#active.mSG$>">
+		<input type=hidden name="dDocAccount" value="<$#active.mDA$>">
+
+		<$c="SL: refresh back to itself"$>
+		<input type=hidden name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=IRIS_BATCH_ACTIONS&tp=bundle&docmoved=y">
+</form>
+<@end@>
+
+<!-- Overrides original include in iriscore_resource.
+		 
+		 Adds extra function for opening a bundle/batch item. -->
+<@dynamichtml doc_listing_js@>
+
+	<$include super.doc_listing_js$>
+
+	<script type="text/javascript">
+
+	  // Opens a bundle in the approval template
+		function openBundle(dDocName,bundleRef,event) {
+
+			if (dDocName != null && dDocName.length > 0)
+				window.location.assign('<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=' + dDocName + '&bundleRef=' + bundleRef);
+			else
+				window.location.assign('<$HttpCgiPath$>?IdcService=DOC_APPROVAL&bundleRef=' + bundleRef);
+
+			event.cancelBubble=true;
+		}
+
+	</script>
+
+<@end@>
+
+<!-- Contains javascript functions used in the batch_doc_listing 
+		and batch_doc_preview pages -->
+<@dynamichtml iris_batch_docs_js@>
+
+<script type="text/javascript">
+	
+	// stores an array of the displayed batch items - created inside
+	// the iris_batchdocuments_thumbcontainer include.
+	var batchItems = new Array();
+	
+	var showNewDoc = false;
+	
+	var firstLoad = true;
+	
+	// Returns the number of batch items
+	function getBatchItemCount() {
+		return batchItems.length;
+	}
+	
+	// Show or hide the div containing the new document form
+	function toggleNewDoc(img)
+	{
+		panel = document.getElementById('docbox');
+
+		if (showNewDoc) {
+			showNewDoc = false;
+			img.src = '<$HttpWebRoot$>images/stellent/tree_top_only_collection_closed.gif'
+			panel.style.display = 'none';
+
+		} else {
+			showNewDoc = true;
+			img.src = '<$HttpWebRoot$>images/stellent/tree_top_only_collection_open.gif'
+			panel.style.display = 'block';
+		}
+	}
+	
+	// Updates a given thumbnail caption. If the supplied
+	// caption parameter is blank, the caption will display as
+	// 'Unclassified'.
+	function updateThumbCaption(docName, caption) {
+		
+		var captionElem = $("#thumbTitle_" + docName + ":first");
+		
+		if (caption == '') {
+			$(captionElem).html("Unclassified");
+		} else {
+			$(captionElem).html(caption);
+		}
+	}
+	
+	// Retrieves the currently-selected thumb dDocName.
+	function getSelThumbDocName() {
+		if (batchItems) {
+			var selThumb = $(".iris_thumb_select").eq(0);
+			
+			if (selThumb) {
+				var selThumbId = ($(selThumb).attr("id"));
+				return selThumbId.substring(6);
+			}
+		}
+		
+		return false;
+	}
+	
+	// Used after clicking a batch item thumbnail.
+	function setSelThumb(docName, saved) {
+		
+		if (!saved) {
+			window.parent.autosaveCurrentItem( function() {
+				setSelThumb(docName, true);
+			});
+			return false;
+		}
+		
+		// update selected index value
+		for (var i=0; i<batchItems.length; i++) {
+			if (batchItems[i].docName == docName) {
+				selIndex = i;
+			}
+		}
+		
+		if (!firstLoad)
+			setSelDocInURL(docName);
+		else
+			firstLoad = false;
+		
+		highlightDocThumbnail(docName);
+		
+		// load the thumbnail content
+		//var iframe = window.parent.document.getElementById("contextFrame");
+		//iframe.src = $("#thumbTitle_" + docName + ":first").attr("href");
+
+		return false;
+	}
+	
+	function selNextThumb() {
+		selectThumbByIndex(selIndex+1);
+	}
+	
+	function selPrevThumb() {
+		selectThumbByIndex(selIndex-1);
+	}
+	
+	// Adjusts the # portion of the current URL to reflect the
+	// currently-selected tab and document.
+	function setSelDocInURL(docName)
+	{	
+		window.parent.location.hash = "_image," + docName;
+	}
+  
+  // Selects a batch item with the given dDocName.
+	// Performs the same actions as clicking a thumbnail.
+  function selectThumbByDocName(docName) {
+  	
+    for (var i=0; i<batchItems.length; i++) {
+		if (batchItems[i].docName == docName) {
+			selectThumbByIndex(i);
+		}
+	}
+  }
+   
+	// Selects a batch item with the given index.
+	// Performs the same actions as clicking a thumbnail.
+	function selectThumbByIndex(index) {
+		setSelThumb(batchItems[index].docName);
+		
+		var itemUrl =  previewUrlPrefix + "&selDoc=" + batchItems[index].docName;
+		itemUrl			+= "&loadContentUrl=" + batchItems[index].contentUrl;
+		
+		// Grab a handle to the content preview iframe and update its URL
+		var contentFrame = window.parent.document.getElementById("contextFrame");
+		contentFrame.src = (itemUrl);
+	}
+	
+	// Updates the batch index label (and associated prev/next buttons), which
+	// is displayed above the doc info panel.
+	function updateBatchIndexLabelByDocName(docName) {
+	
+		for (var i=0; i<batchItems.length; i++) {
+			if (batchItems[i].docName == docName) {
+				window.parent.updateBatchIndexLabel(i+1, getBatchItemCount());
+				return;
+			}
+		}
+	}
+
+	// Called after clicking the Submit Document button. This function
+	// checks for presence of data in the two input fields.
+	function addNewItem(form)
+	{
+
+		fileText = form.primaryFile.value;
+		titleText = form.dDocTitle.value;
+
+		if (fileText == '') {
+			alert('You must specify the file you wish to submit. Click the Browse button to select one.');
+		}
+		else {
+
+			submitform=true;
+
+			if (titleText == '')
+			{
+				submitform=false;
+				alert('You must specify a title for your document.');
+			}
+
+			if (submitform == true) {
+				try {
+					// Call back the parent window to update the displayed total no. of docs
+					//window.parent.batchAdjustNumDocs(1);
+				} catch (err) {}
+
+				// Submit the form.
+				form.submit();
+			}
+		}
+	}
+
+	<$include add_filename_script$>
+
+	// Used for deleting search result entries
+	function delDoc(docID,docName,docTitle)
+	{
+		var c = confirm("Are you sure you wish to delete the document '" + docTitle + "'?");
+
+		if (!c)
+			return false;
+
+		var delForm = document.forms['deldoc'];
+		delForm.elements['sel'].value = docName;
+
+		// set audit values
+		delForm.elements['lMessage'].value = "Document '" + docTitle + "' deleted from bundle";
+		delForm.elements['lParam1'].value = docName;
+		delForm.elements['lParam2'].value = docTitle;
+
+		try {
+			window.parent.batchAdjustNumDocs(-1);
+		} catch (err) {}
+
+		delForm.elements['RedirectUrl'].value += "&deleted_dDocName="+docName;
+
+		delForm.submit();
+
+	}
+
+</script>
+
+<@end@>
+
+<!-- Overriding from irisCore to add extra functionality. -->
+<@dynamichtml doc_approval_js@>
+
+	<$include super.doc_approval_js$>
+
+	<script type="text/javascript">
+
+		// Adjusts the thumbnail count displayed on the Thumbnails tab. Pass in the delta
+		// here, i.e. 1 or -1.
+		function batchAdjustNumDocs(num) {
+				numDocs = numDocs + num;
+				$("#tab_text_caption").html("Thumbnails (" + numDocs + ")");
+		}
+		
+		// Sets the Thumbnails tab count to a given number/string. Passing in a blank string will
+		// remove the count from the label altogether.
+		function setThumbnailDisplayCount(num) {
+			if (num == "") {
+				$("#tab_text_caption").html("Thumbnails");
+			} else {
+				$("#tab_text_caption").html("Thumbnails (" + num + ")");
+			}
+		}
+		
+		// Opens the 'Add new note' popup. The note will be specific to the current
+		// bundle by default. 
+		// An attempt will be made to resolve the currently-selected batch item, if 
+		// applicable. If resolved, this is also passed into the New Note popup.
+		function addBundleNote() {
+			var newNoteUrl = "?IdcService=IRIS_NEW_NOTE" +
+			 "&parentId=" + approvalDocName + "&bundleRef=" + bundleRef + "&viaPopUp=1";
+			
+			if (window.frames.thumbsFrame) {
+				var selDocName = window.frames.thumbsFrame.getSelThumbDocName();
+				newNoteUrl += "&selDocName=" + selDocName;
+			}
+			
+			openPopup(newNoteUrl,470,170);
+		}
+
+	</script>
+
+<@end@>
+
+<!-- Popup action menu used for each row in the Linked Notes view -->
+<@dynamichtml BATCHDOCACTIONS_CustomIncludeScript@>
+	
+	<$if not itemDeleted$>
+		<$actionMenu_CustomInclude = "BATCHDOCACTIONS_menu"$>
+		<$menu_style_prefix="iris"$>
+		<center><$include action_menu$></center>
+	<$endif$>
+
+<@end@>
+
+<!-- Batch document actions menu. Includes check-out and open option. -->
+<@dynamichtml BATCHDOCACTIONS_menu@>
+
+	<$if not selDocName$>
+		<$selDocName = dDocName$>
+		<$selID = dID$>
+		<$selDocTitle = dDocTitle$>
+		<$selExtension = dExtension$>
+	<$endif$>
+
+		<tr>
+			<$paramString= "&tp=bundle&mDN=" & selDocName$>
+			<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')">
+				<a onclick="window.open('<$HttpCgiPath$>?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=IRIS_BATCH_ACTIONS<$paramString$>', 'Actions','location=0,toolbar=1,scrollbars=1,menubar=0,resizable=1,width=705,height=630')" href="javascript:void(0)">
+					Move
+				</a>
+			</td>
+	
+		</tr>
+
+	<$if userCanDelete$>
+		<tr>
+	  	<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')">
+	  		<a href="javascript:delDoc(<$selID$>,'<$selDocName$>','<$selDocTitle$>');">Delete</a>
+			</td>
+		</tr>
+	<$endif$>
+
+	<tr>
+  	<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')">
+  		<$fileUrl = HttpCgiPath & "?IdcService=GET_FILE&dID=" & selID$>
+  		<a href="<$fileUrl$>">Download</a>
+		</td>
+	</tr>
+
+	<$if (strIndexOf(#env.Iris_COAO_extensions,selExtension) >= 0)$>
+		<$include iris_checkout_and_open$>
+
+		<tr>
+  		<td class="<$menu_style_prefix$>PopupLink" nowrap onMouseOver="glowPopupRow(this,'<$menu_style_prefix$>PopupLink_over','<$menu_style_prefix$>PopupLink')"	onMouseOut="fadePopupRow(this,'<$menu_style_prefix$>PopupLink')">
+				<a href='javascript:postCheckoutAndOpen("<$selDocName$>","<$url(selDocTitle)$>","<$selExtension$>")'>Edit document</a>
+			</td>
+		</tr>
+
+	<$endif$>
+
+	<$selDocName = ""$>
+
+<@end@>
+
+<!-- Contains a HTML form used for deleting linked documents. The
+		 delDoc() javascript function is used to submit the form -->
+<@dynamichtml batch_delete_form@>
+
+	<form action="<$HttpCgiPath$>" method="POST" name="deldoc">
+		<$include add_idc_token_to_form$>
+	
+		<input type=hidden name=IdcService value="IRIS_EXPIRE_DOC" />
+		<input type=hidden name=sel />
+
+		<$if IdcService like 'IRIS_BATCH_DOCS_LISTING'$>
+			<input type=hidden name=RedirectUrl value="<$HttpCgiPath & '?IdcService=IRIS_BATCH_DOCS_LISTING&parentDocName=' & parentDocName & '&bundleRef=' & #active.bundleRef$>&isAssignee=<$#local.isAssignee$>">
+		<$else$>
+			<input type=hidden name=RedirectUrl value="<$HttpCgiPath & '?IdcService=IRIS_BATCH_DOCS_PREVIEW&parentDocName=' & parentDocName & '&bundleRef=' & bundleRef$>">
+		<$endif$>
+
+		<input type=hidden name="doAudit" value="1" />
+
+		<input type=hidden name="lApp" value="IRIS" />
+		<input type=hidden name="lAction" value="DEL-DOC" />
+		<input type=hidden name="lRef" value="<$#local.parentDocName$>" />
+		<input type=hidden name="lTitle" value="<$#local.bundleRef$>" />
+		<input type=hidden name="lUser" value="<$dUser$>" />
+		<!-- Completed via javascript -->
+		<input type=hidden name="lMessage" value="" />
+
+		<!-- Audit parameters are:
+				1. dDocName of item to be deleted
+				2. dDocTitle of item to be deleted
+				-->
+		<input type=hidden name="lParam1" value="" />
+		<input type=hidden name="lParam2" value="" />
+
+	</form>
+
+<@end@>
+
+<!-- Contains all javascript functions required to perform
+		 claassification operations on documents. -->
+<@dynamichtml group_classification_js@>
+
+<script>
+
+	// Performs batch update on selected items
+	function classifySelected(frm) {
+
+		var selItems = getSelectedRows();
+		var numSelected = getNumSelectedRows();
+
+		var conf = confirm("Are you sure you wish to update the " + numSelected + " selected items?");
+
+		if (conf) {
+			frm.elements['batchDocNames'].value = selItems;
+			frm.elements['lParam1'].value = selItems;
+			
+			var deptID = frm.elements['xDepartment'].value;
+			var subDeptID = frm.elements['xSubDept'].value;
+			
+			frm.elements['lParam2'].value = deptID;
+			frm.elements['lParam3'].value = subDeptID;
+			frm.elements['lMessage'].value = numSelected + " document(s) classified";
+			
+			frm.submit();
+		}
+	}
+
+	function getSelectedRows() {
+		// get array of checkboxes
+		boxes = document.getElementsByName("selCheckBox");
+
+		var selected='';
+
+		for (i=0; i<boxes.length; i++)
+		{
+			if (boxes[i].checked) {
+				// Collect id's for all ticked checkboxes
+				selected = selected + boxes[i].id + ','
+			}
+		}
+
+		if (selected != '') {
+			selected = selected.substr(0,selected.length-1);
+		}
+
+		return selected;
+	}
+
+	function getNumSelectedRows() {
+		boxes = document.getElementsByName("selCheckBox");
+
+		num = 0;
+
+		for (i=0; i<boxes.length; i++)
+		{
+			if (boxes[i].checked) {
+				num = num + 1;
+			}
+		}
+
+		return num;
+	}
+
+		// Finds the number of selected rows. If there is
+		// 1 or more, enable the action buttons, otherwise
+		// disable them
+		function checkActionButton()
+		{
+			var submitButton = document.getElementById("classification_submit");
+			var dept = document.getElementById("xDepartment");
+			var subdept = document.getElementById("xSubDept");
+
+			var numSel = getNumSelectedRows();
+
+			if (numSel > 0) {
+				submitButton.disabled = false;
+				dept.disabled = false;
+				subdept.disabled = false;
+
+			} else {
+				submitButton.disabled = true;
+				dept.disabled = true;
+				subdept.disabled = true;
+			}
+
+			var selCounter = document.getElementById("numSelected");
+			selCounter.innerHTML = numSel;
+
+		}
+
+		function getCheckBoxFromRow(row)
+		{
+			suffixBegin = row.id.indexOf('_row');
+			rowid = row.id.substr(0,suffixBegin);
+
+			chkbox = document.getElementById(rowid);
+
+			return chkbox;
+		}
+
+		// Invoked through mouseover event on a result row
+		function setRowHighlight(row)
+		{
+			row.className = "resultrow_sel";
+		}
+
+		// Invoked through mouseout event on a result row
+		function remRowHighlight(row)
+		{
+			row.className = "resultrow_linked";
+		}
+
+		// Invoked through clicking on a result row
+		function toggleRow(row,setTicks)
+		{
+
+			//clearChecks();
+			chkbox = getCheckBoxFromRow(row);
+
+			if (chkbox.checked) {
+				remRowHighlight(row);
+				if (setTicks) chkbox.checked = false;
+			} else {
+				setRowHighlight(row);
+				if (setTicks) chkbox.checked = true;
+			}
+
+			checkActionButton();
+		}
+
+		// Clicking on a checkbox
+		function clickCheck(chkbox) {
+			//chkbox.checked = !chkbox.checked;
+			row = document.getElementById(chkbox.id + "_row");
+
+			if (chkbox.checked == true) {
+				setRowHighlight(row);
+			} else {
+				remRowHighlight(row);
+			}
+
+			checkActionButton();
+		}
+
+		// Clear all selected rows
+		function clearChecks() {
+			var inputs = document.getElementsByName('selCheckBox');
+
+			for (var k=0; k<inputs.length; k++) {
+
+				try {
+						if (inputs[k].checked) {
+							row = document.getElementById(inputs[k].id + "_row");
+							toggleRow(row,true);
+						}
+				} catch (err) {} // catch block req. to catch dodgy input elements
+			}
+		}
+
+		// checks all checkboxes for search results
+		function checkAll() {
+			var inputs = document.getElementsByName('selCheckBox');
+
+			for (var k=0; k<inputs.length; k++) {
+
+				try {
+						if (!inputs[k].checked) {
+							row = document.getElementById(inputs[k].id + "_row");
+							toggleRow(row,true);
+						}
+				} catch (err) {} // catch block req. to catch dodgy input elements
+			}
+		}
+
+</script>
+
+<@end@>
+
+<@dynamichtml group_actions_js@>
+<$c="SL:overriding from IrisCore to edit openSelected()"$>
+<$c="SL:needed to addextra id attribute to a tag which holds the bundleRef number"$>
+
+<$if not (#local.tp like 'Bundle')$>
+	<$include super.group_actions_js$>
+<$else$>
+
+	<script>
+	
+		function execGroupAction(act)
+		{
+			if (act=='open') {
+				openSelected();
+			}
+		}
+	
+		// Captures all selected records and places their IDs
+		// on the URL. The DOC_APPROVAL service is then called
+		function openSelected() {
+	
+			var selected=getSelectedRows();
+	
+			var selArray = new Array();
+			selArray = selected.split(',');
+			var FirstBundleRef = document.getElementById(selArray[0] + "_BundleRef_Col").innerHTML;
+	
+			if (selected != '') {
+	
+					selform = document.forms['group_actions_form'];
+					selform.elements['selected'].value = selected;
+					selform.elements['bundleRef'].value = FirstBundleRef;
+					//selform.elements['action'].value = 'view';
+	
+					selform.submit();
+			}
+		}
+	
+		function getSelectedRows() {
+			// get array of checkboxes
+			boxes = document.getElementsByName("selCheckBox");
+	
+			var selected='';
+	
+			for (i=0; i<boxes.length; i++)
+			{
+				if (boxes[i].checked) {
+					// Collect id's for all ticked checkboxes
+					selected = selected + boxes[i].id + ','
+				}
+			}
+	
+			if (selected != '') {
+				selected = selected.substr(0,selected.length-1);
+			}
+	
+			return selected;
+		}
+	
+		function getNumSelectedRows() {
+			boxes = document.getElementsByName("selCheckBox");
+	
+			num = 0;
+	
+			for (i=0; i<boxes.length; i++)
+			{
+				if (boxes[i].checked) {
+					num = num + 1;
+				}
+			}
+	
+			return num;
+		}
+	
+	</script>
+	
+<$endif$>
+
+<@end@>
+
+<@dynamichtml group_actions_form@>
+
+<$if not (tp like 'Bundle')$>
+	<$include super.group_actions_form$>
+<$else$>
+	<form action="<$HttpCgiPath$>" name="group_actions_form" method="GET" style="display: none">
+
+		<input type=hidden name="IdcService" value="DOC_APPROVAL">
+		<!-- These two form fields are filled using javascript calls -->
+		<input type=hidden name="bundleRef" value="">
+		<input type=hidden id="selected" name="sel">
+		<input type=hidden name="action">
+
+	</form>
+<$endif$>
+
+<@end@>
+
+<!-- Computes a value for 'auditText', which displays the
+		 current audit action as a user-friendly string.
+
+		 Requires auditCode and auditParams to be present in
+		 the binder. 
+		 
+		 Overriden from iriscore_resource to include extra
+		 batch audit actions.
+		 -->
+<@dynamichtml iris_compute_audit_text@>
+	<$auditText=''$>
+	
+	<$if lAction like 'USER-NOTE'$>
+
+		<$auditText = "<p class='iris_user_note'><b>User note:</b> " & lMessage & "</p>"$>
+
+	<$elseif lAction like 'ASSIGN'$>
+		<$isWFAction=1$>
+		<$thisAssignee = lParam1$>
+
+		<$auditText = "Assigned to "$>
+
+		<$if strIndexOf(thisAssignee,"a:") == 0$>
+			<$assignee = strSubstring(thisAssignee,2)$>
+			<$auditText = auditText & "group " & assignee$>
+		<$else$>
+			<$assignee = getValueForSpecifiedUser(thisAssignee,"dFullName")$>
+			<$auditText = auditText & assignee$>
+		<$endif$>
+
+	<$elseif lAction like 'FIELD-UPDATE'$>
+		<$fieldName = lParam1$>
+		<$newValue = lParam2$>
+
+		<$if not newValue$>
+			<$auditText = fieldName & " removed"$>
+		<$else$>
+			<$auditText = fieldName & " set to " & newValue$>
+		<$endif$>
+
+	<$elseif lAction like 'SEND-BACK'$>
+		<$isWFAction=1$>
+		<$thisAssignee = lParam1$>
+
+		<$auditText = "Sent back to "$>
+
+		<$if thisAssignee$>
+			<$if strIndexOf(thisAssignee,"a:") == 0$>
+				<$assignee = strSubstring(thisAssignee,2)$>
+				<$auditText = auditText & "group " & assignee$>
+			<$else$>
+				<$assignee = getValueForSpecifiedUser(thisAssignee,"dFullName")$>
+				<$auditText = auditText & assignee$>
+			<$endif$>
+		<$else$>
+			<$auditText = auditText & "mail room"$>
+		<$endif$>
+	
+	<$elseif lAction like 'DI-DOC-FAIL'$>
+		<$auditText = lMessage$>
+		
+	<$elseif lAction like 'DI-DOC-PASS|DI-DOC-FORCE-PASS|DI-BUNDLE-DOC-FORCE-PASS|DI-BUNDLE-PASS|DI-BUNDLE-RESET'$>
+		<$auditText = lMessage$>
+	
+	<$elseif lAction like 'DI-BUNDLE-COUNT-FAIL|DI-BUNDLE-FAIL'$>
+		
+		<$auditText = lMessage & ". <a href='#' onclick='viewBatchDualIndexResults();'>Click for info</a>" $>	
+		
+	<$elseif lAction like 'GEN-EMAIL'$>
+		<$isWFAction=1$>
+
+		<$mailRecipient = lParam1$>
+		<$mailAction = lParam2$>
+
+		<$if strIndexOf(mailRecipient,"a:") == 0$>
+			<$mailRecipient = strSubstring(mailRecipient,2)$>
+		<$else$>
+			<$mailRecipient = getValueForSpecifiedUser(mailRecipient,"dFullName")$>
+		<$endif$>
+
+		<$auditText = strUpper(mailAction) & " email dispatched to " & mailRecipient$>
+
+	<$elseif lAction like 'ADD-DOC'$>
+		<$if not lParam1$>
+			<$auditText = "Document added"$>
+		<$else$>
+		
+			<$itemDocName = lParam1$>
+			<$itemTitle = lParam2$>
+			
+			<$docNameQuoted = '"' & itemDocName & '"'$>
+			<$jsUrl = "<a href='javascript:displayBundleDoc(" & docNameQuoted & ");'>"$>
+			
+			<$auditText = "Document '" & jsUrl & #local.itemTitle & "</a>' added to bundle"$>
+		
+		<$endif$>
+
+	<$elseif lAction like 'GEN-DOC'$>
+		<$genDocName = lParam1$>
+		<$genDocType = lParam2$>
+		<$genDocTitle = lParam3$>
+		
+		<$docNameQuoted = '"' & genDocName & '"'$>
+		<$jsUrl = "<a href='javascript:displayBundleDoc(" & docNameQuoted & ");'>"$>
+
+		<$auditText = genDocType & " document '" & jsUrl & genDocTitle & "</a>' generated"$>
+
+	<$elseif lAction like 'DEL-DOC'$>
+		<$itemDocName = lParam1$>
+		<$itemDocTitle = lParam2$>
+
+		<$auditText = "Document '" & lParam2 & "' (" & itemDocName & ") removed from bundle"$>
+	
+	<$elseif lAction like 'CLASSIFY-DOCS'$>
+		<$classDocs = lParam1$>
+		<$deptID = lParam2$>
+		<$subDeptID = lParam3$>
+		<$exec rsMakeFromString("rsClassDocs",classDocs)$>
+		
+		<$classUrl = "<a href='" & HttpCgiPath & "?IdcService=IRIS_CLASSIFIED_ITEMS&selDocs=" & classDocs & "' target='_blank'>"$>
+		
+		<$auditText = classUrl & rsClassDocs.#numRows & " document(s)</a> classified as"$>
+		
+		<$dept = getViewDisplayValue("vDepartments",deptID)$>
+		<$if subDeptID$>
+			<$subDept = getViewDisplayValue("vSubDepts",subDeptID)$>
+		<$else$>
+			<$subDept = ""$>
+		<$endif$>
+		
+		<$if not subDept$>
+			<$auditText = auditText & " '" & dept & "'"$>
+		<$else$>
+			<$auditText = auditText & " '" & dept & "/" & subDept & "'"$>
+		<$endif$>
+			
+	<$elseif (lAction like 'MOVE-TO') or (lAction like 'MOVE-FROM')$>
+
+		<$if lAction like 'MOVE-TO'$>
+			<$moveDir = 'to'$>
+		<$else$>
+			<$moveDir = 'from'$>
+		<$endif$>
+
+		<$moveID = lParam1$>
+		<$moveDoc = lParam2$>
+		<$origBundle = lParam3$>
+		<$destBundle = lParam4$>
+
+		<$itemURL   = "<a href='" & HttpCgiPath & "?IdcService=DOC_APPROVAL&bundleRef=" & lParam4 & "#_image," & moveID & "' target='_blank'>"$>
+		
+		<$if moveDir like 'to'$>
+			<$bundleURL = "<a href='" & HttpCgiPath & "?IdcService=DOC_APPROVAL&bundleRef=" & destBundle & "' target='_blank'>"$>
+			<$auditText = "Item '" & itemURL & moveDoc & "</a>' moved to bundle " & bundleURL & destBundle & "</a>"$>
+		<$else$>
+			<$docNameQuoted = '"' & moveID & '"'$>
+			<$itemUrl = "<a href='javascript:displayBundleDoc(" & docNameQuoted & ");'>"$>
+			
+			<$bundleURL = "<a href='" & HttpCgiPath & "?IdcService=DOC_APPROVAL&bundleRef=" & origBundle & "' target='_blank'>"$>
+			<$auditText = "Item '" & itemURL & moveDoc & "</a>' moved from bundle " & bundleURL & origBundle & "</a>"$>
+		<$endif$>
+
+	<$elseif lAction like 'COMPLETE'$>
+		<$isWFAction=1$>
+		<$auditText = "Marked as completed"$>
+	<$endif$>
+	
+	<$if not auditText$>
+		
+		<$if isWFAction and lMessage and not (lAction like 'USER-NOTE')$>
+			<$if lAction like 'REJECT'$>
+				<$noteClass = 'iris_reject_note'$>
+			<$elseif lAction like 'APPROVE'$>
+				<$noteClass = 'iris_approve_note'$>
+			<$else$>
+				<$noteClass = 'iris_user_note'$>
+			<$endif$>
+		
+			<$auditText = auditText & "<br/><p class='" & noteClass & "'><b>User note:</b> " & lMessage & "</p>"$>
+		<$endif$>
+			
+	<$endif$>
+		
+	<$if not auditText$>
+		<$include super.iris_compute_audit_text$>
+	<$endif$>
+	
+	<$isWFAction=''$>
+
+<@end@>
+
+<!-- Special S&F filter element for showing a
+     list of bundle assignees. -->
+<@dynamichtml APPROVER_batch_CustomFilterScript@>
+
+	<select name="sel_assignee" <$if autoSearch$>onChange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+		<option value="%NONE%"></option>
+		
+		<$if tp like 'Bundle'$>
+			<$myItemsLabel = "My bundles"$>
+		<$else$>
+			<$myItemsLabel = "My documents"$>
+		<$endif$>
+		
+		<option value="%CURRENT_USER%" <$if #local.sel_assignee like "%CURRENT_USER%"$>selected="selected"<$endif$>><$myItemsLabel$></option>
+
+		<$if (not rsUsers) and (not rsAliases)$>
+			<$executeService("IRIS_GET_USERS_AND_ALIASES")$>
+		<$endif$>
+
+		<$if rsAliases$>
+			<optgroup label="Groups">
+				<$loop rsAliases$>		
+						<option value="a:<$dAlias$>" <$if #local.sel_assignee like dAlias$>selected="selected"<$endif$>>
+							<$dAlias$>
+						</option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+
+		<$if rsUsers$>
+			<optgroup label="Users">
+				<$loop rsUsers$>
+					<option value="<$rsUsers.dName$>" <$if #local.sel_assignee like dName$>selected="selected"<$endif$>>
+						<$rsUsers.dFullName$>
+					</option>
+				<$endloop$>
+			</optgroup>
+		<$endif$>
+	</select>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource -->
+<@dynamichtml doc_listing_styles@>
+
+		<style type="text/css">
+
+			/* Row styles for search results */
+			tr.resultrow {
+				background-color: #FFFFFF; /* #E6F0A9; #FFF0DB; #DCDCDC; */
+				cursor: pointer;
+			}
+
+			tr.resultrow_hilite {
+				background-color: #FFCC79; /*#E6F0A9;  #FFCC79; */
+				color: #FFFFFF;
+				cursor: pointer;
+			}
+
+			.SF_DOCTYPE_results {
+				border-right: none;
+			}
+
+			tr.resultrow_sel {
+				background-color: #FEEDD1;/*#9BDF30;  #FF9933; */
+				color: #FFFFFF;
+				cursor: pointer;
+			}
+
+			/* Row style for linked items */
+			tr.resultrow_linked {
+				background-color: #DCDCDC;
+			}
+
+			/* Row styles for action menu */
+			tr.actionrow {
+				background-color: #DCDCDC;
+				color: #FFFFFF;
+				cursor: pointer;
+			}
+
+			tr.actionrow_hilite {
+				background-color: #FFFFFF;
+				color: #000000;
+				cursor: pointer;
+				border: thin solid;
+			}
+
+			/* Div containing action menu */
+			div.actionlist {
+				vertical-align: top;
+				position: absolute;
+				display: inline;
+				z-index: 99;
+				border: thin solid;
+				border-color: #000000;
+				background-color: #DCDCDC;
+				color: #FFFFFF;
+				width: 10em;
+			}
+
+			div.invis {
+				display: none;
+			}
+
+			input.searchbtn {
+				width: 10em;
+				margin-bottom: 5px;
+			}
+
+
+			input.searchbtn_small {
+				width: 6em;
+				margin-bottom: 5px;
+			}
+
+			div.listingfooter {
+				width: 100%
+			}
+			
+			.togglelist{
+				display: none;
+			}
+			.testcolour{
+				background-color: #FFFFFF;
+			}
+			
+		</style>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource to provide default
+		 validation on bundle items.
+
+		 Handles item/bundle validation before executing a workflow
+		 action (i.e. approve/reject). Any overrides to this include
+		 must contain the function validatePreWorkflowAction(). If
+		 any validation fails the function should return false, true
+		 otherwise.
+		 -->
+<@dynamichtml iris_workflow_action_validation_js@>
+
+	<script type="text/javascript">
+		
+		var batchValidationUrl = "?IdcService=IRIS_BATCH_WORKFLOW_ACTION_VALIDATION";
+		
+		// Function called before a workflow action (approve/reject)
+		// is taken.
+		function validatePreWorkflowAction() {
+			
+			var ts = new Date().getTime(); // forces server request in IE
+		
+			$.get(batchValidationUrl, { 
+				bundleDocName: bundleDocName,
+				profileName: "<$profileName$>",
+				timestamp: ts,
+			}, 
+			function(data) {checkWorkflowActionValidationResponse(data);} 
+			
+			return true;
+		}
+		
+		// callback function to AJAX call above. Determines whether the
+		// validation tests passed successfully.
+		function checkWorkflowActionValidationResponse(data) {
+			
+		}
+		
+	</script>
+
+<@end@>
+
+<!-- JavaScript hook into the pop-up toggle function.
+		 Used to toggle the display of the context frame
+		 when showing/hiding pop-ups. -->
+<@dynamichtml ecs_popup_hide_elements_extra@>
+
+		<$if not thumbnailMode$>
+			<$include super.ecs_popup_hide_elements_extra$>
+		<$else$>
+			
+			<script type="text/javascript">
+				/* Hides/shows the content frame (Iris) */
+				
+				function doHideElementsExtra(hideDivElements) {
+					var cFrame = document.getElementById('contextFrame');
+					
+					var cFrameDoc = cFrame.contentWindow || cFrame.contentDocument;
+					if (cFrameDoc.document) {
+						cFrameDoc = cFrameDoc.document;
+					}
+					
+					// inner frame used on batch document implementations
+					var innerFrame = cFrameDoc.getElementById('contentFrame');
+			
+					if (innerFrame)
+						cFrame = innerFrame;
+					
+					// Check if the iframe holds a PDF document. If it does, it must be
+					// hidden/displayed.
+					if (cFrame.src.search(/.pdf/i)== -1) {
+					
+					} else {
+					
+						if (cFrame.style.visibility && (cFrame.style.visibility == 'hidden')) {
+							// cFrame.style.visibility = 'visible';
+							// cFrame.src = cFrame.src;
+						} else {
+							// cFrame.style.visibility = 'hidden';
+							hideDivElements.push(cFrame);
+						}
+					}
+				}
+			</script>
+			
+		<$endif$>
+
+<@end@>
+
+<!-- JavaScript auto-loading function, used to append bundle item counts
+	 next to bundle IDs in a SearchResults listing.
+	 
+	 When appending an item count, the method will search for HTML elements
+	 with IDs in the form '<bundleRef>_item_count'. Their inner HTML will
+	 be replaced with '(<item count>)'
+	 
+	 Requires some functions in iris_common.js
+	 -->
+<@dynamichtml iris_sf_bundle_item_counts_js@>
+	
+<$if #env.Iris_enableAJAXBatchItemCounts$>
+	
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+			
+			var bundleIds = new Object();
+
+			<$loop SearchResults$>
+				<$bundleId = getValue("SearchResults", #env.Iris_batchIdField)$>
+				<$if bundleId$>
+					if (!bundleIds['<$bundleId$>'])
+						bundleIds['<$bundleId$>'] = true;
+				<$endif$>
+			<$endloop$>
+			
+			var bundleIdList = "";
+			
+			for (var id in bundleIds) {
+				if (bundleIdList.length > 0)
+					bundleIdList += ",";
+				
+				bundleIdList += "'" + id + "'";
+			}
+			
+			if (bundleIdList != "") {
+				$.getJSON(	"?IdcService=IRIS_BATCH_GET_ITEM_COUNTS",
+					{ 		bundleRefs: bundleIdList,
+							IsJson: 1,
+							ts: new Date().getTime()
+					}, function(jsonData) {lookupItemCountsCompleted(jsonData)} 
+				);
+			}
+		
+		});
+		
+		function lookupItemCountsCompleted(jsonData) {
+			if (jsonData == "") {
+				// silent error
+			} else {	
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+				
+				if (jsonErrorMsg) {
+					// Something went wrong during web service call.
+					
+				} else {
+					var batchItemCounts = jsonData.ResultSets.batchItemCounts;
+					var numRows = getJsonResultSetNumRows(batchItemCounts);
+					
+					var counts = "";
+					
+					for (var i=0; i<numRows; i++) {
+						var thisBundleRef 	= getJsonResultSetValue(batchItemCounts, "xBundleRef", i);
+						var thisCount		= getJsonResultSetValue(batchItemCounts, "NUMDOCS", i);
+						
+						$("[name='" + thisBundleRef + "_item_count']").html("(" + thisCount + ")");
+					}
+				}
+			}
+		}
+	
+	</script>
+
+<$endif$>
+	
+<@end@>
+
+<!-- Used to construct a Universal Search query string for
+     retrieval of batch items via a GET_SEARCH_RESULTS call.
+     
+     The bundle reference is expected to exist in the binder
+     as 'bundleRef' prior to calling this include.
+     
+     By default, the query will fetch all content items with
+     a matching bundle reference value, except the parent bundle
+     item.
+     
+     If the matchParentOnly flag is present in the binder, only
+     the parent bundle item is returned by the query.
+      -->
+<@dynamichtml iris_build_batch_item_query@>
+	
+	<$if matchParentOnly$>
+		<$batchItemQuery = 	"(dDocType <MATCHES> `" & #env.Iris_batchDocType & "`) "$>
+		<$matchParentOnly=''$>
+		
+	<$else$>
+		<$if #env.Iris_batchChildDocTypes$>
+			<$if not #local.batchChildItemQuery$>
+				<$include iris_build_child_item_query$>
+			<$endif$>
+							
+			<$batchItemQuery = 	"(" & batchChildItemQuery & ")"$>	
+		<$else$>
+			<$batchItemQuery = 	"<NOT> (dDocType <MATCHES> `" & #env.Iris_batchDocType & "`) "$>
+		<$endif$>
+	<$endif$>
+	
+	<$batchItemQuery = batchItemQuery & " <AND> "$>
+	
+	<$batchIdFieldType = "text"$>
+				
+	<$if #env.Iris_batchIdFieldType$>
+		<$batchIdFieldType = #env.Iris_batchIdFieldType$>
+	<$endif$>
+	
+	<$if batchIdFieldType like "text"$>
+		<$querySuffix = #env.Iris_batchIdField & " <MATCHES> `" & bundleRef & "` "$>
+	<$else$>
+		<$c='Assume int data type, construct numeric match clause'$>
+		<$querySuffix = #env.Iris_batchIdField & " >= `" & bundleRef & "` <AND> " &  #env.Iris_batchIdField & " <= `" & bundleRef & "` "$>
+	<$endif$>
+	
+	<$batchItemQuery = batchItemQuery & querySuffix$>
+	<$log4j("built batch query: " & batchItemQuery)$>
+
+<@end@>
+
+<!-- 	If Iris_batchChildDocTypes environment var is present, all batch item queries must
+			must be filtered to show only specific doc types listed in this var.
+			
+			This include is responsible for creating the search query clauses to match against
+			these documents. It is cached as batchChildItemQuery.
+			
+			TODO: use cacheInclude here.
+			--> 
+<@dynamichtml iris_build_child_item_query@>
+
+	<$exec rsMakeFromString("rsChildTypes",#env.Iris_batchChildDocTypes,"childDocType")$>	
+
+	<$loop rsChildTypes$>
+		<$if #local.batchChildItemQuery$>
+			<$batchChildItemQuery = batchChildItemQuery & " <OR> "$>
+		<$endif$>
+		
+		<$batchChildItemQuery = #local.batchChildItemQuery & "(dDocType <MATCHES> `" & rsChildTypes.childDocType & "`)"$>
+	<$endloop$>
+
+<@end@>
+
+</body></html>

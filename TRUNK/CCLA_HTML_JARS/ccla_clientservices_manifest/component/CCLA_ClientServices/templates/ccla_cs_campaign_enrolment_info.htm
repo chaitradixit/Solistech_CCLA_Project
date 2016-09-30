@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$processTarget = rsProcess.TARGET$>
+		
+		<title>
+			Enrolment info  | <$rsCampaign.CAMPAIGN_NAME$> | <$rsEntity.ORGANISATION_NAME$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+		
+		<$include ccla_cs_enrolment_attributes_js$>
+		
+		<script type="text/javascript">
+			
+		function openPDF() {
+			window.open ('<$HttpWebRoot$>groups/public/documents/document/ccla_003724.pdf')
+		}
+			
+		function refreshProcessDetail() {
+			var entityId = "<$#active.ORGANISATION_ID$>";
+			var enrolmentId = "<$#active.CAMPAIGN_ENROLMENT_ID$>";
+			var personId = "<$#active.PERSON_ID$>";
+			var campaignId = "<$#active.CAMPAIGN_ID$>";
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_psdf_reg_process_info",
+				{
+					"ORGANISATION_ID": entityId,
+					"PERSON_ID":personId,
+					"CAMPAIGN_ENROLMENT_ID":enrolmentId,
+					"CAMPAIGN_ID":campaignId,
+					"ajaxRefresh": 1,
+					"ts":	new Date().getTime()
+				},
+				function(data) {
+					$("#intentionListingDivContainer").html("");
+					$("#intentionListingDivContainer").html(data);
+				}
+			);
+		}
+		
+		function refreshContactOption()
+		{
+			var elementId = document.recipientForm.PERSON_ID.value;
+				$.post("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_select_contact_method",
+					{
+						"CONTACT_PERSON_ID": elementId,
+						"ajaxRefresh": 1
+					},
+					function(data) {
+						$("#prefContactMethod").html(data);
+					}
+				);
+		}
+		function submitContactOption()
+		{
+			var contactMethod = document.recipientForm.CONTACT_ID.value;
+			if (contactMethod == null || contactMethod.length==0)
+			{
+			alert ('Please ensure you choose a contact address for the recipient. If no methods are available choose another person or add an address for the chosen recipient');
+			return false;
+			} else {
+			document.recipientForm.submit();
+			}
+		}	
+
+		function submitUpdateIntentionForm(thisFormId, campEnrolId){
+
+			// Grab the selected status and unit value
+			var selInvIntId = $("#INVINTENTSTATUS_ID_"+campEnrolId+"_A").val();
+			var selInvIntUnits = $("#UNITS_"+campEnrolId+"_A").val();
+			var selInvIntCash = $("#CASH_"+campEnrolId+"_A").val();
+
+			//Update the relevant form fields
+			$("#INVINTENTSTATUS_ID_"+campEnrolId+"_B").val(selInvIntId);
+			$("#UNITS_"+campEnrolId+"_B").val(selInvIntUnits);
+			$("#CASH_"+campEnrolId+"_B").val(selInvIntCash);
+			
+			document.forms[thisFormId].submit();
+		}
+		</script>
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div id="cs_page_container" class="cs-page-container enrolmentInfoContainer">
+			
+			<$if NOT hideActionButtons$>
+				<$buttonContext = "entity"$>
+				<$include ccla_cs_action_buttons$>
+			<$endif$>
+			
+			<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<div id='ccla_cs_content' class="cs-content-container" >
+		
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Enrolment info  
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<!-- Standard header info displaying the campaign name etc. -->
+					<table width="100%" class="cs-info-table">
+						<tr>
+							<th>Campaign:</th><td><$rsCampaign.CAMPAIGN_NAME$></td>
+							<th>Date started:</th><td><$rsCampaign.CAMPAIGN_START_DATE$></td>
+						</tr>
+						
+						<tr>
+							<th>Enrolment ID:</th><td><$rsCampaignEnrolment.CAMPAIGN_ENROLMENT_ID$></td>
+							<th>Last action:</th><td><$rsCampaignEnrolment.LAST_UPDATED$></td>
+						</tr>
+						
+						<tr>
+							<th>Status:</th><td><$rsCampaignEnrolment.ENROLMENT_STATUS_NAME$></td>
+						</tr>
+					</table>
+					
+					<br/>
+					
+					<!-- TODO, when the db field target is present, i.e. org or person, 
+						 display the below or not -->		
+					<$include ccla_cs_enrolment_contact_method$>
+	
+					<!-- Attempt to display a custom process_info include, based on the parent
+					     campaign's IDOC_INCLUDE_INFIX value. If this isn't present, use a default
+						 include instead (TODO)
+						 -->
+					<div id="intentionListingDivContainer">
+						<$if rsCampaign.IDOC_INCLUDE_INFIX$>
+							<$inc("ccla_cs_" & rsCampaign.IDOC_INCLUDE_INFIX & "_process_info")$>
+						<$endif$>
+					</div>	
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<$include ccla_cs_enrolment_actions_panel$>
+				
+				<$include orangeContainer_top$>
+			
+					<div class='ccla_cs_panel_header'>
+						Organisation
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<div style="padding-top:5px"></div>
+						<$hideClientInfo="true"$>
+						<$include ccla_cs_display_entity_info$>
+						
+						<div style="padding-top:5px"></div>
+
+						<$include ccla_cs_display_readonly_contact_details$>
+						
+						<div style="padding-top:5px"></div>
+						
+					</div>
+
+				<$include orangeContainer_bottom$>
+				
+				<$include ccla_cs_entity_enrolment_activities_list$>
+
+				<$include orangeContainer_top$>
+				
+					<div class='ccla_cs_panel_header'>
+						Generated Forms
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<$if not rsProcessForms$>
+				
+							<p>No forms have been generated for this process.</p>
+							
+						<$else$>
+						
+							<$include ccla_cs_form_table_header_display$>
+							
+								<$loop rsProcessForms$>
+									<$include ccla_cs_form_table_row_display$>
+								<$endloop$>
+								
+							</table>
+						
+						<$endif$>
+						
+					</div>
+			
+				<$include orangeContainer_bottom$>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

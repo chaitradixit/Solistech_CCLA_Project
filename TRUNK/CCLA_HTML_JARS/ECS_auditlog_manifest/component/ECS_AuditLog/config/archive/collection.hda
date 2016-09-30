@@ -1,0 +1,14 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+IDC_Name=idcxe
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Archives
+2
+aArchiveName
+aArchiveDescription
+AuditLog_Config
+Configurations for ECS_AuditLog component
+@end
+

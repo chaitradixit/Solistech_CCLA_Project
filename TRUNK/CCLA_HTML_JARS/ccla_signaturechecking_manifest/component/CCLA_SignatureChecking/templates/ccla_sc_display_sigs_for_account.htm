@@ -1,0 +1,307 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>
+	Signatures for account
+</title>
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+
+	<style>
+		#sigApprovedMsg{
+			margin-bottom:5px;
+			display:none;
+			float:left;
+		}
+		.sigImage{
+			width:238px;
+			cursor:pointer;
+		}
+		.sigForPerson{
+			margin-bottom:8px;
+			background-color:#FFF0DB;
+			border:1px solid #AAAAAA;
+			margin-bottom:3px;
+			padding:3px;
+		}
+		.personName{
+			margin-bottom:2px;
+			padding-bottom:3px;
+		}
+		#sigSaveButton{
+			float:right;
+		}
+		.buttonOveride{
+			float:right;
+			background-color:#D0CDCE;
+			border:medium none;
+			color:#EE2C74;
+			font-family:Arial;
+			font-size:9pt;
+			padding:2px 5px;
+		}
+		.recentDocDetailsDiv{
+			float:left;
+			margin:3px;
+		}
+		.recentDocsOpenLinkDiv{
+			float:right;
+		}
+		.recentDocDetailsSpan{
+			float:left;
+		}
+		.recentDocEntry{
+			background-color:#FFF0DB;
+			float:left;
+			margin-top:3px;
+			padding:3px;
+			width:97%;
+			border:1px solid #AAAAAA;
+		}
+		.subTitle{
+			font-size:13px;
+			font-weight:bold;
+			margin-bottom:3px;
+		}
+		.clearAll{
+			clear:both;
+		}
+		.right{
+			float:right;
+		}
+		.error_icon{
+			background-position:2px 2px !important;
+		}
+		.reqSigsDiv{
+			padding:0 8px 4px;
+		}
+		.red{background-color:red}
+		.orange{background-color:#FFC85C !important}
+		.green{background-color:#88F9B0 !important}
+		.sigActionIcons{
+			margin-bottom:-3px;
+		}
+		.moreDiv{
+			margin-top:2px;
+			padding-bottom:2px;
+		}
+		.links{
+			cursor:pointer;
+		}
+	</style>
+	
+	<$include ccla_sc_sig_info_icon_styling_override$>
+	<$include ecs_javascript_popupCenter_include$>
+
+	<script type="text/javascript">
+	
+		var saveCheckedSignatures = function(){
+		
+			$('#sigApprovedMsg').hide();
+			var sigsApproved="";
+			$('.personChkBoxes:checked').each(function () {
+			
+			   if(sigsApproved.length!=0)
+					sigsApproved = sigsApproved+",";
+				  sigsApproved=sigsApproved + this.id;
+			});
+
+			$.getJSON('?IdcService=CCLA_SC_UPDATE_APPROVED_SIGS<$include add_idc_token_to_url$>',
+				{
+					"sigsApproved": sigsApproved,
+					"DOCNAME":		"<$#local.DOCNAME$>",
+					"ACCOUNT_ID":	"<$#local.ACCOUNT_ID$>",
+					"DOC_GUID":     "<$#local.DOC_GUID$>",
+					"IsJson":		1,
+					"ts":			new Date().getTime()
+				},
+				function(jsonData) {
+				
+				
+					var jsonErrorMsg = getJsonErrorMsg(jsonData);
+					if(jsonErrorMsg){
+						alert(jsonErrorMsg);
+					} else {
+						$('#sigApprovedMsg').show();
+					}
+				}
+			);
+		};	
+
+		var openSigInPopUp = function(element){
+			popupCenter("?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_SC_SIG_POPUP_PREVIEW&dDocName="
+			 +element.id, "",650,300, false) 
+		};
+	
+	
+		var className = "";
+		// This will return the css class name needed to color the signatures
+		// Assumption made that there will never be more than 2 Required signatures
+		var resolveSigColor = function(){
+			var reqSigs = <$#active.REQ_SIGS$>
+			var numSigsChecked = $('.personChkBoxes:checked').size();
+			
+			if (numSigsChecked >= reqSigs){
+				className = "green";
+			} else if (numSigsChecked <= reqSigs-1){
+				className = "orange";
+			} 
+		};
+		
+		var removeAllColorClasses = function(){
+			$('.personChkBoxes').each(function () {
+				$(this).parent().parent().removeClass("red orange green");
+			});
+		};
+	
+		var reDrawSigColors = function(){
+			resolveSigColor();
+			$('.personChkBoxes:checked').each(function () {
+				$(this).parent().parent().addClass(className);
+			})
+		};
+		
+		var updateCheckboxes = function(){
+			reDrawSigColors(className);
+			removeAllColorClasses();
+			reDrawSigColors()
+		};
+		
+			
+		var tickCheckbox = function(element){
+			if ($(element).attr("class") == "sigImage"){
+				alert("clicking an image");
+			} else {
+				alert($(element).find(".right").find("input").attr("id"));
+			}
+		}
+			
+		var postImage =  function(personID,action,element){
+			var origHTML = $("#"+element.id).html();
+			$("#"+element.id).html("uploading...");
+			var obj = document.getElementById('paste-image');
+			var image =obj.getClipboardImageURL(personID,action);
+
+			if (image && image.indexOf("ERROR")<0) {
+				loadSigPanelContent(true)
+			} else {
+				alert(image);
+				$("#"+element.id).html(origHTML);
+			}
+		};
+		
+				
+		$(document).ready( function() {
+			updateCheckboxes();
+		});
+		
+	</script>
+</head>
+<body class="popupBody">
+		<div id="applet"></div>
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_content'>
+				<div class="subTitle">Signatories for account: <a target="_blank" href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&CLIENT_NUMBER=<$#active.CLIENT_NUMBER$>&ACCOUNT_NUMBER=<$#active.ACCOUNT_NUMBER$>"><$#active.ACCOUNT_NUMBER$></a></div>
+				
+				<$executeService("CCLA_SC_GET_SIGS_FOR_ACCOUNT")$>
+				
+				<div id="noSigsFoundMsg" class="message_panel info_icon" style="margin: 0px 0px 5px 0px">
+					<$if signatureCheckRequired$>
+						Required Signatures: <$#active.REQ_SIGS$>
+					<$else$>
+						Signature checking isn't required for this instruction type.
+					<$endif$>
+				</div>
+				
+				<$rsMakeFromString("rsSignatoryIds",signatoryIds)$>
+				<$if rsSignatoryIds$>
+					<$loop rsSignatoryIds$>
+					<$sigDocFound=0$>
+					<div class="sigForPerson" >
+						<$loop rsPersonsInAccount$>
+							<$if rsPersonsInAccount.PERSON_ID == rsSignatoryIds.row$>
+								<$personFullName = rsPersonsInAccount.FULL_NAME$>
+							<$endif$>
+						<$endloop$>
+							<$loop sigDocNames$>			
+								<$if sigDocNames.PERSON_ID == rsSignatoryIds.row$>
+								<div class="personName"><b><$personFullName$></b> - <a target="_blank" title="click to edit <$personFullName$>" href="?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&PERSON_ID=<$rsSignatoryIds.row$>#sigPanelDiv">edit</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/edit.png"/> | <a id="link_<$sigDocNames.SIGNATURE_DOCNAME$>" class="links" onclick="postImage('<$sigDocNames.SIGNATURE_DOCNAME$>','update',this);">update</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/></div>
+
+									<span class="sigImageDiv"><img class="sigImage" title="Click to see a larger signature image for: <$personFullName$>" onclick="openSigInPopUp(this)" id="<$sigDocNames.SIGNATURE_DOCNAME$>" src="?IdcService=GET_FILE<$include add_idc_token_to_url$>&dDocName=<$sigDocNames.SIGNATURE_DOCNAME$>&RevisionSelectionMethod=Latest&rand=<$strGenerateRandom(5)$>"/></span>
+									<$sigDocFound=1$>
+									
+									<$if signatureCheckRequired$>
+									
+										<$ApprovedSig=0$>
+										<$loop rsApprovedSigs$>
+											<$if sigDocNames.PERSON_ID == rsApprovedSigs.PERSON_ID$>
+												<$ApprovedSig=1$>
+											<$endif$>	
+										<$endloop$>
+										
+										<div class="right">
+											<label for="<$sigDocNames.PERSON_ID$>">Signature matches document</label>
+											<input type="checkbox" class="personChkBoxes" onclick="updateCheckboxes()" id="<$sigDocNames.PERSON_ID$>"  <$if ApprovedSig==1$>checked<$endif$>/>
+										</div>
+									
+									<$endif$>
+									
+									<div class="clearAll"></div>
+								<$endif$>	
+							<$endloop$>
+						<$if sigDocFound == 0$>
+						<div class="personName"><b><$personFullName$></b> - <a target="_blank" title="click to edit <$personFullName$>" href="?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&PERSON_ID=<$rsSignatoryIds.row$>#sigPanelDiv">edit</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/edit.png"/> | <a class="links" id="link_<$rsSignatoryIds.row$>" onclick="postImage('<$rsSignatoryIds.row$>','add',this);">add</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/></div>
+						<div id="noSigsFoundMsg" class="message_panel error_icon" >
+							No signature on record. 
+						</div>
+						<$endif$>
+					
+					</div>	
+				
+					<$endloop$>
+					</br>
+					<div id="sigApprovedMsg" class="message_panel info_icon" >
+						Approved signatures updated	
+					</div>
+					
+					<$if signatureCheckRequired$>
+						<input id="sigSaveButton" class="buttonOveride" type="button" value="Save" onclick="saveCheckedSignatures()" />
+					<$endif$>
+					
+					<div class="clearAll"></div>
+				<$else$>
+					<div id="noSigsFoundMsg" class="message_panel error_icon" >
+						There are no signatories for this account. <a target="_blank" href="?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>">Click here</a> to add them. 
+					</div>
+				<$endif$>
+				</br></br>
+			
+			<div id="recentSigDocs">
+				<span class="subTitle">Recent Documents</span>
+				<$if rsRecentSigForms$>
+					<$loop rsRecentSigForms$>
+						<$include ccla_get_doc_url$>
+						
+						<div class="recentDocEntry">
+							<div class="recentDocDetailsSpan"><b>Doc Type: </b><$rsRecentSigForms.xDocumentClass$>. </br><b>Index Date: </b><$rsRecentSigForms.dInDate$> </div>
+							<div class="recentDocsOpenLinkDiv"><a target="_blank" href="<$cclaDocUrl$>">Open</a></div>
+						</div>
+						<div class="clearAll"> </div>
+					<$endloop$>
+					<$if rsRecentSigForms.#numRows == 6$>
+						<div class="moreDiv right"><a target="_blank" href="?IdcService=IRIS_CLASSIFIED_ITEMS&sf=dInDate&so=DESC&clientnoadv=<$#active.CLIENT_NUMBER$>">more</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/newWindow.png"/> </div>
+					<$endif$>
+				<$else$>
+					<div id="noSigsFoundMsg" class="message_panel info_icon" >
+						There are no recent documents
+					</div>
+				<$endif$>
+			</div>
+		</div>
+				
+		<$include orangeContainer_bottom$>
+
+</body>
+</html>

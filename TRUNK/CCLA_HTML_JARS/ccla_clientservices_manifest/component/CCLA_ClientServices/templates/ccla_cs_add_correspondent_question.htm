@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Add question
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<script type="text/javascript">
+			
+			function submitQuestionForm() {
+				
+				var frm = document.forms["questionForm"];
+				
+				if (frm.elements["questionCategory"].value == "") {
+					alert("Please select the question category.");
+					frm.elements["questionCategory"].focus();
+					return;
+				}
+				
+				if (frm.elements["questionText"].value == "") {
+					alert("Please enter the correspondent's question.");
+					frm.elements["questionText"].focus();
+					return;
+				}
+				
+				if (frm.elements["outcome"].value == "") {
+					alert("Please select the question outcome.");
+					frm.elements["outcome"].focus();
+					return;
+				}
+				
+				frm.submit();
+			}
+			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 500px'>
+		
+				<$include orangeContainer_top$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					Add question
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$if questionAdded$>
+						<p>Your question has been saved.</p>
+						<br/>
+						
+						<div style="text-align:right">
+							<input type="button" value="Close window" onclick="window.close();" />
+						</div>
+						
+					<$else$>
+						
+						<!-- Fetch correspondent data -->
+						<$methodName="GetCorrespondentByCorrespondentCode"$>
+						<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+						
+						<form name="questionForm" id="questionForm" method="POST">
+							<input type="hidden" name="IdcService" value="CCLA_CS_ADD_CORRESPONDENT_QUESTION_SUBMIT" /><$include add_idc_token_to_form$>
+							
+							<input type="hidden" name="processId" 		value="<$#local.processId$>" />
+							<input type="hidden" name="activityId" 		value="<$#local.activityId$>" />
+							<input type="hidden" name="personId" 		value="<$#local.personId$>" />
+							
+							<input type="hidden" name="company" 		value="<$#local.company$>" />
+							
+							<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_ADD_CORRESPONDENT_QUESTION<$include add_idc_token_to_url$>&questionAdded=1" />
+							
+							<table width="100%">
+								<tr>
+									<td valign="top"><b>Posed by:</b></td>
+									<td>
+										<$rsCorrespondent.name$>
+										<br/>
+										<br/>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top"><b>Question category:*</b></td>
+									<td>
+										<select name="questionCategory">
+											<option value=""></option>
+											
+											<$exec rsMakeFromString("rsQuestionTypes",#env.CCLA_CS_QuestionTypes,"type")$>
+											<$loop rsQuestionTypes$>
+												<option value="<$#active.type$>"><$#active.type$></option>
+											<$endloop$>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top"><b>Question:*</b></td>
+									<td>
+										<textarea name="questionText" style="width: 100%; height: 4em"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top"><b>Answer:</b></td>
+									<td>
+										<textarea name="answerText" style="width: 100%; height: 4em"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top"><b>Outcome:*</b></td>
+									<td>
+										<select name="outcome">
+											<option value="">
+											
+											<option value="Follow-up">Follow-up</option>
+											<option value="Resolved">Resolved</option>
+										</select>
+									</td>
+								</tr>
+								
+							</table>
+							
+							<br/>
+							
+							<div style="text-align: right">
+								<input type="button" name="submitType" value="Submit" onclick="submitQuestionForm()" />
+							</div>
+							
+							<br/>
+						</form>
+					
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

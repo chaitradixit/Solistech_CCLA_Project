@@ -1,0 +1,218 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include iris_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		User Profile
+	</title>
+
+	<!-- 	Check the user metadata field 'AllowProfileEdit' to
+				determine whether or not the user will be able to edit
+				their user profile -->
+	<$if uAllowProfileEdit like 'Yes'$>
+		<$allowProfileEdit=1$>
+	<$endif$>
+	
+<script>
+	
+	function updateUserInfo(form)
+	{
+		var userPassword = form.dPassword.value;
+		var confirmPassword = form.cPassword.value;
+
+		if (userPassword != confirmPassword)
+		{
+			alert("Your specified password did not match your confirmed password. Please try again.");
+			return false;
+		}
+		
+		var profile = form.elements['profileName'];
+		var selProfile = profile.options[profile.selectedIndex].value;	
+		form.elements['uIrisProfile'].value = selProfile;
+		
+		form.submit();
+		
+	}
+	
+	/* Clears the confirm password field after a new password is entered */
+	function clearConfirmation(form)
+	{
+		form.cPassword.value = "";
+	}
+	
+	/* Reloads the page to restore saved data. */
+	function discardChanges()
+	{
+		window.location.reload(true);
+	}
+	
+	
+</script>
+			
+
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include iris_header$>
+		
+	<div align=center style="margin-top: 20px;">	
+		
+	<div style='width: 400px' class='profile_panel'>
+		
+		<$include orangeContainer_top$>
+		
+		<!-- Title for the user profile: displays the dDocName for this item -->
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px;">
+			<table width="100%" cellpadding=0 cellspacing=0>
+				<tr>
+					<td>
+					<b>User Profile for<b> <span style="font-size: 1em; color: #FF0000"><$dName$></span></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div>
+			
+			<br>
+			
+			<table width="100%" cellpadding=0 cellspacing=2>
+				
+				<$if allowProfileEdit$>
+					
+					<!-- Form used for submitting profile changes -->
+					<form name=userEditForm action="<$HttpCgiPath$>" method=POST >
+						<input type=hidden name="IdcService" value="EDIT_USER_PROFILE">
+						<input type=hidden name="dName" value="<$dUser$>">
+						<$include add_idc_token_to_form$>
+						<input type=hidden name="RedirectUrl" value='<$HttpCgiPath & "?IdcService=DOC_LISTING<$include add_idc_token_to_url$>"$>'>
+							
+				<$endif$>
+			
+				<tr>
+					<td width='50%'><span class=field_caption><$lc("wwLabelUserName")$></span></td>
+					<td width='50%'><span class=field_value_info><$dUser$></span></td>
+				</tr>
+				<tr>
+					<td><span class=field_caption><$lc("wwLabelRoles")$></span></td>
+					<td>
+						<$if UserRoles$>
+							[[% Ensure all user roles have a br delimiter to prevent them all appearing on one line. %]]
+							<$spacedUserRoles = strReplace(UserRoles, ",", "<br/>")$>
+						<$endif$>
+					
+						<span class=field_value_info>
+							<$if spacedUserRoles$>
+								<$spacedUserRoles$>
+							<$else$>
+								<$lc("wwNoRolesDefined")$>
+							<$endif$>
+						</span>
+					</td>
+				</tr>
+					
+				<$if UseAccounts$>
+					<tr>
+						<td><span class=field_caption><$lc("wwAccounts")$></span></td>
+						<td><span class=field_value_info><$if UserAccounts$><$UserAccounts$>
+							<$else$><$lc("wwNoAccountsDefined")$><$endif$></span></td>
+					</tr>
+				<$endif$>
+				
+				<tr><td><br></td></tr>
+						
+				<tr>
+					<td><span class=field_caption>Full name:</span></td>
+					
+					<$if allowProfileEdit$>
+						<td><input type=text value='<$dFullName$>' name=dFullName></td>
+					<$else$>
+						<td><span class=field_value_info><$dFullName$></span></td>		
+					<$endif$>
+					
+				<tr>
+					<td><span class=field_caption>Notification e-mail:</span></td>
+					
+					<$if allowProfileEdit$>
+						<td><input type=text value='<$dEmail$>' name=dEmail></td>
+					<$else$>
+						<td><span class=field_value_info><$dEmail$></span></td>
+					<$endif$>
+				</tr>
+			
+				<tr><td><br></td></tr>
+				
+				<$if allowProfileEdit$>
+				
+						<tr>
+							<td><span class=field_caption>Password:</span></td>
+							<td><input type=password value='<$dPassword$>' name=dPassword onChange="clearConfirmation(this.form)"></td>
+						</tr>
+						
+						<tr>
+							<td><span class=field_caption>Confirm password:</span></td>
+							<td><input type=password value='<$dPassword$>' name=cPassword></td>
+						</tr>
+					
+						<tr><td><br></td></tr>
+						
+						<$QueryText = "dDocType <matches> `IrisProfile`"$>
+						<$executeService("GET_SEARCH_RESULTS")$>
+						
+						<tr>
+							<td><span class=field_caption>Profile:</span></td>
+							<td>
+								<select name="profileName">
+									<option></option>
+									
+									<$loop SearchResults$>
+										<option value="<$dDocName$>" <$if dDocName like uIrisProfile$>selected="selected"<$endif$>><$dDocName$></option>
+									<$endloop$>
+								
+								</select>
+								
+								<input type="hidden" name="uIrisProfile" />
+							</td>
+						</tr>
+						
+						<tr><td><br></td></tr>
+					
+						<tr>
+							<td colspan=2 align=center>
+								<input type=button value="Save changes" onClick="updateUserInfo(this.form)">
+								<input type=button value="Discard changes" onClick="discardChanges()">
+							</td>
+						</tr>
+				
+					</form>
+				
+				<$else$>
+					
+					<tr>
+							<td><span class=field_caption>Profile:</span></td>
+							<td><$#active.uIrisProfile$></td>
+					</tr>
+				
+				
+				<$endif$>
+			
+			</table>
+			
+		</div>
+		
+		<$include orangeContainer_bottom$>
+				
+		</div> <!-- End side_panel div -->
+		
+	</div>
+		
+		
+	</div>
+	
+	<$include std_page_end$>
+	
+</body></html>

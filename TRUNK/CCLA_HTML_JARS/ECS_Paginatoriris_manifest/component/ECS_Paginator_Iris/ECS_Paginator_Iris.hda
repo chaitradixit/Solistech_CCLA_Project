@@ -1,0 +1,41 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_04_22 v1.0
+classpath=$COMPONENT_DIR/classes
+blFieldTypes=
+libpath=$COMPONENT_DIR/lib
+ComponentName=ECS_Paginator_Iris
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/ecs_paginator_iris_resource.htm
+null
+1
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end
+

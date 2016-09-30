@@ -1,0 +1,29 @@
+-- Add 2 new columns
+ALTER TABLE JOB_PRIORITY_RULE_VALUES
+ADD (
+	DATE_ADDED Timestamp(6),
+	NUM_VALID_DAYS Number(15,0) 
+); 
+
+-- set all previous values to today's date
+UPDATE JOB_PRIORITY_RULE_VALUES SET DATE_ADDED=SYSDATE;
+
+-- make sure the date_added is not null
+ALTER TABLE JOB_PRIORITY_RULE_VALUES
+MODIFY DATE_ADDED Timestamp(6) NOT NULL;
+
+
+-- Add IS_APPEND_PRIORITY column to rule
+ALTER TABLE JOB_PRIORITY_RULES
+ADD (
+	IS_APPEND_PRIORITY Number(1,0) 
+); 
+
+-- Update all previous rules to IS_APPEND_PRIORITY
+UPDATE JOB_PRIORITY_RULES SET IS_APPEND_PRIORITY=0;
+
+-- make sure the IS_APPEND_PRIORITY is not null
+ALTER TABLE JOB_PRIORITY_RULES
+MODIFY IS_APPEND_PRIORITY Number(1,0) NOT NULL;
+
+

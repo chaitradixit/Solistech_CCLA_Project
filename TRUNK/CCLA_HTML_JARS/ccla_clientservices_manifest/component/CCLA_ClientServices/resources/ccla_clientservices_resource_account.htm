@@ -1,0 +1,2360 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Displays editable fields for a CCLA account. -->
+<@dynamichtml ccla_cs_display_account_fields@>
+<$if IsDebug$>ccla_cs_display_account_fields<$endif$>
+
+	<$if isEdit$>
+		<$entityServiceName="CCLA_CS_ENTITY_EDIT"$>
+	<$else$>
+		<$entityServiceName="CCLA_CS_ENTITY_INFO"$>
+	<$endif$>
+
+	<table width="100%">
+		
+		<tr>
+			<td>Organisation:</td>
+			<td colspan=3>
+				<$#active.ORGANISATION_NAME$>
+				<input type="hidden" name="ORGANISATION_ID" id="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">
+			</td>
+		</tr>
+		<tr>
+			<td>Org Acc. Code:</td>
+			<td colspan=3>
+				<a href="?IdcService=<$entityServiceName$><$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$#active.ORG_ACCOUNT_CODE$></a>
+			</td>		
+		
+		<$if isNew$>
+			<tr>
+				<td>Client Number:</td>
+				<td colspan=3>
+					<$if rsAuroraClient$>
+						<$loop rsAuroraClient$>
+							<$#active.CLIENT_NUMBER$>
+							<$break$>
+						<$endloop$>
+					<$else$>
+						
+						<$if #env.CCLA_CS_EnableClientNumberGeneration$>
+							(Generated on submission)
+							<input type="hidden" name="generateClientNumber" value="1" />
+						<$else$>
+							<input type="text" name="CLIENT_NUMBER" id="CLIENT_NUMBER">
+						<$endif$>
+					
+					<$endif$>
+				</td>
+			</tr>
+			<tr>
+				<td><br/></td>
+			</tr>
+			<tr>
+				<td>Company:</td>
+				<td colspan=3>
+					
+					[[% Determine currently-mapped Company for this Org %]]
+					
+					<$if rsAuroraClient$>
+						<$loop rsAuroraClient$>
+							<$selCompanyId = rsAuroraClient.COMPANY_ID$>
+							<$break$>
+						<$endloop$>
+					<$endif$>
+					
+					<script type="text/javascript">
+						
+						$(document).ready( function() {
+							// Attach onchange listener to Company field. This will
+							// update the available Fund Code listing.
+							$("#COMPANY_ID").bind("change", function() {
+								
+								var selCompanyId = $("#COMPANY_ID").val();
+								
+								$.get("?<$include add_idc_token_to_url$>", {
+									"IdcService" 	: "CCLA_CS_GET_INCLUDE",
+									"incName"		: "ccla_cs_fund_code_dropdown",
+									"isAjax"		: 1,
+									"hidePIFund"	: 1,
+									"hideCFFund"	: 1,
+									"selCompanyId"  : selCompanyId,
+									"ts"			: new Date().getTime()
+								}, function(data) {
+									$("#fundSelectorDiv").html(data);
+								});
+							
+							});
+							
+						});
+						
+					</script>
+
+					<$include ccla_cs_aurora_company_dropdown$>
+					
+				</td>
+			</tr>	
+			<tr>
+				<td>Fund Code:</td>
+				<td colspan=3>
+					<$if isNew$>
+						<$hidePIFund=1$>
+						<$hideCFFund=1$>
+		
+						<div id="fundSelectorDiv">
+							<$include ccla_cs_fund_code_dropdown$>
+						</div>
+					<$else$>
+						<$#active.FUND_CODE$>
+						<Input type="hidden" id="FUND_CODE" name="FUND_CODE" value="<$#active.FUND_CODE$>"/>
+						<$currentFundCode = #active.FUND_CODE$>
+					<$endif$>							
+				</td>
+			</tr>
+
+			<$if #local.isDonorAccount$>
+				<tr>
+					<td>Donor:</td>
+					<td colspan=3>
+						<select name="DONOR_ID" id="DONOR_ID">
+														
+							<$if rsOrgDonorRelations$>
+								<optgroup label="Org Donors">
+									<$loop rsOrgDonorRelations$>
+										<$thisDonorId = rsOrgDonorRelations.ELEMENT_ID1$>
+										<$loop rsRelatedOrgs$>
+											<$if #active.ORGANISATION_ID like thisDonorId$>
+												<option value="<$#active.ORGANISATION_ID$>"><$#active.ORG_ACCOUNT_CODE$> - <$#active.ORGANISATION_NAME$></option>
+											<$endif$>
+										<$endloop$>
+									<$endloop$>
+								</optgroup>
+							<$endif$>
+						
+							<$if rsPersonDonorRelations$>
+								<optgroup label="Person Donors">
+									<$loop rsPersonDonorRelations$>
+										<$thisDonorId = rsPersonDonorRelations.ELEMENT_ID2$>
+										<$loop rsRelatedPersons$>
+											<$if #active.PERSON_ID like thisDonorId$>
+												<option value="<$#active.PERSON_ID$>"><$#active.PERSON_ACCOUNT_CODE$> - <$#active.FULL_NAME$></option>
+											<$endif$>
+										<$endloop$>
+									<$endloop$>
+								</optgroup>
+							<$endif$>
+							
+						</select>
+					</td>
+				</tr>
+			<$endif$>
+			
+			<$if not #local.isDonorAccount$>
+				<tr>
+					<td>Account Number:</td>
+					<td colspan=3>
+					<$if #active.ACCOUNTNUMBER$><$#active.ACCOUNTNUMBER$><$else$><input type="text" name="ACCOUNTNUMBER" id="ACCOUNTNUMBER" <$if isDonorAccount$>disabled="disabled"<$endif$>><$endif$>
+					</td>
+				</tr>	
+			<$endif$>
+			
+		<$endif$>
+		
+		<!-- set col widths -->
+		<tr>
+			<td width="20%"></td>
+			<td width="30%"></td>
+			<td width="20%"></td>
+			<td width="30%"></td>
+		</tr>
+		<$if NOT isNew and not #env.CCLA_CS_EnableAccountIVSCheckOverride$>
+			<tr>
+				<td valign="top">IVS check status:</td>
+				<td>
+				
+					<$include ccla_cs_account_ivs_check_status_display$>
+					
+				</td>
+			</tr>
+		<$endif$>
+		
+		<$if not #local.isDonorAccount$>
+			<tr>
+				<td>Subtitle:</td>
+				<td colspan=3>
+					<input type="text" name="SUBTITLE" id="SUBTITLE" value="<$#active.SUBTITLE$>" size="40" <$if isDonorAccount$>disabled="disabled"<$endif$> />
+				</td>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<td>Income dist. method:</td>
+			<td colspan=3>
+				
+				<$disableIncDistMethodSelector = ""$>
+				
+				<$if rsFund and (rsFund.INCOME_TYPECODE_ID == 2)$>
+					<$disableIncDistMethodSelector=1$>
+				<$endif$>
+				
+				<select name="INCOME_DISTRIBUTION_METHOD" id="INCOME_DISTRIBUTION_METHOD" <$if disableIncDistMethodSelector$>disabled<$endif$>>
+					<$loop rsIncomeDistMethods$>
+						<option value="<$#active.IDM_CODE$>" 
+								<$if #active.IDM_CODE like #active.INCOME_DISTRIBUTION_METHOD$>selected<$endif$>><$#active.IDM_CODE$> - <$#active.IDM_NAME$></option>
+					<$endloop$>
+				</select>
+			</td>
+		</tr>
+
+		<tr id="shareClassDiv">
+			<$includeShareClassOverride = "1"$>
+			<$include ccla_cs_display_share_class$>
+		</tr>
+		
+		<tr>
+			<td>Mandated Account:</td>
+			<td colspan=3>
+				<input type="text" name="MANDATED_ACCOUNT_ID_DISPLAY" id="MANDATED_ACCOUNT_ID_DISPLAY" value="<$#active.MANDATED_ACCOUNT_ID_DISPLAY$>" disabled="disabled" size="18" />
+				<input type="hidden" name="MANDATED_ACCOUNT_ID" id="MANDATED_ACCOUNT_ID" value="<$#active.MANDATED_ACCOUNT_ID$>"  />
+				<input type="button" value="Choose Account" 
+				onclick="openPopup('?IdcService=CCLA_CS_ADD_MANDATED_ACCOUNT<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#local.ACCOUNT_ID$>includeAssociation=Yes&showAllSearchFields=true&CLIENT_NO=<$#active.CLIENT_NUMBER$>&seachScope=account',800);" 
+				>
+				<input type="button" name="CLEAR_MANDATE_ACC_DETAILS" id="CLEAR_MANDATE_ACC_DETAILS" value="Clear" onclick="clearMandateAccountFields()" />
+			</td>
+		</tr>	
+		
+		<tr>
+			<td>Status:</td>
+			<td>
+			<$if isNew$>
+				Pending
+				<input type="hidden" value="4" name="ACCOUNT_STATUS_ID">
+				<input type="hidden" value="20" name="RELATION_NAME_ID">
+			<$else$>
+				<select name="ACCOUNT_STATUS_ID" <$if not #env.CCLA_EnableAccountStatusUpdate$>disabled<$endif$> >	
+					<$thisAccStatus = #active.ACCOUNT_STATUS_ID$>
+					<$loop rsAccountStatuses$>
+						<option value="<$rsAccountStatuses.ACCOUNT_STATUS_ID$>" 
+								<$if strEquals(#active.thisAccStatus, rsAccountStatuses.ACCOUNT_STATUS_ID)$>selected<$endif$>><$rsAccountStatuses.SHORT_NAME$></option>
+					<$endloop$>
+				</select>
+			<$endif$>
+			</td>
+			
+			<td>Required signatures:</td>
+			<td>
+				<$include ccla_cs_num_required_signatures_select$>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<!-- Hidden fields. -->
+				<input type="hidden" name="ACCOUNT_TYPE_ID" value="<$#active.ACCOUNT_TYPE_ID$>" />
+				<input type="hidden" name="DATE_OPENED" value="<$#active.DATE_OPENED$>" />
+				<input type="hidden" name="ACC_ACCOUNT_CODE" value="<$#active.ACC_ACCOUNT_CODE$>" />
+			</td>
+		</tr>
+		
+		<$if #active.ACCOUNT_TYPE_ID like #env.CCLA_CS_AccountTypeId_Loan$>
+		
+			<tr>
+				<td>Loan Type:</td>
+				<td>
+					<$include ccla_cs_account_loan_type_select$>
+				</td>
+				
+				<td>Term of loan:</td>
+				<td>
+					<$include ccla_cs_account_loan_term_select$>
+				</td>
+			</tr>
+			
+		<$endif$>
+		
+		<tr>			
+			<td>Agreement Type:</td>
+			<td>
+				<$include ccla_cs_account_agreement_type_select$>
+			</td>
+			
+			<td>Exclusive Bank Account:</td>
+			<td>
+				<input type="checkbox" name="IS_EXCLUSIVE" <$if #active.IS_EXCLUSIVE == 1$>checked<$endif$> />
+			</td>
+		</tr>		
+		
+		<tr>
+			<td>Aurora Account:</td>
+			<td>
+				<$if not #active.ACCOUNT_ID$>
+					<$isAuroraAccount = 1$>
+				<$else$>
+					<$isAuroraAccount = #active.AURORA_ACCOUNT$>
+				<$endif$>
+				<input type="checkbox" id="AURORA_ACCOUNT" name="AURORA_ACCOUNT" <$if isAuroraAccount like 1$>checked<$endif$> />
+			</td>
+		</tr>
+		
+		<$include ccla_cs_account_aurora_updates$>
+		
+	</table>
+
+	<$if #active.ACCOUNT_ID$>
+		<br/>
+		
+		[[% Display misc Account details attributes %]]
+	
+		<$element_attribute_panel_title = "Other Details"$>
+		<$element_attribute_type_id = #env.CCLA_AttributeType_MiscAccountDetails$>	
+		<$element_attribute_save_button = ""$>
+		<$element_attribute_panel_use_small_header = 1$>
+		<$include ccla_cs_generic_element_attributes_panel$>	
+
+
+	<$endif$>
+	
+	<$include ccla_cs_account_flag_display$>
+	
+	<table width="100%">
+		<tr>
+			<td valign="top"></td>
+			<td>
+			
+			</td>
+			
+			<td></td>
+			<td valign="bottom" align="right">
+			<$if #active.ACCOUNT_ID$>
+					<!-- Don't show 'Save Changes' button on new records -->
+					<input type="submit" value="Save changes"/>
+			<$else$>
+				<input type="submit" value="Add Account"/>
+			<$endif$>
+			</td>
+		</tr>
+	</table>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_num_required_signatures_select@>
+	
+	<select name="REQ_SIGNATURES">
+		<$sigCount = 1$>
+		<$loopwhile sigCount <= 10$>
+			<option value="<$sigCount$>" 
+					<$if #active.REQ_SIGNATURES == sigCount$>selected<$endif$>><$sigCount$></option>
+			<$sigCount = sigCount + 1$>
+		<$endloop$>
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_account_loan_type_select@>
+	
+	<select name="LOAN_TYPE_ID" id="LOAN_TYPE_ID">
+		<option value="1" <$if #active.LOAN_TYPE_ID like "1"$>selected<$endif$>>Interest-only</option>
+		<option value="2" <$if #active.LOAN_TYPE_ID like "2"$>selected<$endif$>>Repayment</option>
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_account_loan_term_select@>
+	
+	<select name="LOAN_TERM" id="LOAN_TERM">
+		<$monthCounter = 1$>
+		<$maxMonths = 120$>
+		
+		<$loopwhile monthCounter <= maxMonths$>
+			<option value="<$monthCounter$>" 
+					<$if #active.LOAN_TERM like monthCounter$>selected<$endif$>><$monthCounter$> months</option>
+			<$monthCounter = monthCounter + 1$>
+		<$endloop$>
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_account_agreement_type_select@>
+	
+	<$thisAgreementTypeId = rsAccount.AGREEMENT_TYPE_ID$>
+	
+	<select name="AGREEMENT_TYPE_ID" id="AGREEMENT_TYPE_ID">
+		<$loop rsAgreementTypes$>
+			<option value="<$#active.AGREEMENT_TYPE_ID$>" 
+					<$if thisAgreementTypeId like #active.AGREEMENT_TYPE_ID$>selected<$endif$>><$#active.AGREEMENT_TYPE_NAME$></option>
+		<$endloop$>
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_account_aurora_updates@>
+<$if IsDebug$>ccla_cs_account_aurora_updates<$endif$>
+
+<$if rsAuroraAccountUpdate$>
+	<$loop rsAuroraAccountUpdate$>
+	<$currentUpdateType = #active.UPDATE_TYPE$>
+	<$hasUpdateType = "true"$>
+	<$endloop$>
+<$endif$>
+		<tr>
+			<td><br/></td>
+		</tr>
+<@end@>
+
+<!-- Displays read-only info for a CCLA account. -->
+<@dynamichtml ccla_cs_display_account_info@>
+
+	<$if IsDebug$>ccla_cs_display_account_info<$endif$>
+	
+	<$loop rsAccount$>
+	
+		<table class="cs-info-table" width="100%">
+		
+			<tr>
+				<th>Subtitle:</th><td colspan=3><$#active.SUBTITLE$></td>
+			</tr>
+			<!-- Set column widths -->
+			<tr>
+				<th width="20%"></th><td width="30%"></td>
+				<th width="20%"></th><td width="30%"></td>
+			</tr>
+		
+			<tr>
+				<th>IVS check status:</th>
+				<td>
+					<$include ccla_cs_account_ivs_check_status_display$>
+				</td>
+				<th>Required signatures:</th>
+				<td>
+					<$#active.REQ_SIGNATURES$>
+				</td>
+			</tr>
+
+			
+			<tr>
+				<th>Account no:</th>
+				<td><$strLeftFill(#active.ACCOUNTNUMBER,"0",8)$></td>
+				<th>Fund code:</th>
+				<td>
+					<$#active.FUND_CODE$>
+				</td>
+			</tr>
+
+			<tr>
+				<$include ccla_cs_display_share_class$>			
+			</tr>
+			
+			<tr>
+				<th>Status:</th>
+				<td><$#active.SHORT_NAME$></td>
+				<th>Income dist method:</th>
+				<td>
+					<$#active.INCOME_DISTRIBUTION_METHOD$>
+				</td>
+			</tr>
+			
+			<tr>
+				<td></td>
+			</tr>
+			
+			<tr>
+				<th>Cash:</th>
+				<td class="mono-type"><$#active.ACC_CASH$></td>
+				<th>Units:</th>
+				<td class="mono-type">
+					<$#active.ACC_UNITS$>
+				</td>
+			</tr>
+			
+			<$if #active.MANDATED_ACCOUNT_ID$>
+				<tr>
+					<th>Mandated account:</th>
+					<td class="mono-type">
+						<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.MANDATED_ACCOUNT_ID$>"><$#local.MANDATED_ACCOUNT_ID_DISPLAY$></a>
+					</td>
+				</tr>
+			<$endif$>
+			
+			<tr>
+				<td></td>
+			</tr>
+			
+			<tr>
+				<th>Date opened:</th>
+				<td><$formatDateOnly(#active.DATE_OPENED)$></td>
+				<th>Last refresh date:</th>
+				<td>
+					<$formatDateOnly(#active.ACC_LAST_REFRESH)$>
+				</td>
+			</tr>
+
+			<$if rsAccountFlagApplied$>
+				<tr>
+					<th>Flags:</th>
+						<$loop rsAccountFlagApplied$>
+							<td colspan="6"><$#active.ACCOUNT_FLAG_NAME$></td>
+						</tr>
+						<tr> 
+								<td></td>
+						<$endloop$>
+				</tr>
+			<$endif$>
+
+		</table>
+	
+	<$endloop$>
+	
+	
+	
+	<$if rsFund$>
+		<br/>
+		
+		<$loop rsFund$>
+
+			<h3 class="ccla_data_panel_header">Fund info</h3>
+
+			<table class="cs-info-table" width="100%">
+				
+				<tr>
+					<th >Name:</th>
+					<td colspan=3>
+						<$#active.DISPLAYNAME$>
+					</td>
+				</tr>
+				
+				<tr>
+					<th width="20%"></th><td width="30%"></td>
+					<th width="20%"></th><td width="30%"></td>
+				</tr>
+			
+				<tr>
+					<th>Company:</th>
+					<td><$#active.COMPANY_CODE$></td>
+					
+					<th>Opening date:</th>
+					<td><$formatDateOnly(#active.OPENINGDATE)$></td>
+				</tr>
+				
+				<tr>
+					<th>Type code:</th>
+					<td><$#active.FUND_TYPECODE$></td>
+					
+					<th>Income type code:</th>
+					<td><$#active.INCOME_TYPECODE$></td>
+				</tr>
+				
+				<tr>
+					<th>CHAPS code:</th>
+					<td><$#active.CHAPSCODE$></td>
+					
+					<th>Group ID:</th>
+					<td><$#active.FUNDGROUPID$></td>
+				</tr>
+			</table>
+			
+		<$endloop$>
+
+	<$else$>
+		WARNING: No Fund data found
+	
+	<$endif$>	
+	
+	<$if rsEntity$>
+		<br/>
+		
+		<$loop rsEntity$>
+
+			<h3 class="ccla_data_panel_header">Client info</h3>
+			
+			<!-- Organisation is a registered CCLA client -->
+			<table class="cs-info-table" width="100%">
+				
+				<tr>
+					<th width="20%">Name:</th>
+					<td colspan=3>
+						<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$rsEntity.ORGANISATION_NAME$></a>
+					</td>
+				</tr>
+				
+				<tr>
+					<th width="20%">Org Account code:</th>
+					<td width="30%">
+					<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$#active.ORG_ACCOUNT_CODE$></a>
+					</td>
+					<th></th>
+					<td>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>Category:</th>
+					<td colspan=2>
+						
+						<$selCategoryList = ""$>
+						
+						<$loop rsSelectedCategories$>
+							<$if selCategoryList$>
+								<$selCategoryList = selCategoryList & " > "$>
+							<$endif$>
+						
+							<$selCategoryList = #local.selCategoryList & #active.BASE_CAT_NAME$>
+						<$endloop$>
+						
+						<$selCategoryList$>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>Classification:</th>
+					<td colspan=2></td>
+				</tr>
+				
+				<!-- Display Aurora Client Number for the Account's Company, if one exists. -->
+				
+				<$exec rsFirst("rsFund")$>
+				<$exec rsFirst("rsAccount")$>
+				
+				<$foundAuroraClientMap = ""$>
+				
+				<$loop rsAuroraClientMap$>
+					<$if #active.COMPANY_ID like rsFund.COMPANY_ID$>
+						<tr>
+							<th width="20%">Aurora Client no:</th><td width="30%"><$strLeftFill(#active.CLIENT_NUMBER,"0",5)$></td>
+						</tr>
+						<$foundAuroraClientMap = 1$>
+					<$endif$>
+				<$endloop$>
+				
+				<$if (not foundAuroraClientMap) and (rsAccount.AURORA_ACCOUNT == 1)$>
+					<tr>
+						<th width="20%">Aurora Client no:</th>
+						<td><span style="color: red">No Aurora Client link for Company <$rsFund.COMPANY_CODE$></span></td>
+					</tr>
+				<$endif$>
+				
+			</table>
+			
+		<$endloop$>
+	
+	<$else$>
+		WARNING: No organisation/client info found (Organisation ID = <$rsAccount.ACC_CLIENT_ID$>)
+	
+	<$endif$>
+		
+<@end@>
+
+<!-- Displays IVS check status for an account. -->
+<@dynamichtml ccla_cs_account_ivs_check_status_display@>
+
+	<$if #local.IVSCheckStatus like "PASSED"$>
+		<div 	onclick="alert('The account has passed IVS checking.');"
+				class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+		
+		<$if #local.IVSPassReason$>
+			<div class="message_panel info_icon" style="margin: 5px 0px;">
+				<$#local.IVSPassReason$>
+			</div>
+		<$endif$>
+		
+		<$if not #env.CCLA_CS_EnableAccountIVSCheckOverride$>
+			[[% Old method of overriding account entity checking. %]]
+		
+			<$if #active.AML_CHECK_OVERRIDE_USER$>
+				<br/>
+			
+				<div class="message_panel error_icon">
+					Overriden by <$#active.AML_CHECK_OVERRIDE_USER$>
+				</div>
+				
+				<$if userHasRole("admin") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+					<input type="button" value="Remove override" onclick="removeOverrideUser()" />
+				<$endif$>
+				
+			<$endif$>
+		<$endif$>
+		
+	<$elseif #local.IVSCheckStatus like "UNKNOWN"$>
+		<div 	onclick="alert('The account has an Unknown IVS state, due to related Persons not being IVS checked.');"
+				class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+		
+		<br/>
+		
+		<div class="message_panel info_icon" style="margin: 5px 0px;">
+			<$#local.IVSFailReason$>
+		</div>
+		
+		<$if not #env.CCLA_CS_EnableAccountIVSCheckOverride$>
+			<$if userHasRole("admin") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+				<input type="button" value="Override" onclick="setOverrideUser()" />
+			<$endif$>
+
+		<$endif$>
+	
+	<$else$>
+		<div 	onclick="alert('The account has failed IVS checking.');"
+				class="check-status-box red-status-box">&nbsp;</div>&nbsp;RED
+		
+		<br/>
+		
+		<div class="message_panel info_icon" style="margin: 5px 0px;">
+			<$#local.IVSFailReason$>
+		</div>
+		
+		<$if not #env.CCLA_CS_EnableAccountIVSCheckOverride$>
+			<$if userHasRole("admin") or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+				<input type="button" value="Override" onclick="setOverrideUser()" />
+			<$endif$>
+
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml ccla_cs_account_set_aml_check_override_user_form@>
+	
+	<script type="text/javascript">
+
+		function setOverrideUser() {
+			if (!confirm("Are you sure you wish to override AML checking for this account?"))
+				return;
+		
+			var frm = document.forms["setAmlCheckOverrideUserForm"];
+			frm.submit();
+		}
+		
+		function removeOverrideUser() {
+			if (!confirm("Are you sure you wish to remove AML checking for this account?"))
+				return;
+		
+			var frm = document.forms["setAmlCheckOverrideUserForm"];
+			
+			frm.elements["OVERRIDE_USER"].value = "";
+			frm.submit();
+		}
+		
+	</script>
+	
+	<form name="setAmlCheckOverrideUserForm" id="setAmlCheckOverrideUserForm" method="POST">
+		<input 	type="hidden" name="IdcService" value="CCLA_CS_ST_AML_CHECK_OVERRIDE_USER" /><$include add_idc_token_to_form$>
+		<input 	type="hidden" name="ACCOUNT_ID" value="<$#active.ACCOUNT_ID$>" />
+		
+		<input 	type="hidden" name="OVERRIDE_USER" 
+				value="<$dUser$>" />
+		
+		<input  type="hidden" name="RedirectUrl"
+				value="?IdcService=<$#local.IdcService$><$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>" />
+	</form>
+	
+<@end@>
+
+
+<@dynamichtml ccla_cs_related_bank_accounts_display_compact@>
+	
+	<$if ajaxRefresh$>
+		<$fetchElements="account,relatedBankAccounts"$>
+		<$executeService("CCLA_CS_GET_ACCOUNT_DATA")$>
+	<$endif$>
+	
+	<$displayBankAccountRelations=1$>
+	
+	<span class="bank_account_list relation_list">
+		<$include ccla_cs_related_bank_accounts_display$>
+	</span>
+	
+	<$include ccla_cs_account_details_display_compact$>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_account_flags_display@>
+	
+	<$if ajaxRefresh$>
+		<$fetchElements="account,flags"$>
+		<$executeService("CCLA_CS_GET_ACCOUNT_DATA")$>
+	<$endif$>
+	
+	<span class="account_flag_list relation_list">
+		<$hideAccountFlagTitle=1$>
+		<$displayAppliedFlagsOnly=1$>
+		<$include ccla_cs_account_flag_display$>
+	</span>
+	
+	<$include ccla_cs_account_details_display_compact$>
+	
+<@end@>
+
+
+<@dynamichtml ccla_cs_account_relations_div@>
+	<$executeService("CCLA_CS_ACCOUNT_EDIT")$>
+	<$ELEMENT_ID = #active.ACCOUNT_ID$>
+	<$include ccla_cs_related_bank_accounts$>
+<@end@>
+
+<!-- Displays the contents of the rsRelatedBankAccounts ResultSet, including
+     support for empty/missing ResultSet.
+	 
+     Can be called via AJAX to refresh the display. -->
+<@dynamichtml ccla_cs_related_bank_accounts@>
+
+	<$if isRelationsUpdated$>
+		<div class="message_panel info_icon">
+			Relationships updated
+		</div>
+		<br/>
+	<$endif$>
+	
+	<$if ajaxRefresh$>
+		<$if ELEMENT_ID$>
+			<$executeService("CCLA_CS_GET_RELATED_BANK_ACCOUNTS")$>
+		<$else$>
+			Error: ELEMENT_ID missing
+		<$endif$>
+	<$endif$>
+
+	<$displayBankAccountRelations=1$>
+	
+	<$if not rsRelatedBankAccounts$>
+		<div class="no-info">None</div>
+	<$else$>
+		<$include ccla_cs_related_bank_accounts_display$>
+	<$endif$>
+	
+<@end@>
+
+<!-- Displays the contents of the rsRelatedBankAccounts/rsBankAccountRelations 
+	 ResultSets.
+     The rsRelatedBankAccounts ResultSet should be checked first to ensure 
+	 it is non-empty before calling this include. -->
+<@dynamichtml ccla_cs_related_bank_accounts_display@>
+	
+	<$if IsDebug$>ccla_cs_related_bank_accounts_display<$endif$>	
+	
+	<!-- Determine who is the newly-updated/added Bank Account, if applicable. -->
+	<$if displayBankAccountRelations$>
+		<$if #local.newRelationId$>
+			<$loop rsBankAccountRelations$>
+				<$if ELEMENT_TYPE_ID_1 like #env.CCLA_ElementType_Account$>
+					<$thisBankAccountId = #active.ELEMENT_ID2$>
+				<$endif$>
+
+				<$if #local.newRelationId like #active.RELATION_ID$>
+					<$newRelatedBankAccount = thisBankAccountId$>
+				<$endif$>
+				
+			<$endloop$>
+
+			<$exec rsFirst("rsBankAccountRelations")$>
+		<$endif$>
+	<$endif$>
+	
+	<$if displayBankAccountRelations$>
+		<!-- Determine which relations have the 'Default' property set, if any. -->
+		<$defaultIncomeRelationId = "", defaultWithdrawalRelationId = ""$>
+		
+		<$loop rsBankAccountRelationProperties$>
+			<$if rsBankAccountRelationProperties.RELATION_PROPERTY_ID like #env.CCLA_RelationProperty_Income_Default$>
+				<$defaultIncomeRelationId = rsBankAccountRelationProperties.RELATION_ID$>
+			<$elseif rsBankAccountRelationProperties.RELATION_PROPERTY_ID like #env.CCLA_RelationProperty_Withdrawal_Default$>
+				<$defaultWithdrawalRelationId = rsBankAccountRelationProperties.RELATION_ID$>
+			<$endif$>
+		<$endloop$>
+	<$endif$>
+	
+	<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+		<tr>
+			<th class="first-col" width=80>
+				Account No.
+			</th>
+			
+			<th width=60>
+				Sort Code
+			</th>
+			
+			<th width=110>
+				Building Soc. No.
+			</th>
+			
+			<th width=110>
+				Short Name
+			</th>
+			
+			<th>
+				Account name
+			</th>
+
+			<$if displayBankAccountRelations$>
+			
+				<$loop rsElementRelationTypeNames$>	
+					<$if #active.ELEMENT_TYPE_ID_1 like #local.ELEMENT_TYPE_ID_1 AND #active.ELEMENT_TYPE_ID_2 like #local.ELEMENT_TYPE_ID_2$>
+						<th width="40"><$#active.SHORT_NAME$></th>
+					<$endif$>
+				<$endloop$>
+				
+			<$endif$>
+			
+			<$if allowSelectRelation$>
+				<th width="80">&nbsp;</th>
+			<$endif$>
+
+		</tr>
+		
+		<$exec rsFirst("rsRelatedBankAccounts")$>
+		
+		<$if isEdit$>
+			<$bankAccountServiceName="CCLA_CS_BANK_ACCOUNT_EDIT"$>
+		<$else$>
+			<$bankAccountServiceName="CCLA_CS_BANK_ACCOUNT_INFO"$>
+		<$endif$>
+		
+		<$loop rsRelatedBankAccounts$>	
+			
+			<tr class="account-details-row" 
+				<$if #active.BANK_ACCOUNT_ID like #local.newRelatedBankAccountId$>style="background-color: #BEDFA7"<$endif$> >
+				<td class="first-col">
+					<$if not #active.isCompact$>
+						<a href="?IdcService=<$bankAccountServiceName$><$include add_idc_token_to_url$>&BANK_ACCOUNT_ID=<$#active.BANK_ACCOUNT_ID$>"><$#active.ACCOUNT_NO$></a>
+					<$else$>
+						<$#active.ACCOUNT_NO$>
+					<$endif$>
+				</td>
+				
+				<td>
+					<$#active.SORT_CODE$>
+				</td>
+				
+				<td>
+					<$#active.BUILDING_SOCIETY_ROLL_NUMBER$>&nbsp;
+				</td>
+				
+				<td>
+					<$#active.ACCOUNT_SHORT_NAME$>&nbsp;
+				</td>
+				
+				<td>
+					<$#active.ACCOUNT_NAME$>&nbsp;
+				</td>
+
+				<$if displayBankAccountRelations$>
+				
+					<$rsName = "rsRelations_" & #active.BANK_ACCOUNT_ID$>
+					<$loop rsElementRelationTypeNames$>
+					
+						<$if #active.ELEMENT_TYPE_ID_1 like #local.ELEMENT_TYPE_ID_1 AND #active.ELEMENT_TYPE_ID_2 like #local.ELEMENT_TYPE_ID_2$>
+							
+							<$if rsFindRowPrimary("rsBankAccountRelationMap", #active.BANK_ACCOUNT_ID & "_" & #active.RELATION_NAME_ID)$>
+								<$relationExists = 1$>
+							<$else$>
+								<$relationExists = ""$>
+							<$endif$>
+							
+							<td align="center">
+								
+								<$defaultRelation=""$>
+								
+								<$if relationExists$>
+									<$exec rsFirst("rsBankAccountRelationMap")$>
+										
+									<$loop rsBankAccountRelationMap$>
+										<$if #active.REL_MAP like (#active.BANK_ACCOUNT_ID & "_" & #active.RELATION_NAME_ID)$>
+											<$thisRelationId = #active.REL_ID$>
+											<$relationVerified = #active.NUM_VER_SOURCES$>
+
+											<$if (thisRelationId like defaultIncomeRelationId)
+												or (thisRelationId like defaultWithdrawalRelationId)$>
+												<$defaultRelation=1$>
+											<$endif$>
+											
+										<$endif$>
+									<$endloop$>
+								<$endif$>
+								
+								<$if isEdit or isBulkEdit or allowSelectRelation$>
+									<$if singleSelectRelation$>
+										<input 	type="checkbox" 
+												name="relElement_<$rsRelatedBankAccounts.BANK_ACCOUNT_ID$>_<$rsElementRelationTypeNames.RELATION_NAME_ID$>"
+												
+												id="relationNameId_<$rsElementRelationTypeNames.RELATION_NAME_ID$>"
+												class="single_select_relation relationNameId_<$rsElementRelationTypeNames.RELATION_NAME_ID$><$if isBulkEdit$> bulk_update_check<$endif$>"
+												
+												<$if relationExists$>checked<$endif$> />
+												
+										
+									<$else$>
+										<input 	type="checkbox" 
+												name="relElement_<$rsRelatedBankAccounts.BANK_ACCOUNT_ID$>_<$rsElementRelationTypeNames.RELATION_NAME_ID$>"
+												
+												<$if isBulkEdit$>class="bulk_update_check"<$endif$>
+												
+												<$if relationExists$>checked<$endif$> />
+									<$endif$>
+											
+								<$elseif relationExists$>
+
+									<$if relationVerified$>
+										<a 	href="javascript:openPopup('?IdcService=CCLA_CS_RELATION_INFO<$include add_idc_token_to_url$>&RELATION_ID=<$thisRelationId$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&isEdit=1');"
+											title="Relationship has been verified against an external source. Click for more info"
+											
+											><$if defaultRelation$><img src="images/ccla/tick-green-nom.gif" /><$else$><img src="images/ccla/tick-green.gif" /><$endif$></a>
+									<$else$>
+										<a 	href="javascript:openPopup('?IdcService=CCLA_CS_RELATION_INFO<$include add_idc_token_to_url$>&RELATION_ID=<$thisRelationId$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&isEdit=1');"
+											title="Unverified relationship. Click for more info"
+			
+											><$if defaultRelation$><img src="images/ccla/tick-amber-nom.gif" /><$else$><img src="images/ccla/tick-amber.gif" /><$endif$></a>
+									<$endif$>
+								<$else$>								
+									&nbsp;
+								<$endif$>
+
+							</td>
+						<$endif$>
+					<$endloop$>
+				
+				<$endif$>
+				
+				<$if allowSelectRelation$>
+					<td align="center">
+						<input type="button" value="Select" onclick="selectBankAccount('<$#active.BANK_ACCOUNT_ID$>')">
+					</td>
+				<$endif$>
+			</tr>
+			
+		<$endloop$>
+		
+	</table>
+	
+	<$if displayBankAccountRelations and not isEdit and not isBulkEdit$>
+		<div style="float:right"><img src="images/ccla/tick-amber-nom.gif" /> denotes nominated account</div>
+	<$endif$>
+	<br>
+<@end@>
+
+<!-- Displays a list of bank account-element relationships. -->
+<@dynamichtml ccla_cs_bank_account_relations@>
+
+	<$if IsDebug$>ccla_cs_bank_account_relations<$endif$>
+
+	<$include orangeContainer_top$>
+	
+		<div class='ccla_cs_panel_header'>
+			Relationships
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+		
+			<h3 class="ccla_data_panel_header">Accounts</h3>
+			
+			<form name="frmAccountRelations" id="frmAccountRelations" method="POST">
+				
+				<$include ccla_cs_common_params$>
+
+				<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_BANK_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#local.BANK_ACCOUNT_ID$>&isRelationsUpdated=true"/>
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Account$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_BankAccount$>
+				
+				<input type="hidden" name="ELEMENT_ID"		value="<$#local.BANK_ACCOUNT_ID$>" />
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+			
+				<div id="accountRelationsDisplay">
+					<$include ccla_cs_related_accounts$>
+				</div>
+
+				<$if isEdit$>
+					<br/>
+					<div align="right">
+						<input type="submit" value="Update" tabindex="155" />
+						
+						<$if false and not #active.isCompact$>
+							<input type="button" 
+								value="Add account..." 
+								onclick="openPopup('?IdcService=CCLA_CS_ADD_ACCOUNT_RELATION<$include add_idc_token_to_url$>&BANK_ACCOUNT_ID=<$#local.BANK_ACCOUNT_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=Yes&searchScope=account',800);" 
+								tabindex="160"  />
+						<$endif$>
+					</div>
+				
+				<$endif$>
+			</form>	
+		
+		</div>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Displays a list of related accounts.
+
+	 Requires ELEMENT_ID, ELEMENT_TYPE_ID_1 and ELEMENT_TYPE_ID_2 set. -->
+<@dynamichtml ccla_cs_related_accounts@>
+	
+	<$if isRelationsUpdated$>
+		<div class="message_panel info_icon">
+			Relationships updated
+		</div>
+	<$endif$>
+	
+	<$if ajaxRefresh$>
+		<$if ELEMENT_ID$>
+			<$executeService("CCLA_CS_GET_RELATED_ACCOUNTS")$>
+		<$else$>
+			Error: ELEMENT_ID missing
+		<$endif$>
+	<$endif$>
+	
+	<$if not rsRelatedAccounts$>
+		<div class="no-info">None</div>
+	<$else$>
+		<$include ccla_cs_related_accounts_display$>
+	<$endif$>
+	
+
+<@end@>
+
+<@dynamichtml ccla_cs_related_accounts_display@>
+	
+	<$if IsDebug$>ccla_cs_related_accounts_display<$endif$>	
+	
+	<!-- Generate relation ResultSets for each related Account.
+		 
+		 These ResultSets contain a single 'rel' column, which
+		 holds a relation name ID. 
+			-->
+	
+	<$loop rsAccountRelations$>
+		<$if (ELEMENT_TYPE_ID_1 like #env.CCLA_ElementType_Org) or (ELEMENT_TYPE_ID_1 like #env.CCLA_ElementType_Person)$>
+			<$thisAccountId = #active.ELEMENT_ID2$>
+		<$elseif (ELEMENT_TYPE_ID_2 like #env.CCLA_ElementType_BankAccount)$>
+			<$thisAccountId = #active.ELEMENT_ID1$>
+		<$endif$>
+
+		<$if #local.newRelationId like #active.RELATION_ID$>
+			<$newRelatedAccount = thisAccountId$>
+		<$endif$>
+		
+		<$rsName = "rsRelations_" & thisAccountId$>
+	
+		<$if not rsExists(rsName)$>
+			<$exec rsCreateResultSet(rsName, "rel")$>
+		<$endif$>
+
+		<$exec rsAppendRowValues(rsName, #active.RELATION_NAME_ID)$>
+	<$endloop$>
+
+	<$exec rsFirst("rsAccountRelations")$>
+	
+	<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+		<tr>
+			<th class="first-col" width="130">
+				Ext. Acc. No.
+			</th>
+									
+			<th width="70">Status</th>
+			
+			<th>Subtitle</th>
+
+			<$exec rsFirst("rsElementRelationTypeNames")$>
+			
+			<$loop rsElementRelationTypeNames$>	
+				<$if #active.ELEMENT_TYPE_ID_1 like #local.ELEMENT_TYPE_ID_1 AND #active.ELEMENT_TYPE_ID_2 like #local.ELEMENT_TYPE_ID_2$>
+					<th width="40"><$#active.SHORT_NAME$></th>
+				<$endif$>
+			<$endloop$>
+			
+			<$if allowSelectRelation$>
+				<th width="80">&nbsp;</th>
+			<$endif$>					
+		</tr>
+		
+		<$exec rsFirst("rsRelatedAccounts")$>
+		
+		<$loop rsRelatedAccounts$>	
+			
+			<tr class="account-details-row"
+				<$if #active.ACCOUNT_ID like #local.newRelatedAccount$>style="background-color: #BEDFA7"<$endif$> >
+				<td class="first-col">
+					<$if not #active.isCompact$>
+						<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>">
+					<$endif$>
+					
+					<$#active.ACCNUMEXT$>
+					
+					<$if not #active.isCompact$>
+						</a>
+					<$endif$>
+				</td>
+				
+				<td><$#active.SHORT_NAME$></td>
+				<td><$#active.SUBTITLE$>&nbsp;</td>
+				
+				
+				<$rsName = "rsRelations_" & #active.ACCOUNT_ID$>
+				
+				<$loop rsElementRelationTypeNames$>	
+					<$if #active.ELEMENT_TYPE_ID_1 like #local.ELEMENT_TYPE_ID_1 AND #active.ELEMENT_TYPE_ID_2 like #local.ELEMENT_TYPE_ID_2$>
+					
+						<$if rsFindRowPrimary(rsName, #active.RELATION_NAME_ID)$>
+							<$relationExists = 1$>
+						<$else$>
+							<$relationExists = ""$>
+						<$endif$>
+						
+						<td align="center">
+							<$if isEdit$>
+								<input 	type="checkbox" 
+										name="relElement_<$#active.ACCOUNT_ID$>_<$#active.RELATION_NAME_ID$>" 
+										<$if relationExists$>checked<$endif$> />
+										
+							<$elseif relationExists$>
+								<img src="images/ccla/tick.gif" />
+							<$else$>								
+								&nbsp;
+							<$endif$>
+
+						</td>
+					<$endif$>
+				<$endloop$>
+				
+				<$if allowSelectRelation$>
+					<td align="center">
+						<input type="button" value="Select" onclick="selectAccount('<$#active.ACCOUNT_ID$>')">
+					</td>
+				<$endif$>
+			</tr>
+			
+		<$endloop$>
+		
+	</table>
+	
+<@end@>
+
+<!-- Displays the contents of the rsRelatedAccounts ResultSet, i.e.
+	 Accounts which are related to a single Bank Account.
+	 
+     The ResultSet should be checked first to ensure it is non-empty
+     before calling this include. -->
+<@dynamichtml ccla_cs_bank_account_related_accounts_display@>
+	
+	<$if IsDebug$>ccla_cs_bank_account_related_accounts_display<$endif$>
+	
+	<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+		<tr>
+			<th class="first-col"  width="20%">
+				Ext. acc. no.
+			</th>
+			
+			<th>
+				Subtitle
+			</th>
+			
+			<th width="65">Default</th>
+			<th width="65">Income</th>
+			<th width="65">Withdrawal</th>
+			
+			<th width="5%">&nbsp;</th>
+		</tr>
+		
+		<$loop rsRelatedAccounts$>	
+			
+			<tr class="account-details-row" >
+				<td class=" first-col mono-type" class="first-col">
+					<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>"><$#active.ACCNUMEXT$></a>
+					&nbsp;
+				</td>
+				<td>
+					<$#active.SUBTITLE$>
+					&nbsp;
+				</td>
+				
+				<td align="center">
+					<$tickFieldValue = #active.IS_DEFAULT$>
+					<$include ccla_cs_field_value_tick_display$>
+				</td>
+				
+				<td align="center">
+					<$tickFieldValue = #active.INCOME$>
+					<$include ccla_cs_field_value_tick_display$>
+				</td>
+				
+				<td align="center">
+					<$tickFieldValue = #active.WITHDRAWAL$>
+					<$include ccla_cs_field_value_tick_display$>
+				</td>
+				
+				<td align="center">
+					<img 	src="<$HttpImagesRoot$>ccla/clientservices/update-record.png" 
+							title="Update" style="cursor: pointer" 
+							onclick="updateBankAccountRelation('<$#active.BANK_ACCOUNT_RELATION_ID$>')" />
+				</td>
+			</tr>
+			
+		<$endloop$>
+		
+	</table>
+	
+<@end@>
+
+<!-- Used to display a tick graphic for boolean fields (i.e. value of 0/1).
+     Assign the boolean field value to 'tickFieldValue' before calling the
+	 include. -->
+<@dynamichtml ccla_cs_field_value_tick_display@>
+	
+	<$if #local.tickFieldValue == 1$> 
+		<img src="images/ccla/tick.gif" />
+	<$else$>
+		&nbsp;
+	<$endif$>
+
+<@end@>
+
+<!-- Tab controls which will appear at the top of static data record pages.
+	 Toggles between info/edit record mode.
+	 
+	 Requires the following present in the binder:
+	 -recordService_info: 	the IdcService plus parameters for the info view
+	 -recordService_edit:	the IdcService plus parameters for the edit view
+	 -isInfo:				flag determining whether current display is info
+							mode
+	 -isEdit:				flag determining whether current display is edit
+							mode
+	 -isNew:				new record mode.
+	 -->
+<@dynamichtml ccla_cs_toggle_info_edit_display@>
+<$if IsDebug$>ccla_cs_toggle_info_edit_display<$endif$>	
+	
+	<$include ccla_cs_common_params$>
+	
+	<$if not isNew$>
+		<div class="cs-tab-container">
+			<!-- Record info toggle -->
+			<a 	href="?IdcService=<$recordService_info$><$include add_idc_token_to_url$><$commonParams$>" title="View record info"
+				class="cs-info-tab cs-link-tab <$if isInfo$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">Info</span></a>
+			
+			<!-- Record edit toggle -->
+			<a 	href="?IdcService=<$recordService_edit$><$include add_idc_token_to_url$><$commonParams$>" title="Edit this record"
+				class="cs-info-tab cs-link-tab <$if isEdit$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">
+				<$if recordService_edit_Label$><$recordService_edit_Label$><$else$>Edit<$endif$></span></a>
+
+			<!-- Record edit toggle -->	
+			<$if strEqualsIgnoreCase(buttonContext,"entity") and not #local.isCompact$>
+			<a 	href="?IdcService=<$recordService_bulkupdate$><$include add_idc_token_to_url$><$commonParams$>" title="Make a bulk update to this record"
+				class="cs-info-tab cs-link-tab <$if not isEdit and not isInfo$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">Bulk Update</span></a>
+			<$endif$>
+
+			
+		</div>
+	<$endif$>
+		
+<@end@>
+
+<@dynamichtml ccla_cs_unique_identifier_search_fields@>
+	<$if IsDebug$>ccla_cs_unique_identifier_search_fields<$endif$>
+	<h3 class="ccla_data_panel_header">CCLA Identifiers</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">
+			<tr>
+				<th>Org Code:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="ORGANISATION_CODE" name="ORGANISATION_CODE" value="<$#active.ORGANISATION_CODE$>"/></td>
+				
+					<th>Person Code:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_UNIQUE_ID" id="EXT_UNIQUE_ID" value="<$#active.EXT_UNIQUE_ID$>" /></td>
+
+
+					<th>Campaign No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="CAMPAIGN_NO" id="CAMPAIGN_NO" value="<$#active.CAMPAIGN_NO$>" /></td>
+
+					<th></th>
+					<td></td>
+
+			</tr>
+		</table>
+	</div>
+	
+<@end@>
+<@dynamichtml ccla_cs_organisation_identifier_search_fields@>
+	<h3 class="ccla_data_panel_header">External Identifiers</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">
+			<tr>
+				<th>ONS No:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="EXT_IDENTIFIER_2" name="EXT_IDENTIFIER_2" value="<$#active.EXT_IDENTIFIER_2$>"/></td>
+				
+					<th>HMRC No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_5" id="EXT_IDENTIFIER_5" value="<$#active.EXT_IDENTIFIER_5$>" /></td>
+
+					<th></th>
+					<td></td>
+
+					<th>Crockfords:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_4" id="EXT_IDENTIFIER_4" value="<$#active.EXT_IDENTIFIER_4$>" /></td>
+
+					<th></th>
+					<td></td>
+
+			</tr>
+			<tr>
+				<th>Charity Ref:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="EXT_IDENTIFIER_1" name="EXT_IDENTIFIER_1" value="<$#active.EXT_IDENTIFIER_1$>"/></td>
+				
+					<th>Company Ref:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_3" id="EXT_IDENTIFIER_3" value="<$#active.EXT_IDENTIFIER_3$>" /></td>
+
+					<th></th>
+					<td></td>
+
+					<th></th>
+					<td></td>
+
+					<th></th>
+					<td></td>
+
+			</tr>			
+		</table>
+	</div>
+
+
+
+<@end@>
+
+<@dynamichtml ccla_cs_organisation_account_search_fields@>
+	<$if IsDebug$>ccla_cs_organisation_account_search_fields<$endif$>
+	<h3 class="ccla_data_panel_header">Existing Organisations/Accounts</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">	
+			<tr>
+				<$if searchScope like 'all' OR searchScope like 'organisation' OR searchScope like 'account'$>
+					<th>Client No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="CLIENT_NO" id="CLIENT_NO" value="<$#active.CLIENT_NO$>" /></td>
+				<$endif$>
+				
+				<$if searchScope  like 'all' OR searchScope like 'account'$>
+					<th>Account No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="ACCOUNT_NO" id="ACCOUNT_NO" value="<$#active.ACCOUNT_NO$>" /></td>
+				<$endif$>
+			
+				<$if searchScope  like 'all' OR searchScope like 'account' OR searchScope like 'organisation'$>			
+					<th>Fund:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="FUND" id="FUND" value="<$#active.FUND$>" /></td>
+				<$endif$>
+			</tr>
+		<$if searchScope  like 'all' OR searchScope like 'person'$>						
+			<tr>
+				<th>Corr. No.</th>
+				<td><input size="<$searchFieldSize$>" type="text" name="CORR_ID" id="CORR_ID" value="<$#active.CORR_ID$>" /></td>
+				
+				<th></th>
+				<td></td>
+				
+				<th></th>
+				<td></td>
+			</tr>
+		<$endif$>
+		</table>
+	</div>
+<@end@>
+
+<@dynamichtml ccla_cs_person_organisation_search_fields@>
+	<$if IsDebug$>ccla_cs_person_organisation_search_fields<$endif$>
+	
+	<$if searchScope like 'address'$>
+		<h3 class="ccla_data_panel_header">ADDRESSES</h3>
+	<$else$>
+		<h3 class="ccla_data_panel_header">New or unidentified People/Organisations</h3>
+	<$endif$>	
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table two-col">
+			<tr>
+				<$if searchScope  like 'all' OR searchScope like 'person'$>
+					<th>Person Name:</th>
+					<td width="30%"><input size="<$searchFieldSize$>" type="text" name="PERSON_NAME" id="PERSON_NAME" value="<$#active.PERSON_NAME$>" /></td>
+				<$endif$>	
+				<$if searchScope  like 'all' OR searchScope like 'organisation'$>
+					<th>Org. Name:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="ORG_NAME" id="ORG_NAME" value="<$#active.ORG_NAME$>" /></td>
+				<$else$>
+					<th></th>
+					<td></td>			
+				<$endif$>
+			</tr>
+			<tr>
+				<th>Postcode:</th>
+				<td><input size="<$searchFieldSize$>" type="text" name="POSTCODE" id="POSTCODE" value="<$#active.POSTCODE$>" /></td>				
+				<th>House/Flat No:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="HOUSE_NAMENUMBER"  name="HOUSE_NAMENUMBER" value="<$#active.HOUSE_NAMENUMBER$>" /></td>
+			</tr>			
+		</table>
+	</div>
+<@end@>
+
+<@dynamichtml ccla_cs_fund_code_dropdown@>
+	
+	<$if isAjax$>
+		<$executeService("CCLA_CS_GET_FUNDS")$>
+	<$endif$>
+
+	<$if IsDebug$>ccla_cs_fund_code_dropdown<$endif$>
+	
+					
+							
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+			// Gather array of Accumulation Funds.
+			var accumulationFunds = new Array();
+			
+			<$loop rsFunds$>
+				<$if (#active.INCOME_TYPECODE_ID == 2)$>
+					accumulationFunds.push('<$#active.FUND_CODE$>');
+				<$endif$>
+			<$endloop$>
+			
+			// Bind change event to Fund selector. 
+			$("#FUND_CODE").bind("change", function() {
+				var selFundCode = $(this).val();
+				
+				// Determine if Accumulation Fund has been selected.
+				if (accumulationFunds.indexOf(selFundCode) != -1) {
+					// Accumulation Fund selected.
+					
+					// Set Inc. Dist. Method to REIN.
+					$("#INCOME_DISTRIBUTION_METHOD").val("REIN");
+					// Disable Inc. Dist. Method selector
+					$("#INCOME_DISTRIBUTION_METHOD").attr("disabled", "disabled");
+				} else {
+					// Accumulation Fund not selected.
+					
+					// Enable Inc. Dist. Method selector
+					$("#INCOME_DISTRIBUTION_METHOD").removeAttr("disabled");
+				}
+			});
+		});
+	
+	</script>
+	
+	<select name="FUND_CODE" id="FUND_CODE" <$if not selCompanyId$>disabled<$endif$> >
+		
+		<$if selCompanyId$>
+			<option value=""></option>
+		
+			<$loop rsFunds$>
+				<$if #local.selCompanyId like #active.COMPANY_ID$>
+					<$if isTrue(hidePIFund) AND strEquals(rsFunds.FUND_CODE,"PI")$>
+					<$elseif isTrue(hideCFFund) AND strEquals(rsFunds.FUND_CODE,"CF")$>
+					<$else$>
+						<option value="<$#active.FUND_CODE$>" 
+								<$if #local.selFundCode like #active.FUND_CODE$>selected<$endif$> ><$#active.FUND_CODE$> <$if #active.DISPLAYNAME$> - <$#active.DISPLAYNAME$><$endif$></option>
+					<$endif$>
+				<$endif$>
+				
+			<$endloop$>
+		
+		<$else$>
+			<option value="">Select a Company</option>
+		<$endif$>
+		
+	</select>
+<@end@>
+
+<!-- Special panel shown on the Add New Interaction screen, if the user ticks one of the
+	 'Start workflow job' checkboxes. -->
+<@dynamichtml ccla_cs_interaction_query_job_fields@>
+
+	<div style="overflow: auto;<$if #active.isCompact$>display:none;<$endif$>">
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=80>
+						<h3 class="ccla_data_panel_header">Cause*:</h3>
+					</td>
+					<td>
+						<select name="causeId" id="causeId" style="width:330px">
+							<option value="0">Default</option>
+							<$c="Cache the response options for 1 day, at the application scope"$>
+							<$cacheInclude("ccls_cs_interaction_cause_options","application",86400)$>
+						</select>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="float: left; width: 2%;">&nbsp;</div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=80>
+						<h3 class="ccla_data_panel_header">Sub Cause:</h3>
+					</td>
+					<td>
+						<select name="subCauseId" id="subCauseId" style="width:330px">
+							<option value=""></option>
+							<!-- Filled dynamically after a cause is selected -->
+						</select>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="clear:both;"></div>
+		
+		<div style="float: left; width: 49%;">
+				
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=80 valign="top">
+						<h3 class="ccla_data_panel_header">Summary*:</h3>
+					</td>
+					<td>
+						<textarea name="summary" id="summary" style="height: 5em; width:330px; padding: 3px;"></textarea>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="float: left; width: 2%;">&nbsp;</div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=80 valign="top">		
+						<h3 class="ccla_data_panel_header">How identified*:</h3>					
+					</td>
+					<td>
+						<textarea name="howIdentified" id="howIdentified" style="width: 330px; height: 5em; padding: 3px;"></textarea>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=80 valign="top">	
+						<h3 class="ccla_data_panel_header">Required action*:</h3>
+					</td>
+					<td>
+						<textarea name="requiredAction" id="requiredAction" style="width: 330px; height: 5em; padding: 3px;"></textarea>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="clear:both;"></div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=120>
+						<h3 class="ccla_data_panel_header">Date identified*:</h3>
+					</td>
+					<td>
+						<input type="text" name="dateIdentified" id="dateIdentified" class="jquery_date"/>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="float: left; width: 2%;">&nbsp;</div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=120>
+						<h3 class="ccla_data_panel_header">Date occurred*:</h3>
+					</td>
+					<td>
+						<input type="text" name="dateOccurred" id="dateOccurred" class="jquery_date"/>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div style="float: left; width: 49%;">
+			<div class="ccla_data_panel">
+				<table width="100%" cellspacing=0 cellpadding=2>
+				<tr>
+					<td width=120>			
+						<h3 class="ccla_data_panel_header">Date resolved:</h3>
+					</td>
+					<td>
+						<input type="text" name="dateResolved" id="dateResolved" class="jquery_date"/>
+					</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+<@end@>
+
+<@dynamichtml ccla_cs_interaction_outcome_types_dropdown@>
+<$if rsOutcomeTypesById$>
+	<select id="OUTCOME_TYPE_ID" name="OUTCOME_TYPE_ID" <$if isEdit$>disabled="disabled"<$endif$>>>
+			<option value=""></option>
+		<$loop rsOutcomeTypesById$>
+			<option value="<$#active.OUTCOME_TYPE_ID$>" <$if strEqualsIgnoreCase(#active.OUTCOME_TYPE_ID,rsInteraction.OUTCOME_TYPE_ID)$>selected="selected"<$endif$>><$#active.OUTCOME_TYPE$></option>
+		<$endloop$>
+	</select>
+<$endif$>
+<@end@>
+
+<!-- Special panel shown on the Interaction screen, if the user marks the interaction as complete -->
+<@dynamichtml ccla_cs_interaction_outcome_complete_fields@>
+	<div style="overflow: auto;">
+		<div style="float: left; width: 100%;">
+			<div class="ccla_data_panel">
+			<table>
+				<tr>
+					<td width=80 valign="top">
+						<h3 class="ccla_data_panel_header">Complete Description*:</h3>
+					</td>
+					<td>
+						<textarea name="OUTCOME_TEXT" id="OUTCOME_TEXT" style="height: 5em; width:780px; padding: 3px;" <$if isEdit$>disabled="disabled"<$endif$>><$#active.OUTCOME_TEXT$></textarea>
+					</td>
+				</tr>
+			</table>
+			</div>
+		</div>	
+	</div>
+<@end@>
+
+
+<@dynamichtml ccls_cs_interaction_cause_options@>
+	<$include ccla_spp_int_get_complaint_category_options$>
+<@end@>
+
+<@dynamichtml ccla_cs_account_create_error_handling_js@>
+<$if IsDebug$>ccla_cs_account_create_error_handling_js<$endif$>
+<script type="text/javascript">
+	// ensures all the correct parameters are set in order
+	// to create an entity
+	function validateAccount(){
+
+		// remove any previously-displayed error messages
+		clearFieldErrorMsgs();
+		
+		var hasErrors = false;
+		var doErrorExplain = true;
+					
+		// Use this include for custom validation checks.
+		if (document.accountForm.CLIENT_NUMBER)
+		{
+			if (document.accountForm.CLIENT_NUMBER.value.length ==0) {
+				if (doErrorExplain)
+					displayFieldErrorMsg("Error creating account","Please correct the following errors and try again","");
+				doErrorExplain=false;	
+				displayFieldErrorMsg("CLIENT_NUMBER","Client Number","Please enter the client number from Aurora");
+				hasErrors = true;
+			}	
+		}
+	
+		if (!hasErrors) {
+			/*
+			
+			// Disabled this AJAX request - never appeared to fire anyway due to where its called 
+			// (onsubmit of the Account form)
+			
+			$.getJSON("?IdcService=CCLA_CS_VALIDATE_AURORA_ACCOUNT<$include add_idc_token_to_url$>", 
+			{ 	
+				"IS_PERSIST": "0",
+				"FUND_CODE": $('#FUND_CODE').val(),
+				"MANDATED_ACCOUNT_ID": $('#MANDATED_ACCOUNT_ID').val(),
+				"INCOME_DISTRIBUTION_METHOD": $('#INCOME_DISTRIBUTION_METHOD').val(),
+				"IS_AURORA_ACCOUNT": $('#AURORA_ACCOUNT').is(':checked')?"1":"0",
+				"IsJson": 1,
+				"ts": new Date()
+			}, function(jsonData) {
+				if (jsonData=="") {
+					if (doErrorExplain)
+						displayFieldErrorMsg("Error creating account","Please correct the following errors and try again","");
+					doErrorExplain=false;	
+					displayFieldErrorMsg("JSON","Error whilst trying to validate account - no data","");
+					hasErrors = true;
+					 
+				} else {
+					var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+	
+					if (jsonErrorMsg) {
+						if (doErrorExplain)
+							displayFieldErrorMsg("Error creating account","Please correct the following errors and try again","");
+						doErrorExplain=false;	
+						displayFieldErrorMsg("JSON",jsonErrorMsg,"");
+						hasErrors = true;
+
+					} else {
+						var isValid = jsonData.LocalData.isValid;
+						var errorMessage = jsonData.LocalData.errorMessage;
+						
+						//alert(isValid+", "+errorMessage);
+						
+						if (isValid!='1') {
+							if (doErrorExplain)
+								displayFieldErrorMsg("Error creating account","Please correct the following errors and try again","");
+							doErrorExplain=false;	
+							displayFieldErrorMsg("JSON",errorMessage,"");
+							hasErrors = true;								
+						} 
+					}
+				}
+			});
+			*/
+		}
+		
+		if (hasErrors) {
+			if ($("#errorMessage").length > 0) {
+				var new_position = $('#errorMessage').offset();
+				window.scrollTo(new_position.left,new_position.top);
+			}
+		}
+		
+		return !hasErrors;
+		//return false;
+	}
+
+			
+		
+	// Creates and returns an error message DIV element. It must
+	// be inserted into the DOM afterwards.
+	//
+	// The given msgTitle, msgBody variables determine the content
+	// of the error message.
+	function createErrorMsg(msgId, msgTitle, msgBody) {
+		
+		// create the divs which hold the error message
+		var errorMsgTitle = document.createElement("span");
+		errorMsgTitle.className = "validation_error_title";
+		errorMsgTitle.innerHTML = msgTitle + ': ';
+		
+		if (msgBody && msgBody.length > 0) {
+			var errorMsgBody = document.createElement("span");
+			errorMsgBody.innerHTML = msgBody;
+		}
+		
+		var errorMsgDiv = document.createElement("div");
+		errorMsgDiv.id				= "err_" + msgId;
+		errorMsgDiv.className = "validation_error error_icon";
+		
+		errorMsgDiv.appendChild(errorMsgTitle);
+		
+		if (errorMsgBody)
+			errorMsgDiv.appendChild(errorMsgBody);
+		
+		return errorMsgDiv;
+	}
+			// Displays a validation error message below the given field
+	// on the document indexing panel.
+	//
+	// The field element itself will also be re-styled to show it
+	// is in error.
+	function displayFieldErrorMsg(fieldName, msgTitle, msgBody) {
+		
+		// re-style field input element
+		var fieldElem = document.accountForm[fieldName];
+		$(fieldElem).addClass("validation_error_field");
+	
+		// build the error message div
+		var errorMsg = createErrorMsg(fieldName, msgTitle, msgBody);
+		
+		// clicking the error msg div will highlight the offending field.
+		errorMsg.onclick = function() {
+			var thisField = this.id.substring(4);
+			
+			document.accountForm[thisField].focus();
+			document.accountForm[thisField].select();
+		}
+	// create the table cell/row to hold the div and insert
+		// it after the document field row.
+		var errorMsgDiv = document.createElement("div");
+		
+		errorMsgDiv.appendChild(errorMsg);
+
+		errorMsgDiv.id = "FieldError_" + fieldName;
+		errorMsgDiv.className = "doc_field_error_row";
+		
+		// find the div for the error message
+		var errorMessageContainer = $("#errorMessage");
+	
+		
+		$(errorMessageContainer).append(errorMsgDiv);
+	}
+	
+	// Deletes any existing field error messages spawned by 
+	// function above.
+	function clearFieldErrorMsgs() {
+		// remove error styling on invalid fields
+		$("#accountForm input, #accountForm select, #accountForm textarea").removeClass("validation_error_field");
+		
+		// delete rows used for displaying validation errors
+		$(".doc_field_error_row").remove();
+	}
+
+</script>
+<@end@>	
+
+<@dynamichtml ccla_cs_default_bank_account_display@>
+<$if IsDebug$>ccla_cs_default_bank_account_display<$endif$>
+					<$exec rsFirst("rsBankAccountRelations")$>
+					<h3 class="ccla_data_panel_header">
+						<$defaultTitle$>
+					</h3>
+					<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+						<tr>
+							<th class="first-col" width=80>
+								Account No.
+							</th>
+							
+							<th width=60>
+								Sort Code
+							</th>
+							
+							<th>
+								Account name
+							</th>
+							
+							<th width=80>
+								Default <$defaultTitle$>
+							</th>
+				
+						</tr>
+						
+						<$exec rsFirst("rsAllRelatedBankAccounts")$>
+						
+						<$if isEdit$>
+							<$bankAccountServiceName="CCLA_CS_BANK_ACCOUNT_EDIT"$>
+						<$else$>
+							<$bankAccountServiceName="CCLA_CS_BANK_ACCOUNT_INFO"$>
+						<$endif$>
+						
+						<$loop rsAllRelatedBankAccounts$>	
+							<$if #active.RELATION_NAME_ID like defaultRelationNameId$>
+							<tr class="account-details-row" 
+								<$if #active.BANK_ACCOUNT_ID like #local.newRelatedBankAccountId$>style="background-color: #BEDFA7"<$endif$> >
+								<td class="first-col">
+									<$if not #active.isCompact$>
+										<a href="?IdcService=<$bankAccountServiceName$><$include add_idc_token_to_url$>&BANK_ACCOUNT_ID=<$#active.BANK_ACCOUNT_ID$>"><$#active.ACCOUNT_NO$></a>
+									<$else$>
+										<$#active.ACCOUNT_NO$>
+									<$endif$>
+								</td>
+								
+								<td>
+									<$#active.SORT_CODE$>
+								</td>
+								
+								<td>
+									<$#active.ACCOUNT_NAME$>&nbsp;
+								</td>
+						
+									
+								<$loop rsRelationProperties$>
+								<$if #active.RELATION_NAME_ID like defaultRelationNameId AND #active.ELEMENT_TYPE_ID_1 like #local.ELEMENT_TYPE_ID_1 AND #active.ELEMENT_TYPE_ID_2 like #local.ELEMENT_TYPE_ID_2$>
+									<td><input type="radio" name="<$rsRelationProperties.RELATION_PROPERTY_ID$>"  value="<$rsAllRelatedBankAccounts.RELATION_ID$>"
+									<$if rsAllRelatedBankAccounts.RELATION_PROPERTY_ID$>checked="checked"<$endif$>
+									></td>
+								<$endif$>				
+								<$endloop$>			
+
+							</tr>
+							<$endif$>
+						<$endloop$>
+		
+					</table>
+					
+<@end@>
+
+<@dynamichtml ccla_cs_account_flag_display@>
+	<$if IsDebug$>ccla_cs_account_flag_display<$endif$>
+	
+	<$if not hideAccountFlagTitle$>
+		<h3 class="ccla_cs_data_panel_header">Account Flags</h3>
+	<$endif$>
+
+	<table class="accounts-table" width="100%" cellpadding=2 cellspacing=0>			
+		<tr class="account-details-row">
+			<th class="first-col">
+				Flag Reason
+			</th>
+			
+			<th width=80>Watchlist</th>
+			
+			<th width=60>
+				State
+			</th>	
+		</tr>
+
+		<$if displayAppliedFlagsOnly$>
+			<!-- Only display flags that have been set for this account -->
+			
+			                  
+				<$loop rsAccountFlagApplied$>
+					<$if #active.ACCOUNT_FLAG_ID like rsAccountFlags.ACCOUNT_FLAG_ID$>
+					
+						<tr class="account-details-row">
+							<td class="first-col"><$rsAccountFlags.ACCOUNT_FLAG_NAME$></td>
+							
+							<td align="center">
+								<$if #active.ADD_TO_WATCHLIST == 1$>
+									<img src="images/ccla/tick-green.gif"/>
+								<$else$>
+									&nbsp;
+								<$endif$>
+							</td>
+							
+							<td align="center">
+								<img src="images/ccla/tick-green.gif"/>
+							</td>
+						</tr>
+					
+						<$break$>
+					<$endif$>
+				<$endloop$>
+
+			<$endloop$>
+			
+		<$else$>
+			<!-- Display all flags -->
+		
+			<$loop rsAccountFlags$>
+				<tr class="account-details-row">
+					<td class="first-col"><$rsAccountFlags.ACCOUNT_FLAG_NAME$></td>
+					
+					<td align="center">
+						<$if #active.ADD_TO_WATCHLIST == 1$>
+							<img src="images/ccla/tick-green.gif"/>
+						<$else$>
+							&nbsp;
+						<$endif$>
+					</td>
+					
+					<td align="center">
+						<input type="checkbox" 
+							name="flag_<$rsAccountFlags.ACCOUNT_FLAG_ID$>" 
+							id="flag_<$rsAccountFlags.ACCOUNT_FLAG_ID$>"
+							<$if isBulkEdit$>class="bulk_update_check"<$endif$>
+							
+							<$loop rsAccountFlagApplied$>
+								<$if rsAccountFlagApplied.ACCOUNT_FLAG_ID like rsAccountFlags.ACCOUNT_FLAG_ID$>
+									checked="checked"
+								<$endif$>
+							<$endloop$> />
+					
+					</td>
+				</tr>
+			<$endloop$>
+		
+		<$endif$>
+		
+</table>
+<@end@>
+
+
+<@dynamichtml ccla_cs_share_class_account_details@>
+	<$if IsDebug$>ccla_cs_share_class_account_details<$endif$>
+
+	<tr>
+		<th>Account Override Share Class:</th>
+		<td>
+			<$if #active.SHARE_CLASS_OVERRIDE_ID$>
+			<$#active.SHARE_CLASS_OVERRIDE_NAME$>
+			<$else$>
+			n/a
+			<$endif$>
+		</td>
+		<th>Share Class Group:</th>
+		<td>
+			<$if #active.SHARE_CLASS_GROUP_ID$>
+				<$#active.SHARE_CLASS_GROUP_NAME$>
+			<$else$>
+			n/a
+			<$endif$>
+		</td>
+	</tr>
+
+<@end@>	
+
+<@dynamichtml ccla_cs_display_share_class_div@>
+	<$executeService("CCLA_CS_ACCOUNT_EDIT")$>
+	<$include ccla_cs_display_share_class$>
+<@end@>
+
+<@dynamichtml ccla_cs_display_share_class@>
+<$if IsDebug$>ccla_cs_display_share_class<$endif$>
+			<$if hasShareClass$>
+					<$if isEdit$>
+					<td>Share Class:</td>
+					<$else$>
+					<th>Share Class:</th>
+					<$endif$>
+					<td >
+					<$if rsShareClass$>
+						<$loop rsShareClass$>
+							<$rsShareClass.SHARE_CLASS_NAME$>
+						<$endloop$>
+					<$else$>
+						Not yet calculated
+					<$endif$>
+					<$if includeShareClassOverride$>
+					<input type="button" onclick="openPopup('?IdcService=CCLA_CS_SHARE_CLASS_OVERRIDE<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>&ts=' + new Date());" value="Override">
+					<$endif$>
+					</td>
+					<$if rsShareClassGroup$>
+					<td colspan="2">
+					<div class="message_panel info_icon">This account is part of share class group '<$loop rsShareClassGroup$><$rsShareClassGroup.GROUP_NAME$>'<$endloop$>
+					</div>
+					</td>
+					<$else$>
+					<$if rsShareClassOverride$>
+					<td colspan="2">
+					<div class="message_panel info_icon">The share class for this account has been overridden
+					</div>
+					</td>
+					<$endif$>
+					<$endif$>
+			<$endif$>
+			
+
+<@end@>
+
+<!-- Displays all available (non-verification) Element Attributes. 
+	
+	TODO: Group by Attribute Type.
+	-->
+<@dynamichtml ccla_cs_generic_element_attributes_panel@>
+
+	<$if IsDebug$>ccla_cs_generic_element_attributes_panel<$endif$>
+
+	
+	<$if strLength(#local.element_attribute_panel_title)>0 $>
+		<$if #local.element_attribute_panel_use_small_header$>
+			<h3 class="ccla_data_panel_header"><$element_attribute_panel_title$></h3>
+		<$else$>
+			<div class='ccla_cs_panel_header'>		
+				<$element_attribute_panel_title$> 
+			</div>		
+		<$endif$>
+	<$endif$>
+
+	
+	<table width="100%">
+		<!-- set col widths -->
+		<tr>
+			<td width="25%"></td>
+			<td width="25%"></td>
+			<td width="25%"></td>
+			<td width="25%"></td>
+		</tr>
+	
+		<$attribCount = 0$>
+	
+		<tr>
+			[[% Only display non-verification/specific type Element Attributes %]]
+		
+			<$loop rsElementAttributes$>
+				<$if (#active.ELEMENT_ATTRIBUTE_TYPE_ID == element_attribute_type_id) 
+					 and not #active.VERIFICATION_SOURCE_ID$>
+						<$exec rsFirst("rsElementAttributesApplied")$>
+						
+						<$loop rsElementAttributesApplied$>
+							<$if rsElementAttributes.ELEMENT_ATTRIBUTE_ID == #active.ELEMENT_ATTRIBUTE_ID$>							
+								<$attribValue = rsElementAttributesApplied.ATTRIBUTE_VALUE$>
+								<$attribStatus = rsElementAttributesApplied.ATTRIBUTE_STATUS$>
+								
+								<$if rsElementAttributesApplied.USER_GROUPS$>
+									<$hasACL = 1$>
+									<$attribDisabled=1$>
+
+									<$exec rsMakeFromString("rsAttribGroups", rsElementAttributesApplied.USER_GROUPS, "userGroup")$>
+									
+									<$loop rsAttribGroups$>
+									<$if IsDebug$>userGroup:<$#active.userGroup$><$endif$>
+										<$if userHasRole(#active.userGroup) or userHasRole("admin")$>
+											<$attribDisabled=""$>
+											<$break$>
+										<$endif$>
+									<$endloop$>
+								
+								<$endif$>									
+								
+								<$break$>
+							<$endif$>
+						<$endloop$>
+						
+						<td>							
+							<label for="ELEMENT_ATTRIBUTE_<$rsElementAttributesApplied.ELEMENT_ATTRIBUTE_ID$>"><$rsElementAttributes.ELEMENT_ATTRIBUTE_NAME$>:</label>
+						</td>
+						<td>					
+				
+						<$if #active.ELEMENT_ATTRIBUTE_DATA_TYPE like "BOOL"$>
+							[[% Drop-down option list to model attribute status %]]
+
+							<select id="elemAttribStatus_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+									name="elemAttribStatus_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>"
+
+									<$if #active.SET_BY_USER like "0"$>disabled<$endif$>
+									
+									 <$if attribDisabled$>disabled<$endif$>
+									>
+									
+									<option value=""></option>
+									
+									<option value="1" <$if #local.attribStatus like "1"$>selected<$endif$>>Yes</option>
+									<option value="0" <$if #local.attribStatus like "0"$>selected<$endif$>>No</option>
+									
+							</select>
+							
+							<$if #active.SET_BY_USER like "0"$>
+								<input 	type="hidden" 
+										id="elemAttribStatus_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+										name="elemAttribStatus_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+										value="<$#local.attribStatus$>" />
+							<$endif$>
+							
+							<$if false$>
+								<$if #active.SET_BY_USER like "0"$>
+									<$if #local.attribStatus and not (#local.attribStatus like "0")$>
+										<input 	type="hidden" 
+												id="elemAttribTrue_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+												name="elemAttribTrue_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+												<$if #local.attribStatus and not (#local.attribStatus like "0")$>
+													value="1"
+												<$endif$>
+										/>
+									<$endif$>
+								<$endif$>
+								
+								<input 	type="checkbox" 
+										id="elemAttribTrue_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+										name="elemAttribTrue_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+										<$if #local.attribStatus and not (#local.attribStatus like "0")$>
+											checked
+										<$endif$>
+										<$if #active.SET_BY_USER like "0" OR attribDisabled$>
+											disabled
+										<$endif$>
+								/>
+							<$endif$>
+							
+						<$else$>
+							[[% Standard text field attribute value %]]
+							<input 
+								type="text" 
+								name="ELEMENT_ATTRIBUTE_<$rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>" 
+								value="<$attribValue$>" 
+								tabindex="<$rsElementAttributes.rowNum + 35$>"
+								
+								<$if #active.SET_BY_USER like "0"$>disabled<$endif$>
+							/>
+
+						<$endif$>
+												
+						
+						<$attribValue = "", attribStatus = "", hasACL ="", attribDisabled = ""$>
+						
+					</td>
+					
+					<$c="Determine where to start a new row, keeping it 2 textboxes per row"$>
+					<$if (attribCount%2) > 0$>
+						</tr>
+						<tr>
+					<$endif$>
+					
+					<$attribCount = attribCount+1$>
+					
+				<$endif$>
+				
+			<$endloop$>
+		</tr>
+		
+	</table>
+
+	<$if element_attribute_save_button$>
+		<table width="100%">
+			<tr>
+				<td valign="top"></td>
+				<td>
+				
+				</td>
+				
+				<td></td>
+				<td valign="bottom" align="right">
+						<input type="submit" value="Save changes" />
+				</td>
+			</tr>
+		</table>
+	<$endif$>
+
+	[[% Reset values %]]
+	<$element_attribute_panel_make_collapsible=0$>
+	<$element_attribute_panel_content_hidden=0$>
+	<$element_attribute_panel_html_id_suffix = ""$>
+
+<@end@>
+
+<!-- Displays Bank/Branch details.
+	 
+	 Expects either an rsBankDetails ResultSet in the Binder, or the
+	 isAjax flag and a SORT_CODE value to dynamically load the content 
+-->
+<@dynamichtml ccla_cs_bank_details_display@>
+	
+	<$if IsAjax$>
+		<$executeService("CCLA_CS_GET_BANK_DETAILS")$>
+	<$endif$>
+	
+	<$if not hideBankDetailsDisplayHeader$>
+		<h3 class="ccla_data_panel_header">Bank/Branch Details</h3>
+	<$endif$>
+						
+	<$if not rsBankDetails$>
+		<p>Error fetching bank/branch details</p>
+	<$endif$>
+	
+	<$loop rsBankDetails$>
+	
+		<table class="cs-info-table" width="100%">
+
+			<tr>
+				<th>Bank Name:</th><td colspan=3><$#active.BANK_NAME$></td>
+			</tr>
+			
+			<tr>
+				<th>Branch:</th><td colspan=3><$#active.BRANCH_NAME$></td>
+			</tr>
+			
+			<!-- Set column widths -->
+			<tr>
+				<th width="20%"></th><td width="30%"></td>
+				<th width="20%"></th><td width="30%"></td>
+			</tr>
+			
+		</table>
+		
+	<$endloop$>
+	
+<@end@>
+
+</body></html>

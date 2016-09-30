@@ -1,0 +1,30 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+	Last process actions
+</title>
+</head>
+<body>
+
+<table>
+	<tr>
+		<th>Process ID</th>
+		<th>Last action date</th>
+		<th>Last activity</th>
+		<th>Activity outcome</th>
+	</tr>
+
+
+	<$loop rsLastProcessActions$>
+		<tr>
+			<td><$#active.PROCESS_ID$></td>
+			<td><$#active.LAST_ACTION$></td>
+			<td><$#active.ACTIVITY_TYPE$></td>
+			<td><$#active.ACTIVITY_OUTCOME$></td>
+		</tr>
+	<$endloop$>
+
+</table>
+
+</body></html>

@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Routing Module Administration
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		<$include ccla_cp_routing_module_admin_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+		<script type="text/javascript">
+			function reloadPage(){
+				location.reload(true);
+			}
+		</script>
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 600px'>
+				
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Routing Module Administration
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<table width="100%">
+						<tr>
+							<td width="100%" valign="top">
+								<h3 class="ccla_data_panel_header">Routing Manager Info</h3>
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th>Number of cycles</th><th>Number of modules</th><th>Last cycle</th><th>Manager status</th><th>Action</th>
+									</tr>
+									<tr>
+									<td><$#active.numCycles$>&nbsp;</td>
+									<td><$#active.moduleCount$>&nbsp;</td>
+									<td><$#active.lastCycle$>&nbsp;</td>
+									<td><$if #active.managerIsPaused == 1$>Paused<$else$>Running<$endif$>&nbsp;</td>
+									<td align="center">
+										<form name="administerRoutingManagerForm" method="POST">
+										<input type="hidden" name="IdcService" 	value="CCLA_CP_SET_MANAGER_STATE" /><$include add_idc_token_to_form$>
+										<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>" />
+										<$if #active.managerIsPaused == 1$>
+											<a class="pointer" onclick="administerRoutingManagerForm.submit()" title="Start"><img src="images/ccla/play.png"/></a>
+											<input type="hidden" name="managerIsPaused" value="0"/>
+										<$else$>
+											<a class="pointer" onclick="administerRoutingManagerForm.submit()" title="Pause"><img src="images/ccla/pause.png"/></a>
+											<input type="hidden" name="managerIsPaused" value="1"/>
+										<$endif$>&nbsp;
+										</form>
+									</td>
+									</tr>
+								</table>
+								
+								<a target="_blank" class="newWindow" href="?IdcService=CCLA_CP_GET_INSTRUCTION_ERRORS<$include add_idc_token_to_url$>">See Error Logs</a>
+								
+								<br/>
+								
+								<$if #local.currentModule$>
+									<br/>
+									
+									<h3 class="ccla_data_panel_header">Current Module Execution</h3>
+								
+									<table class="accounts-table" width="100%" cellspacing="0" cellpadding="0">
+										<tr>
+											<th class="first-col" width="35%">Field Name</th>
+											<th>Value</th>
+										</tr>
+										<tr class="account-details-row">
+											<td class="first-col">Module Name</td>
+											<td><$#local.currentModule$></td>
+										</tr>
+										<tr class="account-details-row">
+											<td class="first-col">Status</td>
+											<td><$#local.moduleExecStatus$></td>
+										</tr>
+										<tr class="account-details-row">
+											<td class="first-col">Instrs. Processed/Fetched</td>
+											<td><$#local.numProcessedInstructions$>/<$#local.numFetchedInstructions$></td>
+										</tr>
+										
+										<tr class="account-details-row">
+											<td class="first-col">Elapsed Running Time</td>
+											<td><$#local.elapsedModuleExecutionTime$></td>
+										</tr>
+
+									</table>
+									
+								<$endif$>
+								
+							</td>
+							
+						</tr>
+					</table>
+				</div>
+				<br/>
+				<$include ccla_cp_display_all_modules_info$>
+
+				<$include orangeContainer_bottom$>
+	
+			</div>
+		</div>
+		
+	</body>
+</html>

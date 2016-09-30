@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Identity Check Details
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Identity Check Details
+			</div>
+			
+			<div class="ccla_cs_panel_content">
+				
+				<$if rsIdentityCheck$>
+					
+					<table class="cs-info-table" width="100%">
+						<tr>
+							<th width="20%">Check date:</td>
+							<td width="30%"><$#active.CHECK_DATE$></td>
+							<th width="20%">Expires:</th>
+							<td width="30%"><$#active.EXPIRY_DATE$></td>
+						</tr>
+					</table>
+					
+					<br/>
+					
+				<$endif$>
+				
+				<form>
+					<input type="hidden" name="IdcService" value="CCLA_CS_FORCE_RECALCULATE_IDENTITY_CHECK" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="PERSON_ID"  value="<$#local.PERSON_ID$>" />
+					
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_SHOW_AUTHENTICATION_DETAILS<$include add_idc_token_to_url$>&PERSON_ID=<$#local.PERSON_ID$>" />
+	
+					<input type="submit" value="Force recalculation" />
+				</form>
+				
+				<br/>
+				
+				<table class="accounts-table" cellpadding=0 cellspacing=0 width="100%">
+					<tr>
+						<th class="first-col">Positive</th>
+						<th>Negative</th>
+					</tr>
+					
+					<tr class="account-details-row">
+						<td class="first-col">
+							
+							<p>
+								<$loop rsScoreDescriptions$>
+									<$if #active.ScoreType like "Positive"$>
+										<$foundScore=1$>
+										
+										<$#active.Description$> <br/>
+									<$endif$>
+								<$endloop$>
+								
+								<$if not foundScore$>
+									<span class="no-info">None</span>
+								<$endif$>
+							</p>
+		
+						</td>
+						
+						<td>
+							
+							<$foundScore=""$>
+							
+							<p>
+								<$loop rsScoreDescriptions$>
+									<$if #active.ScoreType like "Negative"$>
+										<$foundScore=1$>
+									
+										<$#active.Description$> <br/>
+									<$endif$>
+								<$endloop$>
+								
+								<$if not foundScore$>
+									<span class="no-info">None</span>
+								<$endif$>
+							</p>
+							
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<$if rsIdentityCheck.RISK_CONDITIONS$>
+					<div class="message_panel error_icon">
+						<$rsIdentityCheck.DECISION_TEXT$>
+						<br/>
+						<br/>
+						<$rsIdentityCheck.RISK_CONDITIONS_TEXT$>
+					</div>
+					<br/>
+				<$endif$>
+				
+				<div align="right">
+					<input type="button" value="Close" onclick="window.parent.closePopup()" />
+				</div>
+
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

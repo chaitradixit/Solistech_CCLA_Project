@@ -1,0 +1,9 @@
+.cluetip-default h3#cluetip-title {
+	background-color:#9C0000;
+	
+}
+
+.cluetip-default #cluetip-outer {
+	background-color:#F7F7F7;
+	border:2px solid #9C0000;
+}

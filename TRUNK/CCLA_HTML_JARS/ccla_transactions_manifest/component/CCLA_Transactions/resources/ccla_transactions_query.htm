@@ -1,0 +1,1073 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_Transactions query
+</title>
+</head>
+<body>
+
+<@table CCLA_Transactions_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qTransactions_GetAllAccountsByFund</td>
+	<td>select * from ACCOUNT where FUND_CODE = ?</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeExpense</td>
+		<td>select rie.*, rsc.SHARE_CLASS_NAME from REF_INCOME_EXPENSE rie
+		left join REF_SHARE_CLASS rsc on (rie.SHARE_CLASS_ID = rsc.SHARE_CLASS_ID)
+			where rie.INCOME_EXPENSE_ID = ? AND rie.IS_ENABLED=1</td>
+	<td>INCOME_EXPENSE_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeExpenseByType</td>
+		<td>select * FROM REF_INCOME_EXPENSE
+		where INCOME_EXPENSE_TYPE_ID = ? AND FUND_CODE=?
+			AND IS_ENABLED=1
+		ORDER BY INCOME_EXPENSE_NAME ASC</td>
+	<td>INCOME_EXPENSE_TYPE_ID int
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeExpenseByFund</td>
+		<td>select * FROM REF_INCOME_EXPENSE
+		where FUND_CODE=? AND IS_ENABLED=1
+		ORDER BY INCOME_EXPENSE_NAME ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetExpenseByFund</td>
+		<td>select * FROM REF_INCOME_EXPENSE rie
+		inner join REF_INCOME_EXPENSE_TYPE riet on 
+		rie.income_expense_type_id = riet.income_expense_type_id
+		where riet.is_income = 0 and rie.FUND_CODE=? AND rie.IS_ENABLED=1
+		ORDER BY rie.INCOME_EXPENSE_NAME ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateIncomeExpense</td>
+		<td>update REF_INCOME_EXPENSE 
+		set FUND_CODE=?, INCOME_EXPENSE_NAME=?, INCOME_EXPENSE_TYPE_ID=?, SHARE_CLASS_ID=?,
+		DESCRIPTION=?, DEFAULT_VALUE=?, IS_PERCENTAGE =?, IS_EXTERNAL=?, LAST_UPDATED=SYSDATE,
+		LAST_UPDATED_BY=?
+		where INCOME_EXPENSE_ID = ?</td>
+	<td>FUND_CODE varchar
+		INCOME_EXPENSE_NAME varchar
+		INCOME_EXPENSE_TYPE_ID int
+		SHARE_CLASS_ID int
+		DESCRIPTION varchar
+		DEFAULT_VALUE int
+		IS_PERCENTAGE int
+		IS_EXTERNAL int
+		LAST_UPDATED_BY varchar
+	INCOME_EXPENSE_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_InsertIncomeExpense</td>
+	<td>insert into REF_INCOME_EXPENSE
+	values (?,?,?,?,?,?,?,?,SYSDATE,SYSDATE,?,?,1)</td>
+	<td>INCOME_EXPENSE_ID int
+	FUND_CODE varchar
+	SHARE_CLASS_ID int
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_NAME varchar
+	DESCRIPTION varchar
+	IS_PERCENTAGE int	
+	DEFAULT_VALUE int
+	LAST_UPDATED_BY varchar
+	IS_EXTERNAL int
+	</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextIncomeExpenseId</td>
+	<td>SELECT SEQ_INCOME_EXPENSE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetFunds</td>
+		<td>select * from FUND order by FUND_CODE ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_DisableIncomeExpense</td>
+		<td>update REF_INCOME_EXPENSE set IS_ENABLED=0 where INCOME_EXPENSE_ID =?</td>
+	<td>INCOME_EXPENSE_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_getTransactions</td>
+		<td>select * from TRANSACTION</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_getTransactionById</td>
+		<td>select * from TRANSACTION where COMM_ID = ?</td>
+	<td>COMM_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_getTransactionsForEOD</td>
+		<td>select * from TRANSACTION
+		where PROCESS_DATE <= ? AND REPORT_DATE IS NULL
+		ORDER BY SOURCE_ACCOUNT_ID</td>
+	<td>PROCESS_DATE  date</td>
+</tr>
+<tr>
+	<td>qTransactions_getTransactionsbyShareClassForEOD</td>
+		<td>select trans.*, scm.* from TRANSACTION trans
+		left join SHARE_CLASS_MOVEMENT scm on (trans.SOURCE_ACCOUNT_ID=scm.ACCOUNT_ID
+		AND trans.REPORT_DATE = scm.MOVE_DATE)
+		where trans.REPORT_DATE = ? and scm.SHARE_CLASS_ID=?
+		ORDER BY trans.SOURCE_ACCOUNT_ID</td>
+	<td>REPORT_DATE  date
+		SHARE_CLASS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_getUpdateReportDateforEOD</td>
+		<td>update TRANSACTION set REPORT_DATE = ? where 
+		COMM_ID in (select COMM_ID from TRANSACTION
+		where PROCESS_DATE <= ? AND REPORT_DATE IS NULL)</td>
+	<td>PROCESS_DATE  date
+	PROCESS_DATE  date</td>
+</tr>
+<tr>
+	<td>qTransactions_getAccountsForEOD</td>
+		<td>select distinct(source_account_id) from transaction where report_date =?</td>
+	<td>PROCESS_DATE  date</td>
+</tr>
+<tr>
+	<td>qTransactions_getTransactionType</td>
+		<td>select dc.TRANSACTION_TYPE from TRANSACTION trans
+		inner join DOCUMENT_CLASSES dc on dc.DOC_CLASS = trans.COMM_TYPE
+		where trans.COMM_ID = ?</td>
+	<td>COMM_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextShareClassMovementId</td>
+	<td>SELECT SEQ_SHARE_CLASS_MOVEMENT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_InsertShareClassMovement</td>
+	<td>insert into SHARE_CLASS_MOVEMENT
+	values (?,?,?,?,?,?)</td>
+	<td>SHARE_CLASS_MOVEMENT_ID int
+	ACCOUNT_ID int
+	MOVE_TYPE_ID int
+	NEW_SHARE_CLASS_ID int
+	MOVE_DATE date	
+	OLD_SHARE_CLASS_ID int
+	</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateShareClassMovement</td>
+		<td>update SHARE_CLASS_MOVEMENT 
+		set ACCOUNT_ID=?, MOVE_DATE=?, MOVE_TYPE_ID=?, NEW_SHARE_CLASS_ID=?,
+		OLD_SHARE_CLASS_ID=?
+		where SHARE_CLASS_MOVEMENT_ID = ?</td>
+	<td>ACCOUNT_ID int
+		MOVE_DATE date
+		MOVE_TYPE_ID int
+		NEW_SHARE_CLASS_ID int
+		OLD_SHARE_CLASS_ID int
+		SHARE_CLASS_MOVEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassMovement</td>
+		<td>SELECT *  FROM SHARE_CLASS_MOVEMENT where ACCOUNT_ID =?
+		AND MOVE_TYPE_ID=? AND MOVE_DATE=?</td>
+	<td>ACCOUNT_ID int
+	MOVE_TYPE_ID int
+	MOVE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassMovementById</td>
+		<td>SELECT *  FROM SHARE_CLASS_MOVEMENT where SHARE_CLASS_MOVEMENT_ID=?</td>
+	<td>SHARE_CLASS_MOVEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteShareClassMovement</td>
+		<td>DELETE FROM SHARE_CLASS_MOVEMENT where SHARE_CLASS_MOVEMENT_ID =?</td>
+	<td>SHARE_CLASS_MOVEMENT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassMovementbyFund</td>
+		<td>select * from share_class_movement scm
+inner join ref_share_class sc on (sc.share_class_id = scm.new_share_class_id)
+where scm.move_type_id = ? and sc.fund_code = ? and scm.move_date = ?</td>
+	<td>MOVE_TYPE_ID int
+	FUND_CODE varchar
+	MOVE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteDailyShareClassMovementbyType</td>
+		<td>DELETE FROM SHARE_CLASS_MOVEMENT where MOVE_TYPE_ID =?
+		AND MOVE_DATE = ? </td>
+	<td>MOVE_TYPE_ID int
+	MOVE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetShareClassExpenses</td>
+		<td>select rsc.share_class_id, rsc.share_class_name, rsc.MANAGEMENT_RATE, rie.* from ref_share_class rsc
+		left join ref_income_expense rie
+		on (rsc.share_class_id = rie.share_class_id)
+		where rie.income_expense_type_id=? AND rie.IS_ENABLED=1
+		order by rsc.share_class_name, rie.IS_PERCENTAGE</td>
+	<td>INCOME_EXPENSE_TYPE_ID  int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextIncomeExpenseAppliedId</td>
+	<td>SELECT SEQ_INCOME_EXPENSE_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateIncomeExpenseApplied</td>
+		<td>update INCOME_EXPENSE_APPLIED 
+		set INCOME_EXPENSE_ID=?, INCOME_EXPENSE_DATE=?, INCOME_EXPENSE_VALUE=?,
+		ADDED_BY=?, EOD_ID=?
+		where INCOME_EXPENSE_APPLIED_ID = ?</td>
+	<td>INCOME_EXPENSE_ID int
+		INCOME_EXPENSE_DATE date
+		INCOME_EXPENSE_VALUE int
+		ADDED_BY varchar
+		EOD_ID int
+		INCOME_EXPENSE_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_InsertIncomeExpenseApplied</td>
+	<td>insert into INCOME_EXPENSE_APPLIED
+	values (?,?,?,?,?,?)</td>
+	<td>INCOME_EXPENSE_APPLIED_ID int
+		INCOME_EXPENSE_ID int
+		EOD_ID int
+		INCOME_EXPENSE_DATE date
+		INCOME_EXPENSE_VALUE int
+		ADDED_BY varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteIncomeExpenseApplied</td>
+	<td>delete from INCOME_EXPENSE_APPLIED
+	where INCOME_EXPENSE_APPLIED_ID=?</td>
+	<td>INCOME_EXPENSE_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeExpenseAppliedByDate</td>
+	<td>select * from INCOME_EXPENSE_APPLIED
+	where INCOME_EXPENSE_ID=? AND INCOME_EXPENSE_DATE=?</td>
+	<td>INCOME_EXPENSE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeAppliedForDate</td>
+	<td>select * from income_expense_applied iea
+inner join ref_income_expense rie on (iea.income_expense_id = rie.income_expense_id)
+where rie.fund_code=? AND rie.income_expense_type_id=? and  iea.INCOME_EXPENSE_DATE=? AND rie.IS_ENABLED=1</td>
+	<td>FUND_CODE varchar
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeAppliedByDateAndFund</td>
+	<td>select * from income_expense_applied iea
+inner join ref_income_expense rie on (iea.income_expense_id = rie.income_expense_id)
+where rie.fund_code=? AND rie.income_expense_type_id=? and iea.INCOME_EXPENSE_DATE=?
+AND rie.IS_ENABLED=1</td>
+	<td>FUND_CODE varchar
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTransactionsAll</td>
+	<td>select * from V_TRANSACTIONS_ALL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetTransaction</td>
+	<td>select * from V_TRANSACTIONS_DISTINCT where INSTRUCTION_ID =?</td>
+	<td>INSTRUCTION_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetInstructionsByStatus</td>
+	<td>select * from V_INSTRUCTION_DISTINCT where INSTRUCTION_ID =?
+	AND INSTRUCTION_STATUS_ID=?</td>
+	<td>INSTRUCTION_ID int
+	INSTRUCTION_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetInstructionsByStatusProcessDate</td>
+	<td>select * from V_INSTRUCTION_DISTINCT where INSTRUCTION_ID =?
+	AND INSTRUCTION_STATUS_ID=? and PROCESS_DATE <= ?</td>
+	<td>INSTRUCTION_ID int
+	INSTRUCTION_STATUS_ID int
+	PROCESS_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTransactionsByStatusProcessDateFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id = ? and ins.process_date <= ?
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>INSTRUCTION_STATUS_ID int
+	PROCESS_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetPSDFTransactions</td>
+	<td>select distinct ins.*, ris.instruction_status_name, rit.instruction_type_name, cm.organisation_id,cam.client_number  from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+inner join ref_instruction_status ris on (ris.instruction_status_id=ins.instruction_status_id)
+inner join comm cm on (cm.comm_id = ins.comm_id)
+left join client_aurora_map cam on (cm.organisation_id = cam.organisation_id)
+where (acc.fund_code='PC' or acc.fund_code='PI') 
+order by ins.process_date</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetEODPSDFTransactions</td>
+	<td>select distinct ins.*, ris.instruction_status_name, rit.instruction_type_name, vie.eod_id, cm.organisation_id,cam.client_number  from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join v_instruction_eod vie on (vie.instruction_id = ins.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+inner join ref_instruction_status ris on (ris.instruction_status_id=ins.instruction_status_id)
+inner join comm cm on (cm.comm_id = ins.comm_id)
+left join client_aurora_map cam on (cm.organisation_id = cam.organisation_id)
+where (acc.fund_code='PC' or acc.fund_code='PI') and rit.is_financial_transaction = 1 and vie.eod_id=?
+order by ins.process_date</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetApplicableInstructionData</td>
+	<td>select * from APPLICABLE_INSTRUCTION_DATA where INSTRUCTION_DATA_ID =?</td>
+	<td>INSTRUCTION_DATA_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetHasAccountAudit</td>
+	<td>select * from ACCOUNT_VALUE_AUDIT 
+where account_id=? and trunc(account_value_date) = trunc(cast (? as date))</td>
+	<td>ACCOUNT_ID int
+	ACCOUNT_VALUE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetAccountAuditByDate</td>
+	<td>select ava.* from ACCOUNT_VALUE_AUDIT ava
+ inner join account acc on ava.account_id = acc.account_id
+where trunc(ava.account_value_date) = trunc(cast (? as date))
+and acc.fund_code = ?</td>
+	<td>ACCOUNT_VALUE_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextFundAuditId</td>
+	<td>SELECT SEQ_FUND_AUDIT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_AddFundAudit</td>
+	<td>insert into FUND_AUDIT
+	values (?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>FUND_AUDIT_ID int
+	FUND_CODE varchar
+	SHARE_CLASS_ID int
+	TOTAL_EXPENSE int
+	FUND_AUDIT_DATE date
+	INCOME_PER_UNIT int
+	OPENING_UNITS int
+	CLOSING_UNITS int
+	GROSS_YIELD int
+	FUND_YIELD int
+	NET_YIELD int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundAuditByDate</td>
+	<td>SELECT * from FUND_AUDIT  
+	where SHARE_CLASS_ID = ? AND FUND_AUDIT_DATE=?</td>
+	<td>SHARE_CLASS_ID int
+	FUND_AUDIT_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundAuditById</td>
+	<td>SELECT * from FUND_AUDIT 
+	where FUND_AUDIT_ID = ?</td>
+	<td>FUND_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteFundAuditForDate</td>
+	<td>DELETE from FUND_AUDIT 
+	where trunc(FUND_AUDIT_DATE) = trunc(?)</td>
+	<td>FUND_AUDIT_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteFundEODForDate</td>
+	<td>DELETE from FUND_EOD 
+	where trunc(RUN_DATE) = trunc(?)</td>
+	<td>RUN_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteFundEODForStatus</td>
+	<td>DELETE from FUND_EOD 
+	where FUND_EOD_STATUS_ID=?</td>
+	<td>FUND_EOD_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateFundAudit</td>
+	<td>update FUND_AUDIT set
+	TOTAL_EXPENSE=?, INCOME_PER_UNIT=?, OPENING_UNITS=?,
+	CLOSING_UNITS=?, GROSS_YIELD=?, FUND_YIELD=?, NET_YIELD=?
+	WHERE FUND_AUDIT_ID=?</td>
+	<td>TOTAL_EXPENSE int
+	INCOME_PER_UNIT int
+	OPENING_UNITS int
+	CLOSING_UNITS int
+	GROSS_YIELD int
+	FUND_YIELD int
+	NET_YIELD int
+	FUND_AUDIT_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetLatestFundPrice</td>
+	<td>SELECT * from FUND_PRICE 
+	where FUND_CODE = ? and 
+	DATE_ADDED = (SELECT MAX(DATE_ADDED) FROM FUND_PRICE)</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetDailyFundPrice</td>
+	<td>SELECT * from FUND_PRICE 
+	where FUND_CODE = ? and 
+	DATE_ADDED = (SELECT MAX(DATE_ADDED) FROM FUND_PRICE
+where trunc(DATE_ADDED) = trunc(cast (SYSDATE as date)))</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextFundPriceId</td>
+	<td>SELECT SEQ_FUND_PRICE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_AddFundPrice</td>
+	<td>insert into FUND_PRICE 
+	values (?,?,?,?,?,?,SYSDATE)</td>
+	<td>FUND_PRICE_ID int
+	FUND_CODE varchar
+	BID int
+	BASIC int
+	OFFER int
+	ADDED_BY varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateFundPrice</td>
+	<td>update FUND_PRICE 
+	set BID=?, BASIC =?, OFFER=?, ADDED_BY=?, DATE_ADDED=SYSDATE
+	WHERE FUND_CODE=? AND TRUNC(DATE_ADDED)=trunc(cast (? as date))</td>
+	<td>BID int
+	BASIC int
+	OFFER int
+	ADDED_BY varchar
+	FUND_CODE varchar
+	DATE_ADDED date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceByDate</td>
+	<td>select * from FUND_PRICE 
+where FUND_CODE = ? and
+trunc(DATE_ADDED) = trunc(cast (? as date))
+</td>
+	<td>FUND_CODE varchar
+	DATE_ADDED date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceById</td>
+	<td>select * from FUND_PRICE 
+where FUND_PRICE_ID = ?</td>
+	<td>FUND_PRICE_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_AddFundPriceApplied</td>
+	<td>insert into FUND_PRICE_APPLIED 
+	values (?,?,?,?)</td>
+	<td>FUND_PRICE_APPLIED_ID int
+	FUND_PRICE_ID int
+	DEAL_TYPE_ID int
+	FUND_PRICE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateFundPriceApplied</td>
+	<td>update FUND_PRICE_APPLIED 
+	set FUND_PRICE_ID = ?, FUND_PRICE_DATE = ?,
+	DEAL_TYPE_ID=?
+	WHERE FUND_PRICE_APPLIED_ID = ?</td>
+	<td>FUND_PRICE_ID int
+	FUND_PRICE_DATE date
+	DEAL_TYPE_ID int
+	FUND_PRICE_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTodaysFundPriceApplied</td>
+	<td>SELECT fpa.* from FUND_PRICE_APPLIED fpa 
+	INNER JOIN FUND_PRICE fp on (fpa.FUND_PRICE_ID = fp.FUND_PRICE_ID)
+	where fp.FUND_CODE = ? and 
+	trunc(fpa.FUND_PRICE_DATE) = trunc(cast (SYSDATE as date))</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceAppliedByFundCodeAndDate</td>
+	<td>SELECT fpa.* from FUND_PRICE_APPLIED fpa 
+	INNER JOIN FUND_PRICE fp on (fpa.FUND_PRICE_ID = fp.FUND_PRICE_ID)
+	where fp.FUND_CODE = ? and 
+	trunc(fpa.FUND_PRICE_DATE) = trunc(cast (? as date))</td>
+	<td>FUND_CODE varchar
+		FUND_PRICE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceAppliedByDate</td>
+	<td>SELECT fpa.* from FUND_PRICE_APPLIED fpa 
+	where fpa.FUND_PRICE_ID = ? and 
+	trunc(fpa.FUND_PRICE_DATE) = trunc(cast (? as date))</td>
+	<td>FUND_PRICE_ID int
+	FUND_PRICE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceApplied</td>
+	<td>SELECT fpa.* from FUND_PRICE_APPLIED fpa 
+	where fpa.FUND_PRICE_APPLIED_ID = ?</td>
+	<td>FUND_PRICE_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundPriceAppliedDetail</td>
+	<td>SELECT fp.*, rdt.DEAL_TYPE_NAME from FUND_PRICE_APPLIED fpa 
+	INNER JOIN FUND_PRICE fp on (fpa.FUND_PRICE_ID = fp.FUND_PRICE_ID)
+  INNER JOIN REF_DEAL_TYPE rdt on (rdt.DEAL_TYPE_ID = fpa.deal_type_id)
+	where fpa.FUND_PRICE_APPLIED_ID =?</td>
+	<td>FUND_PRICE_APPLIED_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextFundPriceAppliedId</td>
+	<td>SELECT SEQ_FUND_PRICE_APPLIED.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetTodaysFundAuditByFund</td>
+	<td>SELECT * FROM FUND_AUDIT WHERE
+	FUND_CODE = ? and 
+	trunc(FUND_AUDIT_DATE) = trunc(cast (SYSDATE as date)) 
+	ORDER BY SHARE_CLASS_ID ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTodaysFundAuditDetailByFund</td>
+	<td>SELECT * FROM FUND_AUDIT fa
+	INNER JOIN REF_SHARE_CLASS sc 
+	on fa.SHARE_CLASS_ID = sc.SHARE_CLASS_ID
+	WHERE fa.FUND_CODE = ? and 
+	trunc(fa.FUND_AUDIT_DATE) = trunc(cast (SYSDATE as date)) 
+	ORDER BY fa.SHARE_CLASS_ID ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundAuditDetailByDate</td>
+	<td>SELECT * FROM FUND_AUDIT fa
+	INNER JOIN REF_SHARE_CLASS sc 
+	on fa.SHARE_CLASS_ID = sc.SHARE_CLASS_ID
+	WHERE fa.FUND_CODE = ? and 
+	fa.FUND_AUDIT_DATE = ? 
+	ORDER BY fa.SHARE_CLASS_ID ASC</td>
+	<td>FUND_CODE varchar
+	FUND_AUDIT_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTotalClosingUnitsByFund</td>
+	<td>SELECT SUM(CLOSING_UNITS) AS UNIT_TOTAL FROM FUND_AUDIT WHERE
+	FUND_CODE = ? and 
+	FUND_AUDIT_DATE =? </td>
+	<td>FUND_CODE varchar
+	FUND_AUDIT_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTotalFundExpenseByDate</td>
+	<td>select sum(iea.income_expense_value) as FUND_EXPENSE_TOTAL  from income_expense_applied iea
+inner join ref_income_expense rie
+on iea.income_expense_id = rie.income_expense_id
+inner join ref_income_expense_type riet
+on rie.income_expense_type_id = riet.income_expense_type_id
+where rie.fund_code=? AND riet.is_income=0 and rie.income_expense_type_id=?
+and iea.income_expense_date=? AND rie.IS_ENABLED=1</td>
+	<td>FUND_CODE varchar
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTotalFundIncomeByDate</td>
+	<td>select sum(iea.income_expense_value) as FUND_EXPENSE_TOTAL from income_expense_applied iea
+inner join ref_income_expense rie
+on iea.income_expense_id = rie.income_expense_id
+inner join ref_income_expense_type riet
+on rie.income_expense_type_id = riet.income_expense_type_id
+where rie.fund_code=? AND riet.is_income=1 and rie.income_expense_type_id=?
+AND rie.IS_ENABLED=1
+and iea.income_expense_date=?</td>
+	<td>FUND_CODE varchar
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetIncomeByDate</td>
+	<td>select iea.* from income_expense_applied iea
+inner join ref_income_expense rie
+on iea.income_expense_id = rie.income_expense_id
+inner join ref_income_expense_type riet
+on rie.income_expense_type_id = riet.income_expense_type_id
+where rie.fund_code=? AND riet.is_income=1 and rie.income_expense_type_id=?
+AND rie.IS_ENABLED=1
+and iea.income_expense_date=?</td>
+	<td>FUND_CODE varchar
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTotalCashShareClassExpenseByDate</td>
+	<td>select sum(iea.income_expense_value) as SHARE_CLASS_EXPENSE_TOTAL  from income_expense_applied iea
+inner join ref_income_expense rie
+on iea.income_expense_id = rie.income_expense_id
+inner join ref_income_expense_type riet
+on rie.income_expense_type_id = riet.income_expense_type_id
+where rie.SHARE_CLASS_ID=? AND riet.is_income=0 and rie.income_expense_type_id=?
+AND rie.IS_ENABLED=1
+and iea.income_expense_date=? and rie.IS_PERCENTAGE=0 AND rie.IS_EXTERNAL=1</td>
+	<td>SHARE_CLASS_ID int
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetTotalRateShareClassExpenseByDate</td>
+	<td>select sum(iea.income_expense_value) as SHARE_CLASS_EXPENSE_TOTAL  from income_expense_applied iea
+inner join ref_income_expense rie
+on iea.income_expense_id = rie.income_expense_id
+inner join ref_income_expense_type riet
+on rie.income_expense_type_id = riet.income_expense_type_id
+where rie.SHARE_CLASS_ID=? AND riet.is_income=0 and rie.income_expense_type_id=?
+AND rie.IS_ENABLED=1
+and iea.income_expense_date=? and rie.IS_PERCENTAGE=1 AND rie.IS_EXTERNAL=1</td>
+	<td>SHARE_CLASS_ID int
+	INCOME_EXPENSE_TYPE_ID int
+	INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_ResetProcessedTransactions</td>
+	<td>update instruction set instruction_status_id=?
+	where instruction_status_id=?</td>
+	<td>READY_TO_PROCESS_STATUS_ID int
+	PROCESSED_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteShareClassMovementForDate</td>
+	<td>delete from share_class_movement where trunc(move_date)=trunc(?)</td>
+	<td>MOVE_DATE date</td>
+</tr> 
+<tr>
+	<td>qTransactions_DeleteAccountValueAuditForDate</td>
+	<td>delete from ACCOUNT_VALUE_AUDIT  
+	where trunc(ACCOUNT_VALUE_DATE) = trunc(?)</td>
+	<td>ACCOUNT_VALUE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetPSDFAccounts</td>
+	<td>SELECT * FROM ACCOUNT where fund_code='PC'</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextInstructionId</td>
+	<td>SELECT SEQ_INSTRUCTION.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetAllInstructions</td>
+	<td>SELECT ins.*, ris.instruction_status_name, rit.instruction_type_name from instruction ins
+	inner join ref_instruction_status ris on (ris.instruction_status_id=ins.instruction_status_id)
+	inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+	order by ins.instruction_id ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetAllInstructionValues</td>
+	<td>SELECT * from v_instruction_values</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetAllTransactionTypes</td>
+	<td>select * from ref_instruction_type where transaction_type_id is not null order by instruction_type_name</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundNav</td>
+	<td>SELECT * FROM FUND_NAV_AUDIT fa
+	WHERE fa.FUND_CODE =? AND trunc(fa.NAV_DATE) = trunc(cast (? as date)) 
+	</td>
+	<td>FUND_CODE varchar
+	NAV_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateFundNavAudit</td>
+	<td>update FUND_NAV_AUDIT fa
+	set NAV = ?, NAV_DATE=?
+	WHERE fa.FUND_NAV_ID=? 
+	</td>
+	<td>NAV int
+	NAV_DATE date
+	FUND_NAV_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_AddFundNavAudit</td>
+	<td>insert into FUND_NAV_AUDIT values (?,?,?,?)
+	</td>
+	<td>FUND_NAV_ID int
+	FUND_CODE varchar
+	NAV int
+	NAV_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetFundNavById</td>
+	<td>SELECT * FROM FUND_NAV_AUDIT fa
+	WHERE fa.FUND_NAV_ID=? 
+	</td>
+	<td>FUND_NAV_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetLatestFundNavAudit</td>
+	<td>SELECT * from FUND_NAV_AUDIT 
+	WHERE NAV_DATE IN (SELECT MAX(NAV_DATE) FROM FUND_NAV_AUDIT WHERE FUND_CODE=?)</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextEODId</td>
+	<td>SELECT SEQ_FUND_EOD.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetNextFundNavAuditId</td>
+	<td>SELECT SEQ_FUND_NAV_AUDIT.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_AddFundEOD</td>
+	<td>INSERT INTO FUND_EOD 
+		(EOD_ID, FUND_CODE, FUND_PRICE_APPLIED_ID, FUND_EOD_STATUS_ID, 
+		FUND_NAV_ID, TOTAL_SHARE_CLASS_EXPENSE, RUN_BY, RUN_DATE, 
+		TOTAL_RATE_EXPENSE, TOTAL_CASH_EXPENSE, TOTAL_NET_INCOME_DISTRIBUTION, DATE_ADDED, RUN_START_DATE) 
+		values (?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>EOD_ID int
+	FUND_CODE varchar
+	FUND_PRICE_APPLIED_ID int
+	FUND_EOD_STATUS_ID int
+	FUND_NAV_ID int
+	TOTAL_SHARE_CLASS_EXPENSE int
+	RUN_BY varchar
+	RUN_DATE date
+	TOTAL_RATE_EXPENSE int
+	TOTAL_CASH_EXPENSE int
+	TOTAL_NET_INCOME_DISTRIBUTION int
+	DATE_ADDED date
+	RUN_START_DATE date
+	</td>
+</tr>
+<tr>
+	<td>qTransactions_UpdateEOD</td>
+	<td>update FUND_EOD set FUND_CODE=?, FUND_PRICE_APPLIED_ID=?,
+	FUND_EOD_STATUS_ID=?, FUND_NAV_ID=?, TOTAL_SHARE_CLASS_EXPENSE=?,
+	RUN_BY=?, RUN_DATE=?, RUN_START_DATE=?, DATE_ADDED=?, TOTAL_NET_INCOME_DISTRIBUTION=?, TOTAL_RATE_EXPENSE=?,
+	TOTAL_CASH_EXPENSE=? 
+	WHERE EOD_ID=?</td>
+	<td>FUND_CODE varchar
+	FUND_PRICE_APPLIED_ID int
+	FUND_EOD_STATUS_ID int
+	FUND_NAV_ID int
+	TOTAL_SHARE_CLASS_EXPENSE int
+	RUN_BY varchar
+	RUN_DATE date
+	RUN_START_DATE date
+	DATE_ADDED date
+	TOTAL_NET_INCOME_DISTRIBUTION int
+	TOTAL_RATE_EXPENSE int
+	TOTAL_CASH_EXPENSE int
+	EOD_ID int
+	</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEOD</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE EOD_ID=?</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetLastCompletedEOD</td>
+	<td>SELECT * from FUND_EOD 
+		WHERE RUN_DATE IN (SELECT MAX(RUN_DATE) FROM FUND_EOD WHERE FUND_CODE=? AND FUND_EOD_STATUS_ID=2)</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetLatestEOD</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE RUN_DATE IN (SELECT MAX(RUN_DATE) FROM FUND_EOD WHERE FUND_CODE=?)</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetLatestEODByStatus</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE RUN_DATE IN (SELECT MAX(RUN_DATE) FROM FUND_EOD WHERE FUND_CODE=? and FUND_EOD_STATUS_ID = ?)</td>
+	<td>FUND_CODE varchar
+	FUND_EOD_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEODByStatusDate</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE trunc(RUN_DATE) = trunc(cast (? as date))
+	AND trunc(DATE_ADDED) = trunc(cast(? as date))
+	and FUND_CODE=? AND FUND_EOD_STATUS_ID=?</td>
+	<td>RUN_DATE date
+	RUN_DATE date
+	FUND_CODE varchar
+	FUND_EOD_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEODByStatus</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE FUND_CODE=? AND FUND_EOD_STATUS_ID=?</td>
+	<td>FUND_CODE varchar
+	FUND_EOD_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEODByStatusRunDate</td>
+	<td>SELECT * from FUND_EOD 
+	WHERE trunc(RUN_DATE) = trunc(cast (? as date))
+	and FUND_CODE=? AND FUND_EOD_STATUS_ID=?</td>
+	<td>RUN_DATE date
+	FUND_CODE varchar
+	FUND_EOD_STATUS_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetCompletedEndOfDays</td>
+	<td>select * from FUND_EOD where fund_code=? AND fund_eod_status_id=2 order by run_date desc</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEndOfDayDetail</td>
+	<td>select eod.*, fpa.*, fna.*, rdt.*,fp.* from fund_eod eod
+inner join fund_price_applied fpa on (fpa.fund_price_applied_id = eod.fund_price_applied_id)
+inner join fund_nav_audit fna on (fna.fund_nav_id = eod.fund_nav_id)
+inner join ref_deal_type rdt on (fpa.deal_type_id = rdt.deal_type_id)
+inner join fund_price fp on (fpa.fund_price_id = fp.fund_price_id)
+where eod.eod_id=?</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEndOfDayFundAudit</td>
+	<td>select fa.*, eod.eod_id, sc.share_class_name, fa.income_per_unit*365 as YIELD
+from fund_audit fa inner join
+fund_eod eod on (trunc(eod.run_date) = trunc(fa.fund_audit_date))
+inner join ref_share_class sc on (fa.share_class_id = sc.share_class_id)
+and eod.eod_id=? order by sc.share_class_id ASC</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEndOfDayIncomeExpenseApplied</td>
+	<td>select * from income_expense_applied iea
+inner join ref_income_expense rie on iea.income_expense_id = rie.income_expense_id
+where iea.eod_id=?</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_DeleteIncomeExpenseAppliedByDate</td>
+	<td>DELETE from income_expense_applied
+where trunc(INCOME_EXPENSE_DATE)=trunc(?)</td>
+	<td>INCOME_EXPENSE_DATE date</td>
+</tr>
+<tr>
+	<td>qTransactions_GetEnabledShareClassbyFundOrdered</td>
+		<td>select * from REF_SHARE_CLASS 
+			where FUND_CODE = ? and IS_ENABLED = 1
+			ORDER BY SHARE_CLASS_ID ASC</td>
+	<td>FUND_CODE varchar</td>
+</tr>
+  <tr>
+	<td>qTransactions_GetTodayShareClassMovementReport</td>
+		<td>select scm.move_date, scm.account_id, rsc1.share_class_name as new_share_class_name, 
+rsc2.share_class_name as previous_share_class_name, org.ORGANISATION_ID,  org.ORG_ACCOUNT_CODE, 
+org.ORGANISATION_NAME,cli.CLIENT_NUMBER, acc.subtitle, acc.accountnumber
+from share_class_movement scm
+inner join ref_share_class rsc1 on rsc1.share_class_id = scm.new_share_class_id
+left join ref_share_class rsc2 on rsc2.share_class_id = scm.old_share_class_id
+inner join account acc on acc.account_id = scm.account_id
+  INNER JOIN RELATIONS rel
+  ON (scm.ACCOUNT_ID       = rel.ELEMENT_ID2
+  AND rel.RELATION_NAME_ID = 20)
+  INNER JOIN ORGANISATION org
+  ON (org.ORGANISATION_ID = rel.ELEMENT_ID1)
+  LEFT JOIN CLIENT_AURORA_MAP cli
+  ON (org.ORGANISATION_ID = cli.ORGANISATION_ID)
+  where scm.move_type_id=1
+  and trunc(scm.move_date) = trunc(SYSDATE)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetUserName</td>
+	<td>SELECT DISTINCT(RUN_BY) FROM V_FUND_COMPLETED_END_OF_DAY</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetPSDFTransactionsForEODId</td>
+	<td>SELECT * FROM (
+			SELECT 
+			  I.INSTRUCTION_ID, I.PROCESS_DATE, RIT.INSTRUCTION_TYPE_NAME,
+			  CM.ORGANISATION_ID,CAM.CLIENT_NUMBER, RIS.INSTRUCTION_STATUS_ID, RIS.INSTRUCTION_STATUS_NAME,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE 0 
+			  END) AS CASH_AMOUNT,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=4 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE 0 
+			  END) AS UNITS,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=13 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS EOD_ID,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=1 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS SOURCE_ACCOUNT_ID,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=7 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS DEST_ACCOUNT_ID
+			FROM INSTRUCTION I 
+			  INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+			  INNER JOIN REF_INSTRUCTION_STATUS RIS on (I.INSTRUCTION_STATUS_ID = RIS.INSTRUCTION_STATUS_ID)
+			  INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+			  INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+				(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+				AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+			  INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			INNER JOIN COMM CM on (I.COMM_ID = CM.COMM_ID)
+			INNER JOIN CLIENT_AURORA_MAP CAM on (CM.ORGANISATION_ID = CAM.ORGANISATION_ID)  
+			WHERE RIT.IS_FINANCIAL_TRANSACTION=1  
+			GROUP BY I.INSTRUCTION_ID,CM.ORGANISATION_ID,CAM.CLIENT_NUMBER, RIS.INSTRUCTION_STATUS_ID, RIS.INSTRUCTION_STATUS_NAME,
+			 I.PROCESS_DATE, RIT.INSTRUCTION_TYPE_NAME
+		) W WHERE W.EOD_ID = ?</td>
+	<td>EOD_ID int</td>
+</tr>	
+<tr>
+	<td>qTransactions_GetPSDFTransactionsForStatusId</td>
+	<td>SELECT * FROM (
+			SELECT 
+			  I.INSTRUCTION_ID, I.PROCESS_DATE, RIT.INSTRUCTION_TYPE_NAME,
+			  CM.ORGANISATION_ID,CAM.CLIENT_NUMBER, RIS.INSTRUCTION_STATUS_ID, RIS.INSTRUCTION_STATUS_NAME,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=3 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE 0 
+			  END) AS CASH_AMOUNT,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=4 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE 0 
+			  END) AS UNITS,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=13 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS EOD_ID,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=1 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS SOURCE_ACCOUNT_ID,
+			  MAX(CASE 
+				WHEN RID.INSTRUCTION_DATA_ID=6 THEN IDA.INSTRUCTION_NUM_VALUE
+				ELSE NULL
+			  END) AS DEST_ACCOUNT_ID
+			FROM INSTRUCTION I 
+			  INNER JOIN REF_INSTRUCTION_TYPE RIT ON (I.INSTRUCTION_TYPE_ID = RIT.INSTRUCTION_TYPE_ID)
+			  INNER JOIN REF_INSTRUCTION_STATUS RIS on (I.INSTRUCTION_STATUS_ID = RIS.INSTRUCTION_STATUS_ID)
+			  INNER JOIN APPLICABLE_INSTRUCTION_DATA AID ON (RIT.INSTRUCTION_TYPE_ID = AID.INSTRUCTION_TYPE_ID)
+			  INNER JOIN INSTRUCTION_DATA_APPLIED IDA ON 
+				(AID.APPLICABLE_INSTRUCTION_DATA_ID = IDA.APPLICABLE_INSTRUCTION_DATA_ID 
+				AND I.INSTRUCTION_ID = IDA.INSTRUCTION_ID)
+			  INNER JOIN REF_INSTRUCTION_DATA RID ON (AID.INSTRUCTION_DATA_ID = RID.INSTRUCTION_DATA_ID)
+			INNER JOIN COMM CM on (I.COMM_ID = CM.COMM_ID)
+			INNER JOIN CLIENT_AURORA_MAP CAM on (CM.ORGANISATION_ID = CAM.ORGANISATION_ID)  
+			WHERE RIT.IS_FINANCIAL_TRANSACTION=1 AND RIS.INSTRUCTION_STATUS_ID=? 
+			GROUP BY I.INSTRUCTION_ID,CM.ORGANISATION_ID,CAM.CLIENT_NUMBER, RIS.INSTRUCTION_STATUS_ID, RIS.INSTRUCTION_STATUS_NAME,
+			 I.PROCESS_DATE, RIT.INSTRUCTION_TYPE_NAME
+		) W WHERE W.EOD_ID IS NULL</td>
+	<td>INSTRUCTION_STATUS_ID int</td>
+</tr>	
+<tr>
+	<td>qTransactions_GetInstructionIdsForEODId</td>
+	<td>SELECT * FROM V_INSTRUCTION_EOD WHERE EOD_ID=?</td>
+	<td>EOD_ID int</td>
+</tr>
+<tr>
+	<td>qTransactions_GetMaxCompletedFundEOD</td>
+	<td>SELECT * FROM V_FUND_COMPLETED_END_OF_DAY 
+		WHERE ROWNUM=1 
+		ORDER BY RUN_DATE DESC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qTransactions_GetTransactionsByProcessDateFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_source_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id not in (7,11, 32) and trunc(ins.process_date) = trunc(?)
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>PROCESS_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetDestTransactionsByProcessDateFund</td>
+	<td>select INS.*, rts.transaction_type_name from instruction ins
+inner join v_instruction_dest_accounts visc on (ins.instruction_id = visc.instruction_id)
+inner join account acc on (visc.account_id = acc.account_id)
+inner join ref_instruction_type rit on (rit.instruction_type_id = ins.instruction_type_id)
+inner join ref_transaction_type rts on (rit.transaction_type_id = rts.transaction_type_id)
+where ins.instruction_status_id not in (7,11, 32) and trunc(ins.process_date) = trunc(?)
+and acc.fund_code=? and rit.is_financial_transaction = 1</td>
+	<td>PROCESS_DATE date
+	FUND_CODE varchar</td>
+</tr>
+<tr>
+	<td>qTransactions_GetCurrentAccountShareClassValues</td>
+	<td>select acc.*, av.acc_cash, av.acc_units, sco.share_class_id as OVERRIDE_SHARE_CLASS_ID, sco.override_reason,
+  CASE 
+    WHEN (eaa1.attribute_status) IS NULL THEN 0 
+    ELSE eaa1.attribute_status
+  END AS SEED_FUNDER,
+  CASE 
+    WHEN (eaa2.attribute_status) IS NULL THEN 0 
+    ELSE eaa2.attribute_status
+  END AS EARLY_INVESTOR,
+  CASE 
+    WHEN (eaa3.attribute_status) IS NULL THEN 0 
+    ELSE eaa3.attribute_status
+  END AS INTERNAL_ACCOUNT
+from account acc
+left join account_value av on (acc.account_id = av.account_id)
+left join element_attribute_applied eaa1 on (acc.account_id = eaa1.element_id and eaa1.element_attribute_id=35)
+left join element_attribute_applied eaa2 on (acc.account_id = eaa2.element_id and eaa2.element_attribute_id=36)
+left join element_attribute_applied eaa3 on (acc.account_id = eaa3.element_id and eaa3.element_attribute_id=40)
+left join share_class_override sco on (acc.account_id = sco.account_id)
+where acc.fund_code = 'PC'
+order by acc.account_id</td>
+	<td></td>
+</tr>
+</table>
+<@end@>
+</body></html>

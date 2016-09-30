@@ -1,0 +1,1502 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_reports htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml custom_finish_layout_init@>
+
+  <$include super.custom_finish_layout_init$>
+
+  if (navBuilder.menuB != null)
+  {
+    navBuilder.addChildNodeTo('CONTENT_MANAGEMENT','item','id==ccla_reports','url==<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_REPORTS','label==CCLA Content Reports');
+  }
+
+ if (navBuilder.menuB != null)
+  {
+    navBuilder.addChildNodeTo('CONTENT_MANAGEMENT','item','id==ccla_odc_reports','url==<$HttpCgiPath$>?IdcService=CCLA_ODC_REPORTS<$include add_idc_token_to_url$>','label==CCLA ODC Reports');
+  }
+  
+  if (navBuilder.menuB != null)
+  {
+    navBuilder.addChildNodeTo('CONTENT_MANAGEMENT','item','id==mand_reports','url==<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_WORKFLOW_REPORTS','label==CCLA Parking Lot Report')
+    
+    <$if userHasRole("admin") or userHasRole("WF_COO")$>
+    	navBuilder.addChildNodeTo('CONTENT_MANAGEMENT','item','id==extended_reports','url==<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_EXTENDED_REPORT','label==CCLA Extended Content Report');;
+		navBuilder.addChildNodeTo('CONTENT_MANAGEMENT','item','id==cs_fund_xfer_reports','url==<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_FUND_XFER_REPORT','label==CCLA Fund Transfer Report');;
+	<$endif$>
+  }
+
+<@end@>
+
+<@dynamichtml ccla_reports_styles@>
+
+	<style type="text/css">
+		body{
+			text-align:center;
+			padding:0;
+			margin:0;
+		}
+		
+		table.no-border td {
+			border: none;
+		}
+		
+		table.search {
+			margin: 10px;
+		}
+		
+		table.search th {
+			text-align:right;
+		}
+		
+		table.totals {
+			margin: 10px;
+		}
+		
+		table.totals th {
+			border-top: 1px solid #555;
+			border-right: 1px solid #555;
+			border-bottom: 2px solid #555;
+			border-left: 1px solid #555;
+		}
+		
+		table.totals td {
+			border-top: 1px solid #555;
+			border-right: 1px solid #555;
+			border-bottom: 2px solid #555;
+		}
+		
+		table.results {
+			margin: 10px;
+		}
+		
+		table.results th {
+			background-color: #DDD;
+			border-top: 1px solid #555;
+			border-right: 1px solid #555;
+			border-bottom: 2px solid #555;
+		}
+		
+		table.results td {
+			font-size: 1em;
+			border-right: 1px solid #555;
+			border-bottom: 1px solid #555;
+		}
+		
+		.first-col {
+			border-left: 1px solid #555;
+		}
+		
+		.job_jobStarted{
+			background-color:green;
+			color: #FFF;
+		}
+		
+		.job_jobNotStarted{
+			background-color:orange;
+		}
+		
+		.job_jobInLot,
+		.job_inScanParkingLot{
+			background-color:yellow;
+		}
+		
+		.job_jobNotStartedError,
+		.job_jobNotStartedLeft{
+			background-color:red;
+		}
+		
+		.job_jobNotStartedSharepoint {
+			background-color: purple;
+			color: white;
+		}
+		
+		.job_missingIndexValues,
+		.job_missingBundle {
+			background-color:red;
+			color: white;
+		}
+		
+		.job_jobPendingInIris {
+			background-color: orange;
+			color:black;
+		}
+		
+		.job_validation {
+			background-color: powderblue;
+			color:black;
+		}
+		
+		.job_archived {
+			background-color: #DFB28B;
+			color: black;
+		}
+		
+		.job_duplicate {
+			background-color: lightblue;
+			color:black;
+		}
+		
+		.job_flagged {
+			background-color: sienna;
+			color:black;	
+		}
+	</style>
+
+<@end@>
+
+<!-- Used to display the item status cell for a particular item
+	 on the Extended Content/Parking Lot report. -->
+<@dynamichtml ccla_reports_display_item_status@>
+	
+	<$include ccla_reports_resolve_item_status$>
+	
+	<td class="<$#local.itemCellClass$>">
+	
+		<$if false$>[<b><$#active.xStatus$></b>]<$endif$>
+	
+		<$#local.itemStatusLabel$>
+		
+		<!--Write which docs it's a duplicate of-->
+		<$if strEquals(itemStatusLabel,"Duplicate")$>
+			<$lMessage = rsQueryDocs.xComments$>
+			<$duplicateDocNamesIndex = strIndexOf(lMessage, "of:") + 3$>
+		
+			<$csvDuplicateDocNames = strSubstring(lMessage, duplicateDocNamesIndex, strLength(lMessage)-1)$>
+			<$rsMakeFromString("rsPotentialDuplicateDocs", csvDuplicateDocNames)$>
+			
+			of
+			
+			<$duplicateCounter=0$>
+			<$loop rsPotentialDuplicateDocs$>
+				<$duplicateCounter=duplicateCounter+2$>
+				
+				<$itemDocName = rsPotentialDuplicateDocs.row$>
+				<$exec rsNext("rsPotentialDuplicateDocs")$>
+				<$itemBundleRef = rsPotentialDuplicateDocs.row$>
+
+				<a href="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&bundleRef=' & itemBundleRef$>#_image,<$itemDocName$>" target="_blank"><$itemDocName$> (<$itemBundleRef$>)</a>
+
+				<$if duplicateCounter < rsPotentialDuplicateDocs.#numRows$>, <$endif$>
+			
+			<$endloop$>
+			
+			<$if false$>
+				- potential duplicate of: 
+				
+				<$duplicateCounter=0$>
+				<ul>
+					<$loop rsPotentialDuplicateDocs$>
+						<$duplicateCounter=duplicateCounter+2$>
+						
+						<$itemDocName = rsPotentialDuplicateDocs.row$>
+						<$exec rsNext("rsPotentialDuplicateDocs")$>
+						<$itemBundleRef = rsPotentialDuplicateDocs.row$>
+						
+						<li>
+							<a href="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&bundleRef=' & itemBundleRef$>#_image,<$itemDocName$>" target="_blank"><$itemDocName$> (<$itemBundleRef$>)</a>
+						</li>
+						<$if duplicateCounter < rsPotentialDuplicateDocs.#numRows$><$endif$>
+					
+					<$endloop$>
+				</ul>
+			<$endif$>
+			
+		<$endif$>
+	</td>
+
+<@end@>
+
+<!-- Used to display the item status cell for a particular item
+	 on the Extended Content/Parking Lot report. -->
+<@dynamichtml ccla_reports_display_view_item_status@>
+	
+	<$include ccla_reports_resolve_view_item_status$>
+	
+	<td class="<$#local.itemCellClass$>">
+	
+		<$if false$>[<b><$#active.xStatus$></b>]<$endif$>
+	
+		<$#local.itemStatusLabel$>
+		
+		<!--Write which docs it's a duplicate of-->
+		<$if strEquals(itemStatusLabel,"Duplicate")$>
+			<$lMessage = rsQueryDocs.xComments$>
+			<$duplicateDocNamesIndex = strIndexOf(lMessage, "of:") + 3$>
+		
+			<$csvDuplicateDocNames = strSubstring(lMessage, duplicateDocNamesIndex, strLength(lMessage)-1)$>
+			<$rsMakeFromString("rsPotentialDuplicateDocs", csvDuplicateDocNames)$>
+			
+			of
+			
+			<$duplicateCounter=0$>
+			<$loop rsPotentialDuplicateDocs$>
+				<$duplicateCounter=duplicateCounter+2$>
+				
+				<$itemDocName = rsPotentialDuplicateDocs.row$>
+				<$exec rsNext("rsPotentialDuplicateDocs")$>
+				<$itemBundleRef = rsPotentialDuplicateDocs.row$>
+
+				<a href="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&bundleRef=' & itemBundleRef$>#_image,<$itemDocName$>" target="_blank"><$itemDocName$> (<$itemBundleRef$>)</a>
+
+				<$if duplicateCounter < rsPotentialDuplicateDocs.#numRows$>, <$endif$>
+			
+			<$endloop$>
+			
+		<$endif$>
+	</td>
+
+<@end@>
+
+<!-- 	Used to resolve the status for a particular item displayed on the 
+		Extended Content/Parking Lot reports. -->
+<@dynamichtml ccla_reports_resolve_item_status@>
+
+	<$if strLength(rsQueryDocs.xWorkflowDate) > 0$>
+		<$itemCellClass="job_jobStarted"$>
+		<$itemStatusLabel="Job Started"$>
+		
+		<$counterStarted=counterStarted+1$>
+	<$else$>
+		
+		<$if strEquals(rsQueryDocs.xStatus, "Archived")$>
+			<$itemCellClass="job_archived"$>
+			<$itemStatusLabel="Archived"$>
+			
+			<$counterArchived=counterArchived+1$>
+		
+		<$elseif strEquals(rsQueryDocs.xStatus, "Duplicate")$>
+			<$itemCellClass="job_duplicate"$>
+			<$itemStatusLabel="Duplicate"$>
+			
+			<$counterDuplicate=counterDuplicate+1$>
+		
+		<$elseif strEquals(rsQueryDocs.xStatus, "Pending") and #active.xBundleRef and not (#active.xDocumentClass like "MAND|AUTOMAND")$>
+			<$itemCellClass="job_jobPendingInIris"$>
+			<$itemStatusLabel="Pending In Iris"$>
+			
+			<$counterPendingInIris = counterPendingInIris+1$>
+			
+		<$elseif strEquals(rsQueryDocs.xStatus, "Failed SPP release")$>
+			<$itemCellClass="job_jobNotStartedError"$>
+			<$itemStatusLabel="Job Not Started (ERROR)"$>
+			
+			<$counterNotStartedError=counterNotStartedError+1$>
+
+		<$else$>
+			<$if rsQueryDocs.xDocumentClass like "MAND|AUTOMAND"$>
+			
+				<$if isTrue(rsFindRowPrimary("rsMandWorkflowDocs",rsQueryDocs.dDocName))$>
+					<$itemCellClass="job_jobInLot"$>
+					<$itemStatusLabel="In Parking Lot"$>
+					
+					<$counterParkingLot=counterParkingLot+1$>
+				<$else$>
+					<$if strEquals(rsQueryDocs.xSource, "User Upload")$>
+						<$itemCellClass="job_jobNotStartedUpload"$>
+						<$itemStatusLabel="Job Not Started (User Uploaded)"$>
+						
+						<$counterNotStartedUpload=counterNotStartedUpload+1$>
+					<$elseif (parseDate(rsQueryDocs.dInDate) < parseDate("01/04/2009 0:00"))$>
+						<$itemCellClass="job_jobNotStartedSharepoint"$>
+						<$itemStatusLabel="Migrated from Sharepoint"$>
+						
+						<$counterSharepointMigration=counterSharepointMigration+1$>
+					<$elseif strEquals(rsQueryDocs.xStatus, "Pending") and #active.xBundleRef$>	
+						<$itemCellClass="job_jobPendingInIris"$>
+						<$itemStatusLabel="Pending In Iris"$>
+			
+						<$counterPendingInIris = counterPendingInIris+1$>
+						
+					<$else$>
+						<$itemCellClass="job_jobNotStartedError"$>
+						<$itemStatusLabel="Job Not Started (ERROR)"$>
+						
+						<$c="Error = (Doc Class is MAND) && (Not in Parking Lot) && (Job Not Started) && (Not User Upload)"$>
+						<$counterNotStartedError=counterNotStartedError+1$>
+					<$endif$>
+				<$endif$>
+				
+			<$else$>
+				<$if strEquals(rsQueryDocs.xSource, "User Upload")$>
+					<$itemCellClass="job_jobNotStartedUpload"$>
+					<$itemStatusLabel="Job Not Started (User Uploaded)"$>
+					
+					<$counterNotStartedUpload=counterNotStartedUpload+1$>
+				<$else$>
+						<$if strEquals(rsQueryDocs.xDocumentClass, "XXX")$>
+							<$itemCellClass="job_jobNotStarted"$>
+							<$itemStatusLabel="Job Not Started (Multi-doc)"$>
+							
+							<$counterNotStarted=counterNotStarted+1$>
+						<$else$>
+							<$if (parseDate(rsQueryDocs.dInDate) > parseDate("06/09/2009 0:00")) and ((strLength(rsQueryDocs.xWorkflowDate) == 0) or (parseDate(rsQueryDocs.xWorkflowDate) < parseDate("01/01/1980 0:00")))$>
+								<$itemCellClass="job_jobPendingInIris"$>
+								<$itemStatusLabel="Pending In Iris"$>
+								
+								<$counterPendingInIris = counterPendingInIris+1$>
+							<$elseif strLength(rsQueryDocs.xScanDate) > 0$>
+								<$if parseDate(rsQueryDocs.xScanDate) <= parseDate("05/03/2009 23:59")$>
+									<$itemCellClass="job_inScanParkingLot"$>
+									<$itemStatusLabel="In 05/03/2009 Parking Lot"$>
+									
+									<$counterInScanParkingLot=counterInScanParkingLot+1$>
+								<$else$>
+									<$itemCellClass="job_jobNotStartedError"$>
+									<$itemStatusLabel="Job Not Started (ERROR)"$>
+									
+									<$counterNotStartedError=counterNotStartedError+1$>
+								<$endif$>
+							<$else$>											
+								<$itemCellClass="job_jobNotStartedError"$>
+								<$itemStatusLabel="Job Not Started (ERROR - No Scan Date)"$>
+								
+								<$c="Error = (Doc Class is not MAND) && (Source is Scan) && (Job Not Started)"$>
+								<$counterNotStartedError=counterNotStartedError+1$>
+							<$endif$>
+						<$endif$>
+				<$endif$>
+			<$endif$>
+		<$endif$>
+	<$endif$>						
+
+<@end@>
+
+<!-- 	Used to resolve the status for a particular item displayed on the 
+		Extended Content-->
+<@dynamichtml ccla_reports_resolve_view_item_status@>
+
+	<$if strEquals(rsQueryDocs.STATUS_DESC, "Job Started")$>
+		<$itemCellClass="job_jobStarted"$>
+		<$itemStatusLabel="Job Started"$>		
+		<$counterStarted=counterStarted+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Archived")$>
+		<$itemCellClass="job_archived"$>
+		<$itemStatusLabel="Archived"$>
+		<$counterArchived=counterArchived+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Bundle Flagged")$>
+		<$itemCellClass="job_bundleFlagged"$>
+		<$itemStatusLabel="Bundle Flagged"$>
+		<$counterBundleFlagged=counterBundleFlagged+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Validation")$>
+		<$itemCellClass="job_validation"$>
+		<$itemStatusLabel="Validation"$>
+		<$counterValidation=counterValidation+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Job Not Started (Left Behind)")$>
+		<$itemCellClass="job_jobNotStartedLeft"$>
+		<$itemStatusLabel="Job Not Started (Left Behind)"$>
+		<$counterNotStartedLeft=counterNotStartedLeft+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Duplicate")$>
+		<$itemCellClass="job_duplicate"$>
+		<$itemStatusLabel="Duplicate"$>
+		<$counterDuplicate=counterDuplicate+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Missing Bundle (ERROR)")$>
+		<$itemCellClass="job_missingBundle"$>
+		<$itemStatusLabel="Missing Bundle (ERROR)"$>
+		<$counterMissingBundle = counterMissingBundle+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Missing Index Values (ERROR)")$>
+		<$itemCellClass="job_missingIndexValues"$>
+		<$itemStatusLabel="Missing Index Values (ERROR)"$>
+		<$counterMissingIndexValues = counterMissingIndexValues+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Pending In Iris")$>
+		<$itemCellClass="job_jobPendingInIris"$>
+		<$itemStatusLabel="Pending In Iris"$>
+		<$counterPendingInIris = counterPendingInIris+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Job Not Started (ERROR)")$>
+		<$itemCellClass="job_jobNotStartedError"$>
+		<$itemStatusLabel="Job Not Started (ERROR)"$>
+
+<!-- //Need to figure out what to do with this 
+		<$c="Error = (Doc Class is not MAND) && (Source is Scan) && (Job Not Started)"$>
+		<$c="Error = (Doc Class is MAND) && (Not in Parking Lot) && (Job Not Started) && (Not User Upload)"$>
+-->
+		<$counterNotStartedError=counterNotStartedError+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "In Parking Lot")$>		
+		<$itemCellClass="job_jobInLot"$>
+		<$itemStatusLabel="In Parking Lot"$>
+		<$counterParkingLot=counterParkingLot+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Job Not Started (User Uploaded)")$>		
+		<$itemCellClass="job_jobNotStartedUpload"$>
+		<$itemStatusLabel="Job Not Started (User Uploaded)"$>
+		<$counterNotStartedUpload=counterNotStartedUpload+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Migrated from Sharepoint")$>		
+		<$itemCellClass="job_jobNotStartedSharepoint"$>
+		<$itemStatusLabel="Migrated from Sharepoint"$>
+		<$counterSharepointMigration=counterSharepointMigration+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Job Not Started (Multi-doc)")$>		
+		<$itemCellClass="job_jobNotStarted"$>
+		<$itemStatusLabel="Job Not Started (Multi-doc)"$>					
+		<$counterNotStarted=counterNotStarted+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "In 05/03/2009 Parking Lot")$>		
+		<$itemCellClass="job_inScanParkingLot"$>
+		<$itemStatusLabel="In 05/03/2009 Parking Lot"$>
+		<$counterInScanParkingLot=counterInScanParkingLot+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Job Not Started (ERROR - No Scan Date)")$>		
+		<$itemCellClass="job_jobNotStartedError"$>
+		<$itemStatusLabel="Job Not Started (ERROR - No Scan Date)"$>
+		<$counterNotStartedError=counterNotStartedError+1$>
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Flagged")$>		
+		<$itemCellClass="job_flagged"$>
+		<$itemStatusLabel="Flagged"$>
+		<$counterFlagged=counterFlagged+1$>	
+	<$elseif strEquals(rsQueryDocs.STATUS_DESC, "Bundle/Document Mismatch")$>		
+		<$itemCellClass="job_mismatch"$>
+		<$itemStatusLabel="Bundle/Document Mismatch"$>
+		<$counterMismatch=counterMismatch+1$>	
+	<$endif$>						
+
+<@end@>
+
+
+
+<@dynamichtml ccla_cs_ft_report_transfer_amount@>
+<$TRANSFER_AMOUNT$>&nbsp;
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_to_account@>
+<$NEW_ACCOUNT$>&nbsp;
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_to_fund@>
+<$NEW_FUND$>&nbsp;
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_aurora_status@>
+<$AURORA_STATUS$>&nbsp;
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_account_status@>
+	<$#active.ACCOUNT_STATUS$>&nbsp;
+
+	<$if userHasRole("admin") or userHasRole("WF_COO")$>
+		
+		<$if #active.ACCOUNT_STATUS$><br/><br/><$endif$>
+		
+		<$if #active.ACCOUNT_STATUS like "suspended"$>
+			<input type="button" name="btnUnsuspend" value="Resume" onclick="setTransferAccountStatus('<$#active.TRANSFER_ID$>','resumed');" />
+		<$else$>
+			<input type="button" name="btnSuspend" class="submitLink" value="Suspend" onclick="setTransferAccountStatus('<$#active.TRANSFER_ID$>','suspended');" />
+		<$endif$>
+		
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_units@>
+<input type="hidden" class="unit_value" fund="<$FUND$>" value="<$UNITS$>"/>&nbsp;<span style="width:100%;text-align:right;padding-right:4px;" class="unit_val"><$UNITS$></span>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_batch_id@>
+	<$if #active.AURORA_BATCH_ID$><$#active.AURORA_BATCH_ID$><$else$>&nbsp;<$endif$>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_corr_id@>
+<$CORRESPONDENT_ID$><input type="hidden" class="correspondent_id" value="<$CORRESPONDENT_ID$>"/>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_cli_id@>
+<$CLIENT_ID$><input type="hidden" class="client_id" value="<$CLIENT_ID$>"/>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_note@>
+	<$if userHasRole("WF_COO") or userHasRole("admin")$>
+		<input type="text" value="<$NOTE$>" size="15" id="note<$TRANSFER_ID$>" onKeyUp="if(this.value.length > 0)this.style.backgroundColor='yellow';"/><input type="button" class="submitLink" onClick="submitNote('<$TRANSFER_ID$>');" value="Save"/>
+	<$else$>
+		<$NOTE$>&nbsp;
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_js_common@>
+	//Adds new toUniqueArr values to temp array
+	
+	function toUniqueArr(a) {
+	 temp = new Array();
+	 for(i=0;i<a.length;i++){
+	  if(!contains(temp, a[i]) && a[i].length > 0){
+	   temp.length+=1;
+	   temp[temp.length-1]=a[i];
+	  }
+	 }
+	 return temp;
+	}
+	 
+	//Will check for the Uniqueness
+	function contains(a, e) {
+	 for(j=0;j<a.length;j++)if(a[j]==e)return true;
+	 return false;
+	}
+	
+	function formatWithCommas(num){
+		return addCurrencySymbols(num, false);
+	}
+	
+	function addCurrencySymbols(num, addPoundSymbol){
+		var symbol = unescape('%A3');
+		
+		if(!addPoundSymbol) symbol = '';
+	
+		num = num.toString().replace(/\$|\,/g,'');
+		if(isNaN(num))
+		num = "0";
+		sign = (num == (num = Math.abs(num)));
+		num = Math.floor(num*100+0.50000000001);
+		cents = num%100;
+		num = Math.floor(num/100).toString();
+		if(cents<10)
+		cents = "0" + cents;
+		for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)
+		num = num.substring(0,num.length-(4*i+3))+','+
+		num.substring(num.length-(4*i+3));
+		return (((sign)?'':'-') + symbol + num + '.' + cents);
+	}
+	
+	function removeCurrencySymbols(s){
+		s = unescape((escape(s)).replace('%A3', ''));
+		s = s.replace('','');
+		s = s.replace(',','');
+		return s;
+	}
+	
+	function roundNumber(num, dec) {
+		var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
+		return result;
+	}
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_get_sf_fields@>
+	<input type="hidden" name="numResults" value="<$numResults$>"/>
+<@end@>
+
+<@dynamichtml ccla_cs_ft_report_get_t_and_r_price@>
+	<$rPrice = 7154.36$>
+	<$tPrice = 966.19$>
+	
+	<$c="Commenting out, call on live not working"$>
+	<$if false$>	
+		<$c="Get the latest value of the Funds"$>
+		<$company="COIF"$>
+		<$methodName="GetLatestUnitPrices"$>
+		<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+	<$endif$>
+	
+	<$if rsLatestUnitPrices$>
+		<$loop rsLatestUnitPrices$>
+			<$if strEquals(rsLatestUnitPrices.fundCode, "R")$>
+				<$rPrice=rsLatestUnitPrices.basicPrice$>
+			<$elseif strEquals(rsLatestUnitPrices.fundCode, "T")$>
+				<$tPrice=rsLatestUnitPrices.basicPrice$>
+			<$endif$>
+		<$endloop$>
+	<$endif$>
+	
+	<$c="Strip out pound symbols and commas"$>
+	<$rPrice = strReplace(rPrice,"","")$>
+	<$rPrice = strReplace(rPrice,",","")$>
+	
+	<$tPrice = strReplace(tPrice,"","")$>
+	<$tPrice = strReplace(tPrice,",","")$>
+<@end@>
+
+<@dynamichtml ccla_cs_display_flag_user@>
+	
+	<$if strIndexOf(#active.FLAG_USER,"CCLA\\") == 0$>
+		<$strSubstring(#active.FLAG_USER,5)$>
+	<$else$>
+		<$#active.FLAG_USER$>
+	<$endif$>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_flag_date_display@>
+	<$formatDateWithPattern(#active.FLAG_DATE, 'dd/MM/yy')$>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_time_display@>
+	<$formatDateWithPattern(#active.FLAG_DATE, 'HH:mm')$>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_scan_date_display@>
+	<$formatDateWithPattern(#active.SCAN_DATE, 'dd/MM/yy HH:mm')$>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_select_col_display@>
+<script type="text/javascript">
+function checkAll()
+			{
+			var myfrm = document.forms['SEARCHFILTER'];
+
+				for(i=0; i<myfrm.elements.length; i++)
+				{
+					if(myfrm.elements[i].type=="checkbox" && myfrm.elements[i].name.indexOf('chk_') ==0)
+					{
+					if (myfrm.chk_all.checked)
+						myfrm.elements[i].checked=true;
+					else
+						myfrm.elements[i].checked=false;
+					}
+				}
+			}		
+</script>
+	<input type="checkbox" name="chk_<$#active.BUNDLE_DOCNAME$>" id="chk_<$#active.BUNDLE_DOCNAME$>" class="flagged-checkbox">
+<@end@>
+
+<@dynamichtml ccla_cs_flag_proc_date_display@>
+	<$formatDateWithPattern(#active.FLAG_DOC_PROC_DATE, 'dd/MM/yy')$>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_docname_display@>
+	<a 	title="Click to view metadata snapshot from when the item was flagged"
+		href="javascript:openPopup('?IdcService=CCLA_VIEW_METADATA_SNAPSHOT<$include add_idc_token_to_url$>&DOCMETA_AUDIT_ID=<$#active.DOCMETA_AUDIT_ID$>');"><$#active.FLAG_DOCNAME$></a>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_bundleref_display@>
+	<a target="blank" href="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&bundleRef=' & #active.BUNDLE_REF$>#_image,<$#active.FLAG_DOCNAME$>"><$#active.BUNDLE_REF$></a>
+	<span style="float:right">
+	<a href="javascript:openPopup('?IdcService=CCLA_RPT_SHOW_NOTES<$include add_idc_token_to_url$>&dDocName=<$#active.BUNDLE_DOCNAME$>&bundleRef=<$#active.BUNDLE_REF$>');">
+	<img 	src="<$HttpImagesRoot$>ccla/form.png" 
+									title="View Notes/Activities for this Bundle" /></a><span>
+<@end@>
+
+<@dynamichtml ccla_cs_flag_bundle_status_filter@>
+	
+	<$bundleStatusList = #env.CCLA_bundleStatuses$>
+	<$exec rsMakeFromString("rsStatus",bundleStatusList,"status")$>
+
+	<select name="bundleStatus" id="bundleStatus" class="sfSelect" <$if autoSearch$>onChange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+		<option value=""></option>
+
+		<$loop rsStatus$>
+			<option value="<$rsStatus.status$>" <$if #local.bundleStatus like rsStatus.status$>selected="selected"<$endif$>>
+				<$rsStatus.status$>
+			</option>
+		<$endloop$>
+	</select>
+	
+<@end@>
+
+<!-- Displays document status -->
+<@dynamichtml ccla_cs_flag_bundle_status_display@>
+
+	<$if #active.CURRENT_BUNDLE_STATUS like 'Completed'$>
+		<span style="color: #A9A9A9; font-size: 1em;">Completed</span>
+	<$elseif #active.CURRENT_BUNDLE_STATUS like 'Indexed'$>
+		<span style="color: #2E8B57; font-size: 1em;">Indexed</span>
+	<$elseif #active.CURRENT_BUNDLE_STATUS like 'Deleted|Flagged'$>
+		<span style="color: #DC143C; font-size: 1em;"><$CURRENT_BUNDLE_STATUS$></span>
+	<$else$>
+		<$#active.CURRENT_BUNDLE_STATUS$>
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml ccla_flagged_items_results_header@>
+	
+	 <div class="ccla_cs_panel_content">
+					
+		<p>This report shows all flag actions which occurred within the dates given below.</p>
+	
+		<table>
+			<tr>
+				<td>Start date:</td>
+				<td>
+					<input type="text" name="startDate" value="<$#local.startDate$>" />
+				</td>
+			</tr>
+			<tr>
+				<td>End date:</td>
+				<td>
+					<input type="text" name="endDate" value="<$#local.endDate$>" />
+				</td>
+			</tr>
+		</table>
+		
+		<p>To unflag bundles select the checkbox by them and then click this button:&nbsp;&nbsp;<input type="button" value="Unflag Selected Bundles" name="bulkRelease" onClick="doBulkRelease();"></p>
+	</div>
+
+<@end@>
+
+<@dynamichtml ccla_date_masking_js@>
+<script type="text/javascript">
+
+// [dFilter] - A Numerical Input Mask for JavaScript
+// Written By Dwayne Forehand - March 27th, 2003
+// Please reuse & redistribute while keeping this notice.
+// Updated by ECS 2010.
+
+var dFilterStep;
+var inFocus = false;
+var dateMask = "##/##/####";
+var dateTimeMask = "##/##/#### ##:##";
+
+
+//Returns the raw values entered
+function dFilterStrip (dFilterTemp, dFilterMask)
+{
+    dFilterMask = replace(dFilterMask,'#','');
+    for (dFilterStep = 0; dFilterStep < dFilterMask.length++; dFilterStep++) {
+		dFilterTemp = replace(dFilterTemp,dFilterMask.substring(dFilterStep,dFilterStep+1),'');
+	}
+	return dFilterTemp;
+}
+
+function dFilterMax (dFilterMask)
+{
+ 	dFilterTemp = dFilterMask;
+    for (dFilterStep = 0; dFilterStep < (dFilterMask.length+1); dFilterStep++) {
+		if (dFilterMask.charAt(dFilterStep)!='#') {
+			dFilterTemp = replace(dFilterTemp,dFilterMask.charAt(dFilterStep),'');
+		}
+	}
+	return dFilterTemp.length;
+}
+
+function dDateMask(event, textbox) {
+	return dFilter (event.keyCode, textbox, dateMask);
+}
+
+function dDateTimeMask(event, textbox) {
+	return dFilter (event.keyCode, textbox, dateTimeMask);
+}
+
+function dFilter (key, textbox, dFilterMask)
+{
+	dFilterNum = dFilterStrip(textbox.value, dFilterMask);
+	
+	//tab, return, bslash, space
+	if (key==9 || key==13 || key==191 || key==32) {
+		return true;
+	} else if (key==8&&dFilterNum.length!=0) {
+		dFilterNum = dFilterNum.substring(0,dFilterNum.length-1);
+		return true;
+	} else if (((key>47&&key<58)||(key>95&&key<106)) && dFilterNum.length<dFilterMax(dFilterMask)) {
+		if (key>95)
+			key=key-48;
+		dFilterNum=dFilterNum+String.fromCharCode(key);
+	} else { 
+		if (((key>47&&key<58)||(key>95&&key<106)) && inFocus) {
+			if (key>95)
+				key=key-48;
+			dFilterNum = String.fromCharCode(key);	
+		} else
+			return false;
+	}
+
+	var dFilterFinal='';
+	var counter = 0;
+	
+	do {
+		if (dFilterMask.charAt(counter)=='#') {
+			if (dFilterNum.length!=0) {
+				dFilterFinal = dFilterFinal + dFilterNum.charAt(0);
+				dFilterNum = dFilterNum.substring(1,dFilterNum.length);
+			} else {
+				dFilterFinal = dFilterFinal + "";
+			}		
+		} else if (dFilterMask.charAt(counter)!='#') {
+			dFilterFinal = dFilterFinal + dFilterMask.charAt(counter); 			
+		}
+		counter++
+	} while (dFilterNum.length!=0 && counter<dFilterMask.length);
+	
+	textbox.value = dFilterFinal;
+	
+	if(inFocus)
+		inFocus=false;
+		
+    return false;
+}
+
+
+function replace(fullString,text,by) {
+    var strLength = fullString.length, txtLength = text.length;
+    if ((strLength == 0) || (txtLength == 0)) return fullString;
+
+    var i = fullString.indexOf(text);
+    if ((!i) && (text != fullString.substring(0,txtLength))) return fullString;
+    if (i == -1) return fullString;
+
+    var newstr = fullString.substring(0,i) + by;
+
+    if (i+txtLength < strLength)
+        newstr += replace(fullString.substring(i+txtLength,strLength),text,by);
+
+    return newstr;
+}
+	
+function padOutDate(textbox){
+	if (textbox.value!=null & textbox.value.length==8) {
+		textbox.value =  textbox.value.substring(0,6) + '20' + textbox.value.substring(6);		
+	}
+}
+
+</script>
+<@end@>
+
+<!-- Displays extended view search form fields. What is displayed and pre-selected
+	 is dependant on the 'searchMethod' binder value. -->
+<@dynamichtml ccla_extended_view_report_search_form@>
+	
+	<$if not searchMethod$>
+		<$searchMethod = "all"$>
+	<$endif$>
+	
+	<$if searchMethod like "all"$>
+		<!-- Enable all search filters -->
+		<$reportTitle = ""$>
+		
+		<$showDocumentClassFilter = 1$>
+		<$showDuplicateFilter = 1$>
+		<$showDocumentTypeFilter = 1$>
+		<$showStatusFilter = 1$>
+		<$showSourceFilter = 1$>
+		<$showSpecialSearchOptions=1$>
+	
+	<$elseif searchMethod like "completedAndErrors"$>
+		<!-- Enable all search filters, and pre-select all 
+			 doc classes and some statuses -->
+		<$reportTitle = ""$>
+	
+		<$showDocumentClassFitler = 1$>
+		<$showDuplicateFilter = 1$>
+		<$showDocumentTypeFilter = 1$>
+		<$showStatusFilter = 1$>
+		<$showSourceFilter = 1$>
+	
+		<$allDocumentClasses = 1$>
+		<$allCompletedStatuses = 1$>
+		<$allErrorStatuses = 1$>
+		
+	<$elseif searchMethod like "duplicatesOnly"$>
+		<!-- Only show duplicates -->
+		<$reportTitle = "Duplicates"$>
+		
+		<$allDocumentClasses = 1$>
+		
+		<$jobStatuses = "job_duplicate"$>
+	
+	<$elseif searchMethod like "singleDocumentClass"$>
+		<!-- Show single Document Class selector and date filters only -->
+		<$reportTitle = "Single Document Class"$>
+		
+		<$showDocumentClassFilter = 1$>
+		<$singleDocumentClass = 1$>
+		<$allJobStatuses = 1$>
+		
+	<$elseif searchMethod like "emptyProcessDates"$>
+		<!-- Show single Document Class selector and date filters only -->
+		<$reportTitle = "Empty Process Dates"$>
+		<$allDocumentClasses = 1$>
+		<$allJobStatuses = 1$>
+		
+	<$endif$>
+
+	
+	<$if #local.allCompletedStatuses$>
+		<$job_jobStarted=1$>
+		<$job_archived=1$>
+	<$endif$>
+	
+	<$if #local.allErrorStatuses$>
+		<$job_mismatch=1$>
+		<$job_flagged=1$>
+		<$job_jobNotStarted=1$>
+		<$job_jobNotStartedError=1$>
+		<$job_jobNotStartedLeft=1$>
+	<$endif$>
+	
+	<$if not sortColumn$>
+		<$sortColumn = "DINDATE"$>
+	<$endif$>
+	
+	<$if not sortOrder$>
+		<$sortOrder = "ASC"$>
+	<$endif$>
+	
+	<script type="text/javascript">
+		
+		var searchMethod = "<$#local.searchMethod$>";
+		
+		var allDocumentClasses = <$if #local.allDocumentClasses$>true<$else$>false<$endif$>;
+		var singleDocumentClass = <$if #local.singleDocumentClass$>true<$else$>false<$endif$>;
+		
+		var showDocumentClassFilter = <$if #local.showDocumentClassFilter$>true<$else$>false<$endif$>;
+		var showStatusFilter = <$if #local.showStatusFilter$>true<$else$>false<$endif$>;
+		
+		var nullProcessDate = <$if #local.nullProcessDate$>true<$else$>false<$endif$>;
+		
+		
+		// Page load functions.
+		$(document).ready( function() {
+			
+			if (allDocumentClasses) // Select all doc classes.
+				toggleDocClassCheckboxes(true);
+
+			if (nullProcessDate)
+				checkProcessDate(true);			
+				
+			// Append a special CSS class to all 'transaction' doc class tickboxes
+			if (documentClassArr && documentClassArr.length>0) {
+			
+				var name;
+				var isTransaction;
+				for (var i=0; i<documentClassArr.length; i++) {
+					
+					name 			= documentClassArr[i].name;
+					isTransaction 	= documentClassArr[i].isTransaction;
+					
+					if (isTransaction)
+						$("#" + name).addClass("doc-class-checkbox-trans");
+						
+				}
+			} else {
+				alert('Could not load document classes!');
+			}
+			
+			// Bind click event to doc class checkboxes
+			$(".doc-class-checkbox").bind("click", function() {
+				if (!$(this).is(":checked")) {
+					$("#allDocumentClasses").removeAttr("checked");
+				
+					if ($(this).hasClass("doc-class-checkbox-trans"))
+						$("#allTransactions").removeAttr("checked");
+				}
+				
+			});
+			
+		});
+		
+		// Switches on/off all Document Class checkboxes.
+		function toggleDocClassCheckboxes(checkAll) {
+		
+			if (checkAll) {
+				$("#allTransactions").attr("checked","checked");
+				
+				$(".doc-class-checkbox").attr("checked","checked");
+			} else {
+				$("#allTransactions").removeAttr("checked");
+			
+				$(".doc-class-checkbox").removeAttr("checked");
+			}
+		}
+		
+		// Switches on/off all Transaction Document Class checkboxes
+		function toggleTransactionsDocClassCheckboxes(checkAll) {
+			
+			if (checkAll)
+				$(".doc-class-checkbox-trans").attr("checked","checked");
+			else {
+				$("#allDocumentClasses").removeAttr("checked");
+				
+				$(".doc-class-checkbox-trans").removeAttr("checked");
+			}
+		}
+		
+		// Switches on/off all Job Status checkboxes
+		function toggleJobStatusCheckboxes(checkAll) {
+			
+			if (checkAll)
+				$(".job-status-checkbox").attr("checked","checked");
+			else
+				$(".job-status-checkbox").removeAttr("checked");
+		}
+		
+		// Pre-submit function.
+		function runOnSubmit(){
+		
+			var proceed = false;
+		
+			if (showDocumentClassFilter) {
+				proceed = popDocClasses();
+				
+				if (!proceed) {
+					alert('Please choose at least 1 Document Class');
+					return false;
+				}
+			}
+			
+			if (showStatusFilter) {
+				proceed = popJobStatuses();
+
+				if (!proceed) {
+					alert('Please choose at least 1 Job Status');
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		// Retreives selected document classes and places them in a comma-separated
+		// list. Returns false if no selected doc class was found.
+		function popDocClasses() {
+			
+			// Clear current contents of list
+			$("#docClasses").val("");
+			
+			if (singleDocumentClass) {
+				// Fetch single selected document class from option list.
+				var selDocClass = $("#docClass").val();
+				$("#docClasses").val(selDocClass);
+				
+			} else {
+				// Determine which of the displayed tickboxes has been selected.
+				var newList = "";
+					
+				$(".doc-class-checkbox").each( function() {
+					if ($(this).is(":checked")) {
+						if (newList.length > 0)
+							newList += ",";
+							
+						newList += $(this).attr("name");
+					}
+					
+				});
+
+				$("#docClasses").val(newList);
+			}
+			
+			return ($("#docClasses").val().length > 0);
+		}
+		
+		// Retrieves selected Job Statuses and places them in a comma-separated list.
+		function popJobStatuses() {
+			// Clear current contents of list
+			$("#jobStatuses").val("");
+
+			// Determine which of the displayed tickboxes has been selected.
+			var newList = "";
+				
+			$(".job-status-checkbox").each( function() {
+				if ($(this).is(":checked")) {
+					if (newList.length > 0)
+						newList += ",";
+						
+					newList += $(this).attr("name");
+				}
+				
+			});
+	
+			$("#jobStatuses").val(newList);
+			
+			return ($("#jobStatuses").val().length > 0);
+		}
+		
+		function checkProcessDate(checked) {
+			if (checked) {
+				//check and disable the process date fields
+				$('#startProcessDate').val('');
+				$('#startProcessDate').attr('disabled', 'disabled');
+				$('#endProcessDate').val('');				
+				$('#endProcessDate').attr('disabled', 'disabled');
+			} else {
+				$('#startProcessDate').removeAttr('disabled');
+				$('#endProcessDate').removeAttr('disabled');
+			}
+		}
+		
+	</script>
+	
+	<div class="ccla_cs_panel_header">Extended Content Report <$if reportTitle$> - <$reportTitle$><$endif$></div>
+	
+	<form name="ExtendedViewReport" id="ExtendedViewReport" onSubmit="return runOnSubmit()" method="POST">
+		
+		<input type="hidden" name="searchMethod" id="searchMethod" value="<$#local.searchMethod$>" />
+
+		<!-- Stores comma-separated list of selected document classes -->
+		<input type="hidden" name="docClasses" id="docClasses" value="<$#local.docClasses$>" />
+		<!-- Stores comma-separated list of selected job statuses -->
+		<input type="hidden" name="jobStatuses" id="jobStatuses" value="<$#local.jobStatuses$>" />
+		
+		<$if not showDocumentClassFilter$>
+			<input type="hidden" name="allDocumentClasses" 	id="allDocumentClasses" value="<$#local.allDocumentClasses$>" />
+			<input type="hidden" name="allTransactions" 	id="allTransactions" 	value="<$#local.allTransactions$>" />
+		<$endif$>
+		
+		<!-- If filters are not displayed, use hidden form fields to set/persist filter values -->
+		<$if not showSourceFilter$>
+			<input type="hidden" name="source" value="<$#local.source$>" />
+		<$endif$>
+		
+		<$if not showDuplicateFilter$>
+			<input type="hidden" name="duplicateOption" value="<$#local.duplicateOption$>" />
+		<$endif$>
+		
+		<$if not showDocumentTypeFilter$>
+			<input type="hidden" name="documentTypes" value="<$#local.documentTypes$>" />
+		<$endif$>
+		
+		<$if not showStatusFilter$>
+			<input type="hidden" name="allJobStatuses" value="<$#local.allJobStatuses$>" />
+		<$endif$>
+		
+		<input type="hidden" name="IdcService" value="ECS_Q_REPORT_VIEW"/>
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="isSubmit" value="1"/>
+		<input type="hidden" name="dontSetDates" id="dontSetDates" value="<$local.dontSetDates$>"/>
+		<table width="95%" cellspacing="0" border="1" cellpadding="5" class="search grey_bg">
+			<thead>
+				
+				<$if #local.showDocumentClassFilter$>
+				
+					<tr>
+						<th>
+							Document Class:
+							
+							<$if not singleDocumentClass$>
+								<div style="width:141px;text-align:center;padding-top:10px;">
+									<input type="checkbox" name="allDocumentClasses" id="allDocumentClasses" <$if #local.allDocumentClasses$>checked="checked"<$endif$> onClick="toggleDocClassCheckboxes(this.checked);"/> All Documents
+									<br/>
+									<input type="checkbox" name="allTransactions" id="allTransactions" <$if #local.allDocumentClasses or #local.allTransactions$>checked="checked"<$endif$> onClick="toggleTransactionsDocClassCheckboxes(this.checked);"/> All Transactions
+								
+								</div>
+							<$endif$>
+							
+						</th>
+						<td>
+							<$getViewValuesResultSet("vDOCUMENT_CLASSES","","")$>
+						
+							<$if singleDocumentClass$>
+								
+								<!-- Display option list, allowing one Doc Class to be selected -->
+								<select name="docClass" id="docClass">
+									<$loop SchemaData$>
+										<$key = getValue("SchemaData", "DOC_CLASS")$>	
+										
+										<option value="<$key$>" <$if #local.docClass like key$>selected<$endif$>><$key$></option>
+									<$endloop$>
+								</select>
+							
+							<$else$>
+
+								<!-- Display a tickbox for each document class. -->
+								<div>
+									<ul id="xContentReportCheckBoxes">
+									<$loop SchemaData$>
+										<li>
+											<$key = getValue("SchemaData", "DOC_CLASS")$>					
+											<input type="checkbox" 	id="<$key$>" name="<$key$>" class="doc-class-checkbox"
+																	<$if getValue("#local", #active.key)$>checked<$endif$>																	/><$key$>
+										</li>
+									<$endloop$>
+									
+									<!-- Special 'unclassified' doc class option -->
+									<li>
+										<input 	type="checkbox" 
+												id="unclassified" 
+												name="unclassified"
+												class="doc-class-checkbox"
+												<$if #local.unclassified$>checked<$endif$> 
+												value="unclassified"
+												onclick="if (!this.checked) { this.form.elements['all'].checked = false; }"
+												/>Unclassified
+									</li>
+									</ul>
+								</div>
+							
+							<$endif$>
+							
+						</td>
+					</tr>
+				
+				<$endif$>
+				
+				<$if (not #local.startDate) and (not #local.endDate) and (not #local.startProcessDate) and (not #local.endProcessDate)$>
+					<$if not #local.dontSetDates$>
+						<$setDefaultDates=1$>
+					
+						<$startDate = dateCurrent(-1)$>
+						<$endDate = dateCurrent()$>
+					<$endif$>
+				<$endif$>
+	
+				
+				<tr>
+					<th>Creation Date Range:</th>
+					<td>
+						from <input type="text" id="startDate" name="startDate" value="<$#local.startDate$>"/>
+						to <input type="text" id="endDate" name="endDate" value="<$#local.endDate$>"/> dd/mm/yyyy hh:mm
+					</td>
+				</tr>
+				<tr>
+					<th>Process Date:</th>
+					<td>
+						Range from <input type="text" id="startProcessDate" name="startProcessDate" value="<$#local.startProcessDate$>" />
+						to <input type="text" id="endProcessDate" name="endProcessDate" value="<$#local.endProcessDate$>"/> dd/mm/yyyy
+						&nbsp;&nbsp;<b>or</b>&nbsp;&nbsp;
+						Process Date is Empty <input type="checkbox" id="nullProcessDate" name="nullProcessDate" <$if #local.nullProcessDate$>checked<$endif$> onclick="checkProcessDate(this.checked)" />
+					</td>
+				</tr>
+				
+				<$if #local.showSourceFilter$>
+				
+					<tr>
+						<th>Source:</th>
+						<td>
+							<select name="source" id="source">
+								<option value=""></option>
+								
+								<$dKey="SourceList"$>
+								<$executeService("GET_VALUES")$>
+				
+								<$loop rsValues$>
+									<option value="<$dOption$>" <$if #active.dOption like #local.source$>selected="selected"<$endif$>><$#active.dOption$></option>
+								<$endloop$>
+								
+							</select>
+						</td>
+					</tr>
+					
+				<$endif$>	
+				
+				<$if #local.showDuplicateFilter$>
+				
+					<tr>
+						<th>Duplicates:</th>
+						<td>
+							<select name="duplicateOption" id="duplicateOption">									
+								<option value="exclude" <$if strEquals(#active.duplicateOption,"exclude")$>selected<$endif$>>Exclude Duplicates</option>
+								<option value="include" <$if strEquals(#active.duplicateOption,"include")$>selected<$endif$>>Include Duplicates</option>
+								<option value="only" <$if strEquals(#active.duplicateOption,"only")$>selected<$endif$>>Show Only Duplicates</option>
+								
+							</select>
+						</td>
+					</tr>
+				
+				<$endif$>
+					
+				<$if #local.showDocumentTypeFilter$>	
+					
+					<tr>
+						<th>Document Types:</th>
+						<td>
+							<select name="documentTypes" id="documentTypes">									
+								<option value="all" <$if strEquals(#active.documentTypes,"both")$>selected<$endif$>>All</option>
+								<option value="document" <$if strEquals(#active.documentTypes,"document")$>selected<$endif$>>Document</option>
+								<option value="childdocument" <$if strEquals(#active.documentTypes,"childdocument")$>selected<$endif$>>ChildDocument</option>
+								
+							</select>
+						</td>
+					</tr>
+				
+				<$endif$>
+				
+				<$if #local.showStatusFilter$>	
+				
+					<tr>
+						<th>Status:
+							<div style="width:100%;text-align:center;padding-top:10px;">
+								<input type="checkbox" name="allJobStatuses" id="allJobStatuses" <$if #local.allJobStatuses$>checked="checked"<$endif$> onClick="toggleJobStatusCheckboxes(this.checked)"/> All Statuses
+							</div>
+						</th>
+						<td>
+							<div class="no-border">
+								<ul id="xContentReportStatusChkBxs">
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobStarted" name="job_jobStarted" <$if #active.job_jobStarted$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Job Started</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobNotStarted" name="job_jobNotStarted" <$if #active.job_jobNotStarted$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Job Not Started</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobNotStartedUpload" name="job_jobNotStartedUpload"  <$if #active.job_jobNotStartedUpload$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Job Not Started (User Uploaded)</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobNotStartedError" name="job_jobNotStartedError"  <$if #active.job_jobNotStartedError$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Job Not Started (ERROR)</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_flagged" name="job_flagged"  <$if #active.job_flagged$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Flagged</li>                         
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobNotStartedSharepoint" name="job_jobNotStartedSharepoint" <$if #active.job_jobNotStartedSharepoint$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Migrated From Sharepoint</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobPendingInIris" name="job_jobPendingInIris" <$if #active.job_jobPendingInIris$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Pending In Iris</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobInLot" name="job_jobInLot" <$if #active.job_jobInLot$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>In Parking Lot</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_inScanParkingLot" name="job_inScanParkingLot" <$if #active.job_inScanParkingLot$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>In 05/03/2009 Parking Lot</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_mismatch" name="job_mismatch" <$if #active.job_mismatch$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Bundle/Document Mismatch</li>                      
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_archived" name="job_archived" <$if #active.job_archived$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Archived</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_duplicate" name="job_duplicate" <$if #active.job_duplicate$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Duplicate</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_validation" name="job_validation" <$if #active.job_validation$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Validation</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_jobNotStartedLeft" name="job_jobNotStartedLeft" <$if #active.job_jobNotStartedLeft$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Job Not Started (Left Behind)</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_missingIndexValues" name="job_missingIndexValues" <$if #active.job_missingIndexValues$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Missing Index Values (ERROR)</li>
+									<li><Input type="checkbox" class="job-status-checkbox" id="job_missingBundle" name="job_missingBundle" <$if #active.job_missingBundle$>checked="checked"<$endif$> onclick="if (!this.checked){this.form.elements['allJobStatuses'].checked=false;}"/>Missing Bundle (ERROR)</li>
+								</ul>
+							</div>
+					
+						</td>
+					</tr>
+				
+				<$endif$>
+				
+				<$if #local.showSpecialSearchOptions$>
+					<tr>
+						<th>Extra options</th>
+						<td>
+							<input type="checkbox" name="includeWorkflowData" <$if #local.includeWorkflowData$>checked<$endif$> />
+							Include workflow data
+						</td>
+					</tr>
+				<$endif$>
+				
+				<tr>
+					<th>Order By</th>
+					<td>
+						<select id="sortColumn" name="sortColumn">
+							<option value="XSCANDATE" <$if strEquals(#active.sortColumn,"XSCANDATE")$>selected<$endif$>>Scan Date</option>
+							<option value="XBUNDLEREF" <$if strEquals(#active.sortColumn,"XBUNDLEREF")$>selected<$endif$>>Envelope ID</option>
+							<option value="XDOCUMENTCLASS" <$if strEquals(#active.sortColumn,"XDOCUMENTCLASS")$>selected<$endif$>>Document Class</option>
+							<option value="XCLIENTNUMBER" <$if strEquals(#active.sortColumn,"XCLIENTNUMBER")$>selected<$endif$>>Client</option>
+							<option value="DINDATE" <$if strEquals(#active.sortColumn,"DINDATE")$>selected<$endif$>>Creation Date</option>
+							<option value="XWORKFLOWDATE" <$if strEquals(#active.sortColumn,"XWORKFLOWDATE")$>selected<$endif$>>Workflow Date</option>
+							<option value="XPROCESSDATE" <$if strEquals(#active.sortColumn,"XPROCESSDATE")$>selected<$endif$>>Process Date</option>
+							<option value="STATUS_DESC" <$if strEquals(#active.sortColumn,"STATUS_DESC")$>selected<$endif$>>Status</option>
+
+						</select>	
+						&nbsp;&nbsp;
+						<input type="radio" name="sortOrder" id="sortOrder" value="ASC" <$if strEquals(#active.sortOrder,"ASC")$>checked<$endif$>>Ascending</input>
+						<input type="radio" name="sortOrder" id="sortOrder" value="DESC" <$if strEquals(#active.sortOrder,"DESC")$>checked<$endif$>>Descending</input>
+						
+					</td>
+				</tr>
+				
+				<tr>
+					<th>&nbsp;</th>
+					<td>
+						<input type="submit" name="submitType" value="Display Results"/>
+						<input type="submit" name="submitType" value="Generate CSV File"/>
+					</td>
+				</tr>
+				
+			</thead>
+			<tbody>
+			
+			</tbody>
+		</table>	
+
+	</form>
+		
+<@end@>
+
+<@dynamichtml ccla_user_document_process_count_search_form@>
+	
+	<div class="ccla_cs_panel_header">User/Document Process Counts</div>
+	
+	<form name="ExtendedViewReport" id="ExtendedViewReport" method="GET">
+		
+		<input type="hidden" name="isSubmit" id="isSubmit" value="1" />
+		<input type="hidden" name="IdcService" value="CCLA_USER_DOCUMENT_PROCESS_COUNTS"/>
+		<$include add_idc_token_to_form$>
+		Start date <input type="text" 	name="startDate" 	id="startDate" 	value="<$#local.startDate$>" />
+		End date <input type="text" 	name="endDate" 		id="endDate" 	value="<$#local.endDate$>" />
+		
+		<input type="submit" value="Submit" />
+		
+	</form>	
+	
+<@end@>
+
+<!-- Displays duplicate search form fields -->
+<@dynamichtml ccla_duplicate_report_search_form@>
+	<form name="ExtendedViewReport" id="ExtendedViewReport" method="POST">
+	<input type="hidden" name="docClasses" id="docClasses" value=""/>
+	
+	<!-- special field to select all document classes -->
+	<input type="hidden" name="all" id="all" value="1"/>
+	
+	<input type="hidden" name="jobStatuses" id="jobStatuses" value="job_duplicate"/>
+	<input type="hidden" name="IdcService" value="ECS_DUP_REPORT_VIEW"/>
+	<$include add_idc_token_to_form$>
+	<input type="hidden" name="isSubmit" value="1"/>
+	<input type="hidden" name="duplicateOption" id="duplicateOption" value="only" />	
+	<input type="hidden" name="source" id="source" value="" />
+	<input type="hidden" name="sortColumn" id="sortColumn"  value="">
+	<input type="hidden" name="sortOrder" id="sortOrder" value=""/>
+										
+	<table width="90%" cellspacing="0" border="1" cellpadding="5" class="search grey_bg white_border">
+		<thead>
+			<tr>
+				<th>Start Date:</th>
+				<td><input type="text" id="startDate" name="startDate" value="<$if #local.startDate$><$startDate$><$else$><$dateCurrent(-1)$><$endif$>"/></td>
+			</tr>
+			<tr>
+				<th>End Date:</th>
+				<td><input type="text" id="endDate" name="endDate" value="<$if #local.endDate$><$endDate$><$else$><$dateCurrent()$><$endif$>"/></td>
+			</tr>
+			<tr>
+				<th>&nbsp;</th>
+				<td>
+					<input type="submit" value="Search"/>
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>	
+	</form>
+<@end@>
+
+<@dynamichtml ccla_extended_view_report_search_js@>
+	
+<@end@>
+
+<@dynamichtml ccla_odc_doc_commit_audit_table@>
+	
+	<table class="accounts-table" width="95%" cellspacing="0" cellpadding="0">
+		<tr>
+			<th class="first-col">
+				File Cabinet
+			</th>
+			<th width="130">
+				Batch Name
+			</th>
+			<th width="60">
+				Doc Page Count
+			</th>
+			<th>
+				Scan User
+			</th>
+			<th>
+				Source
+			</th>
+			<th>
+				Envelope ID
+			</th>
+			<th>
+				Form ID
+			</th>
+			<th>
+				Date Completed
+			</th>
+		</tr>
+
+		<$loop rsODCCommitDocumentAudits$>
+			<tr class="account-details-row">	
+	
+				<td class="first-col">
+					<$#active.FILE_CABINET_NAME$>
+				</td>
+				<td>
+					<$#active.ODC_BATCH_NAME$>
+				</td>
+				<td align="right">
+					<$#active.DOC_PAGE_COUNT$>
+				</td>
+				<td>
+					<$#active.ODC_SCAN_USER$>
+				</td>
+				<td>
+					<$#active.ODC_SOURCE$>
+				</td>
+				<td>
+					<a href="?IdcService=DOC_APPROVAL&bundleRef=<$#active.ODC_ENVELOPE_ID$>"><$#active.ODC_ENVELOPE_ID$></a>
+				</td>
+				<td>
+					<$if #active.DOC_FORM_ID$>
+						<$#active.DOC_FORM_ID$>
+					<$else$>
+						&nbsp;
+					<$endif$>
+				</td>
+				<td>
+					<$#active.ODC_COMMIT_DATE$>
+				</td>
+			</tr>
+		<$endloop$>
+
+	</table>
+	
+<@end@>
+
+</body></html>

@@ -1,0 +1,179 @@
+﻿<html>
+<head>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Bundle Counter
+	</title>
+
+	<script type="text/javascript">
+		
+		var curTab = "source";
+		
+		// Time in milliseconds before the view is auto-refreshed.
+		var autoRefreshTimeMillis 	= <$#local.clientRefreshTime$>;
+		var secondsUntilRefresh		= autoRefreshTimeMillis / 1000;
+		var autoRefreshTimer;
+		
+		var includeCompletedCounts = <$if #env.CCLA_includeCompletedBundleCounts$>1<$else$>0<$endif$>;
+		
+		var isReloading = false;
+		
+		$(document).ready( function() {
+			openTab(curTab);
+			
+			resetAutoRefreshTimer();
+		});
+		
+		function resetAutoRefreshTimer() {
+			if (autoRefreshTimer)
+				clearTimeout(autoRefreshTimer);
+			
+			secondsUntilRefresh = autoRefreshTimeMillis / 1000;
+			
+			$("#reloadTimerLabel").html("Auto-reloading in " + displayTime(secondsUntilRefresh));
+			
+			autoRefreshTimer = setTimeout(function() {
+				timerTick();
+			}, 1000);
+		}
+		
+		function displayTime(seconds) {
+			var minutes = 0;
+			var hours = 0;
+			
+			if (seconds > 0)
+				minutes = parseInt(seconds / 60);
+			
+			if (minutes > 0)
+				hours = parseInt(minutes / 60);
+			
+			var remainingMinutes = minutes % 60;
+			var remainingSeconds = seconds % 60;
+			
+			return hours + "h " + remainingMinutes + "m " + remainingSeconds + "s";
+		}
+		
+		function timerTick() {
+		
+			if (secondsUntilRefresh <= 1) {
+				reloadBundleCounts();
+				
+			} else {
+				$("#reloadTimerLabel").html("Auto-reloading in " + displayTime(secondsUntilRefresh));
+			
+				autoRefreshTimer = setTimeout(function() {
+					timerTick();
+				}, 1000);
+				
+				secondsUntilRefresh--;
+			}
+		}
+		
+		function openTab(tabIdSuffix) {	
+
+			curTab = tabIdSuffix;
+		
+			$(".cs-info-tab").removeClass("cs-tabOn").addClass("cs-tabOff");
+			$(".bundle-total-table").addClass("hidden");
+			
+			$("#bundleTotals_" + tabIdSuffix).removeClass("hidden");
+			$("#tab_" + tabIdSuffix).removeClass("cs-tabOff").addClass("cs-tabOn");
+		}
+		
+		function reloadBundleCounts(forceRefresh) {
+			if (isReloading)
+				return;
+				
+			isReloading = true;
+		
+			if (autoRefreshTimer)
+				clearTimeout(autoRefreshTimer);
+		
+			$("#reloadTimerLabel").html("reloading...");
+		
+			var forceRefreshVal = "";
+			
+			if (forceRefresh)
+				forceRefreshVal = "1";
+		
+			$.get("?<$include add_idc_token_to_url$>", 
+				{
+					"IdcService":	"CCLA_CS_GET_INCLUDE",
+					"incName":		"ccla_active_bundle_counts_display",
+					"isAjaxRefresh": 1,
+					"forceRefresh":	forceRefreshVal,
+					"includeCompletedCounts": includeCompletedCounts,
+					"ts":			new Date().getTime()
+				},
+				function(data) {
+					$("#bundle_counts_display").html(data);
+					openTab(curTab);
+					
+					isReloading = false;
+					resetAutoRefreshTimer();
+				}
+			);
+		}
+		
+	</script>
+	
+	<style type="text/css">
+		
+		.bundle-total-table {
+			padding: 5px;
+		}
+		
+		.hidden {
+			display: none;
+		}
+		
+		p {
+			margin-top: 0.5em;
+			margin-bottom: 1em;
+		}
+	
+	</style>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+		
+			<$include orangeContainer_top$>
+			
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Bundle Counter</b>
+				</div>
+					
+				<div style="margin: 5px">
+					
+					<div id="bundle_counts_display">
+						<$include ccla_active_bundle_counts_display$>
+					</div>
+					
+					<br/>
+					
+				</div>
+				
+				<$if userHasRole("admin") or userHasRole("WF_COO") or userHasRole("WF_Scanning Manager")$>
+					<a href="#" onclick="reloadBundleCounts(true);">Force refresh</a> |
+				<$endif$>
+				
+				<span id="reloadTimerLabel"></span> 
+				
+			<$include orangeContainer_bottom$>
+			
+		</div>
+		
+	</div>
+
+</body>
+</html>

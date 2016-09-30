@@ -1,0 +1,140 @@
+﻿<html>
+	<head>
+		<$include iris_jquery_js$>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Interaction Quick Edit</title>
+		
+		<script type="text/javascript">
+			function focusJobId(){
+				$('#jobId').focus();
+			}
+			
+			function populateFlagFields(){
+				if(document.getElementById('jobId').value.length > 15){
+					alert('The Workflow ID exceeds 15 characters, please reduce it.');
+					return false;
+				}
+				
+				populateFlagField('isQuery');
+				populateFlagField('isComplaint');
+				populateFlagField('isBreach');
+				populateFlagField('isError');
+				
+				return true;
+			}
+			
+			function populateFlagField(fieldName){
+				if($('#' + fieldName + '_checkbox').attr('checked')){
+					$('#' + fieldName).val('1');
+				}else{
+					$('#' + fieldName).val('0');
+				}
+			}
+			
+			function jobCodeSelected() {
+				$("#jobId").val($("#jobCode").val());
+			}
+			
+		</script>
+		
+		<$include ccla_cs_styles$>
+		
+		<style type="text/css">
+			ul,li{
+				padding:0;
+				margin:0;
+			}
+			
+			li{
+				list-style-type:none;
+				padding-left:77px;
+				margin-top:5px;
+			}
+			
+			.submitLink{
+				margin-left:85px;
+			}
+		</style>
+	</head>
+	<body onLoad="focusJobId();" class="popupBody" style="padding:5px;">
+		THIS PAGE SHOULD BE DEPRECATED
+		<!-- special container used by ECS_PopupMenus code -->
+		<div id="popUpContainingDiv">
+			<$include orangeContainer_top$>
+				<div id='ccla_cs_content'>
+				
+					<div class='ccla_cs_panel_header'>
+						<strong>Quick Update Transaction</strong>
+					</div>
+				
+					<div class='ccla_cs_panel_content'>
+				
+						<$if #active.isSubmit$>
+							<p>
+								Successfully updated field.
+							</p>
+							<p>
+								<input type="button" onclick="window.parent.closePopup();" value="Close" />
+							</p>
+						<$else$>
+							<form action="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_CS_INTERACTION_QUICK_EDIT<$include add_idc_token_to_url$>" method="post" onSubmit="return populateFlagFields();">
+								<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_INTERACTION_JOB_ID"/><$include add_idc_token_to_form$>
+								
+								<input type="hidden" name="IS_QUERY" 		id="isQuery"		value="<$#active.isQuery$>"/>
+								<input type="hidden" name="IS_COMPLAINT" 	id="isComplaint"	value="<$#active.isComplaint$>"/>
+								<input type="hidden" name="IS_BREACH" 		id="isBreach"		value="<$#active.isBreach$>"/>
+								<input type="hidden" name="IS_ERROR" 		id="isError"		value="<$#active.isError$>"/>
+								
+								<input type="hidden" name="isSubmit" value="1"/>
+								
+								<input type="hidden" name="INTERACTION_ID" value="<$#active.interactionId$>"/>
+								
+								<fieldset style="border:0;padding:5px;">
+									<label for="jobId">Workflow ID:</label>
+									<input type="text" name="JOB_ID" id="jobId" value="<$#active.jobId$>"/>
+									
+									<br/>
+									
+									<select name="jobCode" id="jobCode" onchange="jobCodeSelected()" style="margin-left:80px;">
+										<option value=""></option>
+										<option value="NFA">NFA - No further action</option>
+										<option value="Close ACs">Close ACs</option>
+										<option value="FAR">FAR - Further action required</option>
+										<option value="Comp Ref">Comp Ref - Compliance Referral</option>
+										<option value="With Client">With Client</option>
+									</select>
+									
+									<ul>
+										<li>
+											<input type="checkbox" id="isQuery_checkbox" <$if strEquals(#active.isQuery,"1")$>checked<$endif$>/>
+											<label for="isQuery_checkbox">Is Query</label>
+										</li>
+										<li>
+											<input type="checkbox" id="isComplaint_checkbox"  <$if strEquals(#active.isComplaint,"1")$>checked<$endif$>/>
+											<label for="isComplaint_checkbox">Is Complaint</label>
+										</li>
+										<li>
+											<input type="checkbox" id="isBreach_checkbox"  <$if strEquals(#active.isBreach,"1")$>checked<$endif$>/>
+											<label for="isBreach_checkbox">Is Breach</label>
+										</li>
+										<li>
+											<input type="checkbox" id="isError_checkbox"  <$if strEquals(#active.isError,"1")$>checked<$endif$>/>
+											<label for="isError_checkbox">Is Error</label>
+										</li>
+									</ul>
+								</fieldset>
+								
+								<input type="submit" value="Save" class="submitLink"/>
+							</form>
+						<$endif$>
+						
+					</div>
+				</div>
+				
+			<$include orangeContainer_bottom$>
+			<br/>
+		</div>
+		
+	</body>
+</html>

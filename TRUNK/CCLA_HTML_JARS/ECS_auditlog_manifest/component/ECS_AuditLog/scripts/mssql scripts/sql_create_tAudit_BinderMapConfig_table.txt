@@ -1,0 +1,4 @@
+CREATE TABLE tAudit_BinderMapConfig
+(AC_ACTION nvarchar(32),
+AC_FIELD nvarchar(32),
+AC_BINDERFIELD nvarchar(64))

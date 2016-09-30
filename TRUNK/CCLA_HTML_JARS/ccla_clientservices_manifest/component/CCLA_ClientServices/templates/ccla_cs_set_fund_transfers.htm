@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Step 3: Set Fund Transfers
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<!-- Fetch all correspondent accounts via Aurora web service -->
+		<$methodName="GetAccountsByCorrespondentCode"$>
+		<$correspondentId = personId$>
+		<$getUnitPrices=""$>
+		<$filterClosedAccounts=1$>
+		<$filterEmptyAccounts=1$>
+		<$fundFilter="R,T"$>
+		<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+		
+		<!-- Fetch any existing transfers for this process -->
+		<$executeService("CCLA_CS_GET_FUND_TRANSFERS_BY_PROCESS_ID")$>
+
+		
+		<script type="text/javascript">
+			
+			// Default index for next account row (assuming 1 default row
+			// already exists)
+			var nextRowIndex = 2;
+			
+			// Retrieve the existing row indexes, if applicable, and work
+			// out the next available one.
+			$(document).ready( function() {
+				
+				var rowIndexes = '<$rowIndexes$>';
+				
+				if (rowIndexes != '') {
+					var rowIndexArray = rowIndexes.split(",");
+					
+					// Work out the highest row index.
+					for (var i=0; i<rowIndexArray.length; i++) {
+						var thisIndex = parseInt(rowIndexArray[i]);
+						
+						if (thisIndex >= nextRowIndex)
+							nextRowIndex = thisIndex + 1;
+					}
+				}
+				
+			});
+			
+			// User checked/unchecked an account selection checkbox
+			function toggleAccountSelection(chk) {
+				var thisAccount = chk.name.substring(4);
+				
+				var transferRow = $("#row_" + thisAccount)[0];
+				var radio = $(transferRow).find("input[type='radio']")[0];
+				
+				//alert("transferRow = " + $(transferRow).eq(0).attr("id") + ", " + $(transferRow).eq(0).html());
+				
+				if (chk.checked) {
+					// User toggled account to enable transfer
+					$(transferRow)
+					 .removeClass("account-transfer-row")
+					 .addClass("account-transfer-row-enabled");
+					
+					$(transferRow).find("input").removeAttr("disabled","disabled");
+					updateTransferType(radio);
+					
+				} else {
+					// User toggled account to disable transfer
+					$(transferRow)
+					 .removeClass("account-transfer-row-enabled")
+					 .addClass("account-transfer-row");
+					 
+					$(transferRow).find("input").attr("disabled","disabled");
+				}
+			}
+			
+			// User changed the value of a transfer type radio button.
+			function updateTransferType(radio) {
+				var thisAccount = radio.name.substring(13);
+			
+				var selTransferType = getSelectedTransferType(thisAccount);
+
+				// This will mark the given account row as 'selected'
+				var transferRow = $("#row_" + thisAccount)[0];
+				$(transferRow)
+				 .removeClass("account-transfer-row")
+				 .addClass("account-transfer-row-enabled");
+				
+				// Enable/disable the unit amount text box based on the selected option
+				if (selTransferType == "amount") {
+					$("#transferAmount_" + thisAccount).removeAttr("disabled");
+					$("#transferAmount_" + thisAccount)[0].focus();
+				} else {
+					$("#transferAmount_" + thisAccount).attr("disabled","disabled");
+				}
+			}
+			
+			function getSelectedTransferType(fullAccountNo) {
+				var radios = 
+				 document.forms['fundTransfers'].elements["transferType_" + fullAccountNo];
+				
+				var selTransferType = "";
+				
+				for (var i=0; i<radios.length; i++) {
+					var thisRadio = radios[i];
+					
+					if (thisRadio.checked)
+						selTransferType = thisRadio.value;
+				}
+				
+				return selTransferType;
+			}
+			
+			// Called before form submission while in Manual Data Entry mode.
+			// Determines which row indexes have been used to store account data.
+			function getUsedRowIndexes() {
+				
+				var rowIndexes = "";
+				
+				$(".account-details-row").not("#account_row_template").each( function() {
+					var thisId = $(this).attr("id");
+					var rowIndex = thisId.substring("account_row_".length);
+					
+					if (rowIndexes != "")
+						rowIndexes += ",";
+						
+					rowIndexes +=  rowIndex;
+				});
+				
+				return rowIndexes;
+			}
+			
+			// Called when the Next button is clicked. Ensures that every account has
+			// a selected action before continuing.
+			function submitTransferForm() {
+				
+				// Retrieve full list of accounts from hidden form field
+				var allAccounts = 
+				 document.forms['fundTransfers'].elements['fullAccountNumberList'].value;
+				
+				if (allAccounts == "") {
+					document.forms['fundTransfers'].submit();
+					return;
+				}
+				
+				var accountNumbers = allAccounts.split(",");
+				
+				// Ensure each account has a selected transfer type.
+				for (var i=0; i<accountNumbers.length; i++) {
+					var thisTransferType = getSelectedTransferType(accountNumbers[i]);
+					
+					if (thisTransferType == "") {
+						alert("Please ensure you have selected a transfer type for " +
+						 "every account before continuing.");
+						 return;
+					} else if (thisTransferType == "amount") {
+						// Account has been selected for a custom transfer amount.
+						var transferAmount = $("#transferAmount_" + accountNumbers[i]).val();
+						
+						var amountError = false;
+						
+						// Ensure user has entered an amount for this account.
+						if (transferAmount == "") {
+							alert("You have selected to transfer a specific amount of units " +
+							 "from account " + accountNumbers[i] + ", but not entered an amount. " +
+							 "\n\nPlease enter a number of units before continuing.");
+							 
+							amountError = true;
+							 
+						} else {							
+							var amt;
+							
+							// Ensure user has entered an amount which is a valid number.
+							try {
+								amt = parseInt(transferAmount)
+							} catch (e) {}
+
+							if (amt != transferAmount || amt == "NaN") {
+								alert("The selected transfer amount for account " + accountNumbers[i] +
+								" is not a valid whole number.");
+								amountError = true;
+							}
+									
+							// Ensure user has not entered zero units.
+							if (!amountError && (amt == 0)) {
+								alert("The selected transfer amount for account " + accountNumbers[i] +
+								" is zero.\n\nPlease select 'No action' for this account instead.");
+								amountError = true;
+							}
+							
+							// Ensure user has not entered an amount which exceeds the total
+							// units in the account.
+							var totalUnits = $("#numUnits_" + accountNumbers[i]).val();
+							
+							if (!amountError && (amt > totalUnits)) {
+								alert("The selected transfer amount for account " + accountNumbers[i] +
+								" exceeds the total number of units in the account.");
+								amountError = true;
+							}
+						}
+						
+						if (amountError) {
+							$("#transferAmount_" + accountNumbers[i]).focus();
+							return;
+						}
+					}
+				}
+				
+				document.forms['fundTransfers'].submit();
+			}
+		
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin-top: 20px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+				
+				<$include ccla_cs_activity_details$>
+				
+				<$include orangeContainer_top$>
+				
+				<!-- Title for the user profile: displays the dDocName for this item -->
+				<div class='ccla_cs_panel_header'>
+					Step 3: Set Fund Transfers
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+	
+					<$include ccla_cs_display_correspondent_details$>
+					
+					<br/>
+					
+					<form 	method="post" action="<$HttpCgiPath$>?IdcService=CCLA_CS_SET_FUND_TRANSFERS_CONFIRM"
+							name="fundTransfers" id="fundTransfers" >
+						<input type="hidden" name="IdcService" value="CCLA_CS_SET_FUND_TRANSFERS_CONFIRM" /><$include add_idc_token_to_form$>
+						
+						<$loop rsProcess$>
+							<input type="hidden" name="processId"	value="<$#active.PROCESS_ID$>" />
+							<input type="hidden" name="processName" value="<$#active.PROCESS_NAME$>" />
+						<$endloop$>
+						
+						<input type="hidden" name="activityId" value="<$#local.activityId$>" />
+						
+						<input type="hidden" name="personId" value="<$#local.personId$>" />
+						<input type="hidden" name="clientId" value="<$#local.clientId$>" />
+						<input type="hidden" name="company" value="<$#local.company$>" />
+						
+						<input type="hidden" name="confirmTypes" id="confirmTypes" value="<$#local.confirmTypes$>" />
+						<input type="hidden" name="confirmOther" id="confirmOther" value="<$#local.confirmOther$>" />
+						
+						<$fullAccountNumberList = ""$>
+						
+						<$loop rsCorrespondentAccounts$>
+							<$if fullAccountNumberList$>
+								<$fullAccountNumberList = fullAccountNumberList & ","$>
+							<$endif$>
+							
+							<$fullAccountNumberList = #local.fullAccountNumberList & #active.accountNumberExternal$>
+						<$endloop$>
+						
+						<!-- Store all full account numbers here. Used for account transfer validation on form submission -->
+						<input type="hidden" name="fullAccountNumberList" value="<$#local.fullAccountNumberList$>" />
+						
+						<$if false$>
+							<div class="ccla_data_panel">
+								<input type="checkbox" name="AMLCheck" <$if #local.AMLCheck$>checked="checked"<$endif$> /> Correspondent requires AML check
+							</div>
+							
+							<br/>
+						<$endif$>
+
+						<h3 class="ccla_data_panel_header">Open correspondent accounts for R, T funds (<$getValue("rsCorrespondentAccounts","#numRows")$>)</h3>
+						
+						<$if rsFundTransfers$>
+							<div class="validation_error">
+								<$if false$><div class="validation_error_title">Existing transfer details</div><$endif$>
+								
+								<$loop rsFundTransferActivity$>
+									<p>
+										Transfer details last updated by <b><$#active.USER_ID$></b> at <$#active.ACTIVITY_DATE$> (<$#active.ACTIVITY_TYPE$>)
+									</p>
+								<$endloop$>
+							</div>
+							
+							<!-- Add any existing account transfer information (i.e. from previous client activities)
+								 to the binder as local vars. -->																
+							<$loop rsFundTransfers$>
+								<$fullAccNo = strLeftFill(#active.CLIENT_ID, "0", 5) & #active.ACCOUNT_NUMBER$>
+								
+								<$if not getValue("#local","transferType_" & fullAccNo)$>
+									<$setValue("#local","transferType_" & fullAccNo, #active.TRANSFER_TYPE)$>
+								<$endif$>
+								
+								<$if not getValue("#local","transferAmount_" & fullAccNo)$>
+									<$setValue("#local","transferAmount_" & fullAccNo, #active.TRANSFER_AMOUNT)$>
+								<$endif$>
+								
+							<$endloop$>
+							
+						<$endif$>
+						
+						<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table" id="accounts-table">
+							<tr>
+								<$if #env.CCLA_CS_ManualDataEntry$>
+									<th class="first-col">Client no.</th>
+									<th>Acc. no.</th>
+									<th>Fund</th>
+									<th width=30>&nbsp;</th>
+								<$else$>
+									<th class="first-col">Client no.</th>
+									<th>Acc. no.</th>
+									<th>Acc. name</th>
+									<$if isTrue(#env.CCLA_CS_RESOLVE_QRS_FLAG_FOR_ACCOUNT)$><th>QRS</th><$endif$>
+									<th>No. units</th>
+									<th>Price</th>
+									<th>Current value</th>
+									<th>Cash</th>
+									
+								<$endif$>	
+							</tr>
+
+							<!-- Non-manual data entry. All correspondent account data available. -->
+							<$if #local.accountsToTransfer$>
+								<$exec rsMakeFromString("rsAccountsToTransfer",accountsToTransfer,"accNo")$>
+							<$endif$>
+							
+							<$if not rsCorrespondentAccounts$>
+								<tr id=""class="account-details-row">
+									<td class="first-col" colspan=8>
+									No valid accounts for this correspondent. Accounts must be open and in the R/T funds to be displayed here.
+									</td>
+								</tr>
+							<$endif$>
+							
+							<$anyAccountConfirmed=0$>
+							
+							<$loop rsCorrespondentAccounts$>
+								<$fullAccNo = strTrimWs(#active.accountNumberExternal)$>
+								
+								<$chosenTransferType 	= getValue("#local","transferType_" & fullAccNo)$>
+								<$chosenTransferAmount 	= getValue("#local","transferAmount_" & fullAccNo)$>
+								
+								<$if false$>
+									<$chosenTransferType = ""$>
+									<$chosenTransferAmount = ""$>
+									
+									<$if rsAccountsToTransfer$>
+										<$exec rsFirst("rsAccountsToTransfer")$>
+										<$if rsFindRowPrimary("rsAccountsToTransfer",fullAccNo)$>
+											
+										<$endif$>
+									<$endif$>
+								<$endif$>
+							
+								<tr id=""class="account-details-row<$if (#local.curClientNumber) and not (#active.clientNumber like #local.curClientNumber)$> new-client-row<$endif$>">
+									<td class="first-col">
+									
+										<$curClientNumber = #active.clientNumber$>
+									
+										<$if #active.clientNumber$><$#active.clientNumber$><$else$>&nbsp;<$endif$>
+									</td>
+									<td><$#active.accountNumber$></td>
+									<td>
+										<$if #active.subtitle$><$#active.subtitle$><$else$>[Unnamed account]<$endif$>
+									</td>
+									<$if isTrue(#env.CCLA_CS_RESOLVE_QRS_FLAG_FOR_ACCOUNT)$>
+									<td>
+										<$#active.QRS$>&nbsp;
+									</td>
+									<$endif$>
+									<td>		
+										<$#active.units$>&nbsp;
+									</td>
+									<td>
+										<$unitPrice = "N/A"$>
+										<$exec rsFirst("rsLatestUnitPrices")$>
+										
+										<$if rsFindRowPrimary("rsLatestUnitPrices",#active.fundCode)$>
+											<$unitPrice = #active.basicPrice$>
+										<$endif$>
+									
+										<$#active.unitPrice$>&nbsp;
+									</td>
+									<td>
+										<$#active.currentValue$>&nbsp;
+									</td>
+									<td>
+										<$#active.cash$>&nbsp;
+										
+										<input type="hidden" name="company_<$fullAccNo$>" value="<$#local.company$>" />
+										<input type="hidden" name="clientId_<$fullAccNo$>" value="<$#active.clientNumber$>" />
+										<input type="hidden" name="accountNumber_<$fullAccNo$>" value="<$#active.accountNumber$>" />
+										<input type="hidden" name="fund_<$fullAccNo$>" value="<$#active.fundCode$>" />
+										<input type="hidden" id="numUnits_<$fullAccNo$>" name="numUnits_<$fullAccNo$>" value="<$#active.units$>" />
+										
+									</td>
+									
+								</tr>
+								
+								<tr id="row_<$fullAccNo$>" class="<$if chosenTransferType$>account-transfer-row-enabled<$else$>account-transfer-row<$endif$>">
+									<td colspan=<$if isTrue(#env.CCLA_CS_RESOLVE_QRS_FLAG_FOR_ACCOUNT)$>8<$else$>7<$endif$>  class="first-col" <$if isTrue(#active.clientConfirmed)$>style="background-color:yellow"<$anyAccountConfirmed=1$><$endif$>>
+										
+										
+										<span  style="float:left;<$if userHasRole("admin") or userHasRole("WF_COO")$><$else$> display:none;<$endif$>">
+											<input type="checkbox" name="accountStatus_<$fullAccNo$>" value="suspended"
+													<$if (#active.accStatus like "suspended")$>checked="checked"<$endif$> 
+													/> Suspended
+										</span>
+										
+										<div class="account-transfer-choices">
+											<input 	type="radio" name="transferType_<$fullAccNo$>" 
+													value="not_interested"
+													onclick="updateTransferType(this)"
+													<$if (#local.chosenTransferType like "not_interested")$>checked="checked"<$endif$> 
+													/> Not interested
+											<input 	type="radio" name="transferType_<$fullAccNo$>" 
+													value="none"
+													onclick="updateTransferType(this)"
+													<$if (#local.chosenTransferType like "none")$>checked="checked"<$endif$> 
+													/> No action
+													
+											<input 	type="radio" name="transferType_<$fullAccNo$>" 
+													value="undecided"
+													onclick="updateTransferType(this)"
+													<$if (#local.chosenTransferType like "undecided")$>checked="checked"<$endif$> 
+													/> Undecided
+											
+											<input 	type="radio" name="transferType_<$fullAccNo$>" 
+													value="all"
+													onclick="updateTransferType(this)"
+													<$if (#local.chosenTransferType like "all")$>checked="checked"<$endif$> 
+													/> Transfer all
+											<input 	type="radio" name="transferType_<$fullAccNo$>" 
+													value="amount"
+													onclick="updateTransferType(this)"
+													<$if (#local.chosenTransferType like "amount")$>checked="checked"<$endif$>
+													/> Transfer no. of units
+													
+											<input 	type="text"  name="transferAmount_<$fullAccNo$>" value="<$#local.chosenTransferAmount$>"
+													id="transferAmount_<$fullAccNo$>"
+													<$if chosenTransferType and (#local.chosenTransferType like "amount")$><$else$>disabled="disabled"<$endif$> 
+													class="account-transfer-amount" />
+										</div>
+									</td>
+								</tr>
+							<$endloop$>
+							
+						</table>
+						
+						<br/>
+						
+						<div style="text-align: right">
+							<$if isTrue(#active.anyAccountConfirmed)$>
+								<span style="font-size:0.9em; float:left;">
+									Rows highlighted in <span style="background-color:yellow">yellow</span> indicate we have recieved a CLIENTCONF back
+								</span>
+							<$endif$>
+							<input type="submit" name="submitType" value="Back" />
+							<input type="button" name="submitType" value="Next" onclick="submitTransferForm()" />
+							
+						</div>
+					</form>
+					
+				</div>
+				
+				<br/>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$allowLogAdd=1$>
+				<$CORRESPONDENT_ID=globalCorrespondentId$>
+				<$CORRESPONDENT_NAME=correspondentName$>
+				<$include ccla_cs_correspondant_communications_panel$>
+				
+				<br/>
+				
+				<$include ccla_cs_previous_activity_details$>
+				
+				<$include ccla_cs_correspondent_questions$>
+				
+			</div>
+		</div>
+		
+		<br/>
+		
+	</body>
+</html>

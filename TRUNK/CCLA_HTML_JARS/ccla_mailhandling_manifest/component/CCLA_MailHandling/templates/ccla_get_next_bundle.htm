@@ -1,0 +1,171 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		Fetching next pending bundle...
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include ccla_cs_ajax_js$>	
+
+	<$include float_menu_header$>
+	
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+			initGetNextBundle();
+		});
+		
+		var secondsUntilRetry;
+		
+		/*  Tied to the onload event. Initiates the getNextBundle() method
+		    a certain number of milliseconds after the page loads. 
+		   
+			This delay prevents users being immediately presented with the
+			same bundle after they finish processing it.
+		*/
+		
+		var initalDelay = <$#env.CCLA_intialAutoFetchDelay$>;
+		var retryDelay = <$#env.CCLA_retryAutoFetchDelay$>;
+		
+		var isDebug = <$if #local.IsDebug$>true<$else$>false<$endif$>;
+		
+		function initGetNextBundle() {
+			var t = window.setTimeout(function() { getNextBundle(); }, initalDelay);
+		}
+		
+		/** Makes an AJAX request to determine the next available bundle
+			for processing.
+			
+			Should be initially triggered on page load.
+		*/
+		function getNextBundle() {
+			$("#fetchOutcome").html("");
+			
+			$.getJSON("?IdcService=CCLA_GET_NEXT_BUNDLE_SUBMIT<$include add_idc_token_to_url$>",
+				{
+					"ts":		new Date().getTime(),
+					"IsJson": 	1
+				}, 
+				function(jsonData) {
+					var errorMsg = getJsonErrorMsg(jsonData);
+					var noPendingBundles = false;
+					
+					if (errorMsg) {
+						// TM: hide error messages. These are usually benign so we don't
+						// want to scare the users with them.
+						
+						if (isDebug) {
+							alert(errorMsg);
+						} else {
+							alert("Whoops...\n\nSomething went wrong when fetching the bundle. " +
+							 "Please click OK and try again.\n\n" +
+							 "If you keep seeing this message then contact an adminstrator.");
+						}
+						
+						noPendingBundles = true;
+					} else if (jsonData.LocalData.noPendingBundles) {
+						noPendingBundles = true;
+					}
+				
+					if (noPendingBundles) {
+						// No pending bundles at the current time.
+						// Send another request after retryDelay seconds
+						$("#fetchOutcome").html("none found! Retrying in " + retryDelay + " seconds.");
+						secondsUntilRetry = retryDelay;
+						
+						setTimeout(function() {
+							countdownToRetry();
+						}, 1000);
+						
+					} else {
+						$("#fetchOutcome").html("found one!");
+					
+						var docName 	= jsonData.LocalData.docName;
+						var bundleRef	= jsonData.LocalData.bundleRef;
+						
+						loadBundle(docName, bundleRef);
+					}
+				}
+			);
+		}
+		
+		function countdownToRetry() {
+			if (secondsUntilRetry == 0) {
+				getNextBundle();
+			} else {
+				secondsUntilRetry--;
+				
+				$("#fetchOutcome").html("none found! Retrying in " + 
+				 secondsUntilRetry + " seconds.");
+				
+				setTimeout(function() {
+					countdownToRetry();
+				}, 1000);
+			}
+		}
+		
+		function loadBundle(docName, bundleRef) {
+			var frm = document.forms['loadBundleForm'];
+			
+			frm.elements['dDocName'].value = docName;
+			frm.elements['bundleRef'].value = bundleRef;
+			frm.submit();
+		}
+		
+	</script>
+	
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 600px'>
+			
+			<$include orangeContainer_top$>
+
+			<div class='ccla_cs_panel_content'>
+				<br/>
+			
+				<table cellpadding=3>
+					<tr>
+						<td>
+							<img src="<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif" id="get_bundle_loading" style="visibility:visible" />
+						</td>
+						<td>
+							Fetching next pending bundle...<span id="fetchOutcome"></span>
+						</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<form id="loadBundleForm" method="GET">
+					<input type="hidden" name="IdcService" 	value="DOC_APPROVAL" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="dDocName"	value="" />
+					<input type="hidden" name="bundleRef"	value="" />
+					<input type="hidden" name="view"		value="bundle" />
+					
+					<input type="hidden" name="autoFetch"	value="1" />
+				</form>
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+	
+</body></html>

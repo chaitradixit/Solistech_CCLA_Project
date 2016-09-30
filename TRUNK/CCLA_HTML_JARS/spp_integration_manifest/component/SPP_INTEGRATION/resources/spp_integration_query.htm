@@ -1,0 +1,707 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SPP_INTEGRATION query
+</title>
+</head>
+<body>
+
+<@table SPP_INTEGRATION_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>QitemDocInfoDocname</td>
+	<td>select * from Revisions r, DocMeta d, Documents doc where r.dID=d.dID and doc.DID = r.dID and dIsPrimary = 1 and dRevRank = 0 and dDocName = ? and dStatus != 'DELETED'</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>QitemDocInfoDID</td>
+	<td>select * from Revisions r, DocMeta d, Documents doc where r.dID=d.dID and doc.DID = r.dID and r.dID = ? and dIsPrimary = 1</td>
+	<td>dID varchar</td>
+</tr>
+<tr>
+	<td>qGetNextEnvelopeId</td>
+	<td>SELECT SEQ_ENVELOPE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetNextWorkflowId</td>
+	<td>SELECT SEQ_ENVELOPE.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetNextJobId</td>
+	<td>SELECT SEQ_JOB.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetNextBundleRef</td>
+	<td>SELECT BUNDLEREF.NEXTVAL FROM dual</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qCreateEnvelopeSeq</td>
+	<td>CREATE SEQUENCE ENVELOPEID
+    MINVALUE 1
+    MAXVALUE 999999999999999999999999999
+    START WITH ?
+    INCREMENT BY 1
+    CACHE 20</td>
+	<td>startEnvelopeId int</td>
+</tr>
+<tr>
+	<td>qCreateBundleRefSeq</td>
+	<td>CREATE SEQUENCE BUNDLEREF
+    MINVALUE 1
+    MAXVALUE 999999999999999999999999999
+    START WITH 2
+    INCREMENT BY 1
+    CACHE 20</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetPendingChildDocs</td>
+	<td>SELECT * FROM PENDING_CHILDDOCS
+	WHERE PARENT_DOCNAME = ? AND DATE_GENERATED IS NULL 
+	ORDER BY PENDING_CHILDDOC_ID</td>
+	<td>parentDocName varchar</td>
+</tr>
+<tr>
+	<td>qAddPendingChildDoc</td>
+	<td>INSERT INTO PENDING_CHILDDOCS
+		(PENDING_CHILDDOC_ID, PARENT_DOCNAME, DATE_ADDED, ADDED_BY,
+		CLASS,ACCOUNT,AMOUNT,CLIENTNO,FUND,UNITS)
+		VALUES (SEQ_PENDINGCHILDDOC.NEXTVAL,?,SYSDATE,?,
+		?,?,?,?,?,?)</td>
+	<td>parentDocName varchar
+		addedBy varchar
+		docClass varchar
+		accNum varchar
+		amount varchar
+		clientId varchar
+		fund varchar
+		units varchar</td>
+</tr>
+<tr>
+	<td>qSetPendingChildDocGenerated</td>
+	<td>UPDATE PENDING_CHILDDOCS SET GEN_DOCNAME = ?, DATE_GENERATED = SYSDATE
+		WHERE PENDING_CHILDDOC_ID = ?</td>
+	<td>genDocName varchar
+		id int</td>
+</tr>
+<tr>
+	<td>qDelPendingChildDocs</td>
+	<td>DELETE FROM PENDING_CHILDDOCS WHERE PARENT_DOCNAME = ? AND DATE_GENERATED IS NULL</td>
+	<td>parentDocName varchar</td>
+</tr>
+<tr>
+	<td>qGetNotesByEnvelope</td>
+	<td>SELECT TAUDITLOGS.LMESSAGE FROM REVISIONS
+JOIN DOCMETA ON DOCMETA.DID = REVISIONS.DID
+JOIN TAUDITLOGS ON REVISIONS.DDOCNAME = TAUDITLOGS.LREF
+WHERE REVISIONS.DDOCTYPE='Bundle'
+AND DOCMETA.XBATCHNUMBER = ?</td>
+	<td>envelopeId varchar</td>
+</tr>
+<tr>
+	<td>qGetNotesByDocName</td>
+	<td>SELECT TAUDITLOGS.LMESSAGE FROM REVISIONS
+JOIN DOCMETA ON DOCMETA.DID = REVISIONS.DID
+JOIN TAUDITLOGS ON REVISIONS.DDOCNAME = TAUDITLOGS.LREF
+WHERE REVISIONS.DDOCTYPE='Bundle'
+AND DOCMETA.XBATCHNUMBER IN(
+  SELECT DOCMETA.XBATCHNUMBER FROM DOCMETA
+  JOIN REVISIONS ON DOCMETA.DID = REVISIONS.DID
+  WHERE REVISIONS.DDOCNAME = ?
+)</td>
+	<td>docName varchar</td>
+</tr>
+<tr>
+	<td>qInsertAuroraCache</td>
+	<td>INSERT INTO TAURORACACHE VALUES (?,?)</td>
+	<td>client varchar
+	    account varchar</td>
+</tr>
+<tr>
+	<td>qDeleteAuroraCache</td>
+	<td>DELETE FROM TAURORACACHE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetAuroraCache</td>
+	<td>SELECT * FROM TAURORACACHE
+WHERE CLIENT = ?</td>
+	<td>client varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_GetDependantDocsForRootDoc</td>
+	<td>SELECT DEP_DOCNAME FROM TDEPENDANTDOCS 
+WHERE ROOT_DOCNAME=? AND IS_SUPPORTING=?</td>
+	<td>rootDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_GetRootDocsForDependantDoc</td>
+	<td>SELECT ROOT_DOCNAME FROM TDEPENDANTDOCS 
+WHERE DEP_DOCNAME=? AND IS_SUPPORTING=?</td>
+	<td>dependantDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_GetDependantDocsForRootDoc_WithDocInfo</td>
+	<td>SELECT * FROM TDEPENDANTDOCS 
+JOIN REVISIONS ON TDEPENDANTDOCS.DEP_DOCNAME = REVISIONS.DDOCNAME AND REVISIONS.DREVRANK=0
+JOIN DOCMETA ON REVISIONS.DID = DOCMETA.DID
+WHERE ROOT_DOCNAME=? AND IS_SUPPORTING=?</td>
+	<td>rootDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_GetRootDocsForDependantDoc_WithDocInfo</td>
+	<td>SELECT * FROM TDEPENDANTDOCS 
+JOIN REVISIONS ON TDEPENDANTDOCS.DEP_DOCNAME = REVISIONS.DDOCNAME AND REVISIONS.DREVRANK=0
+JOIN DOCMETA ON REVISIONS.DID = DOCMETA.DID
+WHERE DEP_DOCNAME=? AND IS_SUPPORTING=?</td>
+	<td>dependantDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_DeleteDependantDocForRootDoc</td>
+	<td>DELETE FROM TDEPENDANTDOCS 
+WHERE ROOT_DOCNAME=? 
+AND DEP_DOCNAME=? 
+AND IS_SUPPORTING=?</td>
+	<td>rootDocName varchar
+	    dependantDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qDependantDocs_UpdateDependantDocForRootDoc</td>
+	<td>UPDATE TDEPENDANTDOCS 
+SET IS_SUPPORTING=?
+WHERE ROOT_DOCNAME = ? AND DEP_DOCNAME = ?</td>
+	<td>isSupporting varchar
+	    rootDocName varchar
+	    dependantDocNames varchar</td>
+</tr>
+
+<tr>
+	<td>qGetDocsByWorkflowId</td>
+	<td>SELECT * FROM Revisions
+INNER JOIN DocMeta ON Revisions.dID = DocMeta.dID
+WHERE (Revisions.dRevRank = 0) 
+AND (NOT (Revisions.dStatus = 'DELETED'))
+AND (NOT (Revisions.dStatus = 'EXPIRED'))
+AND ((Revisions.dDocType = 'Document') OR (Revisions.dDocType = 'ChildDocument'))
+AND ((DocMeta.xBundleRef IS NULL)
+AND (DocMeta.xBatchNumber = ?))</td>
+	<td>workflowId int</td>
+</tr>
+<tr>
+	<td>qInsertDependantDoc</td>
+	<td>INSERT INTO TDEPENDANTDOCS
+VALUES (?,?,?)</td>
+	<td>rootDocName varchar
+	    depDocName varchar
+	    isSupporting varchar</td>
+</tr>
+<tr>
+	<td>qGetBundleItemNotes</td>
+	<td>SELECT au.LMESSAGE FROM TAUDITLOGS au
+WHERE au.LREF IN
+
+(SELECT dDocName FROM Revisions r INNER JOIN Docmeta dm ON  (r.dID = dm.dID)
+AND dm.xBundleRef = ?
+AND r.dDocType = 'Bundle')
+AND au.LACTION = 'USER-NOTE'
+AND au.LPARAM1 = ?</td>
+	<td>bundleRef varchar
+	    docName varchar</td>
+</tr>
+<tr>
+	<td>qProcessDates</td>
+	<td>SELECT * FROM CCLA_PROCESS_DATES</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qUpdateProcessDate</td>
+	<td>UPDATE CCLA_PROCESS_DATES
+SET PROCESS_DATE=? WHERE NAME=?</td>
+	<td>processDate date
+	    name varchar</td>
+</tr>
+<tr>
+	<td>qUpdateAllProcessDateTimes</td>
+	<td>UPDATE CCLA_PROCESS_DATES
+SET PROCESS_DATE=? WHERE DATE_TYPE='Time'</td>
+	<td>processDate date</td>
+</tr>
+
+<tr>
+	<td>qGetVerifyMandateBundleItems</td>
+	<td>SELECT * FROM WORKFLOWHISTORY wf
+INNER JOIN Revisions r ON (r.dID = wf.dID)
+INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+WHERE dWfName = 'VerifyMandate'
+AND dm.xBundleRef = ?</td>
+	<td>bundleRef varchar</td>
+</tr>
+<tr>
+	<td>qGetNextDealingDate</td>
+	<td>SELECT * FROM
+(SELECT DEALING_DATE FROM CCLA_FUND_DEALING_DATES dates
+        WHERE FUND_CODE = ?
+        AND DATES.DEALING_DATE >= ?
+        ORDER BY DATES.DEALING_DATE ASC)
+        
+        WHERE ROWNUM = 1</td>
+	<td>fundCode varchar
+	    baseProcessDate date</td>
+</tr>
+<tr>
+	<td>qGetAllNextDealingDates</td>
+	<td>SELECT  cmp.company_code, fnd.FUND_CODE, FND.DISPLAYNAME, MIN(dates.DEALING_DATE) AS NEXT_DEALING_DATE
+        FROM CCLA_FUND_DEALING_DATES dates
+        INNER JOIN FUND fnd  ON (dates.fund_code = fnd.fund_code)
+        INNER JOIN REF_COMPANY cmp ON (fnd.company_id = cmp.company_id)
+        WHERE DATES.DEALING_DATE >= ?
+        
+        GROUP BY cmp.company_code, fnd.FUND_CODE, FND.DISPLAYNAME
+        ORDER BY cmp.company_code, fnd.FUND_CODE ASC</td>
+	<td>baseProcessDate date</td>
+</tr>
+<tr>
+	<td>QGetJobPriorityRules</td>
+	<td>SELECT * FROM JOB_PRIORITY_RULES</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetJobPriorityRuleByName</td>
+	<td>SELECT * FROM JOB_PRIORITY_RULES WHERE RULE_NAME=?</td>
+	<td>ruleName varchar</td>
+</tr>
+<tr>
+	<td>QGetAllJobPriorityRuleValues</td>
+	<td>SELECT * FROM JOB_PRIORITY_RULE_VALUES</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QAddJobPriorityRule</td>
+	<td>INSERT INTO JOB_PRIORITY_RULES 
+		(RULE_ID, RULE_NAME, RULE_FIELD, RULE_TYPE, RULE_ORDER, IS_ENABLED, APPLIES_TO, IS_APPEND_PRIORITY)
+		VALUES(NULL,?,?,?,?,?,?,?)</td>
+	<td>RULE_NAME varchar
+		RULE_FIELD varchar
+		RULE_TYPE varchar
+		RULE_ORDER int
+		IS_ENABLED int
+		APPLIES_TO varchar
+		IS_APPEND_PRIORITY int</td>
+</tr>
+<tr>
+	<td>QUpdateJobPriorityRule</td>
+	<td>UPDATE JOB_PRIORITY_RULES SET
+		RULE_NAME = ?,
+		RULE_FIELD = ?,
+		RULE_TYPE =?,
+		RULE_ORDER = ?,
+		IS_ENABLED = ?,
+		APPLIES_TO = ?,
+		IS_APPEND_PRIORITY = ?
+		WHERE RULE_ID=?</td>
+	<td>RULE_NAME varchar
+		RULE_FIELD varchar
+		RULE_TYPE varchar
+		RULE_ORDER int
+		IS_ENABLED int
+		APPLIES_TO varchar
+		IS_APPEND_PRIORITY int
+		RULE_ID int</td>
+</tr>
+<tr>
+	<td>QAddJobPriorityRuleValue</td>
+	<td>INSERT INTO JOB_PRIORITY_RULE_VALUES (RULE_VALUE_ID, RULE_ID, FIELD_VALUE, PRIORITY, DATE_ADDED, NUM_VALID_DAYS)
+		VALUES(NULL,?,?,?,SYSDATE,?)</td>
+	<td>RULE_ID int
+		FIELD_VALUE varchar
+		PRIORITY int
+		NUM_VALID_DAYS int</td>
+</tr>
+<tr>
+	<td>QUpdateJobPriorityRuleValue</td>
+	<td>UPDATE JOB_PRIORITY_RULE_VALUES SET
+		PRIORITY = ?, NUM_VALID_DAYS = ?
+		WHERE RULE_VALUE_ID=?</td>
+	<td>PRIORITY int
+		NUM_VALID_DAYS int
+		RULE_VALUE_ID int</td>
+</tr>
+<tr>
+	<td>QRemoveJobPriorityRuleValue</td>
+	<td>DELETE FROM JOB_PRIORITY_RULE_VALUES
+		WHERE RULE_VALUE_ID=?</td>
+	<td>RULE_VALUE_ID int</td>
+</tr>
+<tr>
+	<td>QGetAllBundleDocuments</td>
+	<td>SELECT DM.XBUNDLEREF, DM.XSTATUS, R.DDOCNAME, R.DDOCTYPE, DM.XPRIORITY, R.DINDATE  
+		FROM DOCMETA DM 
+		INNER JOIN REVISIONS R ON (DM.DID = R.DID)
+		WHERE R.DDOCTYPE='Bundle' AND DM.XSTATUS<>'Completed' AND DM.XSTATUS<>'Deleted' AND R.DREVRANK=0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClearProcessDate</td>
+	<td>UPDATE CCLA_PROCESS_DATES
+		SET PROCESS_DATE=null WHERE NAME=?</td>
+	<td>name varchar</td>
+</tr>
+<tr>
+	<td>qUpdateSystemConfigSetting</td>
+	<td>UPDATE SYSTEM_CONFIG
+		SET SYSTEM_CONFIG_SETTING=? 
+		WHERE SYSTEM_CONFIG_NAME=?</td>
+	<td>setting varchar
+		name varchar</td>
+</tr>
+<tr>
+	<td>qClearSystemConfigSetting</td>
+	<td>UPDATE SYSTEM_CONFIG
+		SET SYSTEM_CONFIG_SETTING=null
+		WHERE SYSTEM_CONFIG_NAME=?</td>
+	<td>name varchar</td>
+</tr>
+<tr>
+	<td>qGetSystemConfigSetting</td>
+	<td>SELECT * FROM SYSTEM_CONFIG</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetAllProcessDetails</td>
+	<td>SELECT * FROM FUND_PROCESS_DETAILS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetAllProcessDetailsByFundCode</td>
+	<td>SELECT * FROM FUND_PROCESS_DETAILS 
+		WHERE FUND_CODE=?</td>
+	<td>fundCode varchar</td>
+</tr>
+<tr>
+	<td>qGetAllProcessDetailsByFundType</td>
+	<td>SELECT FPD.* FROM FUND_PROCESS_DETAILS FPD
+		INNER JOIN FUND F ON (FPD.FUND_CODE = F.FUND_CODE)
+		WHERE F.FUND_TYPECODE_ID=?</td>
+	<td>fundType int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAllProcessDetails</td>
+	<td>SELECT * FROM FUND_PROCESS_DETAILS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qUpdateAllProcessDetailsRolloverTimes</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET ROLLOVER_TIME=?</td>
+	<td>rolloverTime char</td>
+</tr>
+<tr>
+	<td>qClearAllProcessDetailsRolloverTimes</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET ROLLOVER_TIME=null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qUpdateProcessDetailsRolloverTimeByFundCode</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET ROLLOVER_TIME=? 
+		WHERE FUND_CODE=?</td>
+	<td>rolloverTime char
+		fundCode varchar</td>
+</tr>
+<tr>
+	<td>qUpdateProcessDetailsRolloverTimeByFundType</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET ROLLOVER_TIME=?
+		WHERE FUND_CODE IN (
+			SELECT FPD.FUND_CODE FROM FUND_PROCESS_DETAILS FPD
+			INNER JOIN FUND F ON (FPD.FUND_CODE = F.FUND_CODE)
+			WHERE F.FUND_TYPECODE_ID=?)</td>
+	<td>rolloverTime char
+		fundType int</td>
+</tr>
+<tr>
+	<td>qUpdateProcessDetailsOverrideDateByFundCode</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=?
+		WHERE FUND_CODE=?</td>
+	<td>overrideDate date
+		fundCode varchar</td>
+</tr>
+<tr>
+	<td>qClearProcessDetailsOverrideDateByFundCode</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=null
+		WHERE FUND_CODE=?</td>
+	<td>fundCode varchar</td>
+</tr>
+<tr>
+	<td>UpdateProcessDetailsOverrideDateByFundType</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=?
+		WHERE FUND_CODE IN (
+			SELECT FPD.FUND_CODE FROM FUND_PROCESS_DETAILS FPD
+			INNER JOIN FUND F ON (FPD.FUND_CODE = F.FUND_CODE)
+			WHERE F.FUND_TYPECODE_ID=?)</td>
+	<td>overrideDate char
+		fundType int</td>
+</tr>
+<tr>
+	<td>qClearProcessDetailsOverrideDateByFundType</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=null
+		WHERE FUND_CODE IN (
+			SELECT FPD.FUND_CODE FROM FUND_PROCESS_DETAILS FPD
+			INNER JOIN FUND F ON (FPD.FUND_CODE = F.FUND_CODE)
+			WHERE F.FUND_TYPECODE_ID=?)</td>
+	<td>fundType int</td>
+</tr>
+<tr>
+	<td>qUpdateAllProcessDetailsOverrideDate</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=?</td>
+	<td>overrideDate date</td>
+</tr>
+<tr>
+	<td>qClearAllProcessDetailsOverrideDate</td>
+	<td>UPDATE FUND_PROCESS_DETAILS
+		SET OVERRIDE_DATE=null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetNextFundDealingDate</td>
+	<td>SELECT * FROM
+		(SELECT DEALING_DATE FROM FUND_DEALING_DATES dates
+        WHERE FUND_CODE = ?
+        AND DATES.DEALING_DATE >= ?
+        ORDER BY DATES.DEALING_DATE ASC)
+        WHERE ROWNUM = 1</td>
+	<td>fundCode varchar
+	    baseProcessDate date</td>
+</tr>
+<tr>
+	<td>qGetAllNextFundDealingDates</td>
+	<td>SELECT  cmp.company_code, fnd.FUND_CODE, FND.DISPLAYNAME, MIN(dates.DEALING_DATE) AS NEXT_DEALING_DATE
+        FROM FUND_DEALING_DATES dates
+        INNER JOIN FUND fnd  ON (dates.fund_code = fnd.fund_code)
+        INNER JOIN REF_COMPANY cmp ON (fnd.company_id = cmp.company_id)
+        WHERE DATES.DEALING_DATE >= ?
+        
+        GROUP BY cmp.company_code, fnd.FUND_CODE, FND.DISPLAYNAME
+        ORDER BY cmp.company_code, fnd.FUND_CODE ASC</td>
+	<td>baseProcessDate date</td>
+</tr>
+<tr>
+	<td>QGetAllFundProcessDatesWithSplitUnitised</td>
+	<td>SELECT  
+			C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME, 
+			MIN(FDD.DEALING_DATE) AS NEXT_DEALING_DATE
+		FROM 
+			FUND_DEALING_DATES FDD
+			INNER JOIN FUND F  ON (FDD.FUND_CODE = F.FUND_CODE)
+			INNER JOIN REF_COMPANY C ON (F.COMPANY_ID = C.COMPANY_ID)
+		WHERE 
+			FDD.DEALING_DATE >=? 
+			AND (F.FUND_TYPECODE_ID!=2) AND (F.FUND_TYPECODE_ID=1 AND (F.COMPANY_ID!=1 AND F.COMPANY_ID!=2))
+		GROUP BY C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME
+		UNION ALL
+		SELECT  
+			C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME, 
+			MIN(FDD.DEALING_DATE) AS NEXT_DEALING_DATE
+		FROM 
+			FUND_DEALING_DATES FDD
+			INNER JOIN FUND F  ON (FDD.FUND_CODE = F.FUND_CODE)
+			INNER JOIN REF_COMPANY C ON (F.COMPANY_ID = C.COMPANY_ID)
+		WHERE 
+			FDD.DEALING_DATE >=? 
+			AND F.FUND_TYPECODE_ID=2
+		GROUP BY C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME
+		UNION ALL
+		SELECT  
+			C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME, 
+			MIN(FDD.DEALING_DATE) AS NEXT_DEALING_DATE
+		FROM 
+			FUND_DEALING_DATES FDD
+			INNER JOIN FUND F  ON (FDD.FUND_CODE = F.FUND_CODE)
+			INNER JOIN REF_COMPANY C ON (F.COMPANY_ID = C.COMPANY_ID)
+		WHERE 
+			FDD.DEALING_DATE >=? 
+			AND F.COMPANY_ID=1 AND F.FUND_TYPECODE_ID=1
+		GROUP BY C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME
+		UNION ALL
+		SELECT 
+			C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME, 
+			MIN(FDD.DEALING_DATE) AS NEXT_DEALING_DATE
+		FROM 
+			FUND_DEALING_DATES FDD
+			INNER JOIN FUND F  ON (FDD.FUND_CODE = F.FUND_CODE)
+			INNER JOIN REF_COMPANY C ON (F.COMPANY_ID = C.COMPANY_ID)
+		WHERE 
+			FDD.DEALING_DATE >=? 
+			AND F.COMPANY_ID=2 AND F.FUND_TYPECODE_ID=1
+		GROUP BY C.COMPANY_CODE, F.FUND_CODE, F.DISPLAYNAME</td>
+	<td>baseUnitisedDate date
+		baseDepositDate date
+		baseUnitisedDateCoif date
+		baseUnitisedDateCbf date</td>
+<tr>	
+<tr>
+	<td>qGetUniqueBundleDocnameForPendingValidationDocByClientNum</td>
+	<td>SELECT DISTINCT(BUNDLE_DOCNAME), XBUNDLEREF
+		FROM V_DOCUMENT_STATUS
+		WHERE (XDOCUMENTCLASS='APP' OR XDOCUMENTCLASS='AUTOMAND' OR XDOCUMENTCLASS='MAND') 
+		AND (STATUS_DESC='Pending In Iris' OR STATUS_DESC='Validation')
+		AND XCLIENTNUMBER=?</td>
+	<td>clientNumber varchar</td>
+</tr>
+<tr>
+	<td>qGetDocumentStatusForJobId</td>
+	<td>SELECT *
+		FROM V_DOCUMENT_STATUS
+		WHERE XJOBID=?</td>
+	<td>jobId varchar</td>
+</tr>
+<tr>
+	<td>QGetParkingLotClientCount</td>
+	<td>SELECT COUNT(*) AS NUM_PARKING_LOT_CLIENTS FROM (
+
+		  SELECT  dm.xBundleRef, dm.xClientNumber, dm.xCompany  
+		  FROM WORKFLOWDOCUMENTS wfd 
+		  
+			INNER JOIN Revisions r ON (wfd.DDOCNAME = r.DDOCNAME AND r.dRevRank = 0)
+			INNER JOIN DocMeta dm ON (dm.dID = r.dID)
+		  
+			  WHERE DWFID IN
+			  (SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate')
+			  
+			  AND dm.xDocumentClass IN ('MAND','AUTOMAND')
+			  
+			  GROUP BY dm.xBundleRef, dm.xClientNumber, dm.xCompany
+		) numMands</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetParkingLotAccountCount</td>
+	<td>SELECT COUNT(*) AS NUM_PARKING_LOT_ACCOUNTS FROM (
+
+		  SELECT  dm.xBundleRef, dm.xClientNumber, dm.xCompany, dm.xAccountNumber  
+		  FROM WORKFLOWDOCUMENTS wfd 
+		  
+			INNER JOIN Revisions r ON (wfd.DDOCNAME = r.DDOCNAME AND r.dRevRank = 0)
+			INNER JOIN DocMeta dm ON (dm.dID = r.dID)
+		  
+			  WHERE DWFID IN
+			  (SELECT DWFID FROM WORKFLOWS WHERE DWFNAME = 'VerifyMandate')
+			  
+			  AND dm.xDocumentClass IN ('MAND','AUTOMAND')
+			  
+			  GROUP BY dm.xBundleRef, dm.xClientNumber, dm.xCompany, dm.xAccountNumber
+		) numAccounts</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetPublicHoliday</td>
+	<td>SELECT * FROM REF_PUBLIC_HOLIDAY 
+		WHERE HOLIDAY_DATE BETWEEN ? AND ? 
+		ORDER BY HOLIDAY_DATE ASC</td>
+	<td>startDate date
+		endDate date</td>
+</tr>
+<tr>
+	<td>qAddPublicHoliday</td>
+	<td>INSERT INTO REF_PUBLIC_HOLIDAY (HOLIDAY_ID, HOLIDAY_DATE, DESCRIPTION)
+	VALUES(?,?,?)</td>
+	<td>HOLIDAY_ID int
+		holidayDate date
+		description varchar</td>
+</tr>
+<tr>
+	<td>qDeletePublicHoliday</td>
+	<td>DELETE FROM REF_PUBLIC_HOLIDAY WHERE HOLIDAY_ID=?</td>
+	<td>id int</td>
+</tr>
+<tr>
+	<td>QGetSystemConfigProcessDates</td>
+	<td>SELECT * FROM SYSTEM_CONFIG_VAR WHERE CONFIG_VAR_TYPE='PROCESS_DATES'</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QGetDocumentProcessDateMismatch</td>
+	<td>SELECT dm.xOriginalProcessDate, dm.xProcessDate, dm.xBundleRef, dm.did, r.dDocName, dm.xFund, dm.xCompany, dm.xDocumentClass,
+		case
+			when dm.xProcessDate < dm.xOriginalProcessDate then 0
+			when dm.xProcessDate > dm.xOriginalProcessDate then 2
+		end As MismatchStatus
+		FROM DOCMETA dm
+		LEFT JOIN REVISIONS r ON (dm.did = r.did)
+		WHERE r.dRevRank=0 AND (r.dDocType='ChildDocument' OR r.dDocType='Document') 
+		AND dm.xOriginalProcessDate IS NOT NULL and dm.xProcessDate IS NOT NULL
+		AND dm.xBundleRef IS NOT NULL AND (dm.xOriginalProcessDate!=dm.xProcessDate)
+		AND dm.xBundleRef=?</td>
+	<td>xBundleRef varchar</td>
+</tr>
+<tr>
+	<td>QGetDocumentProcessDateForResetBundle</td>
+	<td>SELECT dm.xDocumentClass, r.dDocName, dm.xProcessDate, dm.xWorkflowDate, dm.xFund, dm.xCompany 
+		FROM DOCMETA dm 
+		LEFT JOIN REVISIONS R ON (dm.dId = r.dId)
+		WHERE r.dRevRank=0 and r.dDocType != 'Bundle'
+		AND dm.xBundleRef=?
+		AND EXISTS (SELECT dm.xBundleRef FROM DOCMETA dm 
+		LEFT JOIN REVISIONS r ON (dm.dId = r.dId)
+		WHERE r.dRevRank=0 and r.dDocType != 'Bundle'
+		AND dm.xDocumentClass='CONDINS' AND dm.xWorkflowDate IS NOT NULL
+		AND dm.xBundleRef=?)</td>
+	<td>xBundleRef varchar
+		xBundleRef varchar</td>
+</tr>
+<tr>
+	<td>QGetAgedFlaggedBundles</td>
+	<td>SELECT r.dDocName, dm.xBundleRef, 
+		auditLog.lDate AS FLAG_DATE, flagreasons.flag_reason_id, flagreasons.flag_reason FROM Revisions r
+		INNER JOIN DocMeta dm ON (r.dID = dm.dID)
+
+		INNER JOIN TAUDITLOGS auditLog ON (r.dDocName = auditLog.lRef)
+		INNER JOIN CCLA_FLAG_REASONS flagReasons ON (auditLog.LPARAM1 = flagreasons.flag_reason_id)
+
+		WHERE r.dRevRank = 0
+		AND r.dStatus = 'RELEASED'
+		AND dm.xStatus = 'Flagged'
+
+		AND auditLog.LACTION = 'FLAG-BUNDLE'
+		AND auditlog.ldate < (SYSDATE-?)
+
+		ORDER BY auditLog.lDate ASC</td>
+	<td>numDays int</td>
+</tr>
+<tr>
+	<td>QGetPendingPreadviceDicondins</td>
+	<td>SELECT * FROM V_PREADVICE_DICONDINS_LOOKUP 
+		WHERE ACCOUNTNUMBER=? AND FUND_CODE=? AND CLIENT_NUMBER=? 
+		AND INSTRUCTION_TYPE_NAME='PREADVICE' AND TRANSACTION_REF IS NULL 
+		AND INSTRUCTION_STATUS_ID=18
+		UNION 
+		SELECT * FROM V_PREADVICE_DICONDINS_LOOKUP 
+		WHERE COMPANY_CODE=? AND INSTRUCTION_TYPE_NAME='DICONDIN' 
+		AND TRANSACTION_REF IS NULL AND INSTRUCTION_STATUS_ID=18</td>
+	<td>ACCOUNTNUMBER int
+		FUND_CODE varchar
+		CLIENT_NUMBER int
+		COMPANY_CODE varchar</td>
+</tr>
+</table>
+<@end@>
+</body></html>

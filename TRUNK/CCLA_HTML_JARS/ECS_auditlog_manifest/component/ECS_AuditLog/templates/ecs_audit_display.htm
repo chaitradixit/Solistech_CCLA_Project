@@ -1,0 +1,75 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_AuditLog - Test Page
+</title>
+</head>
+<body style="font-family: Verdana, Arial, Sans-Serif; font-size: 10pt;">
+
+<h1>ECS_AuditLog - Entry Display</h1>
+
+	<hr/>
+	
+	<h2>Filters</h2>
+	Enter your filter parameters below.
+
+	<br/>
+	<br/>
+	
+	<form method="get">
+		<input type="hidden" name="IdcService" value="ECS_AUDIT_DISPLAY" />
+		<input type="hidden" name="getEntries" value="1" />
+		
+		<$fields="lApp,lAction,lRef,lTitle,lUser"$>
+		<$exec rsMakeFromString("auditFields",fields,"field")$>
+		
+		<table>
+			<$loop auditFields$>
+				<tr>
+					<td><$field$>:</td>
+					<td><input type="text" name="<$field$>" value="<$getValue("#local",field)$>" /></td>
+				</tr>
+			<$endloop$>
+			<$if false$>
+				<tr>
+					<td>Date before:</td>
+					<td><input type="text" name="dateBefore" value="<$#local.dateBefore$>" /></td>
+				</tr>
+					<tr>
+					<td>Date after:</td>
+					<td><input type="text" name="dateAfter" value="<$#local.dateAfter$>" /></td>
+				</tr>
+			<$endif$>
+		</table>
+		
+		<input type="submit" value="Search" />
+		
+	</form>
+	
+	<$if auditEntries$>
+		<h2>Results (<$auditEntries.#numRows$>)</h2>
+		
+		<$fields="lApp,lAction,lDate,lRef,lTitle,lUser,lMessage,lParam1,lParam2,lParam3,lParam4,lParam5,lParam6"$>
+		<$exec rsMakeFromString("auditFields",fields,"field")$>
+		
+		<table border=1 cellpadding=2 cellspacing=0 style="font-size: 0.8em">
+			<tr>
+				<$loop auditFields$>
+					<th><$auditFields.field$></th>
+				<$endloop$>
+			</tr>
+			
+			<$loop auditEntries$>
+				<tr>
+					<$loop auditFields$>
+						<td><$getValue("auditEntries",auditFields.field)$></td>
+					<$endloop$>
+				</tr>
+			<$endloop$>
+		</table>
+		
+	<$endif$>		
+
+
+</body></html>

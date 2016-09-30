@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		
+
+
+		
+		<title>
+			EOD PREVIEW
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+
+		function enterExpenses()
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_CONFIRM_EXPENSES<$include add_idc_token_to_url$>" 
+		}
+		
+		
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+						<$include orangeContainer_top$>
+	
+							<div class='ccla_cs_panel_header'>
+								Projected daily transaction totals for PSDF fund
+							</div>
+						
+							<table class="eod-table">
+							<$loop rsTotals$>	
+								<tr>
+									<td width="50%" class="first-col" ><strong>Total number of transactions</strong></td>
+									<td ><strong><$#active.NUMTRANSACTIONS$></strong></td>
+								</tr>
+								<tr>
+									<td class="first-col" ><strong>Total number of buy transactions</strong></td>
+									<td><$#active.NUMBUYS$></td>
+								</tr>
+								<tr>
+									<td class="first-col"><strong>Total value of buy transactions (£)</strong></td>
+									<td><$#active.BUYS$></td>
+								</tr>
+								<tr>
+									<td class="first-col"><strong>Total number of sell transactions</strong></td>
+									<td><$#active.NUMSELLS$></td>
+								</tr>
+								<tr>
+									<td class="first-col"><strong>Total value of sell transactions (£)</strong></td>
+									<td><$#active.SELLS$></td>
+								</tr>
+								<tr>
+									<td class="first-col"><strong>Total number of transfer transactions</strong></td>
+									<td><$#active.NUMTRANSFERS$></td>
+								</tr>
+								<tr>
+									<td class="first-col"><strong>Total unit value of transfer transactions (units)</strong></td>									
+									<td><$#active.TRANSFERS$></td>
+								</tr>
+								<$endloop$>
+							</table>
+							<br>
+							<div align="right">
+								<input type="button" value="Continue" onclick="enterExpenses();">
+							</div>
+							<br>
+					<$include orangeContainer_bottom$>
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html></body></html>

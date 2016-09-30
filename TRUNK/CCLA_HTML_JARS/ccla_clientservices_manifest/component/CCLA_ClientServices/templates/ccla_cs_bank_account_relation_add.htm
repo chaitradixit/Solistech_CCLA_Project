@@ -1,0 +1,658 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<!-- 	This page is used to add and/or link Bank Account records. 
+			-------------
+			
+			
+			
+	-->
+	
+	<title>
+		Add new bank account association
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_javascript_autocomplete_include$>
+	<$include ccla_cs_ajax_js$>
+
+	<$if #local.ACCOUNT_ID or #local.ORGANISATION_ID$>
+		<$enableRelationCheckboxes = 1$>
+	<$endif$>
+	
+	<$if #local.ACCOUNT_ID$>
+		<$linkMode = "accountRelation"$>
+	<$elseif isBulk$>
+		<$linkMode = "orgAccountRelation"$>
+	<$elseif parentRef$>
+		<$linkMode = "parentCallback"$>
+	<$endif$>
+	
+	<script type="text/javascript">
+	
+	// Determines whether a new association was just added.
+	var added = <$if added$>true<$else$>false<$endif$>;	
+	
+	// Determines whether a new association was just added.
+	var isBulk = <$if added AND isBulk$>true<$else$>false<$endif$>;	
+	
+	var linkMode = "<$#local.linkMode$>";
+	
+	// Determines whether the Account-Bank Account relation checkboxes
+	// will be displayed and checked for minimal input.
+	var enableRelationCheckboxes = <$if enableRelationCheckboxes$>true<$else$>false<$endif$>;
+	
+	// Parent reference which will be passed to the doSelectCallback function, along with
+	// the selected bank account ID.
+	var parentRef = "<$#local.parentRef$>";
+	
+	// ID of the newly-created relation. Will only be present following a form submission
+	// and refresh
+	var newRelationId 	= "<$#local.newRelationId$>";
+	
+	var relationshipIds = "<$#local.relationship$>";
+	
+	// Stores the value of the most recent Sort Code that was sent to the Bank Finder
+	// lookup service.
+	var lastSortCodeRequest = "";
+	
+	// Pads the given string with zeros, to the given length.
+	function padZeroes(str, length) {
+		if (str.length < length) {
+			var numZeroes = length - str.length;
+			
+			for (var i=0; i<numZeroes; i++)
+				str = "0" + str;
+		}
+		
+		return str;
+	}
+	
+	// Caches last list of search results displayed by autocomplete.
+	var cachedSuggestions;
+	
+	$().ready(function() {
+				
+		if (added)
+		{
+			if (isBulk)
+			{
+				window.parent.doSelectCallback('<$#local.BANK_ACCOUNT_ID$>', relationshipIds);
+				window.parent.closePopup();				
+			}
+			else if (enableRelationCheckboxes)
+			{
+				// Refresh relations in parent window
+				window.parent.refreshAccountRelations('<$#local.ACCOUNT_ID$>',newRelationId);
+				window.parent.closePopup();
+			}
+			else if (parentRef) {
+				// Invoke parent call-back function, with selected Bank Account ID.
+				window.parent.doSelectCallback(parentRef, 
+					{
+						"BANK_ACCOUNT_ID":	'<$#local.BANK_ACCOUNT_ID$>'
+					}
+				);
+				window.parent.closePopup();		
+			}
+			else {
+				alert("Not sure what to do now you've selected a bank account? :(");
+			}
+		}
+		
+		// Bind onchange and onkeyup events to the Sort Code field. This will clear and
+		// potentially re-query Bank/Branch data
+		$("#SORT_CODE").bind("change", function() {
+			checkSortCodeForBankDetailsLookup();
+		}).bind("keyup", function() {
+			checkSortCodeForBankDetailsLookup();
+		});
+		
+		// Bind a lose-focus event to the Account Number field. This will populate the Sort
+		// Code field if the user has already entered one while searching, and they didn't
+		// select an existing Bank Account.
+		$("#autoCompleteText").bind("blur", function() {
+			
+			// Check to see if an existing bank account was already selected.
+			if ($("#BANK_ACCOUNT_ID").val() == "") {
+				
+				var searchStr = $("#autoCompleteText").val();
+				
+				if (searchStr.indexOf("-") > -1) {
+					var bankAccValues = searchStr.split("-");
+					
+					$("#ACCOUNT_NO").val(bankAccValues[0]);
+					$("#SORT_CODE").val(bankAccValues[1]);
+				} else {
+					$("#ACCOUNT_NO").val(searchStr);
+				}
+				
+			}
+			
+		});
+		
+		// Bind keypress event to re-enable all bank account value fields
+		// if the user deletes the entire search string.
+		$("#autoCompleteText").bind("keypress", function() {
+			if ($("#autoCompleteText").val() == "") {
+				clearBankDetailsDisplay();
+			
+				$(".bank_account_field").removeAttr("disabled");
+				$(".bank_account_field").val("");
+				
+				// Untick the 'add new Building Society' checkbox
+				$("#addNewBuildingSocAccountCheck").removeAttr("checked");
+				// Hide the 'add new Building Society' div
+				$("#addNewBuildingSocAccount").css("visibility", "hidden");
+			}
+		});
+		
+		// Stores the last searched Account Number/Sort Code string.
+		var lastSearchStr = "";
+		
+		 // Attach autocomplete function to bank account lookup field.
+		 //
+		 // This will take any input from the user and execute a query
+		 // against existing bank account data.
+		 // Bank account numbers, sort codes and names (if applicable)
+		 // will be returned by the search.
+		 $("#autoCompleteText").autocomplete({  
+
+			minLength: 3,
+			delay: 400,
+			
+			source: function(request, add) {
+				
+				clearBankDetailsDisplay();
+				
+				$("#bankAccountLookup_loading").show();
+				
+				// Reset form fields.
+				$("#BANK_ACCOUNT_ID").val("");
+				$(".bank_account_field").val("");
+				
+				$(".bank_account_field").removeAttr("disabled");
+				$(".bank_account_field").val("");
+				
+				// Untick the 'add new Building Society' checkbox
+				$("#addNewBuildingSocAccountCheck").removeAttr("checked");
+				// Hide the 'add new Building Society' div
+				$("#addNewBuildingSocAccount").css("visibility", "hidden");
+				
+				var searchParams = new Object();
+				
+				searchParams.BANK_ACCOUNT_SEARCH_STRING = request.term;
+				searchParams.ts = new Date().getTime();
+				lastSearchStr = request.term;
+				
+				$.getJSON("?IdcService=CCLA_CS_JSON_BANK_ACCOUNT_LOOKUP_SUBMIT<$include add_idc_token_to_url$>", searchParams, function(jsonData) {
+					var suggestions = [];  
+					
+					// Extract rsBankAccounts ResultSet.
+					if (jsonData &&
+						jsonData.ResultSets && 
+						jsonData.ResultSets.rsBankAccounts) {
+						
+						var bankAccounts = jsonData.ResultSets.rsBankAccounts;
+						for (var i=0; i<bankAccounts.rows.length; i++) {	
+							
+							var bankAccountId = getJsonResultSetValue(bankAccounts, "BANK_ACCOUNT_ID", i);
+							
+							var accountNo 	= getJsonResultSetValue(bankAccounts, "ACCOUNT_NO", i);
+							var sortCode  	= getJsonResultSetValue(bankAccounts, "SORT_CODE", i);
+							var buildingSocietyNumber = getJsonResultSetValue(bankAccounts, "BUILDING_SOCIETY_ROLL_NUMBER", i);
+							var accountName	= getJsonResultSetValue(bankAccounts, "ACCOUNT_NAME", i);
+							var shortName = getJsonResultSetValue(bankAccounts, "ACCOUNT_SHORT_NAME", i);
+							
+							var entry = new Object();
+							
+							entry.label 	= padZeroes(accountNo,8) + "-" +  padZeroes(sortCode,6) + " " +
+							 (buildingSocietyNumber ? (buildingSocietyNumber + " ") : "") + accountName;
+							entry.value		= bankAccountId;
+							
+							entry.sortCode 	= sortCode;
+							entry.accountName 	= accountName;
+							entry.accountNo = accountNo;
+							entry.buildingSocietyNumber = buildingSocietyNumber;
+							entry.shortName = shortName;
+							
+							suggestions.push(entry);
+						}
+						
+						if (bankAccounts.rows.length == 0) {						
+							var entry = new Object();
+						
+							entry.label="<$#env.CCLA_CS_AutoCompleteNoResults$>";
+							entry.value="";
+							
+							suggestions.push(entry);
+						}
+						
+						if (bankAccounts.rows.length >= 10) {
+							var entry = new Object();
+							
+							entry.label="<$#env.CCLA_CS_AutoCompleteMoreResults$>";
+							entry.value="";
+							
+							suggestions.push(entry);
+						}	
+					} else {
+						$("#bankAccountLookup_loading").hide();
+					}
+
+					//pass array to callback 
+					cachedSuggestions = suggestions;
+					add(suggestions);
+				});
+				
+
+			},
+
+			open: function(event, ui) {
+				$("#bankAccountLookup_loading").hide();
+				clearBankDetailsDisplay();
+			},
+			
+			select: function(event, ui) {
+				var selAccount;
+
+				// Check for non-result selections first.
+				if (ui.item.value == "")
+					return false;
+				
+				// Look up the cached suggestion for the selected account.
+				for (var i=0; i<cachedSuggestions.length; i++) {
+					if (cachedSuggestions[i].value == ui.item.value)
+					{
+						selAccount =  cachedSuggestions[i];
+					}
+				}
+				
+				$("#autoCompleteText").val(lastSearchStr);
+				
+				// Set the hidden form value to point to the selected Bank Account ID.
+				$("#BANK_ACCOUNT_ID").val(selAccount.value);
+				
+				$("#ACCOUNT_NO").val(selAccount.accountNo);
+				$("#SORT_CODE").val(selAccount.sortCode);
+				$("#BUILDING_SOCIETY_ROLL_NUMBER").val(selAccount.buildingSocietyNumber);
+				$("#ACCOUNT_NAME").val(selAccount.accountName);
+				$("#ACCOUNT_SHORT_NAME").val(selAccount.shortName);
+				
+				// Now disable all bank account value fields.
+				$(".bank_account_field").attr("disabled", "disabled");
+				
+				// Display the 'add new Building Society' div
+				$("#addNewBuildingSocAccount").css("visibility", "");
+				
+				// Load Banking Details info via AJAX
+				loadBankDetails(selAccount.sortCode);
+				
+				return false;
+			},
+			
+			focus: function(event, ui) {
+				if (ui.item.value == "")
+					return false;
+			}
+			
+		});		
+	});  
+	
+	/* Following some validation of user input, this method will invoke one
+	 * of the following:
+	 *
+	 * - If running in parent call-back mode, and no new bank account needs
+	 *   to be created, the doSelectCallback() method is called with the
+	 *   selected Bank Account ID (no form is submitted to server)
+	 * 
+	 * - If running in account relation mode, the form is submitted with the
+	 *   CCLA_CS_ADD_BANK_ACCOUNT_RELATION service. This will always create
+	 *   at least one Account-Bank Account relation for the selected or new
+	 *   bank account.
+	*/
+	function submitBankAccountRelationForm() {
+
+		// Perform validation before submission/call-back.
+		if (validateBankAccountForm()) {
+			
+			if (linkMode == "parentCallback" && !isAddNewBankAccount()) {
+				// No need to submit form when in parent call-back mode,
+				// and no new bank account required. Just call the parent
+				// call-back function with the selected Bank Account ID.
+				var selBankAccountId = $("#BANK_ACCOUNT_ID").val();
+				
+				window.parent.doSelectCallback(parentRef, 
+					{
+						"BANK_ACCOUNT_ID":	selBankAccountId
+					}
+				);
+			
+				// And close the popup.
+				window.parent.closePopup();	
+				
+			} else {
+				// Submit the form to create the new relations, and possibly
+				// a new bank account.
+				document.forms["addAssociation"].submit();
+			}
+		}
+			
+	}
+	
+	// Returns true if the user has entered input in such a way that will
+	// require a new account to be created, or cloned from an existing one with
+	// a distinct Building Society Roll Number.
+	function isAddNewBankAccount() {
+		var frm = document.forms["addAssociation"];
+		
+		var selBankAccountId = $("#BANK_ACCOUNT_ID").val();
+		var cloneBankAccount = $("#addNewBuildingSocAccountCheck").is(":checked");
+	
+		return (!selBankAccountId || cloneBankAccount)
+	}
+	
+	function submitBulkBankAccountform() {
+		// if account id has value (ie not new)
+		var frm = document.forms["addAssociation"];
+		var bankAccountId = frm.elements.BANK_ACCOUNT_ID.value;
+		
+		var relationship = '0';
+		if (frm.elements.WITHDRAWAL.checked)
+			relationship += ',120';
+		if (frm.elements.INCOME.checked)
+			relationship += ',121';	
+			
+		if (bankAccountId != null && bankAccountId != ''
+			&& !($("#addNewBuildingSocAccountCheck").is(":checked"))) {
+			if (validateBankAccountForm())
+				parent.doSelectCallback(bankAccountId, relationship);
+		} else {
+			if (validateBankAccountForm()) {
+				// need to submit form and then callback to opener
+				frm.elements.RedirectUrl.value += '&relationship=' + relationship + '&BANK_ACCOUNT_ID=';
+				frm.submit();			
+			}
+		}
+	}
+	
+	function validateBankAccountForm() {
+	
+		// Ensure that either the Withdrawal or Income checkbox
+		// is ticked.
+		var frm = document.forms["addAssociation"];
+		var retVal = true;
+		
+		if (enableRelationCheckboxes) {
+			if (!frm.elements.WITHDRAWAL.checked && !frm.elements.INCOME.checked) {
+				alert("Please select whether the bank account is " +
+				 "authorised for withdrawal, income or both.");
+				retVal = false;
+			}
+		}
+		
+		// Now determine whether a new account is being added, or an existing
+		// one was selected.
+		var bankAccountId = frm.elements.BANK_ACCOUNT_ID.value;
+		
+		if (bankAccountId == "") {
+			// New account, ensure account no/sort code completed.
+			if (frm.elements.ACCOUNT_NO == "" || frm.elements.SORT_CODE == "") {
+				alert("Please complete the account number and sort code " 
+				 + "fields for the new account.");
+				retVal = false;
+			}
+			
+			// Ensure Short Name has been entered, and it matches the
+			// Building Soc. Number if one has been specified.
+			var shortNameVal = $("#ACCOUNT_SHORT_NAME").val();
+			var buildingSocVal = $("#BUILDING_SOCIETY_ROLL_NUMBER").val();
+			
+			if (shortNameVal == "") {
+				alert("You must enter a Short Name against all new Bank Accounts.");
+				retVal = false;
+			} else if ((buildingSocVal != "") && (buildingSocVal != shortNameVal)) {
+				alert("The Short Name must match the Building Society Number.");
+				retVal = false;
+			}
+		}
+		
+		return retVal;
+	}
+	
+	// Triggered after the user clicks the 'Add new Building Society no.' checkbox.
+	// Enables/disables the Building Society No. and Account Name fields based on
+	// the state of the checkbox.
+	function toggleAddNewBuildingSocAccount() {
+		if ($("#addNewBuildingSocAccountCheck").is(":checked")) {
+			$(".building_society_field").removeAttr("disabled");
+		} else {
+			$(".building_society_field").attr("disabled","disabled");
+		}
+	}
+	
+	function refreshRelations(elementId, newRelationId)
+	{
+		window.parent.closePopup();
+		window.parent.location.reload();
+	}
+	
+	// Checks the value of the Sort Code field. If it is 6 digits in length,
+	// re-load the Bank/Branch Details display.
+	function checkSortCodeForBankDetailsLookup() {
+		
+		var sortCode = $("#SORT_CODE").val();
+		
+		if (sortCode != "" && (sortCode == lastSortCodeRequest))
+			return; // same value as previous request, ignore.
+		else
+			clearBankDetailsDisplay();
+			
+		if (sortCode.length == 6)
+			loadBankDetails(sortCode);
+	}
+	
+	// Clears the dynamic Bank Details display. Should be called when
+	// a new search is initialized or the user changes the Sort Code field
+	// value.
+	function clearBankDetailsDisplay() {
+		$("#bankDetails").html("");
+	}
+	
+	// Fetches the Bank Details display include, using the passed Sort
+	// Code as input to the Bank Finder method.
+	function loadBankDetails(sortCode) {
+		$("#bankDetails").html("Loading bank/branch details...");
+		
+		lastSortCodeRequest = sortCode;
+		
+		$.get("?<$include add_idc_token_to_url$>",
+			{
+				"IdcService":	"CCLA_CS_GET_INCLUDE",
+				"incName":		"ccla_cs_bank_details_display",
+				"SORT_CODE":	sortCode,
+				"hideBankDetailsDisplayHeader": 1,
+				"IsAjax":		1,
+				"ts":			new Date().getTime()
+			}, function(data) {
+				if (sortCode == lastSortCodeRequest) {
+					$("#bankDetails").html(data);
+				}
+			}
+		);
+	}
+	
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+
+		<$if added$>
+			<div class="message_panel info_icon">
+				New association added.	
+			</div>
+		<$endif$>
+		
+		<form name="addAssociation" id="addAssociation" method="POST">
+			<$if isBulk or parentRef$>
+				<input type="hidden" name="IdcService" value="CCLA_CS_BANK_ACCOUNT_ADD" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_BANK_ACCOUNT_RELATION_ADD<$include add_idc_token_to_url$>&added=1<$if isBulk$>&isBulk=true<$endif$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&parentRef=<$#local.parentRef$>&BANK_ACCOUNT_ID=" />	
+				<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">			
+				<input type="hidden" name="parentRef" value="<$#local.parentRef$>" />
+				
+			<$else$>
+				<input type="hidden" name="IdcService" value="CCLA_CS_ADD_BANK_ACCOUNT_RELATION" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_BANK_ACCOUNT_RELATION_ADD<$include add_idc_token_to_url$>&added=1&ACCOUNT_ID=<$#active.ACCOUNT_ID$>&BANK_ACCOUNT_RELATION_ID=" />
+			<$endif$>
+			
+			<input type="hidden" name="ACCOUNT_ID" value="<$#local.ACCOUNT_ID$>" />
+			<input type="hidden" name="BANK_ACCOUNT_ID" id="BANK_ACCOUNT_ID" />
+			
+			
+			<$include orangeContainer_top$>
+		
+			<div class='ccla_cs_panel_header'>
+				Add new bank account association
+			</div>	
+					
+			<div class='ccla_cs_panel_content'>
+				<div class="message_panel info_icon">
+					Search for an existing bank account by typing the account number and sort code below (separated by a dash)
+					or type in the details to create a new bank account.
+				</div>				
+				<br/>				
+				<table width="100%">
+					<tr>
+						<td width="25%">
+							<b>Search existing:</b>
+						</td>
+						<td>
+							<input type="text" id="autoCompleteText" autocomplete="off" size="20" value=""/>
+							
+							<img src="<$HttpImagesRoot$>ccla/ccla-ajax-spinner.gif" id="bankAccountLookup_loading" style="display:none" />
+						</td>
+					</tr>
+					
+					<tr>
+						<td><br/></td>
+					</tr>
+					
+					<tr>
+						<td>
+							Account no:
+						</td>
+						<td>
+							<input type="text" name="ACCOUNT_NO" id="ACCOUNT_NO" class="bank_account_field" autocomplete="off" maxlength=8 size="20" value=""/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="25%">
+							Sort code: 
+						</td>
+						<td>
+							<input type="text" name="SORT_CODE" id="SORT_CODE" class="bank_account_field" autocomplete="off" maxlength=6 size="20" value=""/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="25%">
+							
+						</td>
+						<td>
+							<div id="bankDetails" style="height: 60px">
+								<!-- Used to dynamically display bank/branch details after a bank
+									 account is selected, or a new sort code is entered. -->
+																
+							</div>
+						
+							<div id="addNewBuildingSocAccount" style="visibility:hidden">
+								<input type="checkbox" name="addNewBuildingSocAccountCheck" id="addNewBuildingSocAccountCheck"
+									   onclick="toggleAddNewBuildingSocAccount()" /> Add new Building Society no. for this Sort Code/Account Number
+								<br/><br/>
+								<b>Note:</b> ticking this box will create a brand new bank account record, and leave the 
+								original one (and any relationships it has) untouched.
+								
+								<br/>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="25%">
+							Building Society no:
+						</td>
+						<td>
+							<input type="text" name="BUILDING_SOCIETY_ROLL_NUMBER" id="BUILDING_SOCIETY_ROLL_NUMBER" class="bank_account_field building_society_field" autocomplete="off" size="18" maxlength="18" value=""/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="25%">
+							Account name: 
+						</td>
+						<td>
+							<input type="text" name="ACCOUNT_NAME" id="ACCOUNT_NAME" class="bank_account_field building_society_field" autocomplete="off" size="60" maxlength="60" value=""/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td width="25%">
+							Short name: 
+						</td>
+						<td>
+							<$include ccla_cs_bank_account_short_name_js$>
+						
+							<input type="text" name="ACCOUNT_SHORT_NAME" id="ACCOUNT_SHORT_NAME" class="bank_account_field building_society_field" autocomplete="off" size="18" maxlength="18" value=""/>
+						</td>
+					</tr>
+					
+					<$if enableRelationCheckboxes$>
+						<tr>
+							<td valign="top">
+								Attributes:
+							</td>
+							
+							<td>
+								<input type="checkbox" class="bank-account-rel-attribute" name="WITHDRAWAL" /> Withdrawal
+								<br/>
+								<input type="checkbox" class="bank-account-rel-attribute" name="INCOME" /> Income
+								<!--<br/>
+								<input type="checkbox" class="bank-account-rel-attribute" name="IS_DEFAULT" /> Default account-->
+							</td>
+						</tr>
+					<$endif$>
+					
+				</table>
+				
+				<div class="message_panel error_icon" style="display: none;" id="bankAccountErrorMsg">
+					
+				</div>
+				
+				<$if isBulk$>
+					<div align="right" class="cs-margin-all-5">
+						<input type="button" value="Add association" onclick="submitBulkBankAccountform()" id="addAssociationButton" />
+					</div>				
+				<$else$>
+					<div align="right" class="cs-margin-all-5">
+						<input type="button" value="Add association" onclick="submitBankAccountRelationForm()" id="addAssociationButton" />
+					</div>
+				<$endif$>
+				
+			</div>
+			
+			<$include orangeContainer_bottom$>
+			
+		</form>
+
+	</div>
+</body>
+</html>

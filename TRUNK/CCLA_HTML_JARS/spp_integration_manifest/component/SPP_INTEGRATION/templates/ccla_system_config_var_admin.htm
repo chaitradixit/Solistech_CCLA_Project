@@ -1,0 +1,228 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA System Variables Administration
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+	
+	$(document).ready(function(){
+		changeValuesBox();
+	});
+	
+	function setIdcService(formValue, formName) {
+		
+		if (formValue=='Clear') {
+			var formToUse = document.getElementById(formName);
+			var field = formToUse.CONFIG_VAR_DATA_TYPE.value+'_VALUE';
+			formToUse[field].value=''
+		}		
+	}
+	
+	
+	
+	function checkAddData() {
+		
+		//1. Check name
+		if (!document.addSystemConfigVar.CONFIG_VAR_NAME.value) {
+			alert("Name is blank");
+			return false;
+		}
+		
+		//2. Check description
+		if (!document.addSystemConfigVar.CONFIG_VAR_DESCRIPTION.value) {
+			alert("description is blank");
+			return false;
+		}
+
+		
+		//3. Check data types
+		var dataType = document.addSystemConfigVar.CONFIG_VAR_DATA_TYPE.value+'_VALUE';
+		
+		if (!document.addSystemConfigVar[dataType].value) {
+			alert("value is blank");
+			return false;
+		} 
+		
+		return true;
+	}
+	
+	function changeValuesBox() {
+		var dataType = document.addSystemConfigVar.CONFIG_VAR_DATA_TYPE.value;
+		var valueType = '';
+		var valueHtml = '';
+		var valueLength = '';
+		if (dataType) {
+			valueType=dataType+'_VALUE';
+			
+			if (dataType=='STRING') {
+				valueLength = '100';
+			} else if (dataType=='INT' || dataType=='FLOAT') {
+				valueLength = '38';
+			} else if (dataType=='DATE') {
+				valueLength = '20';
+			}
+		
+			if (dataType=='BOOL') {
+				valueHtml+='<select id="'+valueType+'" name="'+valueType+'" >';
+				valueHtml+='<option value="0">false</option>';
+				valueHtml+='<option value="1">true</option>';
+				valueHtml+='</select>';
+			} else {
+				valueHtml+='<input type="text" id="'+valueType+'" name="'+valueType+'" '; 
+				valueHtml+='maxlength="'+valueLength+'" size="20"/>';
+			}
+		}
+		$("#valuesBox").html(valueHtml);
+	}
+	
+	</script>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA System Variables Administration
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<h3 class="ccla_data_panel_header">Current System Variables are:</h3>
+			
+				<table border="1" cellpadding="3" cellspacing="0">
+					<tr>
+						<th width="20%">Name</th>
+						<th width="40%">Description</th>
+						<th width="5%">Type</th>
+						<th width="5%">DataType</th>
+						<th width="20%">Value</th>
+						<th width="10%">Action</th>
+					</tr>
+					<$if rsSystemConfigVar$>
+						<$loop rsSystemConfigVar$>
+							<form id="form<$#active.CONFIG_VAR_NAME$>" name="form<$#active.CONFIG_VAR_NAME$>" method="POST">
+							<input type="hidden" id="CONFIG_VAR_NAME" name="CONFIG_VAR_NAME" value="<$#active.CONFIG_VAR_NAME$>"/>
+							<input type="hidden" id="CONFIG_VAR_DATA_TYPE" name="CONFIG_VAR_DATA_TYPE" value="<$#active.CONFIG_VAR_DATA_TYPE$>" />
+
+							<input type="hidden" id="CONFIG_VAR_DESCRIPTION" name="CONFIG_VAR_DESCRIPTION" value="<$#active.CONFIG_VAR_DESCRIPTION$>" />
+							
+							<input type="hidden" name="IdcService" value="CCLA_UPDATE_SYSTEM_CONFIG_VAR" />
+							<$include add_idc_token_to_form$>
+							<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_SYSTEM_CONFIG_VAR_ADMIN<$include add_idc_token_to_url$>" />
+
+							<tr>
+								<td><$#active.CONFIG_VAR_NAME$></td>
+								<td><$#active.CONFIG_VAR_DESCRIPTION$></td>
+								<td><input type="text" id="CONFIG_VAR_TYPE" name="CONFIG_VAR_TYPE" value="<$#active.CONFIG_VAR_TYPE$>" /></td>
+
+								<td><$#active.CONFIG_VAR_DATA_TYPE$></td>
+								<td>
+									
+									<$if strEquals(#active.CONFIG_VAR_DATA_TYPE, 'INT')$>
+										<input type="text" id="INT_VALUE" name="INT_VALUE" value="<$#active.INT_VALUE$>" />
+									<$elseif strEquals(#active.CONFIG_VAR_DATA_TYPE, 'DATE')$>
+										<input type="text" id="DATE_VALUE" name="DATE_VALUE" value="<$#active.DATE_VALUE$>" />
+									<$elseif strEquals(#active.CONFIG_VAR_DATA_TYPE, 'STRING')$>
+										<input type="text" id="STRING_VALUE" name="STRING_VALUE" value="<$#active.STRING_VALUE$>" />
+									<$elseif strEquals(#active.CONFIG_VAR_DATA_TYPE, 'BOOL')$>
+										<input type="text" id="BOOL_VALUE" name="BOOL_VALUE" value="<$#active.BOOL_VALUE$>" />
+									<$elseif strEquals(#active.CONFIG_VAR_DATA_TYPE, 'FLOAT')$>
+										<input type="text" id="FLOAT_VALUE" name="FLOAT_VALUE" value="<$#active.FLOAT_VALUE$>" />
+									<$endif$>
+								</td>
+								<td>
+									<input type="submit" value="Update" onclick="setIdcService(this.value, 'form<$#active.CONFIG_VAR_NAME$>');"/>
+									<input type="submit" value="Clear" onclick="setIdcService(this.value, 'form<$#active.CONFIG_VAR_NAME$>');"/>
+								</td>
+							</tr>
+							</form>
+						<$endloop$>
+					<$endif$>
+				</table>					
+			</div>
+			<$include orangeContainer_bottom$>
+			<br />
+			
+			<$include orangeContainer_top$>
+			<div class='ccla_cs_panel_header'>
+				Add System Config Variable
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			<p>
+				Date value should be in the format DD/MM/YYYY HH:MM i.e. 20/12/2011 14:23<br/>
+			</p>
+			<form name="addSystemConfigVar" id="addSystemConfigVar" method="POST" onsubmit="return checkAddData();">
+				<input type="hidden" name="IdcService" value="CCLA_ADD_SYSTEM_CONFIG_VAR"/>	
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_SYSTEM_CONFIG_VAR_ADMIN<$include add_idc_token_to_url$>" />
+				
+				<table border="0"> 
+					<tr>
+						<th width="15%">Name</th> 
+						<th width="45%">Description</th> 
+						<th width="10%">Type</th> 						
+						<th width="10%">Data Type</th>
+						<th width="10%">Value</th>
+						<th width="10%">Action</th>
+					</tr>
+					<tr>
+						<td><input type="text" name="CONFIG_VAR_NAME" id="CONFIG_VAR_NAME" maxlength="50" size="30"/></td>
+						<td><input type="text" name="CONFIG_VAR_DESCRIPTION" id="CONFIG_VAR_DESCRIPTION" maxlength="100" size="40"/></td>
+						<td><input type="text" name="CONFIG_VAR_TYPE" id="CONFIG_VAR_TYPE" maxlength="20" size="20"/></td>
+						
+						<td>
+							<select id="CONFIG_VAR_DATA_TYPE" name="CONFIG_VAR_DATA_TYPE" onChange="changeValuesBox()"> 
+								<option value="STRING">String</option>
+								<option value="INT">Int</option>
+								<option value="FLOAT">Float</option>
+								<option value="DATE">Date</option>
+								<option value="BOOL">Boolean</option>
+							</select>
+						</td>
+						<td><div id="valuesBox" name="valuesBox"></div></td>
+						<td><input type="submit" name="submit" id="submit" value="ADD"/></td>
+					</tr>
+				</table>
+			</form>
+			
+			</div>
+			<$include orangeContainer_bottom$>
+			<br/>
+		</div>
+	</div>
+</body></html>

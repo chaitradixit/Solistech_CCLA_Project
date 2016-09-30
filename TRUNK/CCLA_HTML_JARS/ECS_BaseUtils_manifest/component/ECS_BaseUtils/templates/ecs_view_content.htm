@@ -1,0 +1,72 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+	<$if IdcService like "ECS_VIEW_CONTENT_FRAMED"$>
+		<$isFramed=1$>
+	<$endif$>
+
+	<$if not dID and dDocName$>
+		<!-- If only a dDocName is passed, the LATESTRELEASE service must be executed.
+		     This will retrieve the latest dID for the document -->
+		<$executeService("DOC_INFO_LATESTRELEASE")$>
+		<$loop DOC_INFO$>
+			<$thisID = dID$>
+		<$endloop$>
+		
+		<$if thisID$>
+			<$dID = thisID$>
+		<$endif$>
+	
+	<$endif$>
+
+	<$if dID$>
+		<$executeService("DOC_INFO")$>		
+		<$resolvedUrl=1$>
+	<$endif$>
+		
+	<$if not isFramed$>
+		<!-- Auto-refresh the page to display the content item -->
+		<meta http-equiv="refresh" content="1;URL=<$DocUrl$>"> 	
+	<$endif$>
+
+	<title>
+		
+		<$if resolvedUrl$>
+			
+			<$if isFramed$>
+				Document Title: <$dDocTitle$>
+			<$else$>
+				Loading document '<$dDocTitle$>'...
+			<$endif$>
+				
+		<$else$>
+			Failed to load document
+		<$endif$>
+		
+	</title>
+</head>
+
+	
+	<$if isFramed$>
+		
+		<frameset rows="100,*">
+			<frame noresize="noresize" src="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=ECS_VIEW_CONTENT_HEADER&dID=<$dID$>" frameborder=0 />
+			<frame src="<$DocUrl$>" name="content" frameborder=0 />
+			
+		</frameset>
+		
+	<$else$>
+		
+		<body>
+			<div style="margin: 10px; font-family: Verdana, sans-serif">
+				<$if resolvedUrl$>
+					Loading document '<$dDocTitle$>'...
+				<$else$>
+					Failed to load document! [dDocName=<$dDocName$>, dID=<$dID$>]
+				<$endif$>
+			</div>
+		</body>
+	<$endif$>
+	
+</html>

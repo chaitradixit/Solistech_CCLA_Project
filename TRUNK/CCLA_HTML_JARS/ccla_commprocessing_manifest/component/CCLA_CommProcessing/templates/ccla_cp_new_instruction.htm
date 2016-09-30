@@ -1,0 +1,238 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Instruction Creation
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "processDate"$>
+	
+	<$SF_processDate_type="input"$>
+	<$SF_processDate_shortname="processDate"$>
+	
+	<$include epoch_calendar_header$>
+
+
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+		$("document").ready( function() {
+			$("#INSTRUCTION_TYPE_ID").bind("change", function() {
+				var instrTypeId = $("#INSTRUCTION_TYPE_ID").val();
+				
+				$("#appData").attr("disabled","disabled");
+
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+					{ 
+						"incName"				:  "ccla_cp_applicable_instruction_data",
+						"INSTRUCTION_TYPE_ID"	:  instrTypeId,
+						"ts"					:  new Date().getTime()
+					},
+					function(data) {
+						$("#appData").removeAttr("disabled");
+						$("#appData").html(data);
+					}
+				);
+			});
+		});		
+		
+		var checkInstructionForm = function() {
+			var isComplete = true;
+		
+			$(".instrDataMand").each(function (i) {
+				if ($(this).val().length==0) {
+
+					isComplete = false;
+				} 
+			});
+
+			if (!isComplete) {
+				alert("Please fill in all mandatory fields");
+			}			
+			
+			return isComplete;
+		}
+	</script>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 700px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				Instruction Creation
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<$if #local.INSTRUCTION_ID$>
+					<p>
+						New instruction created with ID 
+						<a href="?IdcService=CCLA_CP_INSTRUCTION_INFO&INSTRUCTION_ID=<$#local.INSTRUCTION_ID$>"><$#local.INSTRUCTION_ID$></a>
+					</p>
+				<$endif$>
+			
+				<h3 class="ccla_data_panel_header">Add New Instruction</h3>
+				<p>Populate all the mandatory fields (*) to create a new instruction</p>
+
+			
+				<form name="addInstr" id="addInstr" method="POST" onsubmit="return checkInstructionForm();">
+					<input type="hidden" name="IdcService" 	value="CCLA_CP_CREATE_INSTRUCTION" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_NEW_INSTRUCTION<$include add_idc_token_to_url$>" />
+
+					<table class="ccla-table">
+						<tr><th>Comm Type*</th>
+							<td>
+								<select name="COMM_TYPE_ID" id="COMM_TYPE_ID" class="instrDataMand">
+									<option value="">-</option>
+									<$loop rsCommType$>
+											<option value="<$#active.COMM_TYPE_ID$>"><$#active.COMM_TYPE_NAME$></option>
+									<$endloop$>
+								</select>
+							</td>
+						</tr>
+						<tr><th>Comm Source*</th>
+							<td>
+							<select name="COMM_SOURCE_ID" id="COMM_SOURCE_ID" class="instrDataMand">
+							<option value="">-</option>
+							<$loop rsCommSource$>
+									<option value="<$#active.COMM_SOURCE_ID$>"><$#active.COMM_SOURCE_NAME$></option>
+							<$endloop$>
+							</select>
+							</td>
+						</tr>
+					</table>
+					
+					<br/>
+					<table class="ccla-table">
+						<tr><th>Instruction Type*</th>
+							<td>
+								<select name="INSTRUCTION_TYPE_ID" id="INSTRUCTION_TYPE_ID" class="instrDataMand">
+								<option value="">-</option>
+								<$loop rsInstructionType$>
+										<option value="<$#active.INSTRUCTION_TYPE_ID$>"><$#active.INSTRUCTION_TYPE_NAME$></option>
+								<$endloop$>
+								</select>
+							</td>
+						</tr>
+						<tr><th>Instruction Status</th>
+							<td>
+								<select name="INSTRUCTION_STATUS_ID" id="INSTRUCTION_STATUS_ID">
+								<option value="">-</option>
+								<$loop rsInstructionStatus$>
+										<option value="<$#active.INSTRUCTION_STATUS_ID$>"><$#active.INSTRUCTION_STATUS_NAME$></option>
+								<$endloop$>
+								</select>
+							</td>
+						</tr>
+					</table>
+
+					<br/>
+					
+					<div id="appData" name="appData"></div>
+					
+				</form>	
+
+			</div>
+			<$include orangeContainer_bottom$>
+			<br />
+			
+			<$if userHasRole("admin")$>
+				<$include orangeContainer_top$>
+		
+				<div class='ccla_cs_panel_header'>
+					SDU Instruction Approval
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+				
+					<$if #local.INSTRUCTION_ID$>
+						<p>
+							New instruction created with ID 
+							<a href="?IdcService=CCLA_CP_INSTRUCTION_INFO&INSTRUCTION_ID=<$#local.INSTRUCTION_ID$>"><$#local.INSTRUCTION_ID$></a>
+						</p>
+					<$endif$>
+				
+					<form method="POST">
+						
+						<input type="hidden" name="IdcService" 	value="CCLA_CP_UPDATE_SDU_INSTRUCTION" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_NEW_INSTRUCTION<$include add_idc_token_to_url$>" />
+						
+						<table class="ccla-table" width="100%">
+							<tr>
+								<th width="25%">Authorising User</th>
+								<td>
+									<input type="text" name="AUTHORISED_USER" 	value="<$dUser$>" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th>Authorised Instr. IDs</th>
+								<td>
+									<input type="text" name="AUTHORISED_INSTR_IDS" 	value="" style="width:100%" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th>Failed Instr. IDs</th>
+								<td>
+									<input type="text" name="FAILED_INSTR_IDS" 	value="" style="width:100%" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th>Terminated Instr. IDs</th>
+								<td>
+									<input type="text" name="TERMINATED_INSTR_IDS" 	value="" style="width:100%" />
+								</td>
+							</tr>
+							
+							<tr>
+								<th>Reject Reason</th>
+								<td>
+									<input type="text" name="REJECT_REASON" 		value="" style="width:100%" />
+								</td>
+							</tr>
+						</table>
+						
+						<br/>
+						
+						<input type="submit" value="Submit" />
+						
+					</form>
+					
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				<br />
+				
+			<$endif$>
+		</div>
+
+	</div>
+	
+	
+	
+</body></html>

@@ -1,0 +1,544 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$if #local.SUBSCRIPTION_ID$>
+		<$pageTitle = "Edit Subscription"$>
+	<$else$>
+		<$pageTitle = "Add New Subscription"$>
+	<$endif$>
+
+	<title>
+		<$pageTitle$>
+	</title>
+
+	
+	<$DOC_GUID$>	
+	<$showSignatureCapture$>
+	<$allowEditPage$>
+	<$subscriptionStatus$>
+	<$signatureCheckNotComplete$>
+	
+	[[% Add the legacyMode switch to the page URL to access legacy TTLA
+	    allocation data stored against older subscriptions. %]]
+	
+	[[% Determine whether the page is editable or not. Depends on the
+		status of the subscription, and whether the returned form has
+		been signature checked or not. %]]
+	
+	<$subscriptionStatus = ""$>
+	
+	<$loop rsSubscription$>
+		<$subscriptionStatus = #active.SUBSCRIPTION_STATUS_ID$>
+	<$endloop$>
+	
+	<$exec rsFirst("rsSubscription")$>
+	
+	<$if rsAccount$>
+		<$REQ_SIGS = rsAccount.REQ_SIGNATURES$>
+	<$else$>
+		<$REQ_SIGS = 2$>			
+	<$endif$>
+	
+	<$if numSigsForDocument==REQ_SIGS$>
+		<$signatureCheckNotComplete=1$>
+	<$endif$>
+	
+	<$if not subscriptionStatus$>
+		<$allowEditPage = 1$>
+		
+	<$elseif (subscriptionStatus==#env.CCLA_CS_SubscriptionStatusId_New) 
+			 or
+			 (subscriptionStatus==#env.CCLA_CS_SubscriptionStatusId_FormGenerated)$>
+		[[% New subscription, no form printed. %]]
+		
+		<$allowEditPage = 1$>
+
+	<$elseif (subscriptionStatus==#env.CCLA_CS_SubscriptionStatusId_FormReturned) 
+		and #local.xFormId$>
+		[[% Form has been returned. Need to check it is the latest form before allowing access. %]]
+		
+		<$if rsForm$>
+			<$loop rsForm$>
+				<$if strEquals(#active.FORM_ID, #local.xFormId) and #active.RET_DOC_GUID$> 
+					<$DOC_GUID = #active.RET_DOC_GUID$>	
+					<$allowEditPage = 1$>
+					<$showSignatureCapture = 1$>
+				<$endif$>
+			<$endloop$>	
+			
+			<$exec rsFirst("rsForm")$>
+		<$endif$>
+	<$endif$>
+ 
+	<$if #local.override$>
+		[[% Special admin override switch present. %]]
+		<$showSignatureCapture = 1$>
+		<$allowEditPage = 1$>
+	<$endif$>
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_element_relations_js$>
+	
+	<$include ccla_cs_expandable_region_js$>
+	
+	<$include ccla_cs_donor_display_js$>
+
+	<script type="text/javascript">
+		
+		function cancelSubscription() {
+			if (confirm("Are you sure you want to cancel this subscription?"))
+				document.forms['cancelSubscription'].submit();
+		}
+	
+	</script>		
+		
+</head>
+<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+
+		<$include iris_header$>
+		
+	<div  id="cs_page_container" class="cs-page-container">
+		
+		<$if not hideActionButtons$>
+			<$buttonContext = "entity"$>
+			<$include ccla_cs_include_tab_parameters$>			
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+		<div id='ccla_cs_content' class="cs-content-container" >
+			
+			<div id="errorMessage">
+			</div>
+			
+			<$include orangeContainer_top$>
+		
+				<div class='ccla_cs_panel_header'>
+					<$pageTitle$>
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$if #local.updated$>
+						<div class="message_panel info_icon">
+							Subscription record updated.
+						</div>
+						<br/>
+					<$endif$>
+					
+					<$if #local.added$>
+						<div class="message_panel info_icon">
+							New subscription record created.
+						</div>
+						<br/>
+					<$elseif not allowEditPage$>
+						<div class="message_panel info_icon">
+							
+							<$if (subscriptionStatus==#env.CCLA_CS_SubscriptionStatusId_Cancelled)$>
+								Cannot edit Subscription - it has been Cancelled.
+							<$else$>
+								Cannot edit Subscription.
+								<br/>
+								The Donor Subscription form must be returned and locked against your user account to allow updates to this page.
+								<br/><br/>
+								You may <a href="#" onclick="cancelSubscription()">cancel the subscription by clicking here.</a>
+							
+							<$endif$>
+						</div>
+						<br/>
+						
+						<$if false$>
+							<input 	type="button" 
+									name="cancelAndCreateNew" 
+									id="cancelAndCreateNew" 
+									value="Cancel and create new subscription..."
+									onclick="cancelAndCreateNewSubscription();"/>
+						<$endif$>
+						
+						<!-- Form for cancelling subscription -->
+						<form id="cancelSubscription">
+							<input type="hidden" name="IdcService"		value="CCLA_CS_CANCEL_SUBSCRIPTION"/><$include add_idc_token_to_form$>
+							<input type="hidden" name="SUBSCRIPTION_ID" id="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+							<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&cancelled=1" />
+						</form>
+						
+						<!-- Form for cancelling/re-creating subscription -->
+						<form id="cancelAndCreateNewForm">
+							<input type="hidden" name="IdcService"			value="CCLA_CS_CANCEL_SUBSCRIPTION_AND_CREATE_NEW"/><$include add_idc_token_to_form$>
+							<input type="hidden" name="SUBSCRIPTION_ID" id="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+							<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&recreated=1" />
+						</form>
+					
+					<$elseif allowEditPage and showSignatureCapture$>
+						<div class="message_panel info_icon">
+							Please signature check document (and save). <br/>
+							If the document is signature checked, click "Generate Transfers" to generate the child documents<br/> 
+						</div>
+						<br/>
+					<$endif$>
+
+					<form name="subscriptionForm" id="subscriptionForm" method="POST">
+						
+						<$if rsSubscription$>
+							<$loop rsSubscription$>
+								<$include ccla_cs_subscription_fields_display$>
+							<$endloop$>
+							
+						<$else$>
+						
+							<$include ccla_cs_subscription_fields_display$>
+							
+						<$endif$>
+						
+						<br/><br/>
+						
+						<div align="right">
+							<$if not #local.SUBSCRIPTION_ID$>
+								<input type="submit" value="Add subscription" />
+							<$else$>
+								<input type="submit" value="Update" />
+							<$endif$>
+						</div>
+
+					</form>
+					
+				</div>
+
+			<$include orangeContainer_bottom$>
+			<br/>
+			<!--------------------------------------------------- Signature Panel **START** --------------------------------------------------->
+			
+			<div id="subscriptionSig">
+			<$if showSignatureCapture$>
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Returned Form Signature Checking 
+				</div>	
+					
+				<div class='ccla_cs_panel_content'>
+					<$if rsAccount$>
+						<$loop rsAccount$>
+							<$REQ_SIGS = #active.REQ_SIGNATURES$>
+							<$ACCOUNT_ID = #active.ACCOUNT_ID$>
+						<$endloop$>
+						
+						<$exec rsFirst("rsAccount")$>
+						
+					<$else$>
+						<$REQ_SIGS = 2$>			
+					<$endif$>
+					
+					<$signatureCheckRequired = 1$>			
+					<$signatureCaptureAllowed = ""$>
+					<$hideSigCheckingTitle = 1$>
+					<$hideRecentSigDocs = 1$>
+					
+					<$include ccla_sc_account_signature_checking_panel$>
+				</div>
+				<$include orangeContainer_bottom$>
+				<br/>
+			<$endif$>
+			</div>
+			<!--------------------------------------------------- Signature Panel **END** --------------------------------------------------->
+
+			<$if #local.SUBSCRIPTION_ID$>
+				
+				<$include orangeContainer_top$>
+				
+				<!-- Beneficiary Details panel -->
+				<div class='ccla_cs_panel_header'>
+					LCF Details
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+						
+					<div style="padding-top:5px"></div>
+						<$loop rsEntity$>
+							
+							<$panelIncName="ccla_cs_display_entity_info"$>
+							<$openByDefault=0$>
+							<$notAjaxData=1$>
+							<$panelId="benificiaryDetails"$>
+							<$panelToggleLabel="Show/hide"$>
+							<$include ccla_cs_ajax_panel_display$>
+
+						<$endloop$>
+					<div style="padding-top:5px"></div>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$if rsForm$>
+					<a name="subscriptionForm"></a>
+					<div id="subscriptionFormDiv">
+					<$include orangeContainer_top$>
+					
+					<!-- Latest Subscription Form panel -->
+					<div class='ccla_cs_panel_header'>
+						Form Details 
+					</div>
+				
+					<div class='ccla_cs_panel_content'>
+						
+						<p>
+							Information for the latest Subscription form.
+						</p>
+						
+						<p>
+							Any other forms for this Subscription are considered to be invalid.
+						</p>
+						
+						<$include ccla_cs_form_table_header_display$>
+						
+							<$loop rsForm$>
+								<$include ccla_cs_form_table_row_display$>
+							<$endloop$>
+							
+						</table>
+						
+					</div>
+				
+					<$include orangeContainer_bottom$>
+					
+					<br/>
+					<div/>
+				<$endif$>
+				
+				<a name="donorContributions"></a>
+				<div id="donorContributionsDiv">
+
+				<$include orangeContainer_top$>
+				
+				<!-- Contributions/Donations panel -->
+				<div class='ccla_cs_panel_header'>
+					Contributions 
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<p>
+						Selecting a registered donor from the list below will ensure they are
+						displayed on the Donor Subscription form. You may complete the Amount
+						fields before the form is generated, or leave them blank.
+					</p>
+					
+					<p>
+						You can set existing Persons and Organisations as registered Donors to
+						this LCF by linking them via the 'Donor' relationship. 
+						
+						<$exec rsFirst("rsEntity")$>
+						
+						<a target="_BLANK" href="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$rsEntity.ORGANISATION_ID$>#relationships">Click here to edit the Organisation's relationships.</a> 
+					
+					</p>
+					
+					<p>
+						Alternatively, create new anonymous
+						Person/Organisation Donors using the buttons below.
+					</p>
+					
+					<div align="right">
+						<input type="button" value="Create Anon. Org Donor" onclick="addAnonymousDonor('<$#env.CCLA_ElementType_Org$>')" />
+						<input type="button" value="Create Anon. Person Donor" onclick="addAnonymousDonor('<$#env.CCLA_ElementType_Person$>')" />
+					</div>
+					
+					<p>
+						On receipt of the returned form, ensure all donation amounts and
+						expected Government Recovery amounts have been entered, or you won't be
+						able to process the transaction instructions.
+					</p>
+					
+					<$if #local.generatedDonorForm$>
+						<div class="message_panel info_icon">
+							Donor Subscription Form generated and printed.
+						</div>
+						<br/>
+					
+					<$endif$>
+					
+					<$if #local.contributionsUpdated$>
+						<div class="message_panel info_icon">
+							Donor contributions updated
+						</div>
+						<br/>
+					<$endif$>
+
+					<$if #local.generatedDonorAccounts$>
+						<$if #local.numFailedAccounts > 0$>
+							<div class="message_panel error_icon">
+								Warning: <$#local.numFailedAccounts$> donor accounts failed to generate. This is likely due to an invalid
+								Income Distribution configuration on the organisation's CF Account. Switch this back to PAYA
+								to ensure all donor accounts generate successfully.
+							</div>
+							<br/>
+						<$endif$>
+					
+						<div class="message_panel info_icon">
+							Donor Accounts generated. <$#local.numAccounts$> required accounts were added/verified 
+							and <$#local.numSDUInstructions$> CREATE_ACCOUNT instructions were dispatched for authorisation.
+						</div>
+						<br/>
+						
+						
+					<$endif$>
+					
+					<div align="right">
+						<$exec rsFirst("rsSubscription")$>
+						
+						<input type="button" value="Generate Donor Accounts" onclick="generateDonorAccounts()" />
+						
+						<$if (#local.override) or (not xFormId and allowEditPage)$>
+							<input type="button" value="Generate <$if #local.legacyMode$>Legacy <$endif$>Subscription Form" onclick="createDonorSubscription()" />
+						<$endif$>
+					</div>
+					
+					<!-- Form for creating anonymous Org/Person donors -->
+					<form id="addAnonymousDonorForm">
+						<input type="hidden" name="IdcService"			value="CCLA_CS_ADD_ANONYMOUS_DONOR"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="ORGANISATION_ID" 	value="<$rsEntity.ORGANISATION_ID$>" />
+						
+						<!-- Set by JavaScript pre-submission -->
+						<input type="hidden" name="ELEMENT_TYPE_ID" id="anonymousDonorElementTypeId" 	value="" />
+						
+						<input type="hidden" name="legacyMode"		value="<$#local.legacyMode$>" />
+						
+						<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&updated=1&xFormId=<$#local.xFormId$>" />
+					</form>
+					
+					<!-- Form for creating Donor Subscription Form -->
+					<form id="createDonorSubscriptionForm">
+						<input type="hidden" name="IdcService"			value="CCLA_CS_CREATE_DONOR_SUBSCRIPTION_FORM"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="ORGANISATION_ID" 	value="<$rsEntity.ORGANISATION_ID$>" />
+						<input type="hidden" name="SUBSCRIPTION_ID" id="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+						<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&generatedDonorForm=1&xFormId=<$#local.xFormId$>#subscriptionForm" />
+					
+						<input type="hidden" name="legacyMode"		value="<$#local.legacyMode$>" />
+					</form>
+					
+					<!-- Form for generating any missing Donor accounts -->
+					<form id="createDonorAccountsForm">
+						<input type="hidden" name="IdcService"			value="CCLA_CS_CREATE_DONOR_ACCOUNTS_FOR_SUBSCRIPTION"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="ORGANISATION_ID" 	value="<$rsEntity.ORGANISATION_ID$>" />
+						<input type="hidden" name="SUBSCRIPTION_ID" 	id="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+						<input type="hidden" name="RedirectUrl"			value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&generatedDonorAccounts=1&xFormId=<$#local.xFormId$>" />
+					
+						<input type="hidden" name="legacyMode"			value="<$#local.legacyMode$>" />
+					</form>
+					
+					<!-- Form for creating Child Doc transaction instructions -->
+					<form id="createChildDocsForm">
+						<input type="hidden" name="IdcService"			value="CCLA_CS_CREATE_CF_CHILD_DOCS"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="ORGANISATION_ID" 	value="<$rsEntity.ORGANISATION_ID$>" />
+						<input type="hidden" name="SUBSCRIPTION_ID" id="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+						<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&xFormId=<$#local.xFormId$>#fundAllocations" />
+					</form>
+					
+					<div id="subscriptionDonorsDisplay">
+						<$include ccla_cs_subscription_donors_display$>
+					</div>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				</div>
+				<br/>
+				
+				<a name="fundAllocations"></a>
+				<div id="fundAllocationsDiv">
+				<$include orangeContainer_top$>
+				
+				<!-- Fund Allocation panel -->
+				<div class='ccla_cs_panel_header'>
+					Fund Allocation
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$if legacyMode$>
+						<p>
+							Selecting a set of Funds below will determine how the Subscription section
+							of the Donor Subscription form is completed. Allocation amounts are optional
+							when generating a form.
+						</p>
+						
+						<p>
+							On receipt of a returned Subscription Form, ensure that 100% of the total
+							donation amount has been allocated across the Funds, depending on how the
+							form has been filled in. You won't be able to process the transaction
+							instructions until this has been done.
+						</p>
+					<$else$>
+						<p>
+							Shows the total Fund allocations for all donations above.
+						</p>
+					<$endif$>
+					
+					<$if #local.fundAllocationsUpdated$>
+						<div class="message_panel info_icon">
+							Fund allocations updated.
+						</div>
+						
+						<br/>
+					<$elseif #local.generatedChildDoc$>
+						<div class="message_panel info_icon">
+							Document instructions generated.
+						</div>
+						<br/>	
+					<$endif$>
+					
+					<form name="subscriptionFundAllocationForm" id="subscriptionFundAllocationForm" method="POST">
+						<input type="hidden" name="IdcService"		value="CCLA_CS_UPDATE_SUBSCRIPTION_FUND_ALLOCATIONS"/><$include add_idc_token_to_form$>
+						<input type="hidden" name="SUBSCRIPTION_ID" 	value="<$#local.SUBSCRIPTION_ID$>" />
+						
+						<input type="hidden" name="RedirectUrl"		value="<$HttpCgiPath$>?IdcService=CCLA_CS_SUBSCRIPTION_EDIT<$include add_idc_token_to_url$>&SUBSCRIPTION_ID=<$#local.SUBSCRIPTION_ID$>&fundAllocationsUpdated=1&xFormId=<$#local.xFormId$>#fundAllocations" />
+						
+						<div id="subscriptionFundAllocationDisplay">
+							<$include ccla_cs_subscription_fund_allocation_display$>
+						</div>
+
+					</form>	
+					
+					<br/>
+					
+					<div align="right">
+						<$if legacyMode$>
+							<$if showSignatureCapture and allowEditPage$>
+								<input type="button" value="Generate Transfers" onclick="generateChildDocs()"/>
+							<$endif$>
+							<input type="button" value="Update" onclick="updateSubscriptionFundAllocations()" />
+						<$endif$>
+					</div>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				</div>
+			<$endif$>
+
+		</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	
+	<style type="text/css">
+		#tblClientDataExport th {
+			text-align: left;
+		}
+	</style>
+	
+	<title>Client Data Export</title>
+
+	<$include iris_jquery_js$>
+	
+	<$include ccla_cs_ajax_js$>
+	<$include ccla_cs_expandable_region_js$>
+	
+	<script type="text/javascript">
+		$().ready( function() {
+		
+			$("#btnSubmit").bind("click", function() {
+				if (confirm("Depending on the selected Company and filters, " +
+				 "this report can take several minutes to generate. Are you sure you want to continue?")) {
+					runExport();
+				}
+			});
+		});
+		
+		/** Checks to see if there is an export in progress. If so, the user is shown a message. 
+			If not, the export form is submitted. */
+		function runExport() {
+	
+			$.getJSON("?", {
+					"IdcService"	: "CCLA_GET_CLIENT_DATA_EXPORT_STATUS",
+					"IsJson"		: "1"
+				}, function(jsonData) {
+					var isExportingClientData = jsonData.LocalData.isExportingClientData;
+					
+					if (isExportingClientData === "0") {
+						$("#loadingPanel").show();
+						$("#frmClientDataExport").submit();
+					} else {
+						alert("An export is currently in progress. " +
+						 "You can't start another one until it completes.");
+						return;
+					}
+				}
+			);
+		}
+		
+	</script>
+	
+</head>
+
+
+<body <$include iris_body_def_internal$> style="text-align:center">
+
+	<$include iris_header$>
+
+	<div>
+		<div class="grey_bg" style="margin: 15px auto;width: 980px;">
+		
+		<$include orangeContainer_top$>
+		
+		<div class="ccla_cs_panel_header">
+			Client Data Export
+		</div>
+		
+		<$if #local.reportDocName$>
+			<div class="message_panel info_icon">
+				Your report is available here: 
+					<a href="?IdcService=GET_FILE&dDocName=<$#local.reportDocName$>&RevisionSelectionMethod=Latest"><$#local.reportDocName$></a>
+			</div>
+		<$endif$>
+		
+		<p>
+			Generates a spreadsheet of clients and their key individuals, with correspondence addresses.
+		</p>
+		
+		<$if #active.isExportingClientData like "1"$>
+			
+			<div id="personRelationsSaveSuccessMsg" class="message_panel info_icon">
+			
+				An export is currently in progress. You can't start another one until it completes.
+				<br/>
+				The export was started by <$#active.clientDataExportUser$> at <$#active.clientDataExportDate$>
+			
+			</div>
+			
+		<$endif$>
+		
+		<br/>
+		
+		<form id="frmClientDataExport">
+			<input type="hidden" name="IdcService" value="CCLA_CLIENT_DATA_EXPORT" />
+			<input type="hidden" name="submitType" value="Generate CSV File" />
+			
+			<table border="0" id="tblClientDataExport">
+				<tr>
+					<th width="200">
+						Company
+					</th>
+					<td>
+						<select name="companyId">
+							<$loop rsCompanyList$>
+								<option value="<$#active.COMPANY_ID$>"><$#active.COMPANY_CODE$></option>
+							<$endloop$>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td><br/></td>
+				</tr>
+				<tr>
+					<th>
+						Data Protection
+					</th>
+					<td>
+						<select name="includeDataProtection">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Deceased
+					</th>
+					<td>
+						<select name="includeDeceased">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						Returned Mail
+					</th>
+					<td>
+						<select name="includeReturnedMail">
+							<option value="0">No</option>
+							<option value="1">Yes</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th><br/></th>
+				</tr>
+				<tr>
+					<th>&nbsp;</th>
+					<td>
+						<input type="button" id="btnSubmit" value="Generate CSV File"/>
+					</td>
+				</tr>
+			</table>
+			
+			<br/>
+		
+			<div 	id="loadingPanel" 
+					class="message_panel loading_icon hiddenPanel">Building report. Your download will start shortly...</div>
+		
+		</form>
+		
+		<br/>
+		
+		<$include orangeContainer_bottom$>
+		
+	</div>
+	</div>
+
+</body>
+</html>
+

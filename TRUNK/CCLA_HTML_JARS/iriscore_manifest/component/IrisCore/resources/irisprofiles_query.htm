@@ -1,0 +1,48 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IrisProfiles query
+</title>
+</head>
+<body>
+
+<@table IrisProfiles_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>QWorkflowNames</td>
+	<td>SELECT dWfName,dWfDescription FROM Workflows ORDER BY dWfName</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QFieldNames</td>
+	<td>SELECT dName AS FIELDNAME,dCaption AS FIELDCAPTION FROM DocMetaDefinition ORDER BY dCaption</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>QStepNames</td>
+	<td>SELECT     WorkflowSteps.dWfStepName AS STEPNAME, WorkflowSteps.dWfStepDescription AS STEPDESCRIPTION, Workflows.dWfName AS WFNAME
+FROM         WorkflowSteps INNER JOIN
+                      Workflows ON WorkflowSteps.dWfID = Workflows.dWfID
+WHERE     (WorkflowSteps.dWfStepName <> 'contribution') AND (dWfStepWeight > 0)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QContentTypes</td>
+	<td>SELECT DDOCTYPE AS DOCTYPE FROM DOCTYPES ORDER BY DOCTYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QProfileNames</td>
+	<td>SELECT DISTINCT DDOCNAME
+FROM         REVISIONS
+WHERE     (DDOCTYPE = 'IrisProfile')</td>
+	<td></td>
+</tr>
+</table>
+<@end@>
+</body></html>

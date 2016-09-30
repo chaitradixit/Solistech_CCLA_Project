@@ -1,0 +1,64 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2015_01_03 v2.0.2 (Build 21928)
+classpath=$COMPONENT_DIR/classes
+blFieldTypes=
+ComponentName=CCLA_MailHandling
+libpath=$COMPONENT_DIR/lib
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+CCLA_MailHandling_Templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+environment
+ccla_mailhandling_environment.cfg
+null
+10
+resource
+resources/ccla_mailhandling_resource.htm
+null
+40
+template
+templates/ccla_mailhandling_template.hda
+null
+10
+service
+resources/ccla_mailhandling_service.htm
+CCLA_MailHandling_Services
+10
+query
+resources/ccla_mailhandling_query.htm
+CCLA_MailHandling_Queries
+10
+resource
+resources/ccla_mailhandling_client_slips_resource.htm
+null
+50
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end

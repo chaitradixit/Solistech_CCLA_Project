@@ -1,0 +1,30 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+ComponentName=IrisCore
+CreateDate=11/05/2012 16:10
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+blFieldTypes=CreateDate date
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+IrisCore/IrisCore.hda
+componentExtra
+IrisCore/readme.txt
+images
+iris/
+componentClasses
+IrisCore/classes/IrisCore.jar
+resources
+jquery/
+resources
+iris/
+componentLib
+IrisCore/lib/
+componentClasses
+IrisCore/lib/castor.properties
+componentExtra
+IrisCore/iris_mapping.xml
+@end

@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+	<$include std_html_head_declarations$>
+</head>
+
+<$include std_page_begin$>
+
+<$if ECS_MAIL_response$>
+	<h2>Response was: <$ECS_MAIL_response$></h2>	
+<$endif$>
+
+<form name="Checkin" enctype="multipart/form-data" method=post action="idcplg">
+
+  <input type=hidden name="IdcService" value="EcsMailService">
+  <input type=hidden name="user" value="<$dUser$>">
+  <input type=hidden name="sendAttachments" value="Y">
+  <input type=hidden name="RedirectUrl" value="idcplg?IdcService=ECS_MAIL_TEST_PAGE">
+  
+  Type target email address:<input type="text" name="email" value="gs@ecs.local" size="40"><br>
+  Type email subject:<input type="text" name="subject" value="Test email from <$dUser$>" size="40"><br>
+  Type email template:<input type="text" name="template" value="ECS_MAIL_SIMPLE" size="40"><br>
+	<br>
+	Please specify a file:<input type="file" name="datafile" size="40"><br>
+	Please specify any Content IDs (comma separated):<input type="text" name="attachments" size="40"><br>
+	<br><br>
+	<input type="submit" value="Send">
+
+</form>
+
+<br>
+<a href="idcplg?IdcService=EcsMailService&help=yes">EcsMailService help</a>
+
+<$include std_page_end$>
+
+</body>
+</html>

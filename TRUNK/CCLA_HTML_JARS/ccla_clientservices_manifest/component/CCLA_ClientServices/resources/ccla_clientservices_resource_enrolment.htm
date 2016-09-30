@@ -1,0 +1,769 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+
+
+<!-- Displays a list of available enrolment actions. -->
+<@dynamichtml ccla_cs_enrolment_actions_panel@>
+	<$if IsDebug$>ccla_cs_enrolment_actions_panel<$endif$>
+
+	<$exec rsFirst("rsProcess")$>
+	
+	<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Actions
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+			
+			<$processStatus = rsProcess.PROCESS_STATUS$>
+			
+			<script type="text/javascript">
+				
+				var campaignId = "<$#active.CAMPAIGN_ID$>";
+				
+				function applyAction(actionName) {
+				
+					var c = confirm("Are you sure you wish to apply the process action:\n\n" +
+					 "'" + actionName + "'?");
+					
+					if (!c)
+						return;
+
+					document.getElementById("actionForm_action").value=actionId;
+					document.actionForm.submit();
+				}
+				
+				function applyAction(actionId,actionName) {
+
+					//if generate forms is clicked (id of 10)
+					
+					// awful...
+					if (actionId=="10" || actionId=="22" || actionId=="13" ||
+						actionId=="23" || actionId=="24" || actionId=="25") {
+						var passedChecks = validateRequiredCheckList();
+						if (!passedChecks)
+							return;
+					}
+				
+					var c = confirm("Are you sure you wish to apply the process action:\n\n" +
+					 "'" + actionName + "'?");
+					
+					if (!c)
+						return;
+
+					document.getElementById("actionForm_action").value=actionId;
+					document.actionForm.submit();
+				}
+				
+				// Copy of applyAction method but now works with radio buttons instead of links
+				function applyActionForCheckBoxes() {
+					$("#actionForm_isCustomAction").val("");
+
+					var actionId = $('input[name=actionRadios]:checked', '#actionForm').val();
+					
+					if (!actionId){
+						alert("Please select an action.");
+						return false;
+					}
+									
+					//if generate forms is clicked (id of 10)
+					// what the shit is this
+					if (campaignId == 10) {
+						if (actionId=="10" || actionId=="22" || actionId=="13" ||
+							actionId=="23" || actionId=="24" || actionId=="25") {
+							var passedChecks = validateRequiredCheckList();
+							if (!passedChecks)
+								return;
+						}
+					} 
+				
+					var actionName = document.getElementById("actionRadiosText_"+actionId).innerHTML;
+				
+					var c = confirm("Are you sure you wish to apply the process action:\n\n" +
+					 "'" + actionName + "'?");
+					
+					if (!c)
+						return;
+				
+					$("#actionForm_action").val(actionId);
+					document.actionForm.submit();
+				}
+	
+				function validateRequiredCheckList(){
+					var validAddress = document.getElementById("required_Address").checked;
+					var validCategory = document.getElementById("required_Category").checked;
+					var validCorrespondant = document.getElementById("required_Correspondant").checked;
+					var validIntention = document.getElementById("required_Intention").checked;
+					var validAccountTemplates = document.getElementById("required_AccountTemplates").checked;
+					var validClientInterested = document.getElementById("required_ClientInterested").checked;
+					var validAuroraClientNum = document.getElementById("required_AuroraClientNum").checked;
+					var validAccountSubtitles  = document.getElementById("required_AccountSubtitles").checked;
+					
+					var alertText = "Please fix the following: \n\n";
+					
+					if(!validAddress)
+						alertText += "- Please assign a valid contact address \n"; 
+					if(!validCategory)
+						alertText += "- Please assign a valid organisation category \n";
+					if(!validCorrespondant)
+						alertText += "- Please assign a valid nominated correspondant\n";
+					if(!validIntention)
+							alertText += "- Please add a intention\n";	
+					if(!validAccountTemplates)
+							alertText += "- Please create an account template\n";
+					if(!validClientInterested)
+							alertText += "- Please change client status to interested\n";	
+					if(!validAuroraClientNum)
+							alertText += "- Please add an Aurora client number\n";	
+					if(!validAccountSubtitles)
+							alertText += "- Please ensure Account Names/Subtitles have been set";
+							
+						if(!validAddress || !validCategory || !validCorrespondant || 
+						   !validIntention || !validAccountTemplates || !validClientInterested || 
+						   !validAuroraClientNum || !validAccountSubtitles){
+							alert(alertText);
+							return false;
+						}
+					return true;
+				}
+		
+				function checkApplyAction(action) {
+					// Reset 'custom action' flag
+					$("#actionForm_isCustomAction").val("");
+					
+					if (action == 'createNewAccountTemp') {	
+						// Creating a new standard account, with intention
+						
+						$("#actionForm_action").val("1");
+						$("#actionForm_isCustomAction").val("1");
+						
+						var newIntentStatusId = $("#NEW_INVINTENTSTATUS_ID").val();
+						var newUnits = $("#NEW_UNITS").val();
+					
+						$("#ACTION_FORM_INVINTENTSTATUS_ID").val(newIntentStatusId);
+						$("#ACTION_FORM_UNITS").val(newUnits);
+			
+						var frm = document.forms['recipientForm'];
+						
+						if (hasNominatedPersonAndContactAddress()) {
+								
+							if ($("#NEW_UNITS").val().length == 0 ){
+								alert("Please enter an intention value. If unsure please enter 0");
+								return false;
+							}
+							
+							if (confirm("Are you sure you wish to create a new PSIC account?\n\n"))
+								document.actionForm.submit();
+						
+						} else {						
+							alert("Please ensure you have saved the nominated correspondent name " +
+							 "and address before creating an account");
+						}
+						
+					} else if (action == 'createNewLoanAccount') {
+						// Creating a new Loan account, with intention
+						
+						$("#actionForm_action").val("1");
+						$("#actionForm_isCustomAction").val("1");
+						
+						var newIntentStatusId = $("#NEW_INVINTENTSTATUS_ID").val();
+						var newUnits = $("#NEW_UNITS").val();
+					
+						$("#ACTION_FORM_INVINTENTSTATUS_ID").val(newIntentStatusId);
+						$("#ACTION_FORM_UNITS").val(newUnits);
+						
+						// Set default inc. dist method for loan accounts to 'retain interest'
+						$("#INCOME_DISTRIBUTION_METHOD").val('RETN');
+
+						var frm = document.forms['recipientForm'];
+						
+						if (hasNominatedPersonAndContactAddress()) {
+								
+							if ($("#NEW_UNITS").val().length == 0) {
+								alert("Please enter an loan amount. If unsure please enter 0");
+								return false;
+							}
+							
+							if (confirm("Are you sure you wish to create a new Diocesan loan account?\n\n"))
+								document.actionForm.submit();
+						
+						} else {						
+							alert("Please ensure you have saved the nominated correspondent name " +
+							 "and address before creating an account");
+						}
+					} else if (action == 'addSelectedAccount') {
+					
+						$("#actionForm_action").val("1");
+						$("#actionForm_isCustomAction").val("1");
+						
+						var customValue = "";
+						$(".account-checkbox").each( function() {
+							if ($(this).is(":checked")) {
+								var thisAccountId = $(this).attr("name").substring(4);
+								
+								if (customValue.length > 0)
+									customValue += ",";
+								
+								customValue += thisAccountId;
+							}
+						});
+
+						$("#actionForm_customValue").val(customValue);
+						
+						
+						if (confirm("Are you sure you wish to save all selected accounts?\n\nThis will remove all previous selected accounts."))
+							document.actionForm.submit();
+						
+					} else if (action == 'resetAccount') {
+						$("#actionForm_action").val("2");
+						$("#actionForm_isCustomAction").val("1");
+						
+						if (confirm("Are you sure you wish to reset the list of selected accounts?\n\n"))
+							document.actionForm.submit();
+					}
+				}
+				
+				// Determines whether a designated Person and Contact Address has been
+				// selected and saved against this enrolment.
+				function hasNominatedPersonAndContactAddress() {
+					return (($('#HAS_PERSON').val() == '1') 
+							&& 
+							($('#HAS_ADDRESS').val() == '1'));
+				}
+	
+			</script>
+			
+			<table width="100%">
+				<tr>
+					<td width="50%">
+			
+						<form name="actionForm" id="actionForm" method="POST" onSubmit="return applyActionForCheckBoxes()">
+							<input type="hidden" name="IdcService" 				value="CCLA_CS_APPLY_ENROLMENT_ACTION" /><$include add_idc_token_to_form$>
+							<input type="hidden" name="CAMPAIGN_ENROLMENT_ID" 	value="<$#local.CAMPAIGN_ENROLMENT_ID$>" />
+							<input type="hidden" name="CAMPAIGN_ID" 			value="<$#active.CAMPAIGN_ID$>" />
+							
+							<!-- Intention field values -->
+							<input type="hidden" name="UNITS" 						id="ACTION_FORM_UNITS"				value="" />
+							<input type="hidden" name="INVINTENTSTATUS_ID" 	 		id="ACTION_FORM_INVINTENTSTATUS_ID" value="" />
+							
+							<!-- New Account field values -->
+							<input type="hidden" name="INCOME_DISTRIBUTION_METHOD" 	id="INCOME_DISTRIBUTION_METHOD" value="REIN" />
+							<input type="hidden" name="ACCOUNT_TYPE_ID" 			id="ACCOUNT_TYPE_ID" 			value="" />
+							<input type="hidden" name="LOAN_TYPE_ID" 				id="LOAN_TYPE_ID" 				value="" />
+							
+							<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_CAMPAIGN_ENROLMENT_INFO<$include add_idc_token_to_url$>&CAMPAIGN_ENROLMENT_ID=<$#local.CAMPAIGN_ENROLMENT_ID$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&PERSON_ID=<$#active.PERSON_ID$>" />
+							
+							<input type="hidden" id="actionForm_action" 		name="ACTION_ID" value="" />
+							<input type="hidden" id="actionForm_isCustomAction" name="isCustomAction" value="" />
+							<input type="hidden" id="actionForm_customValue"    name="CUSTOM_VALUE" value="" />
+							
+							<ul>
+								<$loop rsActions$>
+									<input type="radio" <$if rsCampaignEnrolment.ENROLMENT_STATUS_ID== #active.ENROLMENT_ACTION_ID$>checked=checked<$endif$> name="actionRadios" id="actionRadios" class="actionRadios" value="<$#active.ENROLMENT_ACTION_ID$>"> 
+									<span id="actionRadiosText_<$#active.ENROLMENT_ACTION_ID$>" class="shiftUp"><$#active.ENROLMENT_ACTION_NAME$></span>
+									<br>
+								<$endloop$>
+							</ul>
+							
+						</form>
+						
+						<input type="button" value="Submit" onclick="applyActionForCheckBoxes();"/>
+
+					</td>
+					
+					<td>
+						<b>Add new enrolment note:</b>
+						<br/>
+						<form method="POST">
+							<input type="hidden" name="IdcService" 	value="CCLA_CS_ADD_ENROLMENT_NOTE" /><$include add_idc_token_to_form$>
+							<input type="hidden" name="CAMPAIGN_ENROLMENT_ID" value="<$#local.CAMPAIGN_ENROLMENT_ID$>" />
+							
+							<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_CAMPAIGN_ENROLMENT_INFO<$include add_idc_token_to_url$>&CAMPAIGN_ENROLMENT_ID=<$#local.CAMPAIGN_ENROLMENT_ID$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&PERSON_ID=<$#active.PERSON_ID$>" />
+						
+							<textarea name="NOTE_CONTENT" style="width: 350px; height: 5em;"></textarea>
+							<br/>
+							<input type="submit" value="Add Note" />
+						</form>
+					</td>
+					
+				</tr>
+			</table>
+				
+		</div>
+
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_entity_enrolment_activities_list@>
+	<$if IsDebug$>ccla_cs_entity_enrolment_activities_list<$endif$>
+	
+	<$include orangeContainer_top$>
+	
+		<div class='ccla_cs_panel_header'>
+			Activities
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+			<$if not rsCampaignActivities$>
+				<p>No previous campaign activities logged to this process.</p>
+			<$else$>	
+				<$include ccla_cs_display_enrolment_activity_listing$>
+			<$endif$>
+		</div>
+
+	<$include orangeContainer_bottom$>
+
+<@end@>
+
+<@dynamichtml ccla_cs_display_enrolment_activity_listing@>
+	<$if IsDebug$>ccla_cs_display_enrolment_activity_listing<$endif$>	
+	<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+		<tr>
+			<th class="first-col" width="120">User</th>
+			<th width="80">Date</th>
+			<th width="100">Activity type</th>
+			<th width="">Action</th>
+		</tr>
+	
+		<$loop rsCampaignActivities$>
+			<$if not (#active.CAMPAIGN_ACTIVITY_ID like #local.activityId)$>
+				<tr class="account-details-row">
+					<td class="first-col"><$#active.LAST_UPDATED_BY$></td>
+					<td><$#active.DATE_ADDED$></td>
+					<td><$#active.CAMPAIGN_ACTIVITY_DESCRIPTION$></td>
+					<td>
+						<$if #active.ACTIVITY_DESCRIPTION$><$#active.ACTIVITY_DESCRIPTION$><$else$>&nbsp;<$endif$>												
+					</td>
+				</tr>
+				
+				<$if #active.NOTE_ID$>
+					
+					<tr class="account-details-row">
+						<td class="ccla-note-cell" colspan=4>
+							<div class="ccla-note-connecter">
+								&nbsp;
+							</div>
+							<div class="ccla-note">
+								<pre><$#active.NOTE_CONTENT$></pre>
+							</div>
+						</td>
+					</tr>
+				
+				<$endif$>
+				
+			<$endif$>
+		<$endloop$>
+	</table>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_enrolment_contact_method@>
+	<h3 class="ccla_data_panel_header">Recipient/Status Details</h3>
+	
+			<div class="ccla_data_panel" >
+				
+				<form name="recipientForm" id="recipientForm" method="POST">
+					<input 	type="hidden" name="IdcService" value="CCLA_CS_UPDATE_CAMPAIGN_ENROLMENT_RECIPIENT" /><$include add_idc_token_to_form$>
+					<input 	type="hidden" name="RedirectUrl" 
+							value="<$HttpCgiPath$>?IdcService=CCLA_CS_CAMPAIGN_ENROLMENT_INFO<$include add_idc_token_to_url$>&CAMPAIGN_ENROLMENT_ID=<$#local.CAMPAIGN_ENROLMENT_ID$>&PERSON_ID=<$#local.PERSON_ID$>&recipientUpdated=1" />
+					
+					<input  type="hidden" name="CAMPAIGN_ENROLMENT_ID" value="<$#local.CAMPAIGN_ENROLMENT_ID$>"/> 
+							<$if recipientUpdated$>
+							<div class="message_panel info_icon">
+								Correspondent updated
+							</div>
+							<$endif$>
+				<table width="100%" cellspacing="0" cellpadding="3">
+					<tr>
+						<th width="25%"></th><th width="65%"></th><th></th>
+					</tr>
+					<tr>
+						<td><strong>Campaign recipient:</strong></td>
+						<td>
+						<select name="PERSON_ID" id="PERSON_ID">
+							<$exec rsFirst("rsRelatedPersons")$>
+
+							<option value=""></option>
+							
+							<$lastRelatedPersonId=""$>
+							<$exec rsFirst("rsRelatedPersons")$>
+							
+							<$loop rsRelatedPersons$>
+								
+								<$loopwhile (rsRelatedPersons.PERSON_ID == lastRelatedPersonId)$>
+									<$exec rsNext("rsRelatedPersons")$>
+								<$endloop$>
+								
+								<$lastRelatedPersonId = #active.PERSON_ID$>
+								
+								<$if getValue("rsRelatedPersons","#row") == rsNumRows("rsRelatedPersons")$>
+									<$break$>
+								<$endif$>
+								
+								<option value="<$rsRelatedPersons.PERSON_ID$>" 
+										<$if rsCampaignEnrolment.PERSON_ID == rsRelatedPersons.PERSON_ID$>selected<$endif$>><$include ccla_cs_person_name_display$></option>
+							<$endloop$>
+						</select>
+						
+						<$if rsCampaignEnrolment.PERSON_ID$>
+							<$CONTACT_PERSON_ID = rsCampaignEnrolment.PERSON_ID$>
+							<input type="hidden" value="1" name="HAS_PERSON" id="HAS_PERSON">
+						<$endif$>	
+						
+						<$if rsCampaignEnrolment.CONTACT_ID$>
+							<input type="hidden" value="1" name="HAS_ADDRESS" id="HAS_ADDRESS">
+						<$endif$>	
+						
+						</td>	
+					</tr>
+					<tr>
+						<td><strong>Status:</strong></td>
+						<td><$currentCampSubStatus = #active.CAMPSUBJECTSTATUS_ID$>
+							<select name="CAMPAIGN_SUBJECT_STATUS" id="CAMPAIGN_SUBJECT_STATUS">
+								<$exec rsFirst("rsCampaignSubjectStatuses")$>
+								<$CLIENT_IS_INTERESTED=0$>
+								<$if currentCampSubStatus == 2$><$CLIENT_IS_INTERESTED=1$><$endif$>
+									<$loop rsCampaignSubjectStatuses$>
+										<option value=<$rsCampaignSubjectStatuses.CAMPSUBJECTSTATUS_ID$> <$if currentCampSubStatus==rsCampaignSubjectStatuses.CAMPSUBJECTSTATUS_ID$>selected<$endif$>><$rsCampaignSubjectStatuses.CAMPSUBJECTSTATUS_NAME$></option>
+									<$endloop$>
+							</select>
+
+						</td>
+					</tr>
+					<tr>										
+						<td><strong>Preferred Contact Address:</strong></td>
+						<td>
+							<div id="prefContactMethod">											
+									<$include ccla_cs_select_enrolment_contact$>
+							</div>	
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							Update/Add New: 
+							<a href="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>#addresses" target="_blank">Org Address</a>
+							<$if rsCampaignEnrolment.PERSON_ID$>
+								<a href="?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&PERSON_ID=<$rsCampaignEnrolment.PERSON_ID$>#addresses" target="_blank">Recipient Address</a>
+							<$endif$>
+						</td>
+						<td>
+							<div style="padding: 0px">
+								<input type="button" value="Save" name="saveRecipientButton" id="saveRecipientButton" onclick="submitContactOption()"/>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<br/>
+							
+							<strong>Hint:</strong> Correspondence must be sent to an address 
+							associated with the organisation or campaign recipient. 
+							If none are available, or you need to change an address,
+							you can add or update them using the 'Update/Add new' link.
+							
+							<br/>
+							<br/>
+							
+							<strong>Hint:</strong> Registration/enrolment forms will be sent
+							to the nominated recipient - not the Correspondent of the Organisation
+							or Account.
+						</td>
+					</tr>
+				</table>
+				</form>
+
+	</div>
+<@end@>
+
+<@dynamichtml ccla_cs_select_enrolment_contact@>
+	<$hasOrgAddress = 0$>
+	<$hasPersonAddress = 0$>
+	
+	<select name="CONTACT_ID" id="CONTACT_ID" style="width:500px" >
+		<option value="">** No contact address specified **</option>
+
+		<optgroup label="Organisation Addresses">
+			<$loop rsOrgAddresses$>
+				<$if NOT strEquals(rsOrgAddresses.ADDRESS_ID,"")$>
+					<$hasOrgAddress = 1$>
+					<option value="<$#active.CONTACT_ID$>" <$if strEquals(rsCampaignEnrolment.CONTACT_ID,#active.CONTACT_ID)$>selected="selected"<$endif$>><$include ccla_cs_format_address$></option>
+				<$endif$>
+			<$endloop$>	
+			<$if hasOrgAddress == 0$>
+				<option value="">** No organisation addresses present **</option>
+			<$endif$>
+		</optgroup>
+		<optgroup label="Person Addresses">
+			<$loop rsPersonAddresses$>
+				<$if NOT strEquals(#active.ADDRESS_ID,"")$><$hasPersonAddress = 1$>
+					<option value="<$#active.CONTACT_ID$>" <$if strEquals(rsCampaignEnrolment.CONTACT_ID,#active.CONTACT_ID)$>selected="selected"<$endif$>><$include ccla_cs_format_address$> (<$include ccla_cs_person_name_display$>)</option>
+				<$endif$>
+			<$endloop$>
+			<$if hasPersonAddress == 0$>
+				<option value="">** No person addresses present **</option>
+			<$endif$>
+		</optgroup>
+	</select>
+		
+<@end@>
+
+<@dynamichtml ccla_cs_enrolment_attributes_js@>
+	
+	<!-- Utility methods for updating/refreshing enrolment attributes -->
+	<script type="text/javascript">
+		
+		// Override this to use a custom include to control display of attributes.
+		var enrolmentAttributesIncName = "ccla_cs_enrolment_attributes_display";
+		
+		// Refreshs enrolment attributes via AJAX
+		function refreshEnrolmentAttributes() {
+			
+			$.get("?<$include add_idc_token_to_url$>",
+				{
+					"IdcService":				"CCLA_CS_GET_INCLUDE",
+					"incName":					enrolmentAttributesIncName,
+					"CAMPAIGN_ENROLMENT_ID":	"<$#active.CAMPAIGN_ENROLMENT_ID$>",
+					"ts":						new Date().getTime(),
+					"isAjax":					1
+				}, 
+				function(data) {
+					$("#enrolmentAttributeDisplay").html(data);
+				}
+			);
+		}
+		
+		// Updates a single Enrolment Attribute, then refreshes the enrolment attributes
+		// display.
+		function updateEnrolmentAttribute(applEnrolmentAttrId, value) {
+			
+			// Submit the update via AJAX.
+			$.getJSON("?<$include add_idc_token_to_url$>",
+				{
+					"IdcService":				"CCLA_CS_UPDATE_ENROLMENT_ATTRIBUTE",
+					"APPLENROLATTR_ID":			applEnrolmentAttrId,
+					"ATTRIBUTE_VALUE":			value,
+					"CAMPAIGN_ENROLMENT_ID":	"<$#active.CAMPAIGN_ENROLMENT_ID$>",
+					"ts":						new Date().getTime(),
+					"IsJson":					1
+				}, 
+				function(data) {
+					var errMsg = getJsonErrorMsg(data);
+					
+					if (errMsg) {
+						alert("Failed to update enrolment attribute:\n\n" + errMsg);
+					} else {
+						// TODO: refresh attributes
+						refreshEnrolmentAttributes();
+					}
+				}
+			);
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- Opens the table element used to display Form data.
+     Should be used with ccla_cs_form_table_row_display. -->
+<@dynamichtml ccla_cs_form_table_header_display@>
+	
+	<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+		<tr>
+			<th class="first-col" width="10%">Form ID</th>
+			<th width="20%">Type</th>
+			<th width="10%">Person ID</th>									
+			<th width="10%">Status</th>
+			<th width="20%">Created</th>
+			<th width="10%">Printed</th>
+			<th width="20%">Returned</th>
+		</tr>
+	
+<@end@>
+
+<!-- Displays a row of data from the FORM table
+	 (must be joined to the Form Type/DocMeta tables) -->
+<@dynamichtml ccla_cs_form_table_row_display@>
+	
+	<tr class="account-details-row">
+		<td class="first-col">
+			<a href="javascript:openPopup('?IdcService=CCLA_CS_ENROL_FORM_INFO_POPUP<$include add_idc_token_to_url$>&FORM_ID=<$#active.FORM_ID$>&ts=' + new Date());"><$#active.FORM_ID$></a>
+		</td>
+		<td>
+			<$#active.FORM_TYPE_SHORTNAME$>
+		
+			<$if #active.FORM_TYPE_NAME$>
+				<br/>
+				<span style="color:#666; font-size: 0.8em;"><$#active.FORM_TYPE_NAME$></span>
+			<$endif$>
+			
+		</td>
+
+		<td><$#active.PERSON_ID$></td>
+		
+		<td><$if #active.FORM_STATUS_NAME$><$#active.FORM_STATUS_NAME$><$else$>&nbsp;<$endif$></td>
+		<td><$#active.DATE_ADDED$>&nbsp;
+			<$if #active.GEN_DOC_GUID$>
+				- <a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.GEN_DOC_ID$>"><$#active.GEN_DOC_ID$></a>
+			<$endif$>
+			&nbsp;
+		</td>
+		<td><$#active.DATE_PRINTED$>&nbsp;</td>
+		<td><$#active.DATE_RETURNED$>&nbsp;
+			<$if #active.RET_DOC_GUID$>
+				<$docName = strSubstring(#active.RET_DOC_GUID,0,strIndexOf(#active.RET_DOC_GUID, ":"))$>
+
+				- <a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$docName$>"><$docName$></a>
+			<$endif$>
+		</td>
+	</tr>
+	
+<@end@>
+
+<!--
+CBF Client Confirmation campaign specific screen.
+-->
+<@dynamichtml ccla_cs_cbf_client_process_info@>
+	
+	<$include ccla_cs_account_selection_js$>
+	<br/>
+	<div>
+		<h3 class="ccla_data_panel_header">Selected Accounts</h3>
+		
+		<p>
+			The selected client accounts below will be displayed on the forms.
+		</p>
+
+		<$if #active.hasSelectedAccount$>
+			<p>
+				Current saved accounts for this enrolment are: 
+			</p>
+		<$else$>
+			<div class="validation_error error_icon">
+				No accounts have been saved against this enrolment. Accounts below have been pre-selected 
+				based on a set of filters. If you are happy with the selection then press 'Save' to target 
+				these accounts for the enrolment. 
+			</div>
+		
+			<br/> 
+			
+		<$endif$>
+			
+		<$if rsAccounts$>	
+			<table class="accounts-table" cellspacing="0" cellpadding="0" width="100%">
+				<tr>
+					<th class="first-col" width="20">
+						<input 	type="checkbox" 
+								name="toggleSelectAccountsCheckbox" 
+								id="toggleSelectAccountsCheckbox" 
+								onclick="toggleSelectAccounts();"
+								<$if #local.toggleSelectAccountsCheckbox$>checked<$endif$>
+								>
+					</th>
+					<th width="100">Account no.</th>
+					<th width="50">Fund</th>
+					<th width="100">Cash</th>
+					<th width="100">Units</th>
+					<th width="100">Recent Mandate</th>
+					<th width="">Status</th>
+				</tr>
+
+				<$loop rsAccounts$>
+					
+					[[% Restrict all Loan accounts from display %]]
+					<$if 	(#active.ACCOUNT_TYPE_ID == #env.CCLA_CS_AccountTypeId_Unitised)
+							or
+							(#active.ACCOUNT_TYPE_ID == #env.CCLA_CS_AccountTypeId_Deposit)$>
+						<$if accountLinkShowDetail$>
+							<$link = "style='cursor:pointer' href=\"javascript:viewAccountDetail('" & #active.ACCOUNT_ID & "', $(this).parent().parent())\""$>
+						<$else$>
+							<$link = "href='?IdcService=CCLA_CS_ACCOUNT_INFO&ACCOUNT_ID=" & #active.ACCOUNT_ID & "'"$>
+						<$endif$>	
+						
+						<$rowClass = ""$>
+						
+						<$include ccla_cs_resolve_account_row_css_class$>
+						
+						<$hasNoRecentMand=""$>
+						<$hasNonZeroBalance=""$>
+						
+						<$if getValue("#local","NoMand_"& #active.ACCOUNT_ID)$>
+							<$hasNoRecentMand=1$>
+						<$endif$>
+						
+						[[% When checking for zero balances, the cash/units values are already formatted with
+							commas etc. So we have to check for the exact zero string values. %]]
+						<$if not (#active.ACC_CASH like "0.00" and #active.ACC_UNITS like "0.00")$>
+							<$hasNonZeroBalance=1$>
+						<$endif$>
+						
+						<tr class="account-details-row<$if rowClass$> <$rowClass$><$endif$>">
+							<td class="first-col" align="center">
+								<input type="checkbox" name="chk_<$#active.ACCOUNT_ID$>" id="chk_<$#active.ACCOUNT_ID$>" class="account-checkbox"
+									<$if #active.hasSelectedAccount$>
+										<$if getValue("#local","Sel_"& #active.ACCOUNT_ID)$>
+											checked
+										<$endif$>
+									<$else$>
+									
+										[[% Tick the box based on the following criteria:
+											Account is not closed
+											Doesn't have a recent mandate
+											Has positive balance %]]
+										<$if not (#active.ACCOUNT_STATUS_ID like "2") and #local.hasNoRecentMand and  #local.hasNonZeroBalance$>
+											checked
+										<$endif$>
+								
+									<$endif$>
+								/>
+							</td>
+							<td>
+								<a <$link$> id="link_<$#active.ACCOUNT_ID$>" class="account-select-link" ><$strLeftFill(#active.ACCOUNTNUMBER,"0",8)$></a>
+							</td>
+							<td><$#active.FUND_CODE$></td>
+							<td align="right" class="mono-type"><$#active.ACC_CASH$></td>
+							<td align="right" class="mono-type"><$#active.ACC_UNITS$></td>
+							<td>
+								<$if #local.hasNoRecentMand$>
+									No
+								<$else$>
+									Yes
+								<$endif$>
+							</td>
+							<td><$#active.SHORT_NAME$></td>
+						</tr>
+					
+					<$endif$>
+					
+				<$endloop$>
+			
+			</table>
+			
+			<p>
+			Press 'Save' to save/replace all current selected accounts for the enrolment.</br>
+			Press 'Reset' to delete all saved accounts for the enrolment and let the system preset the account list.
+			</p>
+			
+			<input type="button" value="Save" id="CBFSelectAccount" name="CBFSelectAccount" onclick="javascript:checkApplyAction('addSelectedAccount');" alt="Save the selected accounts against this enrolment."/>
+			<input type="button" value="Reset" id="CBFResetAccount" name="CBFResetAccount" onclick="javascript:checkApplyAction('resetAccount');" alt="Reset the selected accounts and let the system calculated."/>
+			<br/>
+		<$else$>
+			<p class="no-info">
+				No registered accounts for this client
+			</p>
+		<$endif$>
+		
+	</div>
+				
+<@end@>
+
+
+</body></html>

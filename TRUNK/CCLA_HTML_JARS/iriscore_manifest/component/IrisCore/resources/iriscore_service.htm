@@ -1,0 +1,549 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+DocApproval service
+</title>
+</head>
+<body>
+
+<@table IrisCore_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CHECKIN_NEW_ATTACHMENT</td>
+	<td>DocService
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null</td>
+</tr>
+<tr>
+	<td>DOC_LISTING</td>
+	<td>SearchService
+		33
+		DOC_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::null</td>
+</tr>
+<tr>
+	<td>DOC_APPROVAL</td>
+	<td>Service
+		33
+		DOC_APPROVAL
+		null
+		null<br>
+		null</td>
+	<td>3:checkForceLogin:::You are not logged in
+		5:qIrisCore_User:USER_INFO::null</td>
+</tr>
+<tr>
+	<td>IRIS_LINKED_AUDIT_ENTRIES</td>
+	<td>SearchService
+		32
+		IRIS_LINKED_AUDIT_ENTRIES
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_LINKED_DOCS</td>
+	<td>SearchService
+		32
+		IRIS_LINKED_DOCS
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_DOC_INFO</td>
+	<td>DocService
+		33
+		null
+		null
+		null<br>
+		!csUnableToGetLatestRevision</td>
+	<td>3:mapResultSet:QlatestReleasedIDByName,dID,dID:2:!csItemHasNoLatestRevision
+		5:QdocInfo:DOC_INFO::!csUnableToGetLatestRevision
+		3:checkSecurity:DOC_INFO:0:null
+		3:getURLAbsolute::0:null
+		3:getUserMailAddress:dDocAuthor,AuthorAddress:0:null</td>
+</tr>
+<tr>
+	<td>IRIS_UPDATE_DOCINFO</td>
+	<td>DocService
+		2
+		REDIRECT_TEMPLATE
+		null
+		documents<br>
+		!csUnableToUpdateInfo(dDocName)</td>
+	<td>3:checkForceLogin:::null
+		3:doSubService:UPDATE_DOCINFO_SUB:12:null
+		3:doSubService:IRIS_ADD_AUDIT_NOTE_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_EXPIRE_DOC</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		4
+		null
+		null
+		documents<br>
+		!csUnableToDeleteItem(dDocName)</td>
+	<td>3:markAsExpired:::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_LINKED_ITEMS_COUNT</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_LinkedItemCount:linkedItems::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_LINKED_WIP_ITEMS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_GetItemsWIP:NewItems::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_LINKED_ITEMS_DELETED</td>
+	<td>SearchService
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_LinkedItemsDel:deletedItems::null</td>
+</tr>
+
+<tr>
+	<td>IRIS_GET_DOC_WF_INFO</td>
+	<td>SearchService
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_WfDocInfo:DOC_WF_INFO::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_WF_INFO</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_WfInfo:DOC_WF_INFO::null</td>
+</tr>
+<tr>
+	<td>IRIS_WF_APPROVE</td>
+	<td>WorkflowService
+		1
+		REDIRECT_TEMPLATE
+		null
+		workflows,documents<br>
+		null</td>
+	<td>5:QdocInfo:DOC_INFO:6:!csWfApproveError(dDocName)!csItemNoLongerInSystem
+		3:setConditionVars:IgnoreAccounts:0:!csWfApproveError(dDocName)
+		3:checkSecurity:DOC_INFO:0:null
+		3:checkForRevalidateLogin::0:null
+		3:renameValues:dDocName,dDocName,dDocTitle,dDocTitle:0:null
+		3:setLocalValues:wfAction,APPROVE:0:null
+		3:computeWorkflowInfo:WF_INFO,DOC_INFO:0:null
+		3:isDocCheckedOut:false:0:null
+		3:approveDoc::0:null
+		2:IworkflowState::0:null
+		3:docHistoryInfo:Approve,IworkflowDocHistory:1:null
+		3:updateWorkflowAndDocState::8:null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+
+<tr>
+	<td>IRIS_WF_REJECT</td>
+	<td>WorkflowService
+		1
+		REDIRECT_TEMPLATE
+		null
+		workflows,documents<br>
+		null</td>
+	<td>5:QdocInfo:DOC_INFO:6:!csWfRejectError(dDocName)!csItemNoLongerInSystem
+		3:computeWorkflowInfo:WF_INFO,DOC_INFO:0:!csWfRejectError(dDocName)
+		3:setConditionVars:IgnoreAccounts:0:!csWfDocRejectError(dDocName,dWfName)<br>
+		3:checkSecurity:DOC_INFO:0:!csWfDocRejectError(dDocName,dWfName)
+		3:renameValues:dWfID,dWfID,dDocName,dDocName,dDocTitle,dDocTitle,dDocAuthor,dDocAuthor,wfRejectMessage,wfMessage,dPublishState,dPublishState:0:null
+		3:setLocalValues:wfAction,REJECT:0:null
+		3:rejectDoc:UrevisionStatus:0:null
+		3:computeRejectTargetStep::0:null
+		2:UworkflowDocStep::0:null
+		2:UrevisionStatus::0:null
+		2:DworkflowDocState::0:null
+		3:docHistoryInfo:Reject,IworkflowDocHistory:1:null
+		5:QwfDocInformation:WF_INFO:1:!csWfContributorMailError
+		3:prepareMailForStepUsers:WF_REJECT_MAIL,<$include wf_rejected_subject$>:1:null
+		3:updateWorkflowAndDocState::8:null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_NEW_NOTE</td>
+	<td>DocService
+		35
+		IRIS_NEW_NOTE
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>IRIS_USER_PROFILE</td>
+	<td>UserService
+		49
+		IRIS_USER_PROFILE
+		null
+		null<br>
+		!csUnableToRetrieveUserList</td>
+	<td>3:getUserProfile::0:null<br>
+		5:Quser:USER_INFO:2:!csUnableToRetrieveUserInfo(dUser)
+		3:hidePassword:USER_INFO:0:null
+		3:loadUserMetaData::0:null
+		3:loadSharedTable:LmLayouts,LmLayouts:2:null
+		3:loadSharedTable:LmLayoutSkinPairs,LmLayoutSkinPairs:2:null</td>
+</tr>
+<tr>
+	<td>IRIS_NEW_ITEM</td>
+	<td>Service
+		35
+		IRIS_NEW_ITEM
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>IRIS_GET_ACCOUNTS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_AllAccounts:rsAccounts::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_ALIAS_MEMBERS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_AliasMembers:rsAliasMembers::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_WF_COMPANION_INFO</td>
+	<td>com.ecs.stellent.iris.WorkflowUtils
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:readCompanionFileToBinder:::null</td>
+</tr>
+
+<tr>
+	<td>IRIS_GET_USER_WRITE_ACCOUNTS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_UserWriteAccounts:rsWriteAccounts::null</td>
+</tr>
+<tr>
+	<td>IRIS_DOC_THUMBS</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		IRIS_DOC_THUMBS
+		null
+		null<br>
+		null</td>
+	<td>3:buildSelectedDocSearch:::null</td>
+</tr>
+<tr>
+	<td>IRIS_THUMB_PREVIEW</td>
+	<td>Service
+		32
+		IRIS_THUMB_PREVIEW
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_GET_USERS_AND_ALIASES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_IrisAliases:rsAliases::null
+		5:qIrisCore_IrisUsers:rsUsers::null</td>
+</tr>
+<tr>
+	<td>IRIS_ADD_AUDIT_NOTE_SUB</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:addAuditNote:::null</td>
+</tr>
+<tr>
+	<td>IRIS_ADD_AUDIT_NOTE</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:IRIS_ADD_AUDIT_NOTE_SUB::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_AUDIT_ENTRY_COUNT</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_AuditEntryCount:rsEntryCount::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_USER_ACC_PRIVILEGE</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getUserAccountPrivilege:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_USER_ALIASES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_UserAliasMemberships:rsAliasMemberships::null</td>
+</tr>
+<tr>
+	<td>IRIS_CHECKIN_LINKED_ITEM</td>
+	<td>DocService
+		2
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:doSubService:IRIS_COMPLETE_LINKED_DOC_AUDIT_PARAMS_SUB::null
+		3:doSubService:ECS_ADD_AUDIT_ENTRY_SUB::null
+		3:prepareRedirect::0:null</td>
+</tr>
+<tr>
+	<td>IRIS_COMPLETE_LINKED_DOC_AUDIT_PARAMS_SUB</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:completeLinkedDocAuditParams:::null</td>
+</tr>
+
+<tr>
+	<td>GET_SEARCH_RESULTS_SQL</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:performSQLSearch:::null</td>
+</tr>
+<tr>
+	<td>ECS_METADATAUPDATE_SUB</td>
+	<td>com.ecs.stellent.iris.MetaDataUpdate
+		48
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:ecsMetaDataUpdate:::null</td>
+</tr>
+<tr>
+	<td>ECS_METADATAUPDATE</td>
+	<td>Service
+		34
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:doSubService:ECS_METADATAUPDATE_SUB::null</td>
+</tr>
+<tr>
+	<td>ECS_GETOPTIONLISTVALUES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_GetOptionListValues:SchemaData::null</td>
+</tr>
+<tr>
+	<td>ECS_ASYNCMETADATAUPDATE</td>
+	<td>com.ecs.stellent.iris.AsyncMetaDataUpdate
+		35
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:callAsyncService:::null</td>
+</tr>
+<tr>
+	<td>ECS_ASYNCMETADATAUPDATE_SUB</td>
+	<td>com.ecs.stellent.iris.AsyncMetaDataUpdate
+		35
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:callAsyncService:::null</td>
+</tr>
+<tr>
+	<td>AJAX_SEARCH_TEST</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		AJAX_SEARCH_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GET_AJAX_SEARCH_RESULTS</td>
+	<td>Service
+		32
+		AJAX_SEARCH_RESULTS
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_ADD_DOC_TO_WORKFLOW</td>
+	<td>DocService
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:checkCriteriaWorkflow::0:null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DOC_INFO_BASIC</td>
+	<td>DocService
+		33
+		IRIS_DOC_INFO_BASIC
+		null
+		null<br>
+		!csUnableToGetLatestRevision</td>
+	<td>3:mapResultSet:QlatestReleasedIDByName,dID,dID:2:!csItemHasNoLatestRevision
+		5:QdocInfo:DOC_INFO::!csUnableToGetLatestRevision
+		3:checkSecurity:DOC_INFO:0:null</td>
+</tr>
+<tr>
+	<td>IRIS_ACQUIRE_ITEM_LOCK</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:acquireItemLock:::null</td>
+</tr>
+<tr>
+	<td>IRIS_REMOVE_ITEM_LOCK</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:removeItemLock:::null</td>
+</tr>
+<tr>
+	<td>IRIS_VALIDATE_DOCUMENT</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		IRIS_VALIDATION_REPORT
+		null
+		null<br>
+		null</td>
+	<td>3:validateDocument:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_ITEM_LOCK_INFO</td>
+	<td>com.ecs.stellent.iris.IrisServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getItemLockInfo:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_ITEM_LOCKS</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qIrisCore_GetItemLocks:rsItemLocks::null</td>
+</tr>
+</table>
+<@end@>
+</BODY>
+</HTML>

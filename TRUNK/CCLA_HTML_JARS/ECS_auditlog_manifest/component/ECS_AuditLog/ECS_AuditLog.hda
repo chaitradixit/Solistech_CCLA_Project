@@ -1,0 +1,65 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_05_10 (Version 1.4)
+classpath=$COMPONENT_DIR/classes/ECSAuditLog.jar
+blFieldTypes=
+libpath=$COMPONENT_DIR/lib
+ComponentName=ECS_AuditLog
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+extraAfterServicesLoadInit
+com.ecs.stellent.auditlog.AuditStartupFilter
+null
+50
+onEndServiceRequestActions
+com.ecs.stellent.auditlog.AuditFilter
+null
+10
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+ECS_AuditLog_DisplayLog
+IntradocTemplates
+name
+1
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+query
+resources/ecs_auditlog_query.htm
+ECS_AuditLog_Queries
+1
+service
+resources/ecs_auditlog_service.htm
+ECS_AuditLog_Services
+1
+template
+templates/ecs_auditlog_template.hda
+null
+1
+environment
+ecs_auditlog_environment.cfg
+null
+1
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end
+

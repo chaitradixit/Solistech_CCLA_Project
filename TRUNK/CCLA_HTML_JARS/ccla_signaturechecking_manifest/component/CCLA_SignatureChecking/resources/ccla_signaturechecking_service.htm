@@ -1,0 +1,90 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_SignatureChecking service
+</title>
+</head>
+<body>
+
+<@table CCLA_SignatureChecking_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>CCLA_SC_SIG_MODIFY_SERVICE</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:modifySignature:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_SIG_DELETE_SERVICE</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteSignature:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_GET_SIGS_FOR_ACCOUNT</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getSigsForAccount:::null
+		3:getIsSignatureCheckRequired:::null
+		3:getApprovedSigsForDoc:::null
+		3:getRecentSigFormsForAcc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_GET_SIG_FOR_PERSON</td>
+	<td>Service
+		32
+		HOME_PAGE
+		null
+		null<br>
+		null</td>
+	<td>3:createResultSetFromPooledConnection:qSignatureChecking_GetSigDocNameForPerson,rsSigDoc::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_UPDATE_APPROVED_SIGS</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateApprovedSigsForDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_GET_APPROVED_SIGS</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getApprovedSigsForDoc:::null</td>
+</tr>
+<tr>
+	<td>CCLA_SC_SIGNATURE_SAVER</td>
+	<td>com.ecs.stellent.ccla.signature.SignatureServices
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:signatureSaver:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

@@ -1,0 +1,20 @@
+﻿<?hda version="11gR1-11.1.1.6.0-idcprod1-111219T111403" jcharset="UTF8" encoding="utf-8"?>
+@Properties LocalData
+ComponentName=CCLA_CommProcessing
+CreateDate=07/06/2012 17:33
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+blFieldTypes=CreateDate date
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+CCLA_CommProcessing/CCLA_CommProcessing.hda
+componentExtra
+CCLA_CommProcessing/readme.txt
+componentClasses
+CCLA_CommProcessing/classes/
+componentLib
+CCLA_CommProcessing/lib/
+@end

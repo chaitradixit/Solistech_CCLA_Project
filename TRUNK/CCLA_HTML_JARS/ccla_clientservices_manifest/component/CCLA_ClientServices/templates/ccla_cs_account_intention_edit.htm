@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<$if INVESTMENT_INTENTION_ID$>
+		<!--$executeService("CCLA_CS_GET_ACCOUNT_INTENTION_GET")$-->
+	<$endif$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if INVESTMENT_INTENTION_ID$>
+			Update Intention
+		<$else$>
+			Add new Intention
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+	
+			// Determines whether a new intention detail was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;
+		
+		// Determines whether a new intention detail was just updated.
+		var updated = <$if updated$>true<$else$>false<$endif$>;
+		
+		// Determines whether a  intention detail was just deleted.
+		var deleted = <$if deleted$>true<$else$>false<$endif$>;
+		
+				
+		
+			$(document).ready( function() {
+			
+			
+			
+					if (added || updated || deleted)
+				window.parent.refreshProcessDetail();
+			
+				if(added)
+					window.parent.closePopup();
+			
+			// Bind search form elements 'change' event to
+			// update value
+			$("#editAccountIntentionFrm input").bind('keyup', function() {
+				showNiceNumberFormat();
+			});
+			
+			});
+
+		function checkIsNumber(e)
+		{
+			if (e) {
+				var isWhole_re = /^\s*\d+\s*$/;
+				return String(e).search (isWhole_re) != -1;
+			} else {
+				return true;
+			}
+		}
+		
+		function addCommas(nStr)
+		{
+		nStr += '';
+		x = nStr.split('.');
+		x1 = x[0];
+		x2 = x.length > 1 ? '.' + x[1] : '';
+		var rgx = /(\d+)(\d{3})/;
+		while (rgx.test(x1)) {
+			x1 = x1.replace(rgx, '$1' + ',' + '$2');
+		}
+		return x1 + x2;
+}
+
+		function addIntention()
+		{
+			var numUnits = document.editAccountIntentionFrm.UNITS.value;
+			if (checkIsNumber(numUnits))
+			{
+				var sure = false;
+
+				if (numUnits == "")
+					sure = confirm('Are you sure you want to add an unknown intention amount?');
+				else
+					sure = confirm('Are you sure you want to add an intention of ' + addCommas(numUnits) + '?');
+				
+				if (sure==true)
+				{
+					document.editAccountIntentionFrm.IdcService.value='CCLA_CS_ACCOUNT_INTENTION_ADD';
+					document.editAccountIntentionFrm.RedirectUrl.value = document.editAccountIntentionFrm.RedirectUrl.value + '&added=1';
+					document.editAccountIntentionFrm.submit();
+				} 
+			} else {
+				alert('Please ensure you enter a whole number into the units/amount fields');
+			}
+		}
+		
+		function removeIntention()
+		{
+		document.editAccountIntentionFrm.IdcService.value='CCLA_CS_ACCOUNT_INTENTION_DELETE';
+		document.editAccountIntentionFrm.RedirectUrl.value = document.editAccountIntentionFrm.RedirectUrl.value + '&deleted=1';
+		document.editAccountIntentionFrm.submit();
+		}
+		function updateIntention()
+		{
+			var numUnits = document.editAccountIntentionFrm.UNITS.value;
+			if (checkIsNumber(numUnits))
+			{
+				var sure = false;
+
+				if (numUnits == "")
+					sure = confirm('Are you sure you want to add an unknown intention amount?');
+				else
+					sure = confirm('Are you sure you want to add an intention of ' + addCommas(numUnits) + '?');
+				
+				if (sure==true)
+				{
+					document.editAccountIntentionFrm.IdcService.value='CCLA_CS_ACCOUNT_INTENTION_UPDATE';	
+					document.editAccountIntentionFrm.RedirectUrl.value = document.editAccountIntentionFrm.RedirectUrl.value + '&updated=1';
+					document.editAccountIntentionFrm.submit();
+				}			
+			} else {
+				alert('Please ensure you enter a whole number into the units/amount fields');
+			}
+		}
+		function showNiceNumberFormat()
+		{
+		var previousInnerHTML = new String();
+		if (document.editAccountIntentionFrm.UNITS)
+		{
+        var unitsValue = document.editAccountIntentionFrm.UNITS.value;     
+        previousInnerHTML = addCommas(unitsValue);
+        document.getElementById('unitsFormatted').innerHTML = previousInnerHTML;
+		}
+   
+		}
+	</script>
+	
+</head>
+
+<body class="popupBody" onload="showNiceNumberFormat()">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$if INVESTMENT_INTENTION_ID$>
+					Update Intention
+				<$else$>
+					Add new Intention
+				<$endif$>
+			</div>			
+			<div class='ccla_cs_panel_content'>				
+				<$if added$>
+					<div class="message_panel info_icon">
+						New investment intention added.	
+					</div>
+				<$elseif updated$>	
+					<div class="message_panel info_icon">
+						Investment intention updated.	
+					</div>
+				<$elseif deleted$>	
+					<div class="message_panel info_icon">
+						Investment intention deleted.	
+					</div>					
+				<$endif$>				
+				<form name="editAccountIntentionFrm" id="editAccountIntentionFrm" method="POST">
+					<input type="hidden" name="ORGANISATION_ID" 	value="<$#local.ORGANISATION_ID$>" />
+					<input type="hidden" name="PERSON_ID" 	value="<$#local.PERSON_ID$>" />	
+					<input type="hidden" name="CAMPAIGN_ENROLMENT_ID" 	value="<$#local.CAMPAIGN_ENROLMENT_ID$>" />	
+					<input type="hidden" id="CAMPAIGN_ID" name="CAMPAIGN_ID" value="<$#local.CAMPAIGN_ID$>" />
+					<$include add_idc_token_to_form$>
+					<$if not INVESTMENT_INTENTION_ID$>
+						<!-- New intention -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_ACCOUNT_INTENTION_ADD" />
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ACCOUNT_INTENTION_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&PERSON_ID=<$#local.PERSON_ID$>&added=1&CAMPAIGN_ENROLMENT_ID=<$#local.CAMPAIGN_ENROLMENT_ID$>&CAMPAIGN_ID=<$#local.CAMPAIGN_ID$>" />						
+						<$include ccla_cs_account_intention_psdf_detail_display$>						
+					<$else$>
+						<!-- Existing intention -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_ACCOUNT_INTENTION_EDIT" />
+						<input type="hidden" name="INVESTMENT_INTENTION_ID"	value="<$#local.INVESTMENT_INTENTION_ID$>" />						
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ACCOUNT_INTENTION_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&PERSON_ID=<$#local.PERSON_ID$>&INVESTMENT_INTENTION_ID=<$#local.INVESTMENT_INTENTION_ID$>&CAMPAIGN_ENROLMENT_ID=<$#local.CAMPAIGN_ENROLMENT_ID$>&CAMPAIGN_ID=<$#local.CAMPAIGN_ID$>" />
+						<$executeService("CCLA_CS_ACCOUNT_INTENTION_DETAIL")$>
+						<$update="true"$>
+						<$loop rsIntentionDetail$>
+							<$include ccla_cs_account_intention_psdf_detail_display$>
+						<$endloop$>						
+					<$endif$>
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

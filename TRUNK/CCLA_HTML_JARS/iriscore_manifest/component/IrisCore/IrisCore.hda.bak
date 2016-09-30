@@ -1,0 +1,93 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_05_04 Version 1.4.7
+classpath=$COMPONENT_DIR/classes/IrisCore.jar;$COMPONENT_DIR/lib/castor-1.1-xml.jar;$COMPONENT_DIR/lib/xercesImpl-2.5.0.jar;$COMPONENT_DIR/lib
+blFieldTypes=
+libpath=$COMPONENT_DIR/lib
+ComponentName=IrisCore
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+extraBeforeCacheLoadInit
+com.ecs.stellent.iris.definition.StartupFilter
+null
+11
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+IrisCore_
+IntradocTemplates
+name
+1
+IrisProfiles_
+IntradocTemplates
+name
+1
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/iriscore_resource.htm
+null
+1
+service
+resources/iriscore_service.htm
+IrisCore_Services
+1
+query
+resources/iriscore_query.htm
+IrisCore_Queries
+1
+template
+templates/iriscore_template.hda
+null
+1
+environment
+iriscore_environment.cfg
+null
+15
+resource
+resources/iriscore_paginator_resource.htm
+null
+10
+resource
+resources/iriscore_search_resource.htm
+null
+1
+template
+templates/irisprofiles_template.hda
+null
+1
+service
+resources/irisprofiles_service.htm
+IrisProfiles_Services
+1
+query
+resources/irisprofiles_query.htm
+IrisProfiles_Queries
+1
+environment
+irisprofiles_environment.cfg
+null
+10
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end
+

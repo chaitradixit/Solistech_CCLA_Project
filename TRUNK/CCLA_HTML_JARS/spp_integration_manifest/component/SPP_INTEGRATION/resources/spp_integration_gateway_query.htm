@@ -1,0 +1,56 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SPP_INTEGRATION query
+</title>
+</head>
+<body>
+
+<@table SPP_INTEGRATION_Gateway_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>QGateway_AddQueuedItem</td>
+	<td>INSERT INTO SPP_QUEUED_ITEMS
+VALUES (?,?,?,?,?,?,?,?,?)</td>
+	<td>id int
+	    submitUser varchar
+	    submitTime date
+	    embargoTime varchar
+	    status varchar
+	    jobType varchar
+	    itemId int
+	    itemDocName varchar
+	    submitType varchar</td>
+</tr>
+<tr>
+	<td>QGateway_RemoveQueuedItem</td>
+	<td>DELETE FROM SPP_QUEUED_ITEMS
+WHERE QUEUED_ITEM_ID=?</td>
+	<td>queuedItemId int</td>
+</tr>
+<tr>
+	<td>QGateway_UpdateQueuedItemStatus</td>
+	<td>UPDATE SPP_QUEUED_ITEMS
+SET STATUS=?
+WHERE QUEUED_ITEM_ID=?</td>
+	<td>status varchar
+	    queuedItemId int</td>
+</tr>
+<tr>
+	<td>QGateway_GetQueuedItemBatch</td>
+	<td>SELECT * FROM 
+(SELECT * FROM SPP_QUEUED_ITEMS
+WHERE SUBMIT_TYPE='Auto'
+AND STATUS <> 'Failed'
+ORDER BY QUEUED_ITEM_ID ASC)
+
+WHERE ROWNUM <= ?</td>
+	<td>rowCount int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

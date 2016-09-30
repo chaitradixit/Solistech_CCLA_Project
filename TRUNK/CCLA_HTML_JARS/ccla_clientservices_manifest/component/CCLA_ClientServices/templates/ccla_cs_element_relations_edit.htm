@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	
+	<!-- Resolve the Relation Type Name first, based on the
+         passed RELATION_TYPE_ID.	-->
+	<$loop rsElementRelationTypes$>
+		<$if #local.RELATION_TYPE_ID like #active.TYPE_ID$>
+			<$relationTypeName = #active.LABEL$>
+			<$break$>
+		<$endif$>
+	<$endloop$>
+	
+	<$exec rsFirst("rsElementRelationTypes")$>
+	
+	<!-- Now load summary data for the related elements. -->
+	
+	<!-- Organisation data -->
+	<$if relationTypeName like "Client-Person|Client-Account"$>
+		<$ORGANISATION_ID = #local.PARENT_ELEMENT_ID$>
+		<$executeService("CCLA_CS_GET_ENTITY_BASIC")$>
+	<$endif$>
+	
+	<!-- Account data -->
+	<$if relationTypeName like "Client-Account|Person-Account"$>
+		<$ACCOUNT_ID = #local.RELATED_ELEMENT_ID$>
+		<$executeService("CCLA_CS_GET_ACCOUNT_BASIC")$>
+	<$endif$>
+	
+	<!-- Person data -->
+	<$if relationTypeName like "Client-Person"$>
+		<$PERSON_ID = #local.RELATED_ELEMENT_ID$>
+		<$executeService("CCLA_CS_GET_PERSON_BASIC")$>
+	<$endif$>
+	<$if relationTypeName like "Person-Account"$>
+		<$PERSON_ID = #local.PARENT_ELEMENT_ID$>
+		<$executeService("CCLA_CS_GET_PERSON_BASIC")$>
+	<$endif$>
+	
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle = "Update " & relationTypeName & " Relationships"$>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		var updated = <$if #local.updated$>true<$else$>false<$endif$>;
+		
+		$(document).ready( function() {
+			if (updated) {
+				window.parent.refreshRelations('<$ELEMENT_ID$>','');
+			}
+		});
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$pageTitle$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+			
+				<$if updated$>	
+					<div class="message_panel info_icon">
+						Relations updated.	
+					</div>
+				<$endif$>
+				
+				<form method="POST">
+					<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_ELEMENT_RELATIONS" /><$include add_idc_token_to_form$>
+					
+					<!-- This should map to the base Element ID of the page that spawned this 
+						 pop-up view. I.e. if this was spawned from an Edit Person page, the
+						 ELEMENT_ID should point to the person ID. -->
+					<input type="hidden" name="ELEMENT_ID"			value="<$#local.ELEMENT_ID$>" />
+					
+					<input type="hidden" name="PARENT_ELEMENT_ID"	value="<$#local.PARENT_ELEMENT_ID$>" />
+					<input type="hidden" name="RELATED_ELEMENT_ID"	value="<$#local.RELATED_ELEMENT_ID$>" />
+					<input type="hidden" name="RELATION_TYPE_ID"	value="<$#local.RELATION_TYPE_ID$>" />
+					
+					<input type="hidden" name="RedirectUrl" 
+						   value="?IdcService=CCLA_CS_ELEMENT_RELATIONS_EDIT<$include add_idc_token_to_url$>&PARENT_ELEMENT_ID=<$#local.PARENT_ELEMENT_ID$>&RELATED_ELEMENT_ID=<$#local.RELATED_ELEMENT_ID$>&RELATION_TYPE_ID=<$#local.RELATION_TYPE_ID$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&updated=1" />
+					
+					<table class="accounts-table" cellpadding="0" cellspacing="0">
+						<$isFirstRow = 1$>
+													
+						<$if rsEntity$>
+					
+							<tr class="account-details-row<$if isFirstRow$><$isFirstRow=""$> first-row<$endif$>">
+								<td class="first-col" valign="top">
+									<b>Organisation:</b>
+								</td>
+								<td>
+									<$loop rsEntity$>
+										<$#active.NAME$>
+									<$endloop$>
+								</td>
+							</tr>
+						
+						<$endif$>
+						
+						<$if rsPerson$>
+					
+							<tr class="account-details-row<$if isFirstRow$><$isFirstRow=""$> first-row<$endif$>">
+								<td class="first-col" valign="top">
+									<b>Person name:</b>
+								</td>
+								<td>
+									<$loop rsPerson$>
+										<$include ccla_cs_person_name_display$>
+									<$endloop$>
+								</td>
+							</tr>
+						
+						<$endif$>
+						
+						<$if rsAccount$>
+					
+							<tr class="account-details-row<$if isFirstRow$><$isFirstRow=""$> first-row<$endif$>">
+								<td class="first-col" valign="top">
+									<b>Account:</b>
+								</td>
+								<td>
+									<$loop rsAccount$>
+										<$#active.ACCNUMEXT$>
+									<$endloop$>
+								</td>
+							</tr>
+						
+						<$endif$>
+						
+						<tr class="account-details-row" >
+							
+							<td class="first-col" valign="top">
+								<b>Relationships:</b>
+							</td>
+							<td>
+								
+								<$personRelations = ""$>
+					
+								<$loop rsElementRelations$>
+								
+									<$if #local.existingRelations$>
+										<$existingRelations = existingRelations & ","$>
+									<$endif$>
+									<$existingRelations = #local.existingRelations & #active.RELATIONSHIP$>
+								
+								<$endloop$>
+								
+								<$exec rsMakeFromString("rsExistingRelations", existingRelations)$>
+								
+								<!-- Display the available relationships as checkboxes. 
+									 Mark any existing relations to this person as 'checked'. -->
+									
+								<$loop rsElementRelationTypeNames$>
+									
+									<$if #active.TYPE_ID == #local.RELATION_TYPE_ID$>
+										<$if rsFindRowPrimary("rsExistingRelations", #active.RELATION)$>
+											<$hasRelation = 1$>
+										<$else$>
+											<$hasRelation = ""$>
+										<$endif$>
+										
+										<input type="checkbox" name="rel_<$#active.RELATION$>" <$if hasRelation$>checked<$endif$> /> <$#active.RELATION$>
+										<br/>
+									<$endif$>
+									
+								<$endloop$>
+								
+							</td>
+						</tr>
+					</table>
+					
+					<br/>
+					
+					<div style="text-align: right">
+						<input type="submit" value="Save changes" />
+					</div>
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

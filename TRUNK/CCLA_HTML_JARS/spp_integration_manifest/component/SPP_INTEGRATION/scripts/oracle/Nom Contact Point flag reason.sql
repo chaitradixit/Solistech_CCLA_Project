@@ -1,0 +1,1 @@
+INSERT INTO CCLA_FLAG_REASONS VALUES(12, 'Nominated Contact Point discrepancy');

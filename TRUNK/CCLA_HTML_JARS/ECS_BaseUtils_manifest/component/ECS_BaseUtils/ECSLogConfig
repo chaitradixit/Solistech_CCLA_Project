@@ -1,0 +1,103 @@
+#set defaults - there should be no need to change this
+log4j.rootLogger=ERROR,mainlogfile
+
+# console logging settings
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{dd MMM yy - HH:mm:ss:SSS} %c:[%t] %-5p - %m %x %n
+
+# set output file configurations for general logging
+log4j.appender.mainlogfile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mainlogfile.File=d:\\LOGS\\ECS_CMS.log
+log4j.appender.mainlogfile.DatePattern='.'yyyy-MM-dd
+log4j.appender.mainlogfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.mainlogfile.layout.ConversionPattern=%d{dd MMM yy - HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+
+
+
+# log message level settings for your classes - see example below.
+#
+# EXAMPLE 
+# If you want to save all log messages for class com.ecs
+# to c:\ECS.log then use the following settings
+#
+log4j.appender.mylogfile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile.File=d:\\LOGS\\ECS.log
+log4j.appender.mylogfile.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.casemanagement=DEBUG,mylogfile
+log4j.logger.needtoknow=DEBUG,mylogfile
+log4j.logger.com.ecs.stellent.auditlog=DEBUG,mylogfile
+log4j.logger.com.ecs.stellent.xforms=DEBUG,mylogfile
+log4j.logger.com.ecs.utils.stellent.embedded=DEBUG,mylogfile
+log4j.logger.com.ecs.utils.stellent.idoc=DEBUG,mylogfile
+log4j.logger.com.ecs.utils.security=DEBUG,mylogfile
+log4j.logger.com.ecs.businessobjects=DEBUG,mylogfile
+log4j.logger.com.ecs.stellent.snf=DEBUG,mylogfile
+
+log4j.appender.mylogfile0=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile0.File=d:\\LOGS\\ECS_XFORM.log
+log4j.appender.mylogfile0.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile0.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile0.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.xforms=DEBUG,mylogfile0
+
+log4j.appender.mylogfile20=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile20.File=d:\\LOGS\\ECS_SERVICE_AUDIT.log
+log4j.appender.mylogfile20.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile20.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile20.layout.ConversionPattern=%m %x %n
+log4j.logger.com.ecs.utils.audit=DEBUG,mylogfile20
+
+log4j.appender.mylogfile1=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile1.File=d:\\LOGS\\ECS_JBPM.log
+log4j.appender.mylogfile1.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile1.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile1.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.jbpm=DEBUG,mylogfile1
+
+log4j.appender.mylogfile2=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile2.File=d:\\LOGS\\ECS_AUDIT.log
+log4j.appender.mylogfile2.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile2.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile2.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.auditlog=DEBUG,mylogfile2
+
+# jBPM/hibernate library logging (warning: very dense logging!)
+#
+log4j.appender.mylogfile3=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile3.File=d:\\LOGS\\JBPM.log
+log4j.appender.mylogfile3.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile3.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile3.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.org.jbpm=ERROR,mylogfile3          
+log4j.logger.org.hibernate=ERROR,mylogfile3
+
+log4j.appender.mylogfile4=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile4.File=d:\\LOGS\\ECS_CLINICAL.log
+log4j.appender.mylogfile4.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile4.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile4.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.clinical=DEBUG,mylogfile4
+
+log4j.appender.mylogfile5=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile5.File=d:\\LOGS\\ECS_CCLA_FIX.log
+log4j.appender.mylogfile5.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile5.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile5.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.ccla=DEBUG,mylogfile5
+
+log4j.appender.mylogfile6=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile6.File=d:\\LOGS\\ECS_IRIS.log
+log4j.appender.mylogfile6.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile6.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile6.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.iris=DEBUG,mylogfile6
+
+log4j.appender.mylogfile7=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.mylogfile7.File=d:\\LOGS\\ECS_CALENDAR.log
+log4j.appender.mylogfile7.DatePattern='.'yyyy-MM-dd
+log4j.appender.mylogfile7.layout=org.apache.log4j.PatternLayout
+log4j.appender.mylogfile7.layout.ConversionPattern=%d{HH:mm:ss:SSS} %c[%t] %-5p - %m %x %n
+log4j.logger.com.ecs.stellent.ecscalendar=DEBUG,mylogfile7

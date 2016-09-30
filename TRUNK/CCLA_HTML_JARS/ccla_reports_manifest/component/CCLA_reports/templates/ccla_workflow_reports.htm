@@ -1,0 +1,268 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Parking Lot Reports
+		</title>
+		<$include ecs_javascript_jquery_include$>
+		<$include std_html_head_declarations$>
+		
+		<$include iris_styles$>
+		<$include ccla_date_masking_js$>
+		<style type="text/css">
+			
+			body{
+				text-align:center;
+				padding:0;
+				margin:0;
+			}
+			
+			th{text-align:right;}
+			td{font-size:1.1em;}
+			
+			p.small{
+				margin-top:10px;
+				margin-bottom:30px;
+				font-size:0.8em;
+			}
+			
+			div.searchbox{
+				border:1px solid black;
+				padding:10px;
+				width:500px;
+			}
+		</style>
+		
+		<script type="text/javascript">
+			function openBreakdown(startDate, endDate){
+				window.open('?IdcService=ECS_Q_REPORT_1<$include add_idc_token_to_url$>&startDate='+startDate+'&endDate='+endDate+'&docClasses=,MAND,&status=All&isSubmit=1&isSpecialSubmit=1',
+				 'Report');
+			}
+		</script>
+</head>
+
+	<body>
+
+	<$include iris_header$>
+		
+		<$workflowName = "VerifyMandate"$>
+		<$executeService("ECS_Q_WF_NUM_WF_DOCS")$>
+		
+		<p>
+			<h2 class="white">
+				Number of Mandates Currently in Queue:
+			
+				<$if rsNumDocs$>
+					<$rsNumDocs.#numRows$>						
+				<$else$>
+					None
+				<$endif$>
+			</h2>
+		</p>
+		
+		<div class="grey_bg white_border" style="width:800px;padding:10px;">
+		<$if rsNumDocs$>
+			<$rsSort("rsNumDocs", "dActionDate")$>
+		
+			<$counter1 = 0$>
+			<$counter2 = 0$>
+			<$counter3 = 0$>
+			<$counter4 = 0$>
+			<$counter5 = 0$>
+			<$counter6 = 0$>
+		
+			<$loop rsNumDocs$>
+				<$date = rsNumDocs.dActionDate$>
+
+				<$if parseDate(date) < parseDate(dateCurrent()) and parseDate(date) >= parseDate(formatDateWithPattern(dateCurrent(),"dd/MM/yyyy"))$>
+					
+					<$c="Docs before now and after this morning at midnight"$>
+					<$counter1 = counter1 + 1$>
+						
+				<$elseif parseDate(date) < parseDate(formatDateWithPattern(dateCurrent(),"dd/MM/yyyy")) and parseDate(date) >= parseDate(formatDateWithPattern(dateCurrent(-1),"dd/MM/yyyy"))$>
+
+					<$c="Docs before this morning midnight and after yestersay morning at midnight"$>
+					<$counter2 = counter2 + 1$>
+						
+				<$elseif parseDate(date) < parseDate(formatDateWithPattern(dateCurrent(-1),"dd/MM/yyyy")) and parseDate(date) >= parseDate(formatDateWithPattern(dateCurrent(-7),"dd/MM/yyyy"))$>
+
+					<$c="Docs before yesterday morning midnight and after 7 days ago morning at midnight"$>
+					<$counter3 = counter3 + 1$>
+
+				<$elseif parseDate(date)< parseDate(formatDateWithPattern(dateCurrent(-7),"dd/MM/yyyy")) and parseDate(date)>= parseDate(formatDateWithPattern(dateCurrent(-31),"dd/MM/yyyy"))$>
+
+					<$c="Docs before 7 days ago morning at midnight and after 31 days ago midnight"$>
+					<$counter4 = counter4 + 1$>
+						
+				<$elseif parseDate(date)< parseDate(formatDateWithPattern(dateCurrent(-31),"dd/MM/yyyy")) and parseDate(date)>= parseDate(formatDateWithPattern(dateCurrent(-62),"dd/MM/yyyy"))$>
+
+					<$c="Docs before 31 days ago morning at midnight and after 62 days ago midnight"$>
+					<$counter5 = counter5 + 1$>
+						
+				<$elseif parseDate(date)< parseDate(formatDateWithPattern(dateCurrent(-62),"dd/MM/yyyy"))$>
+
+					<$c="Old than 62 days"$>
+					<$counter6 = counter6 + 1$>
+					
+				<$endif$>
+			<$endloop$>
+			
+			<table border="1" cellpadding="6" cellspacing="0">
+				<tr>
+					<th>Today:</th>
+					<td><$counter1$> <a href="#" onClick="openBreakdown('<$parseDate(formatDateWithPattern(dateCurrent(),"dd/MM/yyyy"))$>','<$parseDate(formatDateWithPattern(dateCurrent(),"dd/MM/yyyy") & " 23:59")$>');">breakdown</a></td>
+				</tr>
+				<tr>
+					<th>Yesterday:</th>
+					<td><$counter2$> <a href="#" onClick="openBreakdown('<$parseDate(formatDateWithPattern(dateCurrent(-1),"dd/MM/yyyy"))$>','<$parseDate(formatDateWithPattern(dateCurrent(-1),"dd/MM/yyyy") & " 23:59")$>');">breakdown</a></td>
+				</tr>
+				<tr>
+					<th>One Week:</th>
+					<td><$counter3$> <a href="#" onClick="openBreakdown('<$parseDate(formatDateWithPattern(dateCurrent(-7),"dd/MM/yyyy"))$>','<$parseDate(formatDateWithPattern(dateCurrent(-2),"dd/MM/yyyy") & " 23:59")$>');">breakdown</a></td>
+				</tr>
+				<tr>
+					<th>One Month:</th>
+					<td><$counter4$> <a href="#" onClick="openBreakdown('<$parseDate(formatDateWithPattern(dateCurrent(-31),"dd/MM/yyyy"))$>','<$parseDate(formatDateWithPattern(dateCurrent(-8),"dd/MM/yyyy") & " 23:59")$>');">breakdown</a></td>
+				</tr>
+				<tr>
+					<th>Two Months:</th>
+					<td><$counter5$>  <a href="#" onClick="openBreakdown('<$parseDate(formatDateWithPattern(dateCurrent(-62),"dd/MM/yyyy"))$>','<$parseDate(formatDateWithPattern(dateCurrent(-32),"dd/MM/yyyy") & " 23:59")$>');">breakdown</a></td>
+				</tr>
+				<tr>
+					<th>Older than Two Months:</th>
+					<td><$counter6$></td>
+				</tr>
+				<tr>
+					<th>*TOTAL:</th>
+					<td><strong><$rsNumDocs.#numRows$></strong></td>
+				</tr>
+			</table>
+		<$endif$>
+			
+		<p class="small">*737 Mandates were checked in before Parking Lots were in place*</p>
+		
+		<div class="searchbox">
+			<h2>Search</h2>
+			<form>
+				<input type="hidden" name="IdcService" value="GET_DOC_PAGE"/>
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="Action" value="GetTemplatePage"/>
+				<input type="hidden" name="Page" value="CCLA_WORKFLOW_REPORTS"/>
+				<input type="hidden" name="isSubmit" value="1"/>
+				
+				<table>
+					<tr>
+						<th>Start Date:</th>
+						<td><input type="text" name="startDate" value="<$if #active.startDate$><$startDate$><$else$><$dateCurrent(-30)$><$endif$>" onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateTimeMask(event,this);"/></td>
+					</tr>
+					<tr>
+						<th>End Date:</th>
+						<td><input type="text" name="endDate" value="<$if #active.endDate$><$endDate$><$else$><$dateCurrent()$><$endif$>" onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateTimeMask(event,this);"/></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td><input type="submit" value="Search"/></td>
+					</tr>			
+				</table>
+			</form>
+		
+			<$if isTrue(#active.isSubmit)$>
+			
+				<$temp = rsRename("rsWfDocs", "rsWfDocsOld")$>
+				
+				<$c="No. mandates in ================================================="$>
+				<$workflowName="DocumentUpload"$>
+				<$workflowAction="Checkin"$>
+				<$executeService("ECS_Q_WF_DOCS_FOR_ACTION_IN_DATE")$>
+				<$temp = rsRename("rsWfDocs", "rsMandsIn")$>
+				
+				<$workflowName="MandateUpload"$>
+				<$workflowAction="Checkin"$>
+				<$executeService("ECS_Q_WF_DOCS_FOR_ACTION_IN_DATE_EXSWORDFISH")$>
+				<$temp = rsRename("rsWfDocs", "rsMandsInIris")$>
+				
+				<$numMandIn=0$>
+				<$numMandIn = rsMandsIn.#numRows + rsMandsInIris.#numRows$>
+				
+				
+				<$c="No. mandates out ================================================"$>
+				<$workflowName="VerifyMandate"$>
+				<$workflowAction="Exit"$>
+				<$executeService("ECS_Q_WF_DOCS_FOR_ACTION_IN_DATE")$>
+				<$temp = rsRename("rsWfDocs", "rsMandsOut")$>
+				<$numMandOut=0$>
+				<$numMandOut = rsMandsOut.#numRows$>
+				
+				
+				<$c="No. mandates outstanding at start date =========================="$>
+				<$date1 = startDate$>
+				<$date2 = startDate$>
+				<$executeService("ECS_Q_WF_DOCS_AT_DATE")$>
+				<$temp = rsRename("rsDocsAtDate", "rsOutstandsMands1")$>
+				
+				<$executeService("ECS_Q_WF_IRIS_DOCS_AT_DATE")$>
+				<$temp = rsRename("rsIrisDocsAtDate", "rsIrisOutstandsMands1")$>
+				
+				<$numMandAtStartDate=0$>
+				<$numMandAtStartDate = rsOutstandsMands1.#numRows + rsIrisOutstandsMands1.#numRows$>
+				
+				
+				<$c="No. mandates outstanding at end date ==========================="$>
+				<$date1 = endDate$>
+				<$date2 = endDate$>
+				<$executeService("ECS_Q_WF_DOCS_AT_DATE")$>
+				<$temp = rsRename("rsDocsAtDate", "rsOutstandsMands2")$>
+				
+				<$executeService("ECS_Q_WF_IRIS_DOCS_AT_DATE")$>
+				<$temp = rsRename("rsIrisDocsAtDate", "rsIrisOutstandsMands2")$>
+				
+				<$numMandAtEndDate=0$>
+				<$numMandAtEndDate = rsOutstandsMands2.#numRows + rsIrisOutstandsMands2.#numRows$>
+				
+				<table border="1" cellpadding="6" cellspacing="0">				
+					<tr>
+						<th>
+							No. Mandates In:
+						</th>
+						<td>
+							<$numMandIn$> 
+							<$if numMandIn > 0$>
+								<a href="#" onClick="openBreakdown('<$parseDate(startDate)$>','<$parseDate(endDate)$>');">breakdown</a>
+							<$endif$>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							**No. Mandates Out:
+						</th>
+						<td>
+							<$numMandOut$>
+						</td>
+					</tr>
+					<tr>				
+						<th>
+							No. Outstanding Mandates at <$startDate$>:
+						</th>
+						<td>
+							<$numMandAtStartDate$>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							No. Outstanding Mandates at <$endDate$>:
+						</th>
+						<td>
+							<$numMandAtEndDate$>
+						</td>
+					</tr>
+				</table>
+				
+				<p class="small">
+					**These mandates may have joined the parking lot before the specified time frame, <br/>
+					so the number out may well exceed the number of mandates in.
+				</p>
+			<$endif$>
+		</div>
+		</div>
+	</body>
+</html>

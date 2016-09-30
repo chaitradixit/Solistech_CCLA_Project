@@ -1,0 +1,242 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include iris_styles$>
+	
+	<title>
+		Profile Listing
+	</title>
+
+</head>
+
+<body <$include iris_body_def_internal$> height="100%" >
+
+	<$include iris_header$>
+	
+<$if IsLoggedIn$>
+	
+	<$QueryText = "(dDocType <matches> `IrisProfile`)"$>
+	<$executeService("GET_SEARCH_RESULTS")$>
+		
+	<table border=0 cellpadding=7 cellspacing=0 width="100%">
+		<tr>
+			<td valign=top align=center>
+	
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FFFFFF">
+					<tr>
+						<td>
+							
+							<br style="line-height:40px">
+	
+						</td>
+					</tr>
+				</table>
+
+			<br/>
+
+			<div style="padding-left: 40px; width: 500px" align=center>
+					
+			<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td class="xuiPageHeadingCell">
+							<h5 class="xuiPageHeadingText" style="color:#F29303;font-size: 12pt;">Profile Listing</h5></td>
+	
+						<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+							
+						</td>
+						
+					</tr>
+				</table>
+			
+				<br style="line-height:10px">
+
+				<table cellpadding="0" cellspacing="0" width='100%'>
+					<tr>
+						<td rowspan=10 width=8></td>
+	
+						<td></td>
+						<td>&nbsp;&nbsp;</td>
+						<td class="hp" >
+							
+							Available Iris configurations are listed below. Click one to edit.
+							<br />
+							
+							<p class="hp">
+							
+								<ul type="square" style="line-height: 2em">
+									
+									<$loop SearchResults$>
+									<li><a href="<$HttpCgiPath & "?IdcService=IRIS_PROFILE_CONDITIONS&pName=" & dDocName &inc("add_idc_token_to_url")$>"><$dDocName$></a><br/></li>
+									<$endloop$>	
+								
+								</ul>
+								
+							</p>
+							
+							
+						</td>
+					
+					</tr>
+				</table>
+				
+				<br style="line-height:20px">
+			
+					<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="xuiPageHeadingCell">
+								<h4 class="xuiPageHeadingText" style="color:#F29303;">Add new profile</h4></td>
+		
+							<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+								</td>
+						</tr>
+					</table>
+				
+					<br style="line-height:10px">
+						
+					<table cellpadding="5" cellspacing="0" width='100%'>
+						<tr>
+							<td rowspan=10 width=8></td>
+							<td>
+								Enter the name of your new profile below:
+							</td>
+						</tr>
+						
+						<tr>
+							<td>
+								
+								<script>
+									
+									function updateProfileName(field) {
+										
+										var btn = document.getElementById("new_profile_btn");
+										
+										if (field.value == '') {
+											btn.disabled = true;
+										} else {
+											btn.disabled = false;
+										}
+									}
+									
+								</script>
+								
+								<form action="<$HttpCgiPath$>" method="POST">
+									<input type="hidden" name="IdcService" value="IRIS_CREATE_NEW_PROFILE"/>
+									<input type="hidden" name="RedirectUrlz" value="<$HttpCgiPath$>?IdcService=IRIS_PROFILE_LISTING"/>
+								<$include add_idc_token_to_form$>
+									<input type="text" name="profileName" onKeyUp="updateProfileName(this)"/>
+									<input type="submit" value="Go" id="new_profile_btn" disabled="disabled"/>
+									
+								</form>
+							</td>
+						</tr>
+					</table>
+					
+					<$if #active.newProfileStatus$>
+				
+						<table width="100%">
+							<tr><td><b>
+								<$if newProfileStatus like 'success'$>
+									New profile '<a href="<$HttpCgiPath & "?IdcService=IRIS_PROFILE_CONDITIONS&pName=" & newProfileName &inc("add_idc_token_to_url")$>"><$newProfileName$></a>' created successfully.
+								<$else$>
+									A document with the name '<$newProfileName$>' already exists. Profile was not created.
+								<$endif$>
+								<br/>
+							</b></td></tr>
+						</table>
+				
+					<$endif$>
+	
+					<br style="line-height:20px">
+	
+					<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="xuiPageHeadingCell">
+								<h4 class="xuiPageHeadingText" style="color:#F29303;">Remove profile</h4></td>
+				
+							<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+								</td>
+						</tr>
+					</table>
+
+					<br style="line-height:10px">
+	
+					<table cellpadding="5" cellspacing="0" width='100%'>
+						<tr>
+							<td rowspan=10 width=8></td>
+							<td>
+								Select a profile below and click 'Delete' to remove it.
+							</td>
+						</tr>
+						
+						<script>
+							
+							function updateDelProfile(sel) {
+								
+								var delBtn = document.getElementById("del_profile_btn");
+								
+								if (sel.selectedIndex > 0)
+									delBtn.disabled = false;
+								else
+									delBtn.disabled = true;
+								
+								
+							}
+							
+							function delProfile(frm) {
+								
+								var delList = frm.elements['profileDeleteList'];
+								var opt = delList.options[delList.selectedIndex];
+								
+								frm.elements['dID'].value = opt.value;
+								frm.elements['docName'].value = opt.text;
+													
+								frm.submit();
+								
+							}
+							
+						</script>
+						
+						<tr>
+							<td>
+								
+								<form action="<$HttpCgiPath$>" method="POST">
+									<input type="hidden" name="IdcService" value="IRIS_DELETE_PROFILE"/>
+									<input type="hidden" name="docName"/>
+									<input type="hidden" name="dID"/>
+								<$include add_idc_token_to_form$>
+									<select name="profileDeleteList" class="input_option_field" onChange="updateDelProfile(this)">
+										<option value=""></option>
+										
+										<$loop SearchResults$>
+											<option value="<$dID$>"><$dDocName$></option>
+										<$endloop$>
+									
+									</select>
+									<input type="button" value="Delete" id="del_profile_btn" disabled="disabled" onClick="delProfile(this.form)"/>
+							
+								</form>
+								
+								<$if #active.delProfile$>
+									<br />
+									<b>Profile '<$delProfile$>' successfully deleted.</b>
+								<$endif$>
+								
+							</td>
+						</tr>
+					</table>
+				
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<$include std_footer$>
+			</td>
+		</tr>
+	</table>
+	
+	
+
+<$endif$>
+	
+</body></html>

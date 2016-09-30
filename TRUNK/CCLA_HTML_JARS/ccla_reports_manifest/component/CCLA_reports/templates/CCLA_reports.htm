@@ -1,0 +1,232 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+	<title>CCLA Content Reports</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include iris_styles$>
+	<$include ccla_reports_styles$>
+	<$include ccla_date_masking_js$>
+</head>
+
+<body <$include iris_body_def_internal$> style="text-align:center">
+
+	<$include iris_header$>
+
+	<div style="text-align:center; padding: 10px">
+
+	<$report1="Summary"$>
+	<$report2="Scanned Envelopes - Summary"$>
+	<$report3="Scanned Items - Full"$>
+	<$report4="Scanned Items - No workflow date"$>
+	
+	<$service1="CCLA_Report_summary"$>
+	<$service2="CCLA_Report_envbydate_summary"$>
+	<$service3="CCLA_Report_envbydate_full"$>
+	<$service4="CCLA_Report_envbydate_noWfDate"$>
+	
+	<$tableWidth1=35$>
+	<$tableWidth2=40$>
+	<$tableWidth3=80$>
+	<$tableWidth4=80$>
+
+<h3 class="white">CCLA Content Reports</h3>
+
+ <div class="grey_bg white_border" style="width:865px;padding:10px;">
+<form action="<$HttpCgiPath$>">
+
+<input type="hidden" name="IdcService" value="GET_DOC_PAGE"/>
+<$include add_idc_token_to_form$>
+<input type="hidden" name="Action" value="GetTemplatePage"/>
+<input type="hidden" name="Page" value="CCLA_REPORTS"/>
+<table>
+  <tr>
+    <td>Report type:</td>
+    <td>
+      <select name="r">
+        <option value=""></option>
+
+        <option value="1" <$if #active.r$><$if strEquals(#active.r,"1")$>SELECTED<$endif$><$endif$>><$report1$></option>
+        <option value="2" <$if #active.r$><$if strEquals(#active.r,"2")$>SELECTED<$endif$><$endif$>><$report2$></option>
+        <option value="3" <$if #active.r$><$if strEquals(#active.r,"3")$>SELECTED<$endif$><$endif$>><$report3$></option>
+		<option value="4" <$if #active.r$><$if strEquals(#active.r,"4")$>SELECTED<$endif$><$endif$>><$report4$></option>
+
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>From date:</td>
+    <td><input name="fd" <$if #active.fd$>value="<$#active.fd$>"<$else$>value="<$formatDateWithPattern(dateCurrent(),"dd/MM/yyyy")$>"<$endif$> onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateMask(event,this);" /></td>
+  </tr>
+  <tr>
+    <td>To date:</td>
+    <td><input name="td" <$if #active.td$>value="<$#active.td$>"<$else$>value="<$formatDateWithPattern(dateCurrent(1),"dd/MM/yyyy")$>"<$endif$> onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateMask(event,this);" /></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td align="right"><input type="Submit" value="Go"/>
+</table>
+</form>
+
+<hr/>
+
+
+<$if #active.r$>
+
+	<$longTimeAgo = parseDate(dateCurrent(-10000))$>
+
+  <$if #active.fd$>
+    <$fromDate = #active.fd$>
+  <$else$>
+    <$fromDate = formatDateWithPattern(dateCurrent(),"dd/MM/yyyy")$>
+  <$endif$>
+
+  <$if #active.td$>
+    <$toDate = #active.td$>
+  <$else$>
+    <$toDate = formatDateWithPattern(dateCurrent(1),"dd/MM/yyyy")$>
+  <$endif$>
+
+  <$eval("<$serviceName=service" & #active.r & "$>")$>
+  <$executeService(serviceName)$>
+
+	<h4><$eval("<$report" & #active.r & "$>")$> <$if rsReport$>(<$rsReport.#numRows$>)<$endif$></h4> 
+
+  <p>from: <$fromDate$> to: <$toDate$></p>
+
+  <table cellpadding="5" cellspacing="0" class="results" <$if false$>width="<$eval("<$tableWidth" & #active.r & "$>")$>%"<$endif$>> 
+
+    <tr>
+    	<th class="first-col">&nbsp;</th>
+     <$if strEquals(#active.r,"1")$>
+	    <th width="20%"><b>Date</b></th>
+	    <$if false$><td width="20%"><b>No. of Envelopes Updated</b></th><$endif$>
+	    <th width="20%"><b>Scanned Envelopes</b></th>
+        <th width="20%"><b>Scanned Documents</b></th>
+        <th width="20%"><b>Uploaded Documents</b></th>
+        <th width="20%"><b>Total Documents</b></th>
+     <$elseif strEquals(#active.r,"2")$>
+	<th><b>Date</b></th>
+	<th><b>Envelope ID</b></th>
+	<th><b>Workflow ID</b></th>
+	<th><b>Documents</b></th>
+	<th><b>Client number</b></th>
+	<th><b>Account number</b></th>
+     <$elseif strEquals(#active.r,"3") or strEquals(#active.r,"4")$>
+	<th><b>Date</b></th>
+	<th><b>Envelope ID</b></th>
+	<th><b>Workflow ID</b></th>
+	<th><b>Document Class</b></th>
+	<th><b>Client</b></th>
+	<th><b>Account</b></th>
+	<th><b>Fund</b></th>
+	<th><b>Amount</b></th>
+	<th><b>Units</b></th>
+	<th><b>Scan date</b></th>
+	<th><b>Workflow date</b></th>
+	<th><b>Info</b></th>
+     <$endif$>
+    </tr>
+    
+    <$counter = 1$>
+    <$totalDocs = 0$>
+ 
+    <$loop rsReport$>
+    	<tr align="center">
+  		<td class="first-col"><$counter$> <$counter = counter + 1$></td>
+  		
+      <$if strEquals(#active.r,"1")$>
+		
+		<$if false$>
+			<!-- Old results display (uses qSummary query) -->
+			 <td><$strSubstring(RDATE,6,8)$>/<$strSubstring(RDATE,4,6)$>/<$strSubstring(RDATE,0,4)$></td>
+			 <$if false$><td><$ENVS$></td><$endif$>
+			 <td><$if SCANENVS$><$SCANENVS$><$else$>0<$endif$></td>
+			   <td><$if DOCS$><$DOCS$><$else$>0<$endif$></td>
+			 <td><$if UPLOADS$><$UPLOADS$><$else$>0<$endif$></td>
+			 <td><$if ALLDOCS$><$ALLDOCS$><$else$>&nbsp;<$endif$></td>
+		<$else$>
+		
+			<td><$strSubstring(RDATE,6,8)$>/<$strSubstring(RDATE,4,6)$>/<$strSubstring(RDATE,0,4)$></td>
+			<td><$if #active.ENVELOPES$><$#active.ENVELOPES$><$else$>0<$endif$></td>
+			<td><$if #active.SCANNED_DOCS$><$#active.SCANNED_DOCS$><$else$>0<$endif$></td>
+			<td><$if #active.UPLOADED_DOCS$><$#active.UPLOADED_DOCS$><$else$>0<$endif$></td>
+			<td><$if #active.ALL_DOCS$><$#active.ALL_DOCS$><$else$>&nbsp;<$endif$></td>
+		
+		<$endif$>
+      
+
+      <$elseif strEquals(#active.r,"2")$>
+
+	
+         <td><$if strEquals(RDATE,lastDate)$>&nbsp;<$else$><$strSubstring(RDATE,6,8)$>/<$strSubstring(RDATE,4,6)$>/<$strSubstring(RDATE,0,4)$><$endif$></td>
+         <td><$if ENV$><a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$ENV$>"><$ENV$></a><$else$>&nbsp;<$endif$></td>
+		 <td><$if WORKFLOW_ID$><$WORKFLOW_ID$><$else$>&nbsp;<$endif$></td>
+         <td><$if DOCS$><$DOCS$><$else$>&nbsp;<$endif$></td>
+         <td><$if CLIENT$><$CLIENT$><$else$>&nbsp;<$endif$></td>
+         <td><$if ACCOUNT$><$ACCOUNT$><$else$>&nbsp;<$endif$></td>
+         	
+         <$totalDocs = totalDocs + DOCS$>
+  
+        <$lastDate=RDATE$>
+
+      <$elseif strEquals(#active.r,"3") or strEquals(#active.r,"4")$>
+
+	
+         <td><$if strEquals(RDATE,lastDate)$>&nbsp;<$else$><$strSubstring(RDATE,6,8)$>/<$strSubstring(RDATE,4,6)$>/<$strSubstring(RDATE,0,4)$><$endif$></td>
+         <td><$if ENV$><a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$ENV$>"><$ENV$></a><$else$>&nbsp;<$endif$></td>
+		 <td><$if WORKFLOW_ID$><a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&wfid=<$WORKFLOW_ID$>&showUnclassified=on"><$WORKFLOW_ID$></a><$else$>&nbsp;<$endif$></td>
+         <td><$if DOC$><$DOC$><$else$>&nbsp;<$endif$></td>
+         <td><$if CLIENT$><a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&clientno=<$CLIENT$>&showUnclassified=on"><$CLIENT$></a><$else$>&nbsp;<$endif$></td>
+         <td><$if ACCOUNT$><$ACCOUNT$><$else$>&nbsp;<$endif$></td>
+         <td><$if xFund$><$xFund$><$else$>&nbsp;<$endif$></td>
+         <td><$if xAmount$><$xAmount$><$else$>&nbsp;<$endif$></td>
+         <td><$if xUnits$><$xUnits$><$else$>&nbsp;<$endif$></td>
+         <td>
+			<$#active.dInDate$>
+			<$if false$><$if xScanDate$><$xScanDate$><$else$>&nbsp;<$endif$><$endif$>
+		</td>
+         <td><$if xWorkflowDate$><$xWorkflowDate$><$else$>&nbsp;<$endif$></td>
+         <td>
+		 <a href="<$HttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$dDocName$>" title="Open info for <$dDocName$>" >
+			<$if useImageInfoLink$>
+				<img src="/ucm/resources/layouts/Top Menus/Oracle/InfoIcon_sm.gif" alt="Info" height="16" width="16" border="0">
+			<$else$>
+				<$dDocName$>
+			<$endif$>
+		</a>
+		</td>
+  
+        <$lastDate=RDATE$>
+
+      <$endif$>
+</tr>
+
+    <$endloop$>
+    	
+    <$if strEquals(#active.r,"2")$>
+    	<tr align="center">
+    		<td class="first-col">&nbsp;</td>
+    		<td>&nbsp;</td>
+			<td>&nbsp;</td>
+    		<td><b>Total</b></td>
+    		<td><b><$totalDocs$></b></td>
+    		<td>&nbsp;</td>
+			<td>&nbsp;</td>
+    	</tr>
+    <$endif$>
+</table>
+
+<$else$>
+
+  <p align="left">Please select a report type from above.</p>
+
+<$endif$>
+</div>
+</div>
+
+
+</body>
+</html>

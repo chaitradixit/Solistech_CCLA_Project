@@ -1,0 +1,24 @@
+<?hda version="7.5.1 (050317)" jcharset=Cp1252 encoding=iso-8859-1?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ECS_SearchAndFilter_templates
+5
+name
+class
+formtype
+filename
+description
+SEARCHANDFILTER
+RootPage
+HomePage
+ECS_SearchAndFilter.htm
+SearchAndFilter
+SEARCHANDFILTER_DB
+RootPage
+HomePage
+ECS_SearchAndFilter_DB.htm
+SearchAndFilter database example
+@end
+

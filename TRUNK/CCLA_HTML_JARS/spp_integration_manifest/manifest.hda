@@ -1,0 +1,24 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+ComponentName=SPP_INTEGRATION
+CreateDate=11/05/2012 16:12
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+blFieldTypes=CreateDate date
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+SPP_INTEGRATION/SPP_INTEGRATION.hda
+componentExtra
+SPP_INTEGRATION/readme.txt
+componentClasses
+SPP_INTEGRATION/classes/SPPIntegration.jar
+componentLib
+SPP_INTEGRATION/lib/
+images
+ccla/refresh.png
+componentExtra
+SPP_INTEGRATION/scripts/
+@end

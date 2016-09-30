@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		
+		<$if strIndexOf(IdcService,"CCLA_TRANSACTION_SHARE_CLASS_NEW") > -1$>
+			<$isNew=1$>
+		<$else$>		
+			<$isEdit=1$>
+		<$endif$>
+		
+		<title>
+			Confirm Daily Income / Expense TODO Add process date here
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Income
+							</div>
+							
+	
+						
+						<$include orangeContainer_bottom$>
+				
+				
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html></body></html>

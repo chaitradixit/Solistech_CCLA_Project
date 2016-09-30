@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<$include iris_styles$>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>
+	<$if docName$>
+		Update signature
+	<$else$>	
+		Add new signature
+	<$endif$>
+</title>		
+		
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<script type="text/javascript">
+		
+			function submitSigForm() {
+				var frm = document.forms['sigform'];
+				
+				if (frm.elements['dDocTitle'].value.length == 0) {
+					alert("You must enter a title.");
+					return;
+				}
+				
+				if (frm.elements['xClientNumber'].value.length == 0) {
+					alert("You must enter a Client number.");
+					return;
+				}
+				
+				frm.submit();
+			}
+			
+			function cancel()
+			{
+				window.parent.closePopup();
+			}
+				
+	</script>
+
+	<$include orangeContainer_top$>
+		
+		<$if docName$>
+			<$dDocName = docName$>
+			<$executeService("DOC_INFO_LATESTRELEASE")$>
+		<$endif$>
+		
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+			<b>
+				<$if docName$>
+					Update signature <$#local.docName$>
+				<$else$>	
+					Add new signature
+				<$endif$>
+			</b>
+		</div>
+		
+		<div>
+			
+			<$if sigAdded or sigUpdated$>
+				
+				<!-- Display confirmation of new note -->
+				<table width="100%" cellpadding=0 cellspacing=2>
+				
+					<tr>
+						<td>
+							<br/>
+							<$if sigAdded$>
+								Your signature has been added. It may take a few minutes to appear.
+							<$else$>
+								Your signature has been updated.
+							<$endif$>
+							<br/>
+							<br/>
+						</td>
+					</tr>
+					<tr align="center">
+						<td>
+							<input type=button value=OK style="width: 120; display: block; margin: 2px;" onClick="window.parent.location.reload(true);">
+						</td>
+					</tr>
+					
+				</table>
+			
+			<$else$>
+				
+				<form name="sigform" id="sigform" <$if not docName$>enctype="multipart/form-data" action="<$HttpCgiPath$>" method="POST"<$endif$>>
+					<!-- New table-based auditing submission form -->
+					<$include add_idc_token_to_form$>
+					<$if docName$>
+						<input type=hidden name="IdcService" value="UPDATE_DOCINFO" />
+						<input type=hidden name="dID" value="<$#active.dID$>" />
+						<input type=hidden name="dDocName" value="<$#active.dDocName$>" />
+							
+						<input type=hidden name="dDocAuthor" value="<$#active.dDocAuthor$>" />
+					<$else$>
+						<input type=hidden name="IdcService" value="CHECKIN_NEW" />
+						
+						<input type=hidden name="dDocAuthor" value="<$dUser$>" />
+					<$endif$>
+					
+					<input type=hidden name="dDocType" value="Signature" />
+					<input type=hidden name="dSecurityGroup" value="Public" />
+					<input type=hidden name="dDocAccount" value="" />
+					
+					
+					<input type=hidden name="xSource" value="User Upload" />
+					
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_ADD_SIGNATURE<$include add_idc_token_to_url$><$if docName$>&sigUpdated=1<$else$>&sigAdded=1<$endif$>" />
+			
+					<br/>
+					
+					<table width="100%" cellpadding=0 cellspacing=2>
+						<tr>
+							<td>
+								Title:
+							</td>
+							<td>
+								<input type="text" name="dDocTitle" <$if #active.dDocTitle$>value="<$#active.dDocTitle$>"<$endif$> />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Client no*:
+							</td>
+							<td>
+								<input type="text" name="xClientNumber" <$if #active.xClientNumber$>value="<$#active.xClientNumber$>"<$endif$>/>
+							</td>
+						</tr>
+							<tr>
+							<td>
+								Account no:
+							</td>
+							<td>
+								<input type="text" name="xAccountNumber" <$if #active.xAccountNumber$>value="<$#active.xAccountNumber$>"<$endif$>/>
+							</td>
+						</tr>
+						<tr>
+							<td><br/></td>
+						</tr>
+						
+						<$if not docName$>
+							<tr>
+								<td>
+									File:
+								</td>
+								<td>
+									<!-- File upload -->
+									<input type="file" name="primaryFile" />
+								</td>
+							</tr>
+						<$endif$>
+							
+						<tr>
+							<td><br/></td>
+						</tr>
+						<tr>
+							<td align="center" colspan=2>
+								<input type=button value=Submit style="width: 120; margin: 2px;" onClick="submitSigForm();">
+								<input type=button value=Cancel style="width: 120; margin: 2px;" onClick="cancel();">
+							</td>
+						</tr>
+					</table>
+								
+				</form>	
+				
+			<$endif$>
+				
+		</div>
+		
+	<$include orangeContainer_bottom$>	
+	
+	</div>
+
+</body>
+</html>

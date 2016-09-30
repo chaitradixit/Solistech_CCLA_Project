@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Edit Contribution TTLA Allocations
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<$include ccla_cs_donation_ttla_allocation_js$>
+	
+	<script type="text/javascript">
+		$(document).ready( function() {
+			<$if #local.updated$>
+
+				if (window.parent) {
+					// Refresh the donor subscription display to reflect
+					// any TTLA allocation changes.
+					window.parent.refreshSubscriptionDonorsDisplay();
+				}
+			<$endif$>
+		});
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				Edit Contribution TTLA Allocations
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<$if #local.updated$>
+				
+					<div class="message_panel info_icon">
+						Allocations updated.
+					</div>
+				<$endif$>
+				
+				
+				<form id="ttlaAllocationsForm" name="ttlaAllocationsForm" method="POST">				
+				<p>
+					Set the TTLA Allocations for this Donation below. Any selected
+					TTLAs will be listed on the Subscription form.
+				<p>
+				
+				<p>
+					Allocation percentages are optional - but if you choose to
+					fill any in, they must all add up to 100.
+				</p>
+				
+				<p>
+					There is a special 'To be confirmed' option at the top of 
+					the list - you may allocate any percentage here if the donator
+					has not confirmed some or all the beneficiaries for their investments.
+				</p>
+				
+				<table width="100%">
+					<tr>
+						<td width="20%"><b>Allocation method:</b></td>
+						<td width="30%">
+							<input type="radio" id="valueType" name="valueType" value="percentage" /> Percentages
+							<input type="radio" id="valueType" name="valueType" value="amount" checked /> Amounts
+						</td>
+					
+						<td width="20%"><b>Gov. match rate:</b></td>
+						<td width="30%">
+							<select name="GOV_MATCH_RATE_ID" id="GOV_MATCH_RATE_ID">
+								<$loop rsGovMatchRates$>
+									
+									<option value="<$#active.GOV_MATCH_RATE_ID$>"
+										<$if (parseDate(dateCurrent()) > parseDate(#active.GOV_MATCH_START_DATE)) and (parseDate(dateCurrent()) < parseDate(#active.GOV_MATCH_END_DATE))$>selected<$endif$> >
+										<$#active.GOV_MATCH_PERCENTAGE$>% (<$formatDateWithPattern(#active.GOV_MATCH_START_DATE, "d MMM yyyy")$> - <$formatDateWithPattern(#active.GOV_MATCH_END_DATE, "d MMM yyyy")$>)
+									</option>
+								<$endloop$>
+							</select>
+						</td>
+						
+					</tr>
+				</table>
+
+					<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_CONTRIBUTION_TTLA_ALLOCATIONS" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_CONTRIBUTION_TTLA_ALLOCATION_EDIT<$include add_idc_token_to_url$>&CONTRIBUTION_ID=<$#local.CONTRIBUTION_ID$>&updated=1" />
+	
+					<input type="hidden" name="CONTRIBUTION_ID" value="<$#local.CONTRIBUTION_ID$>"/>
+					
+					<!-- Copy the PRODUCT_ID from the Contribution record. -->
+					<input type="hidden" name="PRODUCT_ID" value="<$rsContribution.PRODUCT_ID$>" />
+					
+					<div style="padding: 5px; border: 1px inset; height: 300px; overflow-y: scroll">
+
+						<table cellspacing="0" cellpadding="0" width="98%" class="accounts-table">			
+							<tr>
+								<th class="first-col" width="20">
+									Sel.
+								</th>
+								<th>
+									TTLA Name
+								</th>
+								<th width="80">
+									% Percent
+								</th>
+								<th width="100">
+									£ Amount
+								</th>
+								
+								<th width="100">
+									£ Exp. Gov Match
+								</th>
+								
+								<th width="100">
+									£ Act. Gov Match
+								</th>
+								
+							</tr>
+
+							<!-- Output special TBC row for unallocated investment -->
+							<$thisOrgId = ""$>
+							<$thisOrgName = "To be confirmed"$>
+							
+							<$include ccla_cs_donation_ttla_allocation_display$>
+	
+							<$loop rsTTLAOrganisations$>
+								<$thisOrgId = #active.ORGANISATION_ID$>
+								<$thisOrgName = #active.ORGANISATION_NAME$>
+								
+								<$include ccla_cs_donation_ttla_allocation_display$>
+								
+							<$endloop$>
+
+						</table>
+						
+					</div>
+
+					<br/>
+					
+					<$loop rsContribution$>
+						<$contributionAmount = #active.CONTRIBUTION_AMOUNT$>
+					<$endloop$>
+					
+					<div>
+						Target amount: £<$formatCurrency(contributionAmount)$> | <span id="numSelectedTTLAs">?</span> | <span id="totalAllocPercentage">?</span>
+					</div>
+
+					<div align="right">
+						<input type="button" value="Update" onclick="updateTTLAAllocations(<$contributionAmount$>)" />
+					</div>
+				</form>				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+</body>
+</html>

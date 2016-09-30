@@ -1,0 +1,139 @@
+﻿<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Add clients to campaign
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+
+		<$include orangeContainer_top$>
+	
+			<$if not (rsProcessResults or processStarted)$>
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Start campaign</b>
+				</div>
+				
+				<div style="margin: 5px">
+					<p class="load_section loading">
+						Adding clients to campaign...
+					</p>
+				</div>
+				
+				<script type="text/javascript">
+					
+					// After the popup loads, callback the parent window to fetch the list
+					// of clients/companies which will be added to the campaign.
+					$(document).ready( function() {
+						var clientList = window.parent.getSelectedClients();
+						
+						// Add the list of clients to the hidden form and submit it.
+						var frm = document.forms['startCampaignForm'];
+						frm.elements['entityList'].value = clientList;
+						
+						frm.submit();
+					});
+				
+				</script>
+				
+				<form id="startCampaignForm" name="startCampaignForm" method="POST">
+					<input type="hidden" name="IdcService" value="CCLA_CS_ADD_SELECTED_CLIENTS_TO_CAMPAIGN" /><$include add_idc_token_to_form$>
+					
+					<input type="hidden" name="entityList" value="" />
+					<input type="hidden" name="campaignId" value="<$#local.campaignId$>" />
+					
+					<$if exclude$>
+						<input type="hidden" name="exclude" value="1" />
+					<$endif$>
+					
+				</form>
+				
+			<$else$>
+			
+				<script type="text/javascript">
+					
+					function doParentRefresh() {
+						var doCallBack = <$if rsProcessResults$>true<$else$>false<$endif$>;
+					
+						if (doCallBack && window.parent) {
+							window.parent.location.href=
+							"<$HttpCgiPath$>?IdcService=CCLA_CS_CAMPAIGN_TARGET_SELECTION<$include add_idc_token_to_url$>&campaignId=<$#local.campaignId$>";	
+						}
+					}
+				
+				</script>
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Completed: Add clients to campaign</b>
+				</div>
+				
+				<div style="margin: 5px">
+					
+					<$numSuccesses = 0$>
+					
+					<$loop rsProcessResults$>
+						<$if #active.PROCESS_STARTED like "Y"$>
+							<$numSuccesses = numSuccesses + 1$>
+						<$endif$>
+					<$endloop$>
+					
+					<$numAttempts = rsProcessResults.#numRows$>
+					<$if not numAttempts$>
+						<$numAttempts = 0$>
+					<$endif$>
+					
+					<p>
+						<$numSuccesses$>/<$numAttempts$> clients were successfully added to the campaign.
+						<br/>
+						A full report is shown below. <a href="#" onclick="doParentRefresh();">Click Here</a> to go back to previous page.
+					</p>
+					
+					<div style="height: 250px; overflow-y: scroll; border: 1px inset; padding: 5px;">
+					
+						<table width="100%">
+							<tr height="20">
+								<th class="sfHeader_start">Client ID</th>
+								<th class="sfHeader_mid">Added to campaign</th>
+								<th class="sfHeader_end">Error</th>
+							</tr>
+							
+							<$loop rsProcessResults$>
+								<tr>
+									<td class="sfResultCell">
+										<$include ccla_cs_display_entity_id$>
+									</td>
+									<td class="sfResultCell">
+										<$if #active.PROCESS_STARTED like "Y"$>
+											Yes
+										<$else$>
+											No
+										<$endif$>
+									</td>
+									<td class="sfResultCell">
+										<$if #active.FAIL_REASON$><$#active.FAIL_REASON$><$else$>&nbsp;<$endif$>
+									</td>
+								</tr>
+							<$endloop$>
+						</table>
+					
+					</div>
+					
+				</div>
+			
+			<$endif$>
+
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

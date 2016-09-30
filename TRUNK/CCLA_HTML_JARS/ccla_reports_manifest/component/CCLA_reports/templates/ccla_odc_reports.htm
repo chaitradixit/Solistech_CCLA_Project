@@ -1,0 +1,148 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include iris_styles$>
+	
+	<title>CCLA ODC Reports</title>
+
+	<$include iris_jquery_js$>
+		
+</head>
+
+
+<body <$include iris_body_def_internal$> style="text-align:center">
+
+	<$include iris_header$>
+
+	<div style="text-align:center; padding: 10px; width:800px">
+
+		<h3 class="white">CCLA ODC Reports</h3>
+
+		<div  class="grey_bg white_border" style="padding:10px;">
+		<form action="<$HttpCgiPath$>">
+		
+		Choose the <b>CCLA_Iris</b> cabinet to view all pending content for Iris.
+		<br/>
+		Choose the <b>CCLA_Clients</b> cabinet to view all pending Client Response slips.
+		<br/>
+		
+		<input type="hidden" name="IdcService" value="CCLA_ODC_REPORTS"/>
+		<$include add_idc_token_to_form$>
+			<table>
+			  <tr>
+				<td>Filing cabinet:</td>
+				<td>
+				  <select name="fileCabinet">
+
+					<$loop rsFileCabinets$>
+						<$fileCabinetName = ""$>
+					
+						<$if #active.ecName$>
+							<!-- MS SQL -->
+							<$fileCabinetName = #active.ecName$>
+						<$else$>
+							<!-- Assume Oracle, capitalized column names -->
+							<$fileCabinetName = #active.ECNAME$>
+						<$endif$>
+					
+						<option value="<$fileCabinetName$>" <$if (not fileCabinet and fileCabinetName like "CCLA") or (#local.fileCabinet like fileCabinetName)$>selected="selected"<$endif$>>
+							<$fileCabinetName$>
+						</option>
+					<$endloop$>
+
+				  </select>
+				</td>
+			  </tr>
+			  <tr>
+				<td>&nbsp;</td>
+				<td align="right"><input type="Submit" value="Go"/>
+			</table>
+		</form>
+
+		<hr/>
+
+
+<$if #active.fileCabinet$>
+  
+  <$executeService("CCLA_GET_ODC_BATCH_LISTING")$>	
+  <$totalBatches = getValue("rsBatches","#numRows")$>
+
+  <$dateCurrent()$>
+  
+  <h5>Batch Summary</h5>
+
+  <table border=1>
+	<tr>
+		<th>
+			Status
+		</th>
+		<th>
+			Total
+		</th>
+	</tr>
+
+	<$loop rsBatchSummary$>
+		<tr>	
+			<td>
+				<!-- Use both column char cases -->
+				<$#active.batchStatus$><$#active.BATCHSTATUS$>
+			</td>
+			<td align="right">
+				<$#active.numBatches$><$#active.NUMBATCHES$>
+			</td>
+		</tr>
+	<$endloop$>
+
+	<tr>
+		<td align="right" colspan=2><$totalBatches$></td>
+	</tr>
+
+  </table>
+
+  <h5>Batch Listing</h5>
+
+  <table border=1>
+	<tr>
+		<th>Name</th>
+		<th>Commited pages</th>
+		<th>Uncommited pages</th>
+		<th>Status</th>
+		<th>Scan date</th>
+	</tr>
+
+	<$loop rsBatches$>
+		<!-- Use both column char cases -->
+		<tr>
+			<td>
+				<$#active.ecName$><$#active.ECNAME$>
+			</td>
+			<td>
+				<$#active.ecCommittedPageCount$><$#active.ECCOMMITTEDPAGECOUNT$>
+			</td>
+			<td>
+				<$#active.ecUnCommittedPageCount$><$#active.ECUNCOMMITTEDPAGECOUNT$>
+			</td>
+			<td>
+				<$#active.ecStatus$><$#active.ECSTATUS$>
+			</td>
+			<td>
+				<$#active.ecDateTime$><$#active.ECDATETIME$>
+			</td>
+		</tr>
+	<$endloop$>
+
+  </table>
+
+ 
+<$else$>
+
+  <p align="left">Please select a file cabinet from above.</p>
+
+<$endif$>
+</div>
+</div>
+
+</body>
+</html>
+

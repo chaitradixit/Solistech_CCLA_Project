@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Trigger batch Workflow jobs
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Trigger batch Workflow jobs
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<form method="post">
+						<$include add_idc_token_to_form$>
+						<input 	type="hidden" name="IdcService" value="SPP_TRIGGER_BATCH_JOBS" />
+						
+						SQL Query: 
+						<br/>
+						<textarea name="query" style="width: 400px; height: 200px;"><$#local.sqlQuery$></textarea>
+						<br/>
+						Check for dates:
+						<br/>
+						<select name="checkForDate">
+							<option value="">No</option>
+							<option value="1">Yes</option>
+						</select>
+						<br/>
+						<br/>
+						<input type="submit" value="Trigger jobs" />
+						
+						<$if clientCount$>
+							<br/>
+							<br/>
+							Attempted to add <$clientCount$> clients from query results.
+							<br/>
+							Started: <$processStartedCount$>
+							<br/>
+							Failed: <$processFailedCount$>
+							<br/>
+						<$endif$>
+					</form>
+					
+					<br/>
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+			</div>
+		</div>
+	
+	</body>
+</html>

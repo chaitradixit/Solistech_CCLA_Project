@@ -1,0 +1,500 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+primaryKeysTAUDITCONFIG_SERVICEMAP=schPrimaryKey
+isSyncTableDesign=true
+tableName=TAUDITCONFIG_SERVICEMAP
+blFieldTypes=schCreateTimestamp date,schModifyTimestamp date
+numRows=58
+fullQueryString=SELECT *  FROM TAUDITCONFIG_SERVICEMAP WHERE ((TAUDITCONFIG_SERVICEMAP.schCreateTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'})  OR (TAUDITCONFIG_SERVICEMAP.schModifyTimestamp BETWEEN {ts '2009-01-01 17:04:31.900'} AND {ts '2009-05-09 17:43:11.561'}) )
+beginDate={ts '2009-01-01 17:04:31.900'}
+useParentTS=false
+useSourceID=0
+modifyTimeStamp=schModifyTimestamp
+archiveDate={ts '2009-05-09 17:43:11.561'}
+removeExistingChildren=0
+createTimeStamp=schCreateTimestamp
+allowDeleteParentRows=0
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+endDate={ts '2009-05-09 17:43:11.561'}
+isTableArchive=1
+removeOnlyWhenNoChild=0
+timeZone=Europe/London
+numFieldsTAUDITCONFIG_SERVICEMAP=8
+instanceName=idcxe
+@end
+@ResultSet ExportResults
+8
+schPrimaryKey 6 20
+schCreateTimestamp 5 20
+schModifyTimestamp 5 20
+schSourceID 6 50
+AC_BINDER_VALUE 6 64
+AC_SERVICE 6 64
+AC_BINDER_FIELD 6 32
+AC_ACTION 6 64
+1
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:42:18.080'}
+idcxe
+*
+WEBDAV_GET
+xCM_Ref
+LOCK-DOC
+2
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_UNLOCK_DOCUMENT
+dDocType
+UNLOCK-DOC
+3
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:42:26.815'}
+idcxe
+*
+WEBDAV_PUT
+xCM_Ref
+SAVE-DOC
+4
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:42:37.737'}
+idcxe
+*
+ECS_UNDO_XFORM_CHECKOUT
+xCM_Ref
+UNLOCK-DOC
+5
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+_autoDiscussion
+UPDATE_DOCINFO
+dDocType
+DELETE-DISCUSSION
+6
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_EXPIRE_ITEM
+dDocType
+DELETE-DOC
+7
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Note
+CM_EXPIRE_ITEM
+dDocType
+DELETE-NOTE
+8
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+note
+CM_ADD_DOCUMENT_SUBMIT
+xCM_Type
+ADD-NOTE
+9
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+announcement
+CM_ADD_DOCUMENT_SUBMIT
+xCM_Type
+ADD-NOTE
+10
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_URL
+CM_ADD_DOCUMENT_SUBMIT
+dDocType
+ADD-URL-TO-CASE
+11
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_ADD_DOCUMENT_SUBMIT
+dDocType
+ADD-REF-DOC
+12
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_ADD_DOCUMENT_SUBMIT
+dDocType
+ADD-DOC
+13
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_UPDATE_DOCUMENT_SUBMIT
+dDocType
+UPDATE-DOC
+14
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Note
+CM_UPDATE_DOCUMENT_SUBMIT
+dDocType
+UPDATE-NOTE
+15
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_URL
+CM_UPDATE_DOCUMENT_SUBMIT
+dDocType
+UPDATE-URL
+16
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_UPDATE_CASE_SUBMIT
+
+UPDATE-CASE
+17
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_NEW_CASE_SUBMIT
+
+CREATE-CASE
+18
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_CHECKOUT_CHECKIN
+dDocType
+ADD-NEW-DOC-VERSION
+19
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_CHECKOUT_CHECKIN
+dDocType
+ADD-NEW-REF-DOC-VERSION
+20
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:43:52.580'}
+idcxe
+*
+CHECKIN_NEW
+xCM_Ref
+CHECKIN-NEW
+21
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_CASE_TEAM_ADD_MEMBER_SUBMIT
+
+ADD-TEAM-MEMBER
+22
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_URL
+CM_EXPIRE_ITEM
+dDocType
+DELETE-URL
+23
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_EXPIRE_ITEM
+dDocType
+DELETE-REF-DOC
+24
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_ADD_DISCUSSION_SUBMIT
+
+CREATE-DISCUSSION
+25
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-04-01 16:56:05.493'}
+idcxe
+false
+CM_ADD_FOLDER_SUBMIT
+isNewFolder
+UPDATE-FOLDER
+26
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:09.830'}
+idcxe
+*
+SUBMIT_HTML_FORM_APPEND_ONLY
+xCM_Ref
+ADD-DISCUSSION-POST
+27
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_CASE_TEAM_REMOVE_ROLE_SUBMIT
+
+REMOVE-ROLE
+28
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_LOCK_DOCUMENT
+dDocType
+LOCK-DOC
+29
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_LOCK_DOCUMENT
+dDocType
+LOCK-REF-DOC
+30
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+UPDATE_DOCINFO
+dDocType
+UPDATE-REF-DOC
+31
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_CASE_TEAM_REMOVE_MEMBER_SUBMIT
+
+REMOVE-TEAM-MEMBER
+32
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Case_Document
+CM_UNLOCK_DOCUMENT_UCM
+dDocType
+UNLOCK-DOC
+33
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_UNLOCK_DOCUMENT_UCM
+dDocType
+UNLOCK-REF-DOC
+34
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:26.799'}
+idcxe
+*
+DELETE_REV
+xCM_Ref
+DELETE-REV
+35
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:32.955'}
+idcxe
+*
+CHECKOUT
+xCM_Ref
+CHECKOUT
+36
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:38.862'}
+idcxe
+*
+UPDATE_DOCINFO_BYFORM
+xCM_Ref
+UPDATE-DOCINFO-BYFORM
+37
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:44.534'}
+idcxe
+*
+CHECKIN_SEL
+xCM_Ref
+CHECKIN-SEL
+38
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_CASE_TEAM_ADD_ROLE_SUBMIT
+
+CREATE-ROLE
+39
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-04-01 16:56:09.430'}
+idcxe
+true
+CM_ADD_FOLDER_SUBMIT
+isNewFolder
+NEW-FOLDER
+40
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:51.612'}
+idcxe
+*
+UNDO_CHECKOUT
+xCM_Ref
+UNDO-CHECKOUT
+41
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:44:58.940'}
+idcxe
+*
+ECS_WF_TASK_COMPLETE
+caseName
+COMPLETE-TASK
+42
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:04.034'}
+idcxe
+*
+CM_CASE_TEAM_ADD_ROLE_SUBMIT
+previousRoleName
+UPDATE-ROLE
+43
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:09.362'}
+idcxe
+*
+ECS_WF_CREATE_PROCESS
+caseName
+CREATE-PROCESS
+44
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:16.049'}
+idcxe
+*
+CM_JBPM_TASK_RELEASE
+caseName
+RELEASE-TASK
+45
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:20.705'}
+idcxe
+*
+CM_JBPM_TASK_ACCEPT
+caseName
+ACCEPT-TASK
+46
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+
+CM_DELETE_FOLDER
+
+DELETE-CASE-FOLDER
+47
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:25.440'}
+idcxe
+*
+SUBSCRIBE
+xCM_Ref
+SUBSCRIBE
+48
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:34.143'}
+idcxe
+*
+UNSUBSCRIBE
+xCM_Ref
+UNSUBSCRIBE
+49
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:39.330'}
+idcxe
+*
+CHECKIN_UNIVERSAL
+xCM_Ref
+CHECKIN-UNIVERSAL
+50
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:44.424'}
+idcxe
+*
+CHECKIN_BYNAME
+xCM_Ref
+CHECKIN-BYNAME
+51
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:50.065'}
+idcxe
+*
+ECS_WF_TASK_COMPLETE_SIGNED
+caseName
+COMPLETE-SIGNED-TASK
+52
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:45:55.393'}
+idcxe
+*
+ECS_WF_TASK_COMMENT
+caseName
+ADD-TASK-COMMENT
+53
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:41:09.721'}
+idcxe
+Reference_Document
+CM_UNLOCK_DOCUMENT
+dDocType
+UNLOCK-REF-DOC
+54
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:46:02.409'}
+idcxe
+*
+CREATE_OR_SUBMIT_FORM_APPEND_ONLY
+xCM_Ref
+ADD-DISCUSSION-POST
+55
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:46:15.846'}
+idcxe
+*
+WEBDAV_UNLOCK
+xCM_Ref
+UNLOCK-DOC
+56
+{ts '2009-03-30 15:41:09.721'}
+{ts '2009-03-30 15:46:16.221'}
+idcxe
+*
+ECS_GET_XFORM
+xCM_Ref
+LOCK-DOC
+58
+{ts '2009-04-27 19:14:01.683'}
+{ts '2009-04-28 14:41:33.429'}
+idcxe
+View
+CHECK_USER_CREDENTIALS
+auditAction
+VIEW-DOCUMENT
+57
+{ts '2009-04-27 18:27:18.802'}
+{ts '2009-04-27 18:27:18.802'}
+idcxe
+
+ECS_LOGIN
+
+LOGIN
+@end
+

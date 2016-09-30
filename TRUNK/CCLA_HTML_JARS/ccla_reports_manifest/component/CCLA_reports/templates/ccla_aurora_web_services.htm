@@ -1,0 +1,200 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Aurora Web Services <$if methodName$> - <$methodName$><$endif$>
+		</title>
+		
+		<$include iris_styles$>
+		
+		<style type="text/css">
+			body{
+				padding:0;
+				margin:0;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<$include iris_header$>
+	
+		<div style="padding: 10px">
+	
+		<h1>Aurora Web Services</h1>
+		
+		<table border=1>
+			<tr>
+				<th>Service method</th>
+				<th>Required params</th>
+			</tr>
+			<tr>
+				<td>IsValidBankAccount</td>
+				<td>Sort code, account no.</td>
+			</tr>
+			<tr>
+				<td>GetAccount</td>
+				<td>Company, extended account no.</td>
+			</tr>
+			<tr>
+				<td>GetClientByClientNumber</td>
+				<td>Company, client no.</td>
+			</tr>
+			<tr>
+				<td>GetClientByAccountNumberExternal</td>
+				<td>Company, extended account no.</td>
+			</tr>
+			<tr>
+				<td>GetAccountCorrespondentAddress</td>
+				<td>Company, extended account no.</td>
+			</tr>
+			<tr>
+				<td>GetClientCorrespondentAddress</td>
+				<td>Company, client no.</td>
+			</tr>
+			
+		</table>
+		<br/>
+		<br/>
+		
+		<form>
+			<input type="hidden" name="IdcService" value="CCLA_AURORA_WEB_SERVICES" />
+			<$include add_idc_token_to_form$>
+			<table>
+				<tr>
+					<td>Company</td>
+					<td>
+						<input type="text" name="company" value="<$#local.company$>" />
+					</td>
+				</tr>
+				<tr>
+					<td>Client number</td>
+					<td>
+						<input type="text" name="clientNumber" value="<$#local.clientNumber$>" />
+					</td>
+				</tr>
+				<tr>
+					<td>Extended account number<br/> (Client number, account number, fund)</td>
+					<td>
+						<input type="text" name="accNumberExternal" value="<$#local.accNumberExternal$>" />
+					</td>
+				</tr>
+				<tr>
+					<td>Sort code</td>
+					<td>
+						<input type="text" name="sortCode" value="<$#local.sortCode$>" />
+					</td>
+				</tr>
+				<tr>
+					<td>Bank account number</td>
+					<td>
+						<input type="text" name="accNumber" value="<$#local.accNumber$>" />
+					</td>
+				</tr>
+				<tr>
+					<td>Service method</td>
+					<td>
+						<$auroraMethods = "IsValidBankAccount,GetAccount,GetClientByClientNumber,GetClientByAccountNumberExternal,GetAccountCorrespondentAddress,GetClientCorrespondentAddress,GetUnitisedPrices"$>
+						<$exec rsMakeFromString("rsAuroraMethods",auroraMethods,"method")$>
+						
+						<select name="methodName">
+							<$loop rsAuroraMethods$>
+								<option value="<$#active.method$>" <$if #local.methodName like #active.method$>selected<$endif$>><$#active.method$></option>
+							<$endloop$>
+						</select>
+					</td>
+				</tr>
+				
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" value="Submit" />
+					</td>
+				</tr>
+			</table>
+		
+		</form>
+		
+		<$if #local.methodName$>
+		
+			<$executeService("CCLA_CALL_AURORA_WEB_SERVICE")$>
+			
+			<h2>Service response</h2>
+			
+			<table border=1>
+				<tr>
+					<td>StatusCode</td>
+					<td><$#local.StatusCode$></td>
+				</tr>
+				<tr>
+					<td>StatusCode</td>
+					<td><$#local.StatusMessage$></td>
+				</tr>
+			</table>
+			
+			<h2>Valid bank account</h2>
+		
+			<$if not (#local.isValidBankAccount like '')$>
+				<$isValidBankAccount$>
+			<$else$>
+				-
+			<$endif$>	
+			
+			<h2>Client details</h2>
+			
+			<table border=1>
+				<tr>
+					<td>Name</td>
+					<td><$#local.clientName$></td>
+				</tr>
+				<tr>
+					<td>Exempion no.</td>
+					<td><$#local.clientExemptionNumber$></td>
+				</tr>
+			</table>
+			
+			<h2>Account details</h2>
+			
+			<table border=1>
+				<tr>
+					<td>Bank Account No. (withdrawal)</td>
+					<td><$#local.bankAccountNumberWithdrawal$></td>
+				</tr>
+				<tr>
+					<td>Bank Sort Code (withdrawal)</td>
+					<td><$#local.bankSortCodeWithdrawal$></td>
+				</tr>
+				<tr>
+					<td>Correspondent Code</td>
+					<td><$#local.correspondentCode$></td>
+				</tr>
+				<tr>
+					<td>Building Societ No. (withdrawal)</td>
+					<td><$#local.buildingSocietyNumberWithdrawal$></td>
+				</tr>
+				<tr>
+					<td>Bank Subtitle</td>
+					<td><$#local.bankSubtitle$></td>
+				</tr>
+			</table>
+			
+			<h2>Address details</h2>
+			
+			<$addressFields = "Organisation,Building,ThoroughFare,Street,Town,Locality,County,Country,PostCode"$>
+			<$exec rsMakeFromString("rsAddressFields",addressFields,"field")$>
+			
+			<table border=1>
+				<$loop rsAddressFields$>
+					<tr>
+						<td><$#active.field$></td>
+						<td><$getValue("#local","addr_" & #active.field)$></td>
+					</tr>
+				<$endloop$>
+			</table>
+			
+			
+		<$endif$>
+		
+		</div>
+		
+	</body>
+</html>

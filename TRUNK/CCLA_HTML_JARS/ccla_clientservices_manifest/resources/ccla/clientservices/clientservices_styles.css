@@ -1,0 +1,790 @@
+/** Styles used by Client Services pages */
+	
+	#ccla_cs_content {
+		text-align: left;
+	}
+	
+	#ccla_cs_content table{
+		background-color:#EEE;
+	}
+	
+	#ccla_cs_content a {
+		color: #000;
+		text-decoration:underline;
+	}
+	
+	#terminate-activity {
+		font-size: 0.9em;
+	}
+	
+	.ccla_cs_panel_header {
+		margin: 0px 3px 5px 0px;
+		padding: 3px;
+		
+		border-bottom: 1px solid #777; 
+		
+		color: #000;
+		font-size: 1.2em;
+		
+		text-align: left;
+		font-weight: bold;
+	}
+	
+	.ccla_cs_panel_content {
+		padding: 0px 5px 5px 5px;
+	}
+	
+	.ccla_data_panel_header {
+		font-size: 1.1em;
+		font-weight: bold;
+		color: #000;
+		margin: 5px 0px;
+	}
+	
+	.ccla_data_panel {
+		/*
+		background-color:#DDD;
+		*/
+		
+		background-color: #84BE5A;
+		border:1px solid #AAA;
+		padding:5px 3px;
+		margin: 5px 0px;
+	}
+	
+	.ccla_search_fields_table,
+	.ccla_data_panel table{
+		background-color: #84BE5A !important;
+	}
+	
+	label.required {
+		color: #F00;
+	}
+	
+	div.toggle-button-open {
+		float: left; 
+		
+		width: 12px; 
+		height: 12px; 
+		
+		padding-right: 5px; 
+		margin-right: 5px;
+		background-image: url(../../../images/stellent/tree_top_only_collection_closed.gif); 
+		background-position: left center;
+		background-repeat: no-repeat;
+		
+		cursor: pointer;
+	}
+	
+	.expandingPanelButton, .ajax-panel-button, .account-table-toggle {
+		cursor:pointer;
+	}
+	
+	.category-selector{
+		width:100%;
+	}
+	
+	div.toggle-button-closed {
+		float: left; 
+		
+		width: 12px; 
+		height: 12px; 
+		
+		padding-right: 5px; 
+		margin-right: 5px;
+		background-image: url(../../../images/stellent/tree_top_only_collection_open.gif); 
+		background-position: left center;
+		background-repeat: no-repeat;
+		
+		cursor: pointer;
+	}
+	
+	div.toggle-button-loading {
+		float: left; 
+		
+		width: 12px; 
+		height: 12px; 
+		
+		padding-right: 5px; 
+		margin-right: 5px;
+		background-image: url(../../../images/ccla/ccla-ajax-loader.gif); 
+		background-position: left center;
+		background-repeat: no-repeat;
+		
+		cursor: pointer;
+	}
+	
+	table.cs-info-table {
+		border: 1px solid #CCC;
+		background-color: #EEE;
+	}
+	
+	table.cs-info-table th {
+		font-weight: bold;
+		text-align: left;
+		vertical-align: top;
+		
+		border: 0px none;
+		border-left: 0px none;
+		border-top: 0px none;
+		border-bottom: 0px none;
+		border-right: 0px none;
+		
+		padding: 3px;
+	}
+	
+	table.cs-info-table td {
+		text-align: left;
+		vertical-align: top;
+		
+		border: 0px none;
+		border-left: 0px none;
+		border-top: 0px none;
+		border-bottom: 0px none;
+		border-right: 0px none;
+		
+		padding: 3px;
+	}
+	
+	.toggle-data-header-table {
+		border:1px solid #CCCCCC;
+		margin: 5px 0px; 
+		background-color: #BEDFA7;
+	}
+	
+	table.accounts-table ,
+	table.ccla-table {
+		margin: 0px;
+		padding: 0px;
+		
+		table-layout:fixed;
+		word-break: break-word;
+		border-style:solid;
+		border-width:1px;
+		background-color:#F3F3F6;
+		border-color:#BBB6C5;
+	}
+	
+	table.accounts-table th.first-col,
+	table.accounts-table td.first-col {
+		border-left: 1px solid #777;
+	}
+	
+	table.accounts-table tr.first-row td {
+		border-top: 1px solid #777;
+	}
+	
+	table.accounts-table th,
+	table.ccla-table th{
+		border:none;
+		border-left:1px solid #FFF;
+		border-top:1px solid #FFF;
+		border-right:1px solid #BBB;
+		border-bottom:1px solid #BBB;
+		padding:3px;
+		background-color:#D0CDCE;
+		color:#000000;
+		font-family:Arial;
+		font-size:9pt;
+	}
+	
+	table.accounts-table tr.account-details-row td,
+	table.ccla-table 	td{
+		border-bottom: 1px solid #999;
+		border-right: 1px solid #999;
+		padding:3px;
+	}
+	
+	table.accounts-table tr.new-client-row td {
+		border-top: 3px solid #777;
+	}
+	
+	table.accounts-table tr.account-details-row td.ccla-note-cell {
+		padding: 0px 0px 3px 0px;
+		border-left: 1px solid #777;
+	}
+	
+	table.accounts-table tr.account-details-row td{
+		color:#000;
+	}
+	
+	div.ccla-note-connecter {
+		float: left; 
+		
+		border-left: 1px solid #777; 
+		border-bottom: 1px solid #777; 
+		width: 5px; 
+		height: 13px;
+		
+		margin-left: 220px;
+	}
+	
+	div.ccla-note {
+		float: left;
+		width: 535px;
+	
+		background-color:#FFF0DB; 
+		border:1px solid #BBBBBB; 
+		
+		margin: 3px 0px 0px 0px;
+		padding: 3px;
+		
+		text-align:left; 
+	}
+	
+	div.ccla-note pre {
+		white-space: pre-wrap; /* css-3 */
+		word-wrap: break-word; /* Internet Explorer 5.5+ */
+		font-family: Verdana, Arial;
+		white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+		width: 99%;
+		_white-space: pre; /* IE only hack to re-specify in addition to word-wrap */
+		margin: 3px 0px;
+		padding: 0px;
+	}
+	
+	tr.account-transfer-row td {
+		text-align: right;
+		
+		border-bottom: 1px solid #777;
+		border-right: 1px solid #777;
+		
+		background-color: #EEE;
+		color: #000;
+		
+		padding: 3px;
+	}
+	
+	tr.account-transfer-row-enabled td {
+		text-align: right;
+		
+		border-bottom: 1px solid #777;
+		border-right: 1px solid #777;
+		
+		background-color: #BEDFA7;
+		color: #000;
+		
+		padding: 3px;
+	}
+	
+	div.account-transfer-choices {
+		margin: 0px 0px 10px 0px;
+	}
+	
+	div.account-transfer-choices input[type="checkbox"] {
+		margin-left: 10px;
+	}
+	
+	input.account-transfer-amount {
+		width: 3.5em;
+	}
+	
+	input.validation-error {
+		color: #FFF;
+		background-color: #EF5675;
+	}
+	
+	tr.account-row-open td {
+		background-color: #D0EBBE;
+	}
+	
+	tr.account-row-pend td {
+		background-color: #FADF93;
+	}	
+	
+	tr.account-row-temp td {
+		background-color: #C17B7B;
+	}
+	
+	tr.account-row-closed td {
+		color: #FFF;
+		background-color: #BBB;
+	}
+	
+	tr.account-row-frozen td {
+		background-color: #26A3CF;
+		color: #EEE;
+	}
+	
+	.mono-type {
+		font-family: "Courier New", "Courier";
+		font-size: 10pt;
+	}
+	
+	.cs-info-tab {
+		cursor: pointer;
+	}
+	
+	div.cs-info-container {
+		border: 1px inset; 
+		margin-top: 1px; 
+		height: 380px; 
+		overflow-y: scroll;
+		/* padding: 10px; */
+	}
+	
+	div.cs-info-panel {
+		padding: 10px; 
+		width: 95%;
+	}
+	
+	div.container-loading {
+		background-image: url(../../../images/ccla/ccla-ajax-spinner.gif);
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-color: #EEE;
+	}
+	
+	.no-info {
+		color: #AAA;
+		margin-top: 0px;
+	}
+	
+	.readonly-address-field {
+		background-color: #DEDEDE;
+	}
+	
+	.cs-page-container
+	{
+		margin: 15px 0px;
+		width:960px;
+		overflow: auto;
+	}
+	.cs-content-container
+	{
+		width: 800px
+	}
+
+	.cs-page-container table{
+		
+	}
+	
+	.cs-right-content-container
+	{
+		float:right;
+	}
+
+	.cs-left-content-container
+	{
+		float:left;
+	}	
+	/* Side navigation/context buttons */
+	.cs-action-buttons-container
+	{
+		width:150px;
+		float:left;
+		height:100%;
+		padding-right:10px;
+	}
+	
+	.cs-action-button {
+		display: block;
+		padding: 8px 5px;
+		margin-bottom: 5px;
+		
+		background-color: #BEDFA7;
+		border-bottom: 2px solid #FFF;
+		
+		font-size: 1em;
+	}
+	
+	.cs-action-button-enabled {
+		color: #555 !important;
+		border-bottom: 2px solid #FFF;
+	}
+	
+		.cs-action-button-enabled:hover {
+			text-decoration: none;
+			border-bottom: 2px solid #C20072;
+			
+			color: #FFF !important;
+		}
+	
+	.cs-action-button-selected {
+		color: #555 !important;
+		border-bottom: 2px solid #C20072;
+		
+		font-weight: bold;
+	}
+	
+		.cs-action-button-selected:hover {
+			text-decoration: none;
+		}
+	
+	.cs-action-button-disabled {
+		border-bottom: 4px solid #FFF;
+		color: #999;
+	}
+	
+	.cs-data-panel-green {
+		background-color: #BEDFA7;
+		border:1px solid #AAA;
+		padding:5px 3px;
+		margin: 5px 0px;
+	}
+		.cs-data-panel-red {
+		background-color: #C20072;
+		border:1px solid #AAA;
+		padding:5px 3px;
+		margin: 5px 0px;
+	}	
+	.cs-float-right{
+	float:right;
+	}
+	.cs-float-left{
+	float:left;
+	}
+	.cs-clear-both{
+	clear: both;
+	}
+	.cs-margin-top-bottom-10{
+	margin-bottom:10px;
+	margin-top:10px;
+	}
+	.red {
+		color: #F00;
+	}
+	.no-padding-spacing{
+	cellpadding:0;
+	cellspacing:0;
+	}
+	table.no-padding-spacing td{
+	padding:0px;
+	}
+	.cs-margin-all-5{
+	margin-bottom:5px;
+	margin-top:5px;
+	margin-left:5px;
+	margin-right:5px;
+	}
+	
+	.ui-autocomplete li {
+		list-style-type: none !important;
+	}
+	
+	.cs-tabOn{
+		background:transparent url(../../../images/ccla/clientservices/shinytab-on-small.gif) no-repeat scroll left top;
+	}
+	.cs-tabOff{
+		background:transparent url(../../../images/ccla/clientservices/shinytab-off-small.gif) no-repeat scroll left top;
+	}
+	
+	.cs-tab-container {
+		overflow: auto; 
+		border-bottom: 1px solid #CCCCCC; 
+	}
+
+	.cs-link-tab {
+		width: 100px; 
+		text-align: center; 
+		display: block; 
+		float: left; 
+		height: 1.5em; 
+		padding-top: 0.2em;
+		margin-right: 2px;
+	}
+	
+	.cs-link-tab:hover {
+		text-decoration: none;
+	}
+	
+	/* Boxes used for displaying entity/IVS/AML check statuses. */
+	.check-status-box {
+		float: left;
+		width: 1.1em;
+		height: 1.1em;
+		cursor: pointer;
+		
+		border: 1px solid #CCC;
+	}
+
+	.red-status-box {
+		background-color:#ff0000;
+	}
+	
+	.amber-status-box {
+		background-color:#ffaa00;
+	}
+	
+	.green-status-box {
+		background-color:#32CD32;
+	}
+	
+	.ccla-home-panel{
+		border:4px solid #FFF;
+		text-align:center;
+		width:200px;
+		height:160px;
+		margin:20px;
+		float:left;
+	}
+	
+	.ccla-home-panel a{
+		font-weight:bold;
+		color:#FFF;
+		font-family:Arial;
+		font-size:9pt;
+		position:relative;
+		top:70px;
+	}
+	
+	ul.ccla-home-list {
+		font-size: 10pt;
+		font-weight: bold;
+		padding-left: 15px;
+	}
+	
+	ul.ccla-home-list li {
+		list-style-type: square;
+		padding: 3px 0px;
+		margin-left: 10px;
+	}
+	
+	.ccla-cs-content a:hover {
+
+	}
+	
+	.ccla-cs-content a:visited {
+		color: #FFF;
+	}
+	
+	.ccla_search_fields_table th {
+		text-align: right;
+		font-weight: normal;
+	}
+	
+	.ccla_search_fields_table input {
+		width: 95%;
+	}
+	
+	#contactLookupForm table,
+	.cs-content-container table,
+	#popUpContainingDiv table,
+	.search_results_cont{
+		background-color:#EEE;
+	}
+	
+	.cs-data-panel-red table{
+		background-color:#DB7093;
+	}
+	
+	.cs-data-panel-green table{
+		background-color:#BEDFA7;
+	}
+	
+	#confirmChecks table{
+		background-color:transparent;
+	}
+	
+	.sfHeaderRow th table{
+		background-color:transparent !important;
+	}
+	
+	/*Bulk Update panel styling*/
+	.bulk_accounts_panel_container #divAccountDetail .more_detail,
+	.bulk_accounts_panel_container #divAccountMoreDetail .person_list,
+	.bulk_accounts_panel_container #divAccountMoreDetail .bank_account_list{
+		display:none;
+	}
+	
+	
+	.bulk_accounts_panel_container table.accounts-table tr.accounts-highlighted td{
+		background-color:#FFF;
+	}
+	.bulk_accounts_panel_container{
+		overflow:auto;
+		border:1px solid #777;
+	}
+	
+	.bulk_accounts_panel_left,
+	.bulk_accounts_panel_right_top{
+		overflow-y: scroll;
+		padding:3px;
+	}
+	
+	.bulk_accounts_panel_left{
+		width:200px;
+		height:209px;
+		float:left;
+		margin:0;
+	}
+	
+	.bulk_accounts_panel_right_top{
+		float:right;
+		width:569px;
+		height:132px;
+		border-bottom:1px solid #777;
+		border-left:1px solid #777;
+	}
+	
+	.bulk_accounts_panel_right_bottom{
+		float:right;
+		width:569px;
+		height:70px;
+		padding:3px;
+		background-color:#E6E6E6;
+		border-left:1px solid #777;
+	}
+	
+	.outcome_highlighted{
+		font-weight:bold;
+	}
+	
+	/*Table styling, used in search screen.*/
+	.two-col th { width:14% }
+	.two-col td { width:36% }
+	.three-col th{ width:14%; }
+	.three-col td{ width:19%; }
+	
+	div.cs-interaction-container {
+		border: 1px inset; 
+		margin-top: 1px; 
+		height: 200px; 
+		overflow-y: scroll;
+	}	
+	
+	div.display-none{
+		display:none !important;
+	}
+	
+	
+	
+	.qas-multiple-result-entry {
+		font-weight: bold;
+		cursor: pointer;
+	
+		margin-top: 5px;
+		padding-left: 16px;
+		background-position: left center;
+		background-repeat: no-repeat;
+	}
+	
+	.qas-multiple-result-entry :hover {
+		text-decoration: underline;
+	}
+	
+	.qas-multiple-result-entry-open {
+		background-image: url(../../../images/stellent/tree_top_only_collection_open.gif);
+	}
+	
+	.qas-multiple-result-entry-closed {
+		background-image: url(../../../images/stellent/tree_top_only_collection_closed.gif);
+	}
+	
+	.qas-refine-search-text-region {
+		background-color: #D0CDCE;
+		margin-top: 5px;
+		padding: 5px;
+	}
+	
+	.dark-grey{
+	background-color:#D0CDCE;
+	}
+	
+	table.eod-table td
+		{
+		border:none;
+		border-left:1px solid #FFF;
+		border-top:1px solid #FFF;
+		border-right:1px solid #BBB;
+		border-bottom:1px solid #BBB;
+		padding:3px;
+		background-color:#D0CDCE;
+		color:#000000;
+		font-family:Arial;
+		font-size:9pt;
+	}	
+
+	.shiftUp{
+		position:relative;
+		top:-2px;
+	}
+
+	.greenNums{
+		color:#10F52C;
+		font-weight:bold;
+	}
+	
+	#requiredDetailsUL li{
+		list-style:none;
+		float:left;
+		width:365px;
+	}
+	
+	.pointer{
+		cursor:pointer;
+	}
+	
+	/*module processing admin page*/
+	.moduleValue{
+		padding:5px;
+	}
+	.newWindow{
+		background: url(../../../images/ccla/new_window.gif) no-repeat scroll right top transparent;
+		padding-right:15px;
+	}
+	.moduleValue label {
+		width:135px;
+		float:left;
+		margin-top:5px;
+	}
+	.moduleValue input{
+		width:500px;
+		float:left;
+		}
+	.moduleValue select{
+		width:250px;
+		float:left;
+		}
+	.editModuleDiv{
+		background-color:#EEEEEE;
+		padding:10px;
+	}
+	
+	.routingModuleTable{
+		margin-bottom:5px;
+	}
+	
+	
+	/* Instruction Error Page */
+	.errorLi .stackTrace{
+		display:none;
+	}
+	.toggleStackTrace{
+		cursor:pointer;
+		font-weight:bold;
+		text-decoration:underline;
+	}
+	.errorLi{
+		margin:15px;
+		padding:5px;
+	}
+	
+	.raisedBorder{
+		border-top:1px solid #B5B1B1;
+		border-left:1px solid #B5B1B1;
+		border-right:1px solid black;
+		border-bottom:1px solid black;
+	}
+	
+	.stackTrace{
+		background:#D9D9D9;
+		padding:5px;
+		font-size:14px;
+	}
+	
+	.timeStamp{
+		font-weight:bold;
+	}
+	.errorLi label{
+		font-weight:bold;
+	}
+	
+	.bold{
+		font-weight:bold;
+	}
+
+/*must only have display:none */	
+.hiddenPanel{
+	display:none;
+}

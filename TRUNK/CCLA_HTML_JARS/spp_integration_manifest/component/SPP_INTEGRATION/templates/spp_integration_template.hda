@@ -1,0 +1,73 @@
+﻿<?hda version="10.1.3.3.3 (080807)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet SPP_INTEGRATION_Templates
+5
+name
+class
+formtype
+filename
+description
+CCLA_ENVELOPE_ID_SEQ
+Document
+HomePage
+ccla_envelope_id_seq.htm
+A page to inspect or create the envelope id sequence
+CCLA_WITHINSTRUCTION_POPUP
+RootPage
+HomePage
+ccla_withinstruction_popup.htm
+Popup window for entering instruction document data
+CCLA_GET_INCLUDE
+RootPage
+HomePage
+ccla_get_include.htm
+Returns whatever the passed include returns
+CCLA_DEP_DOCS_MANAGER
+RootPage
+HomePage
+ccla_dep_docs_manager.htm
+A basic way to interact with the TDEPENDANTDOCS table
+CCLA_CHECKOUT_CHECKIN_BULK
+RootPage
+HomePage
+ccla_checkout_checkin_bulk.htm
+After an archive from live to dev, we need to use this template to check items out and in so they enter ucm worflow
+CCLA_PROCESS_DATE_ADMIN
+Document
+Form
+ccla_process_date_admin.htm
+null
+CCLA_JOB_PRIORITY_ADMIN
+Document
+Form
+ccla_job_priority_admin.htm
+null
+SPP_TRIGGER_BATCH_JOBS
+Document
+DocumentList
+spp_trigger_batch_jobs.htm
+null
+CCLA_PROCESS_DETAILS_ADMIN
+Document
+Form
+ccla_process_details_admin.htm
+null
+CCLA_PUBLIC_HOLIDAY_ADMIN
+Document
+Form
+ccla_public_holiday_admin.htm
+null
+CCLA_SYSTEM_CONFIG_VAR_ADMIN
+Document
+Form
+ccla_system_config_var_admin.htm
+null
+CCLA_PROCESS_DATE_CALCULATOR
+Document
+Form
+ccla_process_date_calculator.htm
+null
+@end

@@ -1,0 +1,1 @@
+-- Adds new female revd INSERT INTO REF_TITLE (GENDER_ID,SALUTATION, SALUTATION_SUFFIX, TITLE, TITLE_CATEGORY_ID, TITLE_ID)VALUES (2, 'Ms', 'sn', 'Revd', 2, 56);-- Modify previous revd entry with male genderUPGRADE REF_TITLE set GENDER_ID = 1 where TITLE_ID = 12;COMMIT;

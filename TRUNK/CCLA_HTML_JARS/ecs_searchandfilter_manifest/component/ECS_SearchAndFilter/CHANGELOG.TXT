@@ -1,0 +1,415 @@
+------------------------------------------------------------------------
+r18619 | camli | Tue Jun 12 13:57:07 BST 2012
+
+ccla latest release on 12/06/2012
+
+------------------------------------------------------------------------
+r18618 | camli | Tue Jun 12 13:55:13 BST 2012
+
+updated fix info.
+------------------------------------------------------------------------
+r18546 | camli | Wed Jun 06 14:40:58 BST 2012
+
+fixed issue with alternating between 2 providers. i.e one using an oracle facade and system database.
+------------------------------------------------------------------------
+r17873 | PAULT | Mon Apr 30 16:24:37 BST 2012
+
+added 11g compatibility, sortlinks were concatenating values instead of replacing
+------------------------------------------------------------------------
+r17817 | PAULT | Thu Apr 26 11:42:47 BST 2012
+
+added note about usage for 11g
+------------------------------------------------------------------------
+r16626 | nigeln | Tue Feb 28 14:24:24 GMT 2012
+
+added another parameter additonalUrlParameters, which allows the addition of url parameters to the URL. These parameters will be passed when the user clicks:
+-The sorting buttons 
+-The Paging buttons
+
+------------------------------------------------------------------------
+r16584 | sgebbie | Fri Feb 24 15:34:16 GMT 2012
+
+updtaed to use ecs-svn
+------------------------------------------------------------------------
+r14770 | tm | Tue Jul 19 13:26:40 BST 2011
+
+Updated readme
+------------------------------------------------------------------------
+r14733 | tm | Mon Jul 18 16:07:45 BST 2011
+
+Added extra switch controlled by binder var (SF_preventRowIdOrdering). This removes default ROWID ordering which can allow paging on certain views.
+------------------------------------------------------------------------
+r14145 | hamishb | Wed Jun 22 14:36:24 BST 2011
+
+Fixed bug with sfProviderName not being read from the binder
+------------------------------------------------------------------------
+r14094 | nigeln | Mon Jun 20 14:52:59 BST 2011
+
+changed the project properties to build using jdk 1.5 instead of 1.6.
+------------------------------------------------------------------------
+r14042 | nigeln | Wed Jun 15 16:42:45 BST 2011
+
+Updated System.out.println to SystemUtils.trace
+added top heading
+
+------------------------------------------------------------------------
+r10891 | pault | Wed Oct 27 16:44:03 BST 2010
+
+	added sfUseImageForSearchButton. 
+	If displaySearchButton=true and sfUseImageForSearchButton is set to a content item dDocName 
+	then that image will be displayed as the search button
+------------------------------------------------------------------------
+r10889 | pault | Wed Oct 27 16:40:04 BST 2010
+
+	added sfUseImageForSearchButton. 
+	If displaySearchButton=true and sfUseImageForSearchButton is set to a content item dDocName 
+	then that image will be displayed as the search button
+------------------------------------------------------------------------
+r10886 | pault | Wed Oct 27 15:52:46 BST 2010
+
+added sfUseImageForSearchButton. If displaySearchButton is true, and sfUseImageForSearchButton is set to a content item dDocName then that image will be displayed
+------------------------------------------------------------------------
+r10668 | tm | Fri Oct 08 10:26:19 BST 2010
+
+New jar containing SF_preventPaging switch
+------------------------------------------------------------------------
+r10667 | tm | Fri Oct 08 10:25:50 BST 2010
+
+Added changelog
+------------------------------------------------------------------------
+r10666 | tm | Fri Oct 08 10:19:22 BST 2010
+
+Added new flag to database search, which will prevent any paging of the results or use of the ROWNUM column in the constructed query. This can be set by passing in a non-empty SF_PreventPaging value before executing the search.
+
+This was done to enable any view to be displayed using S&F. Before it was very restrictive and required all tables to be joined via primary keys only. If the view didn't satisfy this, the DB would throw an ORA-01445 error 'cannot select ROWID...'.
+------------------------------------------------------------------------
+r9995 | kib | Wed Aug 04 09:45:09 BST 2010
+
+Changed refrence from 'EcsBaseUtils' to ECS_BaseUtils
+------------------------------------------------------------------------
+r9488 | katie | Mon Jun 28 11:27:47 BST 2010
+
+added SF_WCMuseCustomOraPool setting
+------------------------------------------------------------------------
+r9487 | katie | Mon Jun 28 11:25:57 BST 2010
+
+updated so that a custom provider can be used.
+------------------------------------------------------------------------
+r9143 | tm | Wed May 19 17:52:12 BST 2010
+
+Added 'bin' to SVN ignore list
+------------------------------------------------------------------------
+r9142 | tm | Wed May 19 17:50:17 BST 2010
+
+Version 3.0.5 changes
+------------------------------------------------------------------------
+r9141 | tm | Wed May 19 17:48:27 BST 2010
+
+Added 'EcsBaseUtils' and 'UCM_CORE' as required projects on the classpath
+------------------------------------------------------------------------
+r7983 | pf | Wed Jan 27 11:31:40 GMT 2010
+
+added ecslc method to replace lc
+
+N.b. To enable ecslc the latest version of BaseUtils is required
+------------------------------------------------------------------------
+r7978 | tm | Wed Jan 27 10:49:06 GMT 2010
+
+Updated to Version 3.0.4:
+
+-Externalised list of selectable Result Counts
+------------------------------------------------------------------------
+r7928 | tm | Fri Jan 22 15:16:31 GMT 2010
+
+Upversioning to 3.0.3
+------------------------------------------------------------------------
+r7927 | tm | Fri Jan 22 15:16:17 GMT 2010
+
+Added null match support
+------------------------------------------------------------------------
+r7728 | darrenj | Fri Jan 15 11:47:41 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7727 | darrenj | Fri Jan 15 11:47:40 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7726 | darrenj | Fri Jan 15 11:47:40 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7725 | darrenj | Fri Jan 15 11:47:40 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7724 | darrenj | Fri Jan 15 11:47:40 GMT 2010
+
+Recomitting without lockwait.bat/bak files and all tilda's omitted
+------------------------------------------------------------------------
+r7721 | darrenj | Fri Jan 15 11:46:15 GMT 2010
+
+Removing all lang folders and recomitting it without lockwait.bat/bak files and all tilda's omitted
+
+------------------------------------------------------------------------
+r7594 | pault | Fri Jan 08 16:51:52 GMT 2010
+
+importing new .hda file
+
+------------------------------------------------------------------------
+r7593 | pault | Fri Jan 08 16:51:42 GMT 2010
+
+removing old .hda file
+
+------------------------------------------------------------------------
+r7592 | pault | Fri Jan 08 16:35:20 GMT 2010
+
+adding new language files
+
+------------------------------------------------------------------------
+r7591 | pault | Fri Jan 08 16:35:20 GMT 2010
+
+adding new language files
+
+------------------------------------------------------------------------
+r7590 | pault | Fri Jan 08 16:35:20 GMT 2010
+
+adding new language files
+
+------------------------------------------------------------------------
+r7589 | pault | Fri Jan 08 16:35:20 GMT 2010
+
+adding new language files
+
+------------------------------------------------------------------------
+r6748 | pault | Tue Nov 17 17:45:25 GMT 2009
+
+updated readme.txt for to date bug fix
+------------------------------------------------------------------------
+r6742 | pault | Tue Nov 17 16:21:58 GMT 2009
+
+Atlas NII00082
+
+added the following to fix the next week, month, year filter bug
+
+<$elseif strEquals(value,lc("wwNextYear"))$>
+	               	 <$startDate=dateCurrent(+365)$>
+	               	 <$endDate=dateCurrent()$>
+	               <$elseif strEquals(value,lc("wwNextMonth"))$>
+	               	 <$startDate=dateCurrent(+31)$>
+	               	 	<$endDate=dateCurrent()$>
+	               <$elseif strEquals(value,lc("wwNextWeek"))$>
+	               	 <$startDate=dateCurrent(+7)$>
+	               	 	<$endDate=dateCurrent()$>
+------------------------------------------------------------------------
+r6408 | kib | Tue Oct 20 16:05:29 BST 2009
+
+Dependency on EcsBaseUtils changed to ECS_BaseUtils. However, JAR file still remains as EcsBaseUtils.jar
+------------------------------------------------------------------------
+r6405 | kib | Tue Oct 20 15:48:55 BST 2009
+
+ECS_SearchAndFilter: Converting Component to use build process.
+------------------------------------------------------------------------
+r5809 | pf | Fri Sep 04 09:31:40 BST 2009
+
+3.0.2 baseline with case insensitivity option added for database searches
+------------------------------------------------------------------------
+r5808 | gs | Fri Sep 04 09:29:36 BST 2009
+
+Added case insensitive option to database search
+------------------------------------------------------------------------
+r5324 | tm | Fri Aug 07 15:39:18 BST 2009
+
+V3.0.1 baseline
+------------------------------------------------------------------------
+r5323 | tm | Fri Aug 07 15:38:14 BST 2009
+
+Fixed bug in 'yesterday' quickdate filter
+------------------------------------------------------------------------
+r5218 | gs | Wed Aug 05 12:37:02 BST 2009
+
+updated build file
+------------------------------------------------------------------------
+r5210 | gs | Wed Aug 05 11:30:18 BST 2009
+
+Version 3.0 baseline created
+------------------------------------------------------------------------
+r5076 | gs | Fri Jul 31 11:51:34 BST 2009
+
+Interim baseline with DB search support added
+------------------------------------------------------------------------
+r5075 | gs | Fri Jul 31 11:48:01 BST 2009
+
+Bug fix when checking for zero len query and extra checks for unsupported GET_SEARCH_RESULTS params
+------------------------------------------------------------------------
+r5066 | gs | Fri Jul 31 10:26:40 BST 2009
+
+Removed ORA includes file - not required
+------------------------------------------------------------------------
+r5065 | gs | Fri Jul 31 10:05:34 BST 2009
+
+Removed file
+------------------------------------------------------------------------
+r5060 | gs | Thu Jul 30 18:03:59 BST 2009
+
+Interim commit of Ora db search support
+------------------------------------------------------------------------
+r5059 | gs | Thu Jul 30 18:02:38 BST 2009
+
+Committed interim build with Ora db support
+------------------------------------------------------------------------
+r4547 | tm | Mon Jun 29 17:13:27 BST 2009
+
+Fixed numeric search bug - see readme
+------------------------------------------------------------------------
+r4546 | tm | Mon Jun 29 16:32:32 BST 2009
+
+Added cursor:pointer to calendar button styles
+------------------------------------------------------------------------
+r4464 | tm | Mon Jun 15 14:26:22 BST 2009
+
+
+------------------------------------------------------------------------
+r4463 | tm | Mon Jun 15 14:21:43 BST 2009
+
+Fixed some rendering issues with thumbnail column
+------------------------------------------------------------------------
+r4452 | tm | Thu Jun 11 15:14:04 BST 2009
+
+
+------------------------------------------------------------------------
+r4451 | tm | Thu Jun 11 15:12:49 BST 2009
+
+-Added support for numeric searching
+-Removed bug from quick search function
+------------------------------------------------------------------------
+r4347 | tm | Wed Jun 03 16:58:16 BST 2009
+
+Fixed typo in buildSearchQuery
+------------------------------------------------------------------------
+r4344 | tm | Wed Jun 03 16:05:36 BST 2009
+
+
+------------------------------------------------------------------------
+r4315 | tm | Mon Jun 01 11:50:05 BST 2009
+
+
+------------------------------------------------------------------------
+r4313 | tm | Fri May 29 18:23:21 BST 2009
+
+Many updates to include file - removed several eval() statements and replaced with getValue()
+------------------------------------------------------------------------
+r3911 | gs | Mon Mar 30 13:01:46 BST 2009
+
+Prep for new v2.0 release
+------------------------------------------------------------------------
+r3910 | tm | Mon Mar 30 12:58:00 BST 2009
+
+Added clarification to is10g flag (no longer required)
+------------------------------------------------------------------------
+r3637 | tm | Tue Feb 17 16:49:56 GMT 2009
+
+Minor change to ecsSearchAndFilter include - now checks for isOracleUCM flag, generated by ECS_BaseUtils. If the flag is set, the is10g flag will be set.
+------------------------------------------------------------------------
+r3285 | gordanam | Wed Dec 03 17:38:08 GMT 2008
+
+update of readme file in order to basline
+------------------------------------------------------------------------
+r3284 | gordanam | Wed Dec 03 17:35:33 GMT 2008
+
+removing set flag is10g (this is a part of configuration of S&F when installing on 10g version)
+------------------------------------------------------------------------
+r3283 | gordanam | Wed Dec 03 17:24:11 GMT 2008
+
+added is10g flag and set it to true
+------------------------------------------------------------------------
+r3215 | gordanam | Mon Nov 24 14:48:02 GMT 2008
+
+Fixing issue HEI00345 in Atlas, search on date from/to in Hera 10g.
+------------------------------------------------------------------------
+r3017 | gordanam | Mon Nov 03 16:58:28 GMT 2008
+
+updating readme file and version in hda file
+------------------------------------------------------------------------
+r3015 | gordanam | Fri Oct 31 12:48:11 GMT 2008
+
+adding multiSelect file to svn (created by Nicolas)
+------------------------------------------------------------------------
+r3014 | gordanam | Fri Oct 31 12:45:25 GMT 2008
+
+Changed calling of makeFilterHeader include to use cacheInclude, and internationalised strings in the component (all strings are defined in resources/lang/en/ww_strings.htm file now). See readme file. 
+------------------------------------------------------------------------
+r2523 | tm | Wed Aug 20 14:45:47 BST 2008
+
+
+------------------------------------------------------------------------
+r2522 | tm | Wed Aug 20 14:43:44 BST 2008
+
+
+------------------------------------------------------------------------
+r2420 | tm | Thu Aug 07 16:44:22 BST 2008
+
+Minor change to <p> tag used in S&F form header.
+------------------------------------------------------------------------
+r2308 | hamishb | Thu Jul 17 11:07:51 BST 2008
+
+Fixed bug not resetting sfValue and date fields were using incorrect short name
+------------------------------------------------------------------------
+r2290 | hamishb | Tue Jul 15 12:24:22 BST 2008
+
+Added styling for gap above header
+------------------------------------------------------------------------
+r2285 | hamishb | Tue Jul 15 09:40:05 BST 2008
+
+Added checks for missing variables
+------------------------------------------------------------------------
+r1647 | sl | Wed May 14 14:07:11 BST 2008
+
+Now works in IE6
+------------------------------------------------------------------------
+r1425 | gs | Thu Apr 17 13:34:11 BST 2008
+
+Sanity checked manifest file
+------------------------------------------------------------------------
+r1424 | gs | Thu Apr 17 13:31:17 BST 2008
+
+Fixed case error in jar name
+------------------------------------------------------------------------
+r1423 | gs | Thu Apr 17 13:29:54 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1422 | gs | Thu Apr 17 13:29:06 BST 2008
+
+Removed file/folder
+------------------------------------------------------------------------
+r1419 | gs | Thu Apr 17 13:19:40 BST 2008
+
+fixed directive error
+------------------------------------------------------------------------
+r1418 | gs | Thu Apr 17 13:17:02 BST 2008
+
+Changed path to jar error in glue file
+------------------------------------------------------------------------
+r1417 | gs | Thu Apr 17 12:47:40 BST 2008
+
+Updated with Build 8 label
+------------------------------------------------------------------------
+r1416 | gs | Thu Apr 17 12:44:37 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1414 | gs | Thu Apr 17 12:44:05 BST 2008
+
+Moved remotely
+------------------------------------------------------------------------
+r1413 | gs | Thu Apr 17 12:44:00 BST 2008
+
+Renamed remotely
+------------------------------------------------------------------------
+r1412 | gs | Thu Apr 17 12:43:45 BST 2008
+
+Added items remotely
+
+C:\SVN_WORKAREA\trunk
+

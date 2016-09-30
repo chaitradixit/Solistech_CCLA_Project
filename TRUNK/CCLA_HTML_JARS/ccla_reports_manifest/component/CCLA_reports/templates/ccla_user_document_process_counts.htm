@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>
+			User/Document Process Counts
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include ccla_reports_styles$>
+		<$include ccla_date_masking_js$>
+		
+	</head>
+	
+<body>
+
+	<$include iris_header$>
+
+	<br/>
+
+	<div class="grey_bg" style="margin: 10px; padding: 5px">
+		<$include ccla_user_document_process_count_search_form$>
+	</div>
+
+	<!-- Build status totals list -->
+	<$if isSubmit$>
+		
+		<!-- Display item listing -->
+		<table cellpadding="3" cellspacing="0" class="results" id="resultsTable" name="resultsTable">
+			<thead>
+			
+				<!-- First header row. Displays the matched Process Dates -->
+				<tr>
+					<th class="first-col" colspan=2>&nbsp;</th>
+
+					<$exec rsFirst("rsMinMaxProcessHours")$>
+					
+					<$loop rsMinMaxProcessHours$>						
+						<th colspan="<$#active.NUM_HOURS$>"><$formatDateOnly(#active.PROCESS_DATE)$></th>
+					<$endloop$>
+				
+				</tr>
+				
+				<!-- Second header row. Displays the WF Step Names -->
+				<tr>
+					<th class="first-col" colspan=2>&nbsp;</th>
+				
+					<$currentProcessDate = ""$>
+					<$currentStepName = ""$>
+					
+					<$exec rsFirst("rsMinMaxProcessHours")$>
+					
+					<$loop rsMinMaxProcessHours$>						
+						<th colspan="<$#active.NUM_HOURS$>"><$#active.dWfStepName$></th>
+					<$endloop$>
+
+				</tr>
+				
+				<!-- Third header row. Contains hour column headers -->
+				<tr>
+					<th class="first-col">User</th>
+					<th class="first-col">Instr. Type</th>
+					
+					<$currentProcessDate = ""$>
+					<$currentStepName = ""$>
+					
+					<$exec rsFirst("rsMinMaxProcessHours")$>
+					
+					<$loop rsProcessHours$>
+						<th><$#active.ProcessHour$></th>
+					<$endloop$>
+					
+								<$if false$>
+									<$loop rsMinMaxProcessHours$>
+										
+										<$if not (currentProcessDate like #active.PROCESS_DATE)$>
+											<$currentProcessDate = #active.PROCESS_DATE$>
+											<$currentStepName = #active.dWfStepName$>
+											
+											<$exec rsFirst("rsProcessHours")$>
+											
+											<$loop rsProcessHours$>
+												<$if (#active.PROCESS_DATE like currentProcessDate) and (#active.dWfStepName like currentStepName)$>
+													<th><$#active.ProcessHour$></th>
+												<$endif$>
+											<$endloop$>
+										
+										<$endif$>
+										
+									<$endloop$>
+								<$endif$>
+					
+				</tr>
+			
+			</thead>
+			
+			<tbody>
+				
+				<$currentUserName = ""$>
+				<$currentDocClass = ""$>
+				
+				<$loop rsDocProcessCounts$>
+					
+					<tr>
+						<th class="first-col"><$#active.dUser$></th>
+						<th><$#active.xDocumentClass$></th>
+						
+						<$currentDocClass = #active.xDocumentClass$>
+						<$currentUserName = #active.dUser$>
+						
+						<$exec rsFirst("rsProcessHours")$>
+						
+						<$loop rsProcessHours$>
+							
+							<$currentProcessDate = formatDateOnly(rsProcessHours.PROCESS_DATE)$>
+							<$currentProcessHour = rsProcessHours.ProcessHour$>
+							<$currentStepName = rsProcessHours.dWfStepName$>
+							
+							<td>
+								<$thisCount = "&nbsp;"$>
+								
+								<$exec rsFirst("rsDocProcessCountsByHour")$>
+								
+								<$loop rsDocProcessCountsByHour$>
+									<$if (formatDateOnly(#active.PROCESS_DATE) like currentProcessDate)
+										and (#active.PROCESS_HOUR like currentProcessHour)
+										and (#active.dUser like currentUserName)
+										and (#active.xDocumentClass like currentDocClass)$>	
+										
+										<$thisCount = #active.NUM_DOCS_PROCESSED$>
+											
+										<$break$>
+									<$endif$>
+								<$endloop$>
+								
+								<$thisCount$>
+							</td>
+							
+						<$endloop$>
+						
+					</tr>
+
+				<$endloop$>
+				
+			</tbody>
+			
+			
+		</table>
+			
+	<$endif$>
+		
+	</body>
+</html>

@@ -1,0 +1,203 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$pageContext="bankaccount"$>
+	<$if IdcService like "CCLA_CS_BANK_ACCOUNT_EDIT"$>
+		<$doEdit=1$>
+		<$isEdit=1$>
+		<$pageTitle = "Edit Bank Account : "$>
+	<$else$>
+	<$isInfo = 1$>
+		<$pageTitle = "Bank Account Info: "$>	
+	<$endif$>
+
+	<$loop rsBankAccount$>
+		<$if #active.ACCOUNT_NAME$>
+			<$pageTitle = pageTitle & #active.ACCOUNT_NAME$>
+		<$else$>
+			<$pageTitle = pageTitle & #active.ACCOUNT_NO$>
+		<$endif$>
+	<$endloop$>
+
+	<title>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_element_relations_js$>
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+	<script type="text/javascript">
+	function validateBankAccount()
+	{
+	var frmUpdateBankAccount = document.forms['frmUpdateBankAccount'];
+	if (frmUpdateBankAccount.SORT_CODE.value.length!=6 || frmUpdateBankAccount.ACCOUNT_NO.value.length==0)
+	{
+	alert('Please ensure that a valid sortcode and account number are entered. Sortcode needs to be 6 digits long.');
+	return false;
+	} else
+	{
+	return true;
+	}
+	
+	}
+	</script>
+	
+</head>
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div id="cs_page_container" class="cs-page-container">	
+		
+		<$if not hideActionButtons$>
+			<$buttonContext = "bankaccount"$>
+			<$include ccla_cs_include_tab_parameters$>			
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+			
+
+			<$include ccla_cs_toggle_info_edit_display$>
+	
+					<$if isUpdated$>	
+					<div class="message_panel info_icon">
+						Bank account details updated.
+					</div>
+				<$elseif added$>
+					<div class="message_panel info_icon">
+						New bank account added.
+					</div>
+				<$endif$>
+				<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						<$pageTitle$>
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+				
+						<$loop rsBankAccount$>
+							<$if doEdit$>
+								<form name="frmUpdateBankAccount" id="frmUpdateBankAccount" method="POST">
+									<input type="hidden" name="BANK_ACCOUNT_ID" value="<$#active.BANK_ACCOUNT_ID$>">
+									<input type="hidden" name="IdcService" value="CCLA_CS_BANK_ACCOUNT_UPDATE"><$include add_idc_token_to_form$>
+									<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_BANK_ACCOUNT_EDIT<$include add_idc_token_to_url$>&BANK_ACCOUNT_ID=<$#active.BANK_ACCOUNT_ID$>&isUpdated=1">
+									<table class="cs-info-table" width="100%">
+										
+										<tr>
+											<th>Account no:</th>
+											<td>
+												<input type="hidden" size=10 maxlength=10 name="ACCOUNT_NO" id="ACCOUNT_NO" value="<$#active.ACCOUNT_NO$>">
+												<$#active.ACCOUNT_NO$>
+											</td>
+											<th>Sort code:</th>
+											<td>
+												<input type="hidden" size=6 maxlength=6 name="SORT_CODE" id="SORT_CODE" value="<$#active.SORT_CODE$>">
+												<$#active.SORT_CODE$>
+											</td>
+										</tr>
+										
+										<tr>
+											<td><br/></td>
+										</tr>
+										
+										<tr>
+											<th>Account name:</th><td colspan=3><input type="text" size=64 name="ACCOUNT_NAME" id="ACCOUNT_NAME" value="<$#active.ACCOUNT_NAME$>"></td>
+										</tr>
+										
+										<tr>
+											<th>Building Soc. no:</th><td colspan=3><input type="text" size=64 maxlength=18 name="BUILDING_SOCIETY_ROLL_NUMBER" id="BUILDING_SOCIETY_ROLL_NUMBER" value="<$#active.BUILDING_SOCIETY_ROLL_NUMBER$>"></td>
+										</tr>
+										
+										<tr>
+											<th>Short name:</th>
+											
+											<td colspan=3>
+											
+												<$include ccla_cs_bank_account_short_name_js$>
+
+												<input type="text" size=18 name="ACCOUNT_SHORT_NAME" id="ACCOUNT_SHORT_NAME" value="<$#active.ACCOUNT_SHORT_NAME$>" autocomplete="off" size="18" maxlength="18">
+											</td>
+										</tr>
+
+										<!-- Set column widths -->
+										<tr>
+											<th width="20%"></th><td width="30%"></td>
+											<th width="20%"></th><td width="30%"></td>
+										</tr>
+									
+										
+										
+									</table>
+									<br>							
+								<div class='ccla_cs_panel_content'>
+								
+									<div style="text-align: right">
+										<input type="submit" value="Save"  onclick="return validateBankAccount()" tabindex="150" />
+									</div>
+									
+								</div>
+								</form>
+							<$else$>
+								<table class="cs-info-table" width="100%">
+								
+									<tr>
+										<th>Account name:</th><td colspan=3><$#active.ACCOUNT_NAME$></td>
+									</tr>
+
+									<tr>
+										<th>Building Soc. no:</th><td colspan=3><$#active.BUILDING_SOCIETY_ROLL_NUMBER$></td>
+									</tr>
+
+									<tr>
+										<th>Short Name:</th><td colspan=3><$#active.ACCOUNT_SHORT_NAME$></td>
+									</tr>
+									
+									<!-- Set column widths -->
+									<tr>
+										<th width="20%"></th><td width="30%"></td>
+										<th width="20%"></th><td width="30%"></td>
+									</tr>
+								
+									<tr>
+										<th>Account no:</th>
+										<td><$#active.ACCOUNT_NO$></td>
+										<th>Sort code:</th>
+										<td><$#active.SORT_CODE$></td>
+									</tr>
+								</table>
+							<$endif$>
+						<$endloop$>
+						
+						<br/>
+						
+						<$include ccla_cs_bank_details_display$>
+						
+					</div>
+					
+				<$include orangeContainer_bottom$>
+				<$isInfo=1$>
+				<$isEdit=""$>
+				<$include ccla_cs_bank_account_relations$>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+</body>
+</html>

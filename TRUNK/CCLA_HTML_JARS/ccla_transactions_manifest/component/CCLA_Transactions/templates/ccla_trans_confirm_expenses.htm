@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<$fundCode = #env.PSDF_FUND_CODE$>
+		
+		<title>
+			Confirm income and expenses for EOD <$#active.REPORT_DATE$> STEP 5.1
+		</title>
+		
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+		
+		function editShareClassExpense(expenseId, shareClassId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_EDIT<$include add_idc_token_to_url$>&INCOME_EXPENSE_ID=" + expenseId + "&SHARE_CLASS_ID=" + shareClassId + '&ts=' + new Date());		
+		}
+
+		function addShareClassExpense(shareClassId, fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_NEW<$include add_idc_token_to_url$>&SHARE_CLASS_ID=" + shareClassId + "&FUND_CODE=" + fundCode + '&ts=' + new Date());		
+		}	
+			
+	
+		function editShareClass(shareClassId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_SHARE_CLASS_EDIT<$include add_idc_token_to_url$>&SHARE_CLASS_ID=" + shareClassId + '&ts=' + new Date());		
+		}		
+		
+		function editGeneralExpense(expenseId)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_EDIT<$include add_idc_token_to_url$>&INCOME_EXPENSE_ID=" + expenseId + '&ts=' + new Date());		
+		}	
+		
+		function addGeneralExpense(fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_EXPENSE_NEW<$include add_idc_token_to_url$>&FUND_CODE=" + fundCode + "&ts=" + new Date());		
+		}	
+
+		function editIncome(fundCode)
+		{
+		openPopup("?IdcService=CCLA_TRANS_INCOME_EDIT<$include add_idc_token_to_url$>&FUND_CODE=" + fundCode + "&ts=" + new Date());		
+		}		
+		
+		function removeExpense()
+		{
+					var frm = document.forms['frmShareClassUpdate'];
+				frm.elements['IdcService'].value = "CCLA_TRANS_INCOME_EXPENSE_DELETE";
+				frm.submit();
+		}	
+
+		function continueNext()
+		{
+			var frm = document.forms['frmIncome'];
+			if (frm.DAILY_INCOME.value=='' || frm.GROSS_INCOME.value=='')
+				alert("Please enter the figures for income before proceeding")
+			else
+			{
+			if (frm.NAV.value=='')
+				alert("Please enter the figure for the NAV before proceeding")
+			else
+				window.location.href = "?IdcService=CCLA_TRANS_START_CALCULATE_EOD_PSDF<$include add_idc_token_to_url$>" ;
+			}
+		}	
+		
+		
+		// Reloads the income display field. Should be triggered after
+		// the income figure is added or updated
+		function updateIncomeValue() {
+
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_trans_show_daily_income_div",
+				{
+					"ts": new Date().getTime(),
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#incomeValue").html(data);
+				}
+			);
+		}
+
+		// Reloads the share class expense fields. Should be triggered after
+		// any share class figure is added or updated
+		function updateShareClassFields() {
+
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE&incName=ccla_trans_share_class_expense_div<$include add_idc_token_to_url$>",
+				{
+					"ts": new Date().getTime(),
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#shareClassExpenses").html(data);
+				}
+			);
+		}
+		
+	// Reloads the share class expense fields. Should be triggered after
+		// any share class figure is added or updated
+		function updateGeneralExpenseFields() {
+
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE&incName=ccla_trans_general_expenses_div<$include add_idc_token_to_url$>",
+				{
+					"ts": new Date().getTime(),
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#generalExpenses").html(data);
+				}
+			);
+		}		
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+				
+			<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>	
+			
+				<$if #active.ERROR_MESSAGE$>
+					<$include orangeContainer_top$>
+					<strong><$#active.ERROR_MESSAGE$></strong>
+					<$include orangeContainer_bottom$>
+				<$else$>
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Daily Expenses for PSDF Fund for <$formatDateWithPattern(#active.RUN_DATE,"dd/MM/yyyy")$>
+							</div>
+						<$include orangeContainer_bottom$>
+							<$if #active.isSameDay == 0$>
+											<div class="message_panel error_icon">
+											Information: You are running the end of day for the period <$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>.
+										</div>					
+							<$endif$>				
+						
+						<form name="frmIncome" method="POST">
+						
+						<$include orangeContainer_top$>
+							<div class="ccla_cs_panel_header">
+								<div id="incomeValue">
+									<$include ccla_trans_show_daily_income$>
+								</div>
+							</div>
+						<$include orangeContainer_bottom$>
+						
+						</form>
+										
+						
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								External Share Class Expenses
+							</div>	
+							<div id="shareClassExpenses">
+								<$include ccla_trans_share_class_expenses_new$>
+							</div>
+							<br>
+					<!-- 22/3/2011 THE INCOME FIGURE FROM HIPORT WILL BE NET OF THESE EXPENSES
+
+							<$include orangeContainer_bottom$>
+						
+						<$include orangeContainer_top$>
+						<div class='ccla_cs_panel_header'>
+								General Expenses for Fund
+							</div>	
+							<div id="generalExpenses">
+								<$include ccla_trans_general_expenses$>
+							</div>
+							<br>
+							<div align="left">
+								<input type="button" value="Add new general expense" onclick="addGeneralExpense('<$fundCode$>')"/>
+							</div>							
+							<br>
+						-->							
+							<div align="right">
+								<input type="button" value="Save and start end of day calculations" onclick="continueNext();">
+							</div>
+							<br>
+						<$include orangeContainer_bottom$>		
+
+				<$endif$>	
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>	
+			
+			</div>
+		</div>
+	</div>	
+	
+	</body>
+</html>

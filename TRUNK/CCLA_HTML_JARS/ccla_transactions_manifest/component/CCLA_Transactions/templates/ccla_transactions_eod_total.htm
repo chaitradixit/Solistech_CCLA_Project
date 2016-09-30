@@ -1,0 +1,116 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+End of Day Summary STEP 4.12
+</title>
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+			function confirmExpenses()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_CONFIRM_EXPENSES<$include add_idc_token_to_url$>" ;
+		}	
+		
+			function restartEOD()
+		{
+			window.location.href = "?IdcService=CCLA_TRANS_RESTART_EOD<$include add_idc_token_to_url$>" ;
+		}	
+			function viewTransactions(statusId)
+		{
+		window.open('?IdcService=CCLA_TRANS_TRANSACTION_LIST<$include add_idc_token_to_url$>&INSTRUCTION_STATUS_ID=' + statusId,'new','') 
+		}			
+		</script>
+	
+		</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+			
+			<$if userHasRole(#env.USER_ROLE_EOD) or userHasRole("admin")$>	
+				
+				<$if #active.ERROR_MESSAGE$>
+				
+					<$include orangeContainer_top$>
+					<strong><$#active.ERROR_MESSAGE$></strong>
+					<$include orangeContainer_bottom$>
+				
+				<$else$>		
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Summary for PSDF fund end of day: <$formatDateWithPattern(#active.RUN_DATE,"dd/MM/yyyy")$>
+							</div>
+						<$if #active.isSameDay == 0 and #active.FORCE_PROCESS == 0$>
+							<div class="message_panel error_icon">
+								Information: You are running the end of day for the period <$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>
+								.  No transactions will be processed therefore opening and closing values should match.
+							</div>
+						<$elseif #active.isSameDay == 0 and #active.FORCE_PROCESS == 1$>
+							<div class="message_panel error_icon">
+								Information: You are running the end of day for the period <$formatDateWithPattern(#active.START_DATE,"dd/MM/yyyy")$> to <$formatDateWithPattern(#active.END_DATE,"dd/MM/yyyy")$>
+								. <br><b>NB</b> You are running with force transaction processing, so the closing values might be different.
+							</div>					
+						<$else$>
+							<$if #active.hasTransactions ==0 $>
+								<div class="message_panel error_icon">
+									Warning: There are no transactions found for today's process date.
+									<br><br>				
+									<input type="button" class="generic_button" value="Restart End of Day" onclick="restartEOD();">*
+									or 
+									<input type="button" class="generic_button" value="Restart End of Day With Date Range" onclick="restartEODWithDate();">*
+									<p>* This will allow you to re-enter unit price and generate share class movements again.  It will also pick up any
+									transactions that are available to be processed since the last run.</p>
+								</div>
+							<$else$>
+								<input type="button" class="generic_button" value="View Transactions" onclick="viewTransactions(<$#env.PROCESSED_INSTRUCTION_STATUS_ID$>);">
+								<br><br>
+							<$endif$>
+						<$endif$>
+						
+						<$if rsFundAudit$>
+							<$include ccla_trans_eod_total_summary$>						
+							<br>
+							<div align="right">
+								<input type="button" class="generic_button" onclick="confirmExpenses()" value="Continue to enter income/expenses for the day">
+							</div>							
+						<$else$>
+							No Fund Audit found for today.
+						<$endif$>
+
+						<$include orangeContainer_bottom$>
+				<$endif$>
+			<$else$>
+					<$include orangeContainer_top$>
+					<strong>You do not have authorisation to view this page. To request access please contact the helpdesk.</strong>
+					<$include orangeContainer_bottom$>
+			<$endif$>				
+			</div>
+		</div>
+	</div>	
+</body></html>

@@ -1,0 +1,531 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+<@dynamichtml ccla_instruction_rule_form@>
+<table class="ccla-table">
+
+	<tr>
+	<$if isPriority$>
+		<th width="30%">Name</th>
+		<th width="10%">Type</th>
+		<th width="10%">Date Added</th>
+		<th width="10%">Added By</th>	
+		<th width="15">Default Priority</td>
+		<th width="25%">Action</th>	
+	<$else$>
+		<th width="30%">Name</th>
+		<th width="15%">Type</th>
+		<th width="15%">Date Added</th>
+		<th width="10%">Added By</th>	
+		<th width="30%">Action</th>	
+	<$endif$>
+
+		</tr>
+	<$if rsInstrRule$>
+		<$loop rsInstrRule$>
+		<form id="form<$#active.INSTRUCTION_RULE_ID$>" name="form<$#active.INSTRUCTION_RULE_ID$>" method="POST">
+		<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_INSTR_RULE" /><$include add_idc_token_to_form$>
+		<$if isPriority$>
+			<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_PRIORITY_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#active.INSTRUCTION_RULE_ID$>" />
+		<$else$>
+			<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#active.INSTRUCTION_RULE_ID$>" />
+		<$endif$>
+		<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#active.INSTRUCTION_RULE_ID$>" />
+		<input type="hidden" id="DATE_ADDED" name="DATE_ADDED" value="<$#active.DATE_ADDED$>" />
+		<input type="hidden" id="ADDED_BY" name="ADDED_BY" value="<$#active.ADDED_BY$>" />	
+		<tr>
+			<td align="center"><input type="text" id="RULE_NAME" name="RULE_NAME" value="<$#active.RULE_NAME$>" /></td>
+			<td align="center">
+				<select id="RULE_TYPE_ID" name="RULE_TYPE_ID">
+					<option value="0" <$if #active.RULE_TYPE_ID==0$>selected<$endif$>>AND</option>
+					<option value="1" <$if #active.RULE_TYPE_ID==1$>selected<$endif$>>OR</option>
+				</select>
+			</td>
+			<td align="center"><$#active.DATE_ADDED$></td>
+			<td align="center"><$#active.ADDED_BY$></td>
+			<$if isPriority$>
+				<td align="center"><input type="text" id="PRIORITY" name="PRIORITY" value="<$#active.PRIORITY$>"/></td>
+			<$endif$>
+			<td align="center">
+				<input type="submit" value="Update"/>
+			</td>
+		</tr>
+		</form>
+		<$endloop$>
+	<$endif$>
+</table>					
+<@end@>
+<@dynamichtml ccla_add_new_instruction_rule_form@>
+<script type="text/javascript">
+		function checkAddForm() {
+			var createForm = document.getElementById('createNewRule');
+			if (createForm) {
+				if (createForm.RULE_NAME.value==null || createForm.RULE_NAME.value.length<=0) {
+					alert('Please enter a rule name');
+					return false;
+				}
+				
+				if (createForm.RULE_TYPE_ID.value==null || createForm.RULE_TYPE_ID.value.length<=0) {
+					alert('Please select a rule type id');
+					return false;
+				}
+				
+				return true;
+			} else {
+				alert('Error with page');
+				return false;
+			}
+		}
+</script>
+
+<$if isPriority$>
+	<$returnService="CCLA_CS_INSTR_RULE_PRIORITY_EDIT"$>
+<$else$>
+	<$returnService="CCLA_CS_INSTR_RULE_EDIT"$>
+<$endif$>
+
+<table class="ccla-table">
+	<tr>
+		<th>Name</th>
+		<th>Type</td>
+
+		<$if isPriority$>
+			<th>Priority</th>
+		<$endif$>
+
+		<th>Action</th>
+	</tr>
+	<tr>
+		<form name="createNewRule" id="createNewRule" method="POST" onsubmit="return checkAddForm()">
+		<input type="hidden" name="IdcService" value="CCLA_CS_ADD_INSTR_RULE" /><$include add_idc_token_to_form$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=<$returnService$><$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=" />
+		<td><input type="text" id="RULE_NAME" name="RULE_NAME" value="" /></td>
+		<td>
+			<select id="RULE_TYPE_ID" name="RULE_TYPE_ID">
+				<option value="0"> AND </option>
+				<option value="1"> OR </option>
+			</select>
+		</td>
+		<$if isPriority$>
+			<td><input type="text" id="PRIORITY" name="PRIORITY" value="0" /></td>
+		<$endif$>
+
+		<td><input type="submit" value="Create" /></td>
+		</form>
+	</tr>
+</table>
+
+<@end@>
+
+<@dynamichtml ccla_existing_instruction_condition_form@>
+<table class="ccla-table">
+<tr>
+	<th width="25%">Description</th>
+	<th width="20%">Data Field</th>
+	<th width="10%">Operator</th>
+	<th width="15%">Check Value</th>
+	<th width="20%">Check Data Field</th>
+	<th width="10%">Action</th>
+	
+	
+</tr>
+	<$loop rsInstrConditions$>
+	<$datafieldId = #active.INSTRUCTION_DATA_ID$>
+	<$checkdatafieldId = #active.CHECK_INSTRUCTION_DATA_ID$>
+	<$operatorId = #active.OPERATOR_ID$>
+	
+	<form id="removeCond<$#active.INSTRUCTION_CONDITION_ID$>" name="removeCond<$#active.INSTRUCTION_CONDITION_ID$>" method="POST">
+	<input type="hidden" name="IdcService" value="CCLA_CS_REMOVE_INSTR_CONDITION_FROM_RULE" /><$include add_idc_token_to_form$>
+	
+	<$if isPriority$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_PRIORITY_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+	<$else$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+	<$endif$>
+	<input type="hidden" id="INSTRUCTION_CONDITION_ID" name="INSTRUCTION_CONDITION_ID" value="<$#active.INSTRUCTION_CONDITION_ID$>" />
+	<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#local.INSTRUCTION_RULE_ID$>" />
+
+	<tr>
+		<td align="center"><$#active.DESCRIPTION$></td>
+		<td align="center">
+			<$exec rsFirst(rsInstrData)$>
+			<$loop rsInstrData$>
+				<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), datafieldId)$>
+						<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+				<$endif$>
+			<$endloop$>
+		</td>
+		<td align="center">
+			<$exec rsFirst(rsOperator)$>
+			<$loop rsOperator$>
+				<$if strEquals(getValue("rsOperator", "OPERATOR_ID"), operatorId)$>
+					<$getValue("rsOperator", "OPERATOR_NAME")$>
+				<$endif$>
+			<$endloop$>
+		</td>
+		<td align="center"><$#active.CHECK_VALUE$>&nbsp;</td>
+		<td align="center">
+			<$exec rsFirst(rsInstrData)$>
+			<$loop rsInstrData$>
+				<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), checkdatafieldId)$>
+					<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+				<$endif$>
+			<$endloop$>
+			&nbsp;
+		</td>
+		<td align="center"><input type="submit" id="removeCondtion" name="removeCondition" value="Remove" /></td>
+	</tr>
+	</form>
+	<$endloop$>
+</table>
+<@end@>
+
+<@dynamichtml ccla_existing_instruction_priorities_form@>
+<script type="text/javascript">
+	function setIdcExistingPriorityService(formValue, formName) {
+		
+		var formToUse = document.forms[formName];
+		if (formToUse) {	
+			if (formValue=='Remove') {
+				formToUse.IdcService.value='CCLA_CS_REMOVE_INSTR_PRIORITY_CONDITION_FROM_RULE';
+			} else {
+				formToUse.IdcService.value='CCLA_CS_UPDATE_INSTR_PRIORITY_CONDITION';
+			}			
+		}
+	}	
+</script>
+<table class="ccla-table">
+<tr>
+	<th width="25%">Description</th>
+	<th width="15%">Data Field</th>
+	<th width="10%">Operator</th>
+	<th width="10%">Check Value</th>
+	<th width="20%">Check Data Field</th>
+	<th width="10%">Priority</th>
+	<th width="10%">Action</th>
+	
+	
+</tr>
+	<$loop rsInstrPriorities$>
+	<$datafieldId = #active.INSTRUCTION_DATA_ID$>
+	<$checkdatafieldId = #active.CHECK_INSTRUCTION_DATA_ID$>
+	<$operatorId = #active.OPERATOR_ID$>
+	
+	<form id="priorityCond<$#active.INSTRUCTION_CONDITION_ID$>" name="priorityCond<$#active.INSTRUCTION_CONDITION_ID$>" method="POST">
+	<input type="hidden" name="IdcService" value="CCLA_CS_REMOVE_INSTR_PRIORITY_CONDITION_FROM_RULE" /><$include add_idc_token_to_form$>
+	
+	<$if isPriority$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_PRIORITY_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+	<$else$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+	<$endif$>
+	<input type="hidden" id="INSTRUCTION_CONDITION_ID" name="INSTRUCTION_CONDITION_ID" value="<$#active.INSTRUCTION_CONDITION_ID$>" />
+	<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#local.INSTRUCTION_RULE_ID$>" />
+
+	<tr>
+		<td align="center"><$#active.DESCRIPTION$></td>
+		<td align="center">
+			<$exec rsFirst(rsInstrData)$>
+			<$loop rsInstrData$>
+				<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), datafieldId)$>
+						<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+				<$endif$>
+			<$endloop$>
+		</td>
+		<td align="center">
+			<$exec rsFirst(rsOperator)$>
+			<$loop rsOperator$>
+				<$if strEquals(getValue("rsOperator", "OPERATOR_ID"), operatorId)$>
+					<$getValue("rsOperator", "OPERATOR_NAME")$>
+				<$endif$>
+			<$endloop$>
+		</td>
+		<td align="center"><$#active.CHECK_VALUE$>&nbsp;</td>
+		<td align="center">
+			<$exec rsFirst(rsInstrData)$>
+			<$loop rsInstrData$>
+				<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), checkdatafieldId)$>
+					<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+				<$endif$>
+			<$endloop$>
+			&nbsp;
+		</td>
+		<td align="center"><input type="text" id="PRIORITY" name="PRIORITY" value="<$#active.PRIORITY$>" /></td>
+		<td align="center">
+			<input type="submit" id="removePriority" name="removeCondition" value="Remove" onclick="setIdcExistingPriorityService(this.value,'priorityCond<$#active.INSTRUCTION_CONDITION_ID$>')">
+			<input type="submit" id="updatePriority" name="updatePriority" value="Update" onclick="setIdcExistingPriorityService(this.value,'priorityCond<$#active.INSTRUCTION_CONDITION_ID$>')">
+		</td>
+	</tr>
+	</form>
+	<$endloop$>
+</table>
+<@end@>
+<@dynamichtml ccla_instruction_rule_condition_search_form@>
+<script type="text/javascript">
+	//function to update the operators from the select list.
+	function updateFormValues() 
+	{
+		var x=document.getElementById("DATA_TYPE_OPTIONS");
+		
+		//Default Values
+		$('#CHECK_INSTRUCTION_DATA_ID').html("");
+		$("#CHECK_INSTRUCTION_DATA_ID").append("<option value=''>-</option>");		
+
+		$('#OPERATOR_ID').html("");
+		$("#OPERATOR_ID").append("<option value=''>-</option>");		
+		
+		if (x.value) {
+			var mySplitResult = x.value.split("|");
+			if (mySplitResult[0]=="DATE") {
+				$('div#instrDataHelp').html("<b>Data value must be a date format dd/mm/yyyy hh:mm <br/>i.e. 21/02/2011 13:31<br/></b>");
+			} else if (mySplitResult[0]=="STRING") {
+				$('div#instrDataHelp').html("");			
+			} else if (mySplitResult[0]=="BOOL") {
+				$('div#instrDataHelp').html("<b>Data value must be a boolean, 0 for false, 1 for true");
+			} else if (mySplitResult[0]=="INT") {
+				$('div#instrDataHelp').html("<b>Data value must be a whole number</b>");
+			} else if (mySplitResult[0]=="FLOAT") {
+				$('div#instrDataHelp').html("<b>Data value must be a number</b>");
+			}
+			document.addCondition.InstructionDataType.value=mySplitResult[0];
+			document.addCondition.INSTRUCTION_DATA_ID.value=mySplitResult[1];
+			
+			$("#DT_OPTIONS option[id='"+mySplitResult[0]+"']").each(function() {
+				$("#CHECK_INSTRUCTION_DATA_ID").append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+			});
+			
+			if (mySplitResult[0]=="BOOL" || mySplitResult[0]=="STRING") {
+				$("#OPERATOR_OPTIONS_ALL option").each(function() {
+					//equals or not equals
+					if ($(this).val()=='1' || $(this).val()=='2') {
+						$("#OPERATOR_ID").append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+					}
+				});						
+			} else {
+				//Show the complete operator selection list
+				$("#OPERATOR_OPTIONS_ALL option").each(function() {
+					$("#OPERATOR_ID").append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+				});			
+			}
+			
+		} else {
+			document.addCondition.InstructionDataType.value="";
+			document.addCondition.INSTRUCTION_DATA_ID.value="";
+			$('div#instrDataHelp').html("");
+			
+			//Show the complete of data type selection list
+			$("#DT_OPTIONS option").each(function() {
+				$("#CHECK_INSTRUCTION_DATA_ID").append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+			});
+			
+			//Show the complete operator selection list
+			$("#OPERATOR_OPTIONS_ALL option").each(function() {
+				$("#OPERATOR_ID").append("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>");
+			});
+
+			
+		}
+		
+		return;
+	}
+	
+	function setIdcAddConditionService(formValue, formName) 
+	{	
+		var formToUse = document.forms[formName];
+		if (formToUse) {	
+			if (formValue=='Add Rule Priority') {
+				formToUse.IdcService.value='CCLA_CS_ADD_INSTR_PRIORITY_CONDITION';
+			} else {
+				formToUse.IdcService.value='CCLA_CS_ADD_INSTR_CONDITION';
+			}			
+		}
+	}	
+
+	function checkAddForm() 
+	{
+		var formToUse = document.addCondition;
+		if (formToUse && (formToUse.INSTRUCTION_DATA_ID && formToUse.INSTRUCTION_DATA_ID.value) &&
+			 (formToUse.OPERATOR_ID && formToUse.OPERATOR_ID.value) &&
+			 (formToUse.DESCRIPTION && formToUse.DESCRIPTION.value)	&&
+			 ((formToUse.CHECK_VALUE && formToUse.CHECK_VALUE.value) ||
+			 (formToUse.CHECK_INSTRUCTION_DATA_ID && formToUse.CHECK_INSTRUCTION_DATA_ID.value))) {
+			  
+			 
+			if ((formToUse.CHECK_VALUE && formToUse.CHECK_VALUE.value) &&
+			 (formToUse.CHECK_INSTRUCTION_DATA_ID && formToUse.CHECK_INSTRUCTION_DATA_ID.value)) {
+				alert('You must either use the data field or data value.');
+				return false;
+			}
+			 
+			 
+			if (formToUse.IdcService.value=='CCLA_CS_ADD_INSTR_PRIORITY_CONDITION') {
+				if (formToUse.PRIORITY.value)
+					return true;
+			} else {
+				return true;
+			}
+		}
+		alert('Please fill in all the mandatory details to add a condition');
+		return false;
+	}
+	
+	function checkSearchForm() 
+	{
+		var formToUse = document.addCondition;
+		
+		if (formToUse && ((formToUse.INSTRUCTION_DATA_ID && formToUse.INSTRUCTION_DATA_ID.value) ||
+			 (formToUse.CHECK_INSTRUCTION_DATA_ID && formToUse.CHECK_INSTRUCTION_DATA_ID.value) ||
+			 (formToUse.OPERATOR_ID && formToUse.OPERATOR_ID.value) ||
+			 (formToUse.DESCRIPTION && formToUse.DESCRIPTION.value)	||
+			 (formToUse.CHECK_VALUE && formToUse.CHECK_VALUE.value))) {
+			return true;
+		} 
+		return false;
+	}
+
+	function doSearch() 
+	{
+		var urlToOpen = '?IdcService=CCLA_CS_INSTR_RULE_CONDITION_SEARCH';
+		
+		if (!checkSearchForm()) {
+			alert('You must at least field in 1 field to do a search');
+			return;
+		}
+		
+		var formToUse = document.addCondition;
+		if (formToUse) {
+			if (formToUse.INSTRUCTION_DATA_ID && formToUse.INSTRUCTION_DATA_ID.value) {
+				urlToOpen+="&INSTRUCTION_DATA_ID="+formToUse.INSTRUCTION_DATA_ID.value;
+			} 
+
+			if (formToUse.CHECK_INSTRUCTION_DATA_ID && formToUse.CHECK_INSTRUCTION_DATA_ID.value) {
+				urlToOpen+='&CHECK_INSTRUCTION_DATA_ID='+formToUse.CHECK_INSTRUCTION_DATA_ID.value;
+			} 
+			
+			if (formToUse.OPERATOR_ID && formToUse.OPERATOR_ID.value) {
+				urlToOpen+="&OPERATOR_ID="+formToUse.OPERATOR_ID.value;
+			} 
+
+			if (formToUse.DESCRIPTION && formToUse.DESCRIPTION.value) {
+				urlToOpen+="&DESCRIPTION="+formToUse.DESCRIPTION.value;
+			} 
+
+			if (formToUse.CHECK_VALUE && formToUse.CHECK_VALUE.value) {
+				urlToOpen+="&CHECK_VALUE="+formToUse.CHECK_VALUE.value;
+			}	
+			
+			if (formToUse.INSTRUCTION_RULE_ID && formToUse.INSTRUCTION_RULE_ID.value) {
+				urlToOpen+="&INSTRUCTION_RULE_ID="+formToUse.INSTRUCTION_RULE_ID.value;
+			}				
+			
+			<$if isPriority$>
+				urlToOpen+="&IS_PRIORITY=1";
+			<$endif$>
+		}
+		openPopup(urlToOpen);
+		return false;
+	}	
+</script>
+<form id="addCondition" name="addCondition" method="POST" onsubmit="return checkAddForm()">	
+	<input type="hidden" name="IdcService" value="CCLA_CS_ADD_INSTR_CONDITION" /><$include add_idc_token_to_form$>
+	<$if isPriority$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_PRIORITY_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />	
+	<$else$>
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_INSTR_RULE_EDIT<$include add_idc_token_to_url$>&INSTRUCTION_RULE_ID=<$#local.INSTRUCTION_RULE_ID$>" />
+	<$endif$>
+	<input type="hidden" id="INSTRUCTION_RULE_ID" name="INSTRUCTION_RULE_ID" value="<$#local.INSTRUCTION_RULE_ID$>" />
+	
+	<input type="hidden" id="InstructionDataType" name="InstructionDataType" value="" />
+	<input type="hidden" id="INSTRUCTION_DATA_ID" name="INSTRUCTION_DATA_ID" value="" />
+
+	<select id="DT_OPTIONS" name="DT_OPTIONS" style="display:none">
+		<option value="">-</option>
+		<$loop rsInstrData$>
+			<option id="<$#active.INSTRUCTION_DATA_TYPE$>" value="<$#active.INSTRUCTION_DATA_ID$>"><$#active.INSTRUCTION_DATA_LABEL$></option>
+		<$endloop$>	
+	</select>
+	
+	<select id="OPERATOR_OPTIONS_ALL" name="OPERATOR_OPTIONS_ALL" style="display:none">
+		<$loop rsOperator$>
+			<option value="<$#active.OPERATOR_ID$>"><$#active.OPERATOR_NAME$></option>
+		<$endloop$>	
+	</select>	
+	
+	<table class="ccla-table">
+		<tr>
+			<th>Description</th>
+			<td><input type="text" id="DESCRIPTION" name="DESCRIPTION" value="" /></td>							
+		</tr>
+		<tr>
+			<th>Data Field</th>
+			<td>
+				<select id="DATA_TYPE_OPTIONS" name="DATA_TYPE_OPTIONS" onchange="updateFormValues()">
+					<option value="">-</option>
+					<$loop rsInstrData$>
+						<option value="<$#active.INSTRUCTION_DATA_TYPE$>|<$#active.INSTRUCTION_DATA_ID$>"><$#active.INSTRUCTION_DATA_LABEL$></option>
+					<$endloop$>	
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>Operator</th>
+			<td>
+				<select id="OPERATOR_ID" name="OPERATOR_ID">
+					<option value="">-</option>
+					<$loop rsOperator$>
+						<option value="<$#active.OPERATOR_ID$>"><$#active.OPERATOR_NAME$></option>
+					<$endloop$>	
+				</select>		
+			</td>
+		</tr>
+		<tr>
+			<th>Check Data</th>
+			<td>
+				<div id="instrDataHelp"></div>
+				<table>
+					<tr>
+						<th>Data Field</th>
+						<th>&nbsp</th>
+						<th>Data Value</th>
+					</tr>
+					<tr>
+						<td>
+							<select id="CHECK_INSTRUCTION_DATA_ID" name="CHECK_INSTRUCTION_DATA_ID">
+							<option value="">-</option>
+							<$loop rsInstrData$>
+							<option value="<$#active.INSTRUCTION_DATA_ID$>"><$#active.INSTRUCTION_DATA_LABEL$></option>
+							<$endloop$>	
+							</select>
+						</td>
+						<td><b>Or</b></td>
+						<td><div id="checkValueData"><input type="text" id="CHECK_VALUE" name="CHECK_VALUE" value="" /></div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<$if isPriority$>
+			<tr>
+				<th>*Priority</th>
+				<td><input type="text" id="PRIORITY" name="PRIORITY" value="" /></td>
+			</tr>		
+		<$endif$>
+
+		<tr>
+			<th>Action</th>
+			<td>
+				<input type="button" id="Search" name="Search" value="Search" onClick="doSearch()"/>
+				<input type="submit" id="AddCondition" name="AddCondition" value="Add Rule Condition" onclick="setIdcAddConditionService(this.value, 'addCondition')"/>
+				<$if isPriority$>
+					<input type="submit" id="AddPriority" name="AddPriority" value="Add Rule Priority" onclick="setIdcAddConditionService(this.value, 'addCondition')"/>
+				<$endif$>
+			</td>
+		</tr>
+	</table>		
+</form>
+<@end@>
+</body></html>

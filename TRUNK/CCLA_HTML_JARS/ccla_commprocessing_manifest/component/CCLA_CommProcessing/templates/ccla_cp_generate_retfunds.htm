@@ -1,0 +1,69 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Generate RETFUNDS
+	</title>
+	
+	<script type="text/javascript">
+
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 680px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Generate RETFUNDS Instruction
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Generate RETFUNDS</h3>
+						<p>Type in the BNKCONDIN instruction id</p>
+						<form name="IATForm" id="IATForm" method="POST">
+						<input type="hidden" name="IdcService" 	value="CCLA_CP_DO_GENERATE_RETFUNDS" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_GENERATE_RETFUNDS<$include add_idc_token_to_url$>" />
+						<input type="hidden" name="persist" id="persist" value="1"/>
+										
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="60%">
+							<tr>
+								<th class="first-col" width="45%">BNKCONDIN Instruction ID</th>
+								<th width="50%">&nbsp;</th>
+							</tr>
+							<tr class="account-details-row">
+								<td>
+									<input type="text" id="bnkcondinId" name="bnkcondinId" value="<$#local.bnkcondinId$>"/>
+								</td>
+								<td><input type="submit" name="submit" id="submit" value="Generate RETFUNDS"/></td>
+							</tr>
+						</table>
+						</form>	
+					<br />
+					<div style="padding-top:5px"></div>
+					
+					<$if #local.generated$>
+						RETFUNDS generated for BNKCONDIN: <$#local.bnkcondinId$>
+					<$endif$>
+					
+					<div style="padding-top:5px"></div>
+					<br/>
+					<input type="button" name="goTransBatch" id="goTransBatch" value="Back To Transaction Batch Listings" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_TRANSBATCH_LISTING<$include add_idc_token_to_url$>'"/>
+
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

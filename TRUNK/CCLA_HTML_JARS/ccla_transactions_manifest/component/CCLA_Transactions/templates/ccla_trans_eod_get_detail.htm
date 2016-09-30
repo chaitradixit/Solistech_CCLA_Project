@@ -1,0 +1,138 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+End of Day Report for PSDF STEP 5.2
+</title>
+		<$include ccla_cs_styles$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ecs_javascript_jquery_include$>
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+
+	
+		<$include create_person_add_association_js$>
+
+		<$include ccla_javascript_autocomplete_include$>
+		<$include ccla_cs_ajax_js$>
+		<script type="text/javascript">
+
+		function viewTransactions(eodId)
+		{
+		window.open('?IdcService=CCLA_TRANS_EOD_TRANSACTION_LIST<$include add_idc_token_to_url$>&EOD_ID=' + eodId,'new','') 
+		}
+		function viewReportList()
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_EOD_COMPLETED_LISTING<$include add_idc_token_to_url$>";
+		}
+		function openEOD(eodId)
+		{
+		window.location.href = "?IdcService=CCLA_TRANS_EOD_GET_DETAIL<$include add_idc_token_to_url$>&EOD_ID=" + eodId;
+		}		
+		</script>
+		</head>
+	<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container" style="width:900px">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container" style="width:900px">
+		
+			<div id='ccla_cs_content' class="cs-content-container" style="width:900px" >
+
+			
+						<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								Summary for PSDF fund end of day: <$formatDateWithPattern(#active.RUN_DATE,"dd/MM/yyyy")$>
+							</div>
+							
+						<table cellpadding="0" cellspacing="0"  class="accounts-table" width="50%" >
+						<tr>
+						<td width="70%"></td>
+						<td width="30%"></td>
+						</tr>
+						<$loop rsIncomeExpense$>
+								<$if rsIncomeExpense.INCOME_EXPENSE_TYPE_ID==3$>
+									<tr  class="account-details-row" align="right">
+										<td class="first-col" ><strong>Fund Income (£)</strong></td><td><$formatCurrency(#active.INCOME_EXPENSE_VALUE)$></td>
+									</tr>
+								<$endif$>
+						<$endloop$>
+						<$loop rsEOD$>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total Share Class Expense (£)</strong></td><td><$formatCurrency(#active.TOTAL_SHARE_CLASS_EXPENSE)$></td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total of Rate Expense (£)</strong></td><td><$formatCurrency(#active.TOTAL_RATE_EXPENSE)$></td>
+						</tr>
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total of Cash Expense (£)</strong></td><td><$formatCurrency(#active.TOTAL_CASH_EXPENSE)$></td>
+						</tr>
+						
+						<tr  class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Total Net Income Distribution</strong></td><td><$#active.TOTAL_NET_INCOME_DISTRIBUTION$></td>
+						</tr>
+						
+						<tr class="account-details-row" align="right">
+							<td class="first-col"  ><strong>Net Asset Value of Fund (NAV) (£)</strong></td><td><$formatCurrency(#active.NAV)$></td>
+						</tr>	
+					
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Bid Price (p)</strong></td><td><$formatCurrency(#active.BID)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Basic Price (p)</strong></td><td><$formatCurrency(#active.BASIC)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Offer Price (p)</strong></td><td><$formatCurrency(#active.OFFER)$></td>
+							</tr>
+							<tr class="account-details-row" align="right">
+								<td class="first-col"  ><strong>Model</strong></td><td><$#active.DEAL_TYPE_NAME$></td>
+						<$endloop$>
+						</table>
+					<br><br>
+	
+						<table cellpadding="0" cellspacing="0"  class="accounts-table" width="100%">
+							<tr  class="account-details-row" >
+								<th width="20%">Share Class</th>
+								<th width="20%">Closing Units</th>
+								<th width="30%">Net Income Per Unit (Dividend) (p)</th>
+								<th width="30%">Yield (p)</th>
+							</tr>
+							<$loop rsFundAudit$>
+							<tr  class="account-details-row">
+								<td><$#active.SHARE_CLASS_NAME$></td>
+								<td><$formatCurrency(#active.CLOSING_UNITS)$>&nbsp;</td>
+								<td><$#active.INCOME_PER_UNIT$>&nbsp;</td>	
+								<td><$#active.YIELD$>&nbsp;</td>								
+							</tr>
+							<$endloop$>
+						</table>
+		
+						<div style="float:right;">				
+							<br><br>
+							<input class="generic_button" type="button" value="View Transactions" onclick="viewTransactions(<$#active.EOD_ID$>)">	
+							&nbsp;&nbsp;&nbsp;
+							<input class="generic_button" type="button" value="Back to EOD Reports" onclick="viewReportList()">	
+							<br><br>
+						</div>
+						<$include orangeContainer_bottom$>
+						
+				
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

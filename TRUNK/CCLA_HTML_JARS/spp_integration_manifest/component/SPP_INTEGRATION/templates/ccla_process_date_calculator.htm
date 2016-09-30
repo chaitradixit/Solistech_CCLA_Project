@@ -1,0 +1,133 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include ccla_cs_styles$>
+
+	<title>
+		CCLA Process Date Calculator
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	<$include ccla_cs_ajax_js$>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$('#getProcessDate').click(function() {
+			
+				$('#results').html("calculating");
+			
+				$.getJSON("?IdcService=CCLA_GET_NEXT_DEALING_DATE<$include add_idc_token_to_url$>", 
+				{ 	
+					"fundCode": $('#fundCode').val(),
+					"source": $('#source').val(),
+					"isAmendment": $('#isAmendment').is(':checked'),
+					"forceOriginal": $('#forceOriginal').is(':checked'),
+					"dateToUse": $('#dateToUse').val(),
+					"IsJson": 1,
+					"ts": new Date()
+				}, function(jsonData) {handleProcessDateCompleted(jsonData);});
+			});
+		});
+		
+		handleProcessDateCompleted = function(jsonData) 
+		{
+			if (jsonData=="") {
+				alert("Error whilst getting process date: no data"); 
+			} else {
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+		
+				if (jsonErrorMsg) {
+					alert("Error whilst getting process date: "+jsonErrorMsg);
+				} else {
+					var calculatedDate = jsonData.LocalData.nextDealingDate;
+					$('#results').html(calculatedDate);
+				}
+			}
+			return;
+		}		
+	</script>
+</head>
+
+<body <$include iris_body_def_internal$>>
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 900px'>
+			
+			<$include orangeContainer_top$>
+	
+			<div class='ccla_cs_panel_header'>
+				CCLA Process Date Calculator
+			</div>
+			
+			<p><b>Fill in the form below to find out the next available process date</b></p>
+	
+			<ul>
+				<li>DateTime format: dd/mm/yyyy hh:mm (24 hour clock)</li>
+				<li>If DateTime is left blank then it will assume the time of now</li>				
+				<li>If forceOriginal is set, this will work out the processDate from the DateTime value using the current cut-off times</li>
+				<li>isAmendment is used to simulate the Condins scenario when instructions are re-generated in UCM from UCM</li>				
+			</ul>
+			
+			<div class='ccla_cs_panel_content'>
+				<form id="calculator" name="calculator" method="POST">
+					<input type="hidden" name="IdcService" value="CCLA_GET_NEXT_PROCESS_DATE" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_PROCESS_DATE_CALCULATOR<$include add_idc_token_to_url$>" />
+
+					<table border=1 cellpadding=3 cellspacing=0>
+						<tr>
+							<th>DateTime</th>
+							<th>Fund Code</th>
+							<th>Source</th>
+							<th>IsAmendment</th>
+							<th>ForceOriginal</th>
+							<th>Action</th>
+							<th>Calculated Process Date</th>
+						</tr>
+						<tr>
+							<td><input type="text" name="dateToUse" id="dateToUse" value="<$#local.dateToUse$>" /></td>
+							<td><select id="fundCode" name="fundCode">
+									<$loop rsFunds$>
+									<option value="<$#active.FUND_CODE$>"><$#active.FUND_CODE$></option>
+									<$endloop$>
+								</select>
+							</td>
+							<td>
+								<select id="source" name="source">
+									<option value="Email">Email</option>
+									<option value="Fax">Fax</option>
+									<option value="Scan">Scanned For Iris</option>
+									<option value="UserUpload">Manual Upload</option>
+									<option value="Form Generator">Form Generator</option>
+									<option value="STP">STP</option>
+								</select>
+							</td>
+							<td><input type="checkbox" id="isAmendment" name="isAmendment" <$if #local.isAmendment$>checked<$endif$> value="1"/></td>
+							<td><input type="checkbox" id="forceOriginal" name="forceOriginal" <$if #local.forceOriginal$>checked<$endif$> value="1"/></td>
+							<td><input type="button" id="getProcessDate" name="getProcessDate" value="Get Process Date" /></td>
+							<td><div id="results" name="results"></div>&nbsp;</td>
+						</tr>
+					</table>
+				</form>
+					
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		</div>
+		
+	</div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<!--CCLA_ClientServices CCLA_SC_MODIFY_SIGNATURE-->
+
+<title>
+	<$include ccla_sc_sig_get_action_title$>
+</title>
+	<$include ccla_cs_styles$>
+	<style>
+		.buttonOveride{
+			background-color:#D0CDCE;
+			border:medium none;
+			color:#EE2C74;
+			font-family:Arial;
+			font-size:9pt;
+			padding:2px 5px;
+			width:120px;
+		}
+		.left{
+			float:left;
+		}
+		.right{
+			float:right;
+		}
+		#popUpContainingDiv{
+			width:610px;
+		}
+		.clearAll{
+			clear:both;
+		}
+
+		
+	</style>
+	<$include ccla_sc_sig_info_icon_styling_override$>
+	<$include ecs_javascript_jquery_include$>
+
+	<$if strEquals(#active.sigAction,"add") or strEquals(#active.sigAction,"update")$>
+		<$include ccla_sc_sig_init_applet$>
+	<$endif$>
+		
+	<$if strEquals(#active.sigAction,"add") or strEquals(#active.sigAction,"update")$>
+		<script type="text/javascript">
+				//Specifies where the upload page is
+				
+				function postImage(personID,action) {
+						$("#spinner").show();
+						$("#noImgSelMsg").hide();
+						var obj = document.getElementById('paste-image');
+						var image = obj.getClipboardImageURL(personID,action);
+						
+						$("#spinner").hide();
+
+						if (image && image.indexOf("ERROR")<0) {
+							$("#sigFormDiv").hide(); 
+							$("#sigReceivedDiv").show();
+							window.opener.refreshSigPanel();
+						} else {
+							alert(image);
+						}
+						
+					}
+			
+			
+				function checkIfFileSelected(){
+					if ( !$("#primaryFile").val()){
+						$("#noImgSelMsg").show();
+						return false;
+					} else {
+						$("#noImgSelMsg").hide();
+						return true;
+					}
+					
+				}	
+		</script>
+	<$endif$>
+
+		<$if strEquals(#active.sigAction,"deleted")$>
+			<script type="text/javascript">
+				$(document).ready( function() {
+					var t=setTimeout("window.opener.refreshSigPanel();",1000);
+				});
+			</script>
+		
+	
+	<$endif$>
+
+</head>
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$include ccla_sc_sig_get_action_title$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<div id="spinner" style="display:none"><img src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/ccla-ajax-spinner.gif" /></div>
+				
+				<div id="noImgSelMsg" style="display:none;" class="message_panel error_icon">
+						Please select an image.
+					</div>	
+				<$if #active.imageTooWide$>
+					<div class="message_panel error_icon">
+						This image is too wide, please upload a narrower image.
+					</div>
+				<$elseif #active.imageTooTall$>
+					<div class="message_panel error_icon">
+						This image is too tall, please upload a shorter image.
+					</div>				
+				<$endif$> 
+				</br>
+				
+				
+				<$if strEquals(#active.sigAction,"added")$>
+					<div class="message_panel info_icon">
+						New signature added, please wait a few moments for it to appear in the system. <$include ccla_sc_sig_close_text$>	
+					</div>
+				<$elseif strEquals(#active.sigAction,"updated")$>
+					<div class="message_panel info_icon">
+						Signature updated, please wait a few moments for it to appear in the system. <$include ccla_sc_sig_close_text$>		
+					</div>
+				<$elseif strEquals(#active.sigAction,"deleted")$>
+					<div class="message_panel info_icon">
+						Signature deleted, please wait a few moments for it to be removed from the system. <$include ccla_sc_sig_close_text$>	 	
+					</div>	
+				<$endif$>
+				
+				<!--for use with the applet-->
+				<div id="sigReceivedDiv" class="message_panel info_icon" style="display: none;">
+						Signature received, please wait a few moments for it to appear in the system. <$include ccla_sc_sig_close_text$>	
+				</div>
+				
+				
+				<div id="sigFormDiv">
+					<form enctype="multipart/form-data" method="POST" id="modifySigForm" onSubmit="<$if not strEquals(#active.sigAction,'delete')$>return checkIfFileSelected()<$endif$>">
+						
+						<$include ccla_sc_sig_get_hidden_inputs$>
+						
+						<$if strEquals(#active.sigAction,"add") or strEquals(#active.sigAction,"update")$>
+							
+							<div class="boxContainer">
+								<div class="left">
+									<b>Paste from the clipboard:</b>
+								</div>
+								<div class="right">
+								<$if strEquals(#active.sigAction,"add")$>
+									<input type="button" class="buttonOveride right" value="Click Here to Paste" onclick="postImage('<$#active.PERSON_ID$>','add');">
+								<$elseif strEquals(#active.sigAction,"update")$>
+									<input type="button" class="buttonOveride right" value="Click Here to Paste" onclick="postImage('<$#active.dDocName$>','update');">
+								<$endif$>
+					
+								</div>
+								<div class="clearAll"></div>
+
+							</div>						
+							<div id="applet"></div>
+							</br>
+							<div> <b>OR</b> </div>
+							</br>
+						
+							<div class="boxContainer">
+								<div class="left">
+									<b>Select Image:</b>
+									<input name="primaryFile" id="primaryFile" type="file">
+								</div>
+								<div class="right">
+									<input type="submit" class="buttonOveride right" value="Upload Signature" >
+								</div>
+								<div class="clearAll"></div>
+								
+							</div>
+											
+						<$elseif strEquals(#active.sigAction,"delete")$>
+							<div>
+								<b>Are you sure you want to delete the signature<b>
+							</div>
+							<div align="right">
+								<input type="button" value="No" class="buttonOveride" onclick="window.close();"/>
+								<!--<input type="button" value="No" class="buttonOveride" onclick="parent.closePopup();"/>-->
+								<input type="submit" value="Yes" class="buttonOveride" >
+							</div>	
+							<div class="clearAll"></div>
+
+						<$endif$>
+
+					</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+
+</html>

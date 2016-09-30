@@ -1,0 +1,66 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include iris_styles$>
+	
+	<title>
+		<$include iris_doc_listing_title$>
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+
+	<!-- Display/result list behaviour -->
+ 	<$hideLineBreak="1"$>
+
+  <$custTableAttrs="class='IssueBlock' cellpadding='1' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+  <$custRowAttrs="class='resultrow' onmouseover='setRowHighlight(this);' onmouseout='remRowHighlight(this);' onclick='toggleRow(this);'"$>
+  <$custRowEval="<$'id=\"' & dDocName & '_row\"'$>"$>
+  <$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+	<$onLoadStr="clearChecks();"$>
+
+	<$include iris_doc_listing_pre$>
+</head>
+
+<body <$include iris_body_def_internal$>>
+
+	<!-- Form used for operations on groups of documents -->
+	<$include group_actions_form$>
+
+  <!-- Viewable layout -->
+  <$include iris_header$>
+
+  <div class="doc_listing_sf_container">
+	  <div style="margin:5px; width=100%; height=100%" class="doc_listing_sf">
+			
+			<$if (userHasRole("admin") or userHasRole("WF_COO"))$>
+				
+				<$include ecsSearchAndFilter$>
+			
+			<$else$>
+				
+				Sorry, you don't have the rights to view this page.
+				<br/>
+				Please contact the helpdesk if you need access.
+				
+			<$endif$>
+			
+			<$include doc_listing_footer$>
+			
+		</div>
+	</div>
+	<$include std_page_end$>
+
+</body>
+
+
+</html>

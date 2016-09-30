@@ -1,0 +1,81 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include iris_styles$>
+
+	<title>
+		Signature Management
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+
+	<!-- Display/result list behaviour -->
+ 	<$hideLineBreak="1"$>
+
+  <$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='1' width='100%' border='0' bgcolor='#F6F6F4'"$>
+  <$custRowAttrs="class='resultrow' style='cursor:default' "$>
+  <$custRowEval="<$'id=\"' & dDocName & '_row\"'$>"$>
+  <$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+	<$onLoadStr=""$>
+
+	<$include ccla_signature_listing_pre$>
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<$include ecs_popup_div_header$>
+
+  <!-- Viewable layout -->
+  <$include iris_header$>
+
+  <div style="margin:5px; width=100%; height=100%">
+		
+		<$if deleted$>
+  		<div class="error">
+				<p>Signature deleted</p>
+				You sucessfully deleted the signature. It can be recovered at a later date by an administrator.
+			</div>	
+  	<$endif$>
+		
+		<br/>
+		<input type=button class="generic_button" name="newSigButton" value="Add new signature..." onclick="openPopup('<$HttpCgiPath$>?IdcService=CCLA_ADD_SIGNATURE<$include add_idc_token_to_url$>',500)">
+		<br/>
+		
+		<$include ecsSearchAndFilter$>
+
+	</div>
+	
+	<script type="text/javascript">
+		
+		function expireSig(docName) {
+			if (confirm("Are you sure you wish to delete the signature: " + docName + "?")) {
+				document.expireSigForm.dDocName.value = docName;
+				document.expireSigForm.submit();
+			}
+		}
+		
+	</script>
+	
+	<!-- Form used for expiring existing signature items. See expireSig() method -->
+	<form name="expireSigForm" id="expireSigForm">
+		<input type="hidden" name="IdcService" value="IRIS_EXPIRE_DOC" />
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="dDocName" value="" />
+		
+		<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_MANAGE_SIGNATURES<$include add_idc_token_to_url$>&deleted=1" />
+	</form>
+
+	<$include std_page_end$>
+
+</body>
+</html>

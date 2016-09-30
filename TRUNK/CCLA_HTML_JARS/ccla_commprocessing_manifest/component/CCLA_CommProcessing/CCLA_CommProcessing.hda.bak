@@ -1,0 +1,68 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_07_06 v1.2.7 (Build 18572)
+classpath=$COMPONENT_DIR/classes/CCLA_CommProcessing.jar;$COMPONENT_DIR/lib/commons-csv.jar;
+blFieldTypes=
+ComponentName=CCLA_CommProcessing
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+service
+resources/ccla_commprocessing_service.htm
+CCLA_CommProcessing_Services
+20
+query
+resources/ccla_commprocessing_query.htm
+CCLA_CommProcessing_Queries
+10
+environment
+ccla_commproc_environment.cfg
+null
+10
+template
+templates/ccla_commprocessing_template.hda
+null
+10
+resource
+resources/ccla_commprocessing_resource.htm
+null
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+extraAfterServicesLoadInit
+com.ecs.ucm.ccla.commproc.filter.StartupFilter
+null
+30
+postDocHistoryInfo
+com.ecs.ucm.ccla.commproc.filter.UpdateFilter
+null
+30
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+CCLA_CommProcessing_Templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end

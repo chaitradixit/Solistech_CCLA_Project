@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<title>
+			Enrolment Listing
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' class='search_results_cont enrolmentListingSF'>
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Enrolment Listing<$if rsCorrespondent$>: <$rsCorrespondent.name$><$endif$>
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<$if formGenAndPrinted$>
+						<div class="validation_error error_icon">
+							<p>Form generation and print successful.</p>			
+						</div>
+					<$endif$>
+					
+					<$SF_PreventPaging=""$>
+					
+					<$SF_UseDatabaseSearch=1$>
+					<$SF_QueryProvider="CCLA_POOL1"$>
+					<$SF_PreventRowIdOrdering=1$>					
+					<$SF_QueryTable="V_PSDF_ENROLMENT_ACTIVITY_LAST"$>	
+				
+					
+					<$if not sf$>
+						<$sf="LAST_ACTION"$>
+						<$so="DESC"$>
+					<$endif$>
+					
+					<$include iris_sf_sort_images$>
+			
+					<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+					<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+					<$calendarSelectFields="DATE,DATE_ADV"$>
+					<$include epoch_calendar_header$>
+					
+					<$displaySearchButton="N"$>
+					<$inlineHeaderInclude = "ccla_cs_process_listing_inline_header"$>
+					
+					<$SF_DISPLAYADVSEARCHLINK=""$>
+					
+					<$hideLineBreak=1$>
+					<$hideInfoLink="Y"$>
+
+					<$displayPagingOptions="N"$>
+					<$displayPaginator="Y"$>
+					<$SF_CustomPaginator="iris_sf_paginator"$>
+
+					<$advSearchBackgroundColour="#FFFFFF"$>
+					<$advSearchDisplay_pre='orangeContainer_top'$>
+					<$advSearchDisplay_after='orangeContainer_bottom'$>
+
+					<$PARAMETERSLIST = PARAMETERSLIST & ",showExcluded"$>
+					
+					
+					<$SF_DISPLAYADVSEARCHLINK="Y"$>
+					<$moreAdvSearchFieldList=""$>
+	
+					<$SF_CaseInsensitive=1$>
+
+					<$nodeFilterFieldNames="PROCESS_ID_COL,CAMPAIGN_ID_COL,ORG_ACCOUNT_CODE_COL,ORG_NAME_COL,FULL_NAME_COL,INV_INT_COL,INV_CONF_COL,CLIENT_STATUS_COL,PROCESS_STATUS_COL,LAST_ACTION_DATE_COL,ACTIVITY_TYPE_COL"$>
+					<$advSearchFieldList=  "PROCESS_ID_COL,CAMPAIGN_ID_COL,ORG_ACCOUNT_CODE_COL,ORG_NAME_COL,FULL_NAME_COL,INV_INT_COL,INV_CONF_COL,CLIENT_STATUS_COL,PROCESS_STATUS_COL,LAST_ACTION_DATE_COL"$>
+					<$nodeFilterFieldWidth="5,5,5,18,7,5,5,10,10,5,15"$>
+					
+					<$QueryFieldList="COMPANY_COL,FULL_NAME_COL,ORG_ACCOUNT_CODE_COL,ORG_NAME_COL,INV_INT_COL,INV_CONF_COL,PROCESS_ID_COL,CAMPAIGN_ID_COL,CLIENT_STATUS_COL,PROCESS_STATUS_COL,LAST_ACTION_DATE_COL,ACTIVITY_TYPE_COL"$>	
+					
+					<$suppressSortLinks="PROCESS_ACTIONS_COL"$>
+					
+					<$if processStatus like "Excluded"$>
+						<$showExcluded=1$>
+					<$endif$>
+					
+					<$if not showExcluded$>
+						<$nodeSearchQuery = "(<not> PROCESS_STATUS <matches> `Excluded`) "$>
+					<$endif$>
+
+					<$ORG_ACCOUNT_CODE_COL_CustomIncludeScript="ccla_cs_display_org_acc_code"$>	
+					<$SF_ORG_ACCOUNT_CODE_COL_caption="Org Acc Code"$>
+					<$SF_ORG_ACCOUNT_CODE_COL_type="input"$>
+					<$SF_ORG_ACCOUNT_CODE_COL_shortname="orgAccCode"$>
+					<$SF_ORG_ACCOUNT_CODE_COL_list="none"$>
+					<$SF_ORG_ACCOUNT_CODE_COL_idcname="ORG_ACCOUNT_CODE"$>
+					<$SF_ORG_ACCOUNT_CODE_COL_search="substring"$>
+					
+					<$FULL_NAME_COL_CustomIncludeScript="ccla_cs_display_person_full_name"$>	
+					<$SF_FULL_NAME_COL_caption="Corr. Name"$>					
+					<$SF_FULL_NAME_COL_type="input"$>
+					<$SF_FULL_NAME_COL_list="none"$>
+					<$SF_FULL_NAME_COL_shortname="fullName"$>
+					<$SF_FULL_NAME_COL_idcname="FULL_NAME"$>
+					<$SF_FULL_NAME_COL_search="substring"$>
+
+					
+					<$SF_INV_INT_COL_caption="Investment Intention"$>					
+					<$SF_INV_INT_COL_type="input"$>
+					<$SF_INV_INT_COL_list="none"$>
+					<$SF_INV_INT_COL_shortname="invInt"$>
+					<$SF_INV_INT_COL_idcname="INTENTION_UNITS"$>
+					<$SF_INV_INT_COL_search="substring"$>
+					
+					<$SF_INV_CONF_COL_caption="Confidence"$>					
+					<$SF_INV_CONF_COL_type="input"$>
+					<$SF_INV_CONF_COL_list="none"$>
+					<$SF_INV_CONF_COL_shortname="invStatus"$>
+					<$SF_INV_CONF_COL_idcname="INTENTION_STATUS_NAME"$>
+					<$SF_INV_CONF_COL_search="matches"$>
+					
+					
+					<$PROCESS_ID_COL_CustomIncludeScript="ccla_cs_display_enrolment_id"$>
+					<$LAST_ACTION_DATE_COL_CustomIncludeScript="ccla_cs_process_last_action_date_display"$>
+					<$ACTIVITY_TYPE_COL_CustomFilterScript="ccla_cs_activity_type_filter"$>
+					<$ACTIVITY_TYPE_COL_CustomIncludeScript="ccla_cs_display_activity_type"$>
+					<$LAST_ACTION_COL_CustomIncludeScript="ccla_cs_display_last_action"$>
+					<$LAST_ACTION_OUTCOME_COL_CustomIncludeScript="ccla_cs_display_activity_outcome"$>
+				
+					<$CAMPAIGN_NAME_COL_CustomFilterScript="ccla_cs_new_campaign_filter"$>
+					<$CAMPAIGN_ID_COL_CustomFilterScript="ccla_cs_new_campaign_id_filter"$>
+					<$CAMPAIGN_ID_COL_CustomIncludeScript="ccla_cs_campaign_id_display"$>
+					
+					<$SF_ACTIVITY_TYPE_COL_caption="Last activity"$>
+					<$SF_LAST_ACTION_DATE_COL_caption="Last updated"$>
+					<$SF_PROCESS_ID_COL_caption="Enrol. ID"$>
+					
+					<$loop rsCampaignSubjectStatuses$>
+						<$clientStatuses = clientStatuses & "," & rsCampaignSubjectStatuses.CAMPSUBJECTSTATUS_NAME$>
+					<$endloop$>
+					
+					<$SF_CLIENT_STATUS_COL_type="dropdownlist"$>
+					<$SF_CLIENT_STATUS_COL_list="client_status_col"$>
+					<$SF_CLIENT_STATUS_COL_listvalues=clientStatuses$>
+
+					
+					<$loop rsCampaignEnrolmentStatuses$>
+						<$processStatuses = processStatuses & "," & rsCampaignEnrolmentStatuses.ENROLMENT_STATUS_NAME$>
+					<$endloop$>
+					
+					<$SF_PROCESS_STATUS_COL_type="dropdownlist"$>
+					<$SF_PROCESS_STATUS_COL_list="process_status_col"$>
+					<$SF_PROCESS_STATUS_COL_listvalues=processStatuses$>
+					
+					
+					
+					<$if false$>
+					<$CLIENT_STATUS_COL_CustomIncludeScript="ccla_cs_display_client_status"$>
+					<$SF_CLIENT_STATUS_COL_caption="Client Status"$>
+					<$endif$>
+					
+
+					
+					
+					<$include ecsSearchAndFilter$>
+					
+					<script type="text/javascript">
+						
+						function generateAndPrintForm(processId, lastActivity) {
+							
+							if (lastActivity == "Form Print") {
+								var conf = confirm("Are you sure you want to generate and print a " +
+								"form for this process? \n\nThe last action was 'Form Print', " +
+								"so you may end with a duplicate print.");
+								
+								if (!conf)
+									return;
+							}
+							
+							var frm = document.forms["generateAndPrintActionForm"];
+							frm.elements["processId"].value = processId;
+							
+							frm.submit();
+						}
+						
+					</script>
+					
+					<form id="generateAndPrintActionForm" name="generateAndPrintActionForm" method="POST">
+						<input type="hidden" name="IdcService" value="CCLA_CS_CREATE_AND_PRINT_ETHICAL_FUND_FORM" /><$include add_idc_token_to_form$>
+						
+						<$include ccla_cs_get_sf_url_params$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$><$#local.sfparamstring$>&formGenAndPrinted=1" />
+						
+						<input type="hidden" name="processId" value="" />
+				
+					</form>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

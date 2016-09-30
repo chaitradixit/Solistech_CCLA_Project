@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Instructions Per Day
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/excanvas.js"></script><![endif]-->
+
+		<!-- JQPLOT INCLUDES -->
+		<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/jquery-1.5.1.js"></script>
+		<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/jquery.jqplot.js"></script>
+		<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
+		<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
+
+			<$if #active.showBarChart$>
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>		 
+		<$else$> 
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.highlighter.min.js"></script>
+			<script language="javascript" type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/plugins/jqplot.cursor.min.js"></script>			
+		<$endif$>
+		
+		<link rel="stylesheet" type="text/css" href="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/jquery.jqplot.css" />
+
+		<!-- DATE PICKER INCLUDES -->
+		<script type="text/javascript" src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/date_picker/js/jquery-ui-1.7.2.js"></script>
+		<link href="<$HttpWebRoot$>resources/ECS_Javascript/jquery/core/css/base/ui.all.css" rel="stylesheet" type="text/css" />
+		
+		<$include ccla_cs_ajax_js$>
+
+		
+	  <style type="text/css" media="screen">
+		.jqplot-axis {
+		  font-size: 0.85em;
+		}
+		table.jqplot-table-legend{
+			width:120px;
+		}
+		.jqplot-table-legend-swatch{
+			width:25% !important;
+		}
+		#loadingImage{
+				left:500px;
+				top:250px;
+				position:absolute;
+			}
+		.ui-datepicker-trigger{
+			cursor:pointer;
+			padding-right:10px;
+		}
+		.toggleChartType{
+			float:right;
+		}
+	  </style>
+	  
+	  <script type="text/javascript" language="javascript">
+
+		function padZero(value){
+		//convert to string
+		value = ""+value;
+		
+			if(value.length==1){
+				value = "0"+value;
+				}
+			return value;
+			}
+	  
+		$(document).ready(function(){
+			
+			//Init datepicker
+			$(".datePickerClass").datepicker({
+				dateFormat: 'dd/mm/yy', 
+				showOn: 'button', 
+				buttonImage: '<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/date_picker/images/calendar.gif', 
+				buttonImageOnly: true
+			});
+			
+
+			var d = new Date();
+			var todaysDateStr = padZero(d.getDate()) + "/" + padZero(d.getMonth()+1) + "/" + d.getFullYear();
+			$("#toDate").val(todaysDateStr);
+			//add one week to the date.
+			d2 = new Date(d.getTime()-500000000);
+			var lastWeekStr = padZero(d2.getDate()) + "/" + padZero(d2.getMonth()+1) + "/" + d2.getFullYear();
+			$("#fromDate").val(lastWeekStr);
+		
+		
+			initGraph();
+		 });
+	 
+	 
+		 function initGraph(fromDate,toDate){
+			$.jqplot.config.enablePlugins = true;
+			$('#chart').empty(); 
+			
+			var fromDate = $("#fromDate").val();
+			var toDate = $("#toDate").val();
+			
+			$.get('http://ccla-ap14-dev/ucm/idcplg?IdcService=CCLA_CS_GET_COUNT_INTRS_PER_DAY<$include add_idc_token_to_url$>&FROM_DATE='+fromDate+'&TO_DATE='+toDate+'&IsJson=1', function(data) {
+
+					plot1 = data.ResultSets.rsIntrsCount.rows;
+					
+					
+					//hide loading image
+					$("#loadingImage").hide();
+					
+					graph = $.jqplot('chart', [plot1], {
+					title: 'Instructions Per Day',
+
+					<$if #active.showBarChart$>
+						seriesDefaults:{renderer:$.jqplot.BarRenderer, rendererOptions:{barPadding:10, barMargin:10}},
+						axes:{
+							xaxis:{
+								label: "Date",
+								renderer:$.jqplot.CategoryAxisRenderer, 
+								tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+								tickOptions:{formatString:'%d/%m/%Y', fontSize:'12pt',angle: -30}	
+								}, 
+							yaxis:{
+								label: "Number of instructions",
+								tickOptions:{fontSize: 16}
+								},
+															
+							}
+					<$else$>
+						axes: {
+							xaxis: {
+								label: "Date",
+								renderer: $.jqplot.DateAxisRenderer,
+								tickOptions:{formatString:'%d/%m/%Y', fontSize:16},
+								
+							}, 
+							yaxis: {
+								label: "Number of instructions",
+								autoscale:true,
+								tickSpacing:100,
+								tickOptions:{fontSize: 16}
+							}
+						},						
+						series:[ 
+							{	
+								label: "Share Class 1", 
+								lineWidth:1, 
+								color:'#999999', 
+								showMarker:true
+							}
+						],
+						
+						cursor: {
+							show: true,
+							zoom:true,
+							showTooltip:false
+						}	
+						<$endif$>
+
+					});
+
+				});
+		 }
+	  </script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		
+		<$include iris_header$>
+		
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 1100px'>
+				
+				<$include orangeContainer_top$>
+				<div class='ccla_cs_panel_header'>
+					Instructions Per Day
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div id="loadingImage"><img src="<$HttpWebRoot$>resources/ECS_Javascript/jquery/addons/jqplot/images/loading.gif"/></div>
+					<div class="message_panel error_icon" id="noResultsErrorMsg" style="display: none;">
+						No results found, please try a different date range.
+					</div>
+					
+					<br/>
+					<div>
+						<b>Choose Date Range: </b>&nbsp;
+						
+						From: <input class="datePickerClass" id="fromDate" value=""/> 
+						To: <input id="toDate" class="datePickerClass" value=""/> 
+						<input type="button" onclick="initGraph()" value="Show Graph"/>
+						<$if not #active.showBarChart$>
+						<input type="button" onclick="graph.resetZoom()" value="Reset Zoom"/>
+						<$endif$>
+					
+					
+					
+						<div class="toggleChartType">
+							<$if #active.showBarChart==1$>
+								<a href="?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_INSTR_GRAPHS">Show Line Chart</a>
+							<$else$>
+								<a href="?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_INSTR_GRAPHS&showBarChart=1">Show Bar Chart</a>
+							<$endif$>
+						</div>
+					</div>
+					<div style="clear:both"></div>
+					<br/>
+					
+					<div id="chart" style="margin-top:20px; margin-left:20px; width:900px; height:500px;"></div>
+				</div>
+				
+				
+				
+				<$include orangeContainer_bottom$>
+	
+			</div>
+		</div>
+		
+	</body>
+</html>

@@ -1,0 +1,257 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+SearchAndFilterMultiSelectPlugin htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml multiSelect_SearchAndFilterConfigurationForCheckboxes@>
+
+<$SF_CHECKBOX_caption=""$>
+<$SF_CHECKBOX_type="none"$>
+<$SF_CHECKBOX_shortname="checkbox"$>
+<$SF_CHECKBOX_list="none"$>
+<$SF_CHECKBOX_idcname="dID"$>
+<$SF_CHECKBOX_search="substring"$>
+
+<$include multiSelect_Checkbox$>
+
+<@end@>
+
+
+<@dynamichtml multiSelect_Checkbox@>
+
+<$CHECKBOX_CustomIncludeScript  ="multiSelect_CheckboxCustomIncludeScript"$>
+<$if not strEquals("",#active.suppressSortLinks)$>
+	<$suppressSortLinks="CHECKBOX," & suppressSortLinks$>
+<$else$>
+	<$suppressSortLinks="CHECKBOX"$>
+<$endif$>
+<$nodeFilterFieldNames="CHECKBOX," & nodeFilterFieldNames$>
+
+<@end@>
+
+
+<@dynamichtml multiSelect_CheckboxCustomIncludeScript@>
+<$if not (strEquals("Reference_Document",dDocType) and xCM_Type)$>
+
+	<input type="checkbox" name="selCheckBox" id="<$dDocName$>" onclick="row=document.getElementById(this.id + '_row'); if(row != null) clickCheck(this);">
+<$endif$>
+<@end@>
+
+
+<@dynamichtml multiSelect_SearchAndFilterConfigurationForRows@>
+<$include multiSelect_SearchAndFilterConfigurationForCheckboxes$>
+
+<$custRowAttrs=custRowAttrs & " class='resultrow' onmouseover='setRowHighlight(this);' onmouseout='remRowHighlight(this);' onclick='toggleRow(this);'"$>
+<$custRowEval=custRowEval & " <$'id=\"' & dDocName & '_row\"'$>"$>
+
+<@end@>
+
+
+<@dynamichtml multiSelect_CheckboxUtilityJavascript@>
+
+<script type="text/javascript">
+	// Finds the number of selected rows. Call a different include if there is no row or multiple rows selected
+	function checkSelection()
+	{
+		if (getNumSelectedRows() > 0) {
+			<$include multiSelect_MultipleRowsSelected$>
+		} else {
+			<$include multiSelect_NoRowSelected$>
+		}
+	}
+	
+	function getNumSelectedRows() {
+		boxes = document.getElementsByName("selCheckBox");
+		
+		num = 0;
+		
+		for (i=0; i<boxes.length; i++)
+		{
+			if (boxes[i].checked) {
+				num = num + 1;
+			}
+		}
+
+		return num;
+	}
+
+	// Clear all selected rows
+	function clearChecks() {
+		
+		checks = document.getElementsByName('selCheckBox');
+		
+		for (i=0; i<checks.length; i++) {
+			
+			if (checks[i].checked) {
+					
+					checks[i].checked = false;
+					
+					try {
+						
+						row = document.getElementById(checks[i].id + "_row");
+						row.className = "resultRow";
+						
+					} catch (err) {}
+			}
+		}
+	}
+		
+	function getSelectedRows() {
+		// get array of checkboxes
+		boxes = document.getElementsByName("selCheckBox");
+
+		var selected='';
+		
+		for (i=0; i<boxes.length; i++)
+		{
+			if (boxes[i].checked) {
+				// Collect id's for all ticked checkboxes
+				selected = selected + boxes[i].id + ','
+			}
+		}
+		
+		if (selected != '') {
+			selected = selected.substr(0,selected.length-1);
+		}
+		
+		return selected;
+	}
+</script>
+
+<@end@>
+
+
+<@dynamichtml multiSelect_RowNoHighlightJavascript@>
+<$include multiSelect_CheckboxUtilityJavascript$>
+
+<script type="text/javascript">
+	
+	// Invoked through clicking on a result row
+	function toggleRow(row)
+	{
+		chkbox = getCheckBoxFromRow(row);
+					
+		if (chkbox.checked) {
+			chkbox.checked = false;
+		} else {
+			chkbox.checked = true;
+		}
+		
+		checkSelection();
+	}
+
+	// Clicking on a checkbox
+	function clickCheck(chkbox) {
+		row = document.getElementById(chkbox.id + "_row");
+		toggleRow(row);
+	}
+
+	function getCheckBoxFromRow(row)
+	{
+		suffixBegin = row.id.indexOf('_row');
+		rowid = row.id.substr(0,suffixBegin);
+		
+		
+		chkbox = document.getElementById(rowid);
+		
+		return chkbox;
+	}
+	
+	// Invoked through mouseover event on a result row
+	function setRowHighlight(row)
+	{
+	}
+
+	function remRowHighlight(row)
+	{
+	}
+
+</script>
+
+<@end@>
+
+
+<@dynamichtml multiSelect_RowHighlightJavascript@>
+<$include multiSelect_CheckboxUtilityJavascript$>
+
+<script type="text/javascript">
+	 
+	// Invoked through clicking on a result row
+	function toggleRow(row)
+	{
+		chkbox = getCheckBoxFromRow(row);
+					
+		if (chkbox.checked) {
+			chkbox.checked = false;
+			row.className = "resultrow_hilite";	
+		} else {
+			chkbox.checked = true;
+			row.className = "resultrow_sel";
+		}
+		
+		checkSelection();
+	}
+	
+	// Invoked through mouseover event on a result row
+	function setRowHighlight(row)
+	{
+		chkbox = getCheckBoxFromRow(row);
+		
+		if (!chkbox.checked) {
+			row.className = "resultrow_hilite";
+		}
+	}
+	
+	// Invoked through mouseout event on a result row
+	function remRowHighlight(row)
+	{
+		chkbox = getCheckBoxFromRow(row);
+		
+		if (!chkbox.checked) {
+			row.className = "resultrow";
+		}
+	}
+	
+	// Clicking on a checkbox
+	function clickCheck(chkbox) {
+		row = document.getElementById(chkbox.id + "_row");
+		toggleRow(row);
+
+	}
+</script>
+	
+<@end@>
+
+
+<@dynamichtml multiSelect_RowCSS@>
+
+<style type="text/css">
+	/* Row styles for search results */
+	tr.resultrow {
+		
+		cursor: pointer;			
+	}
+	
+	tr.resultrow_hilite {
+		background-color: #FFCC79;
+		color: #FFFFFF;
+		cursor: pointer;
+	}
+	
+	tr.resultrow_sel {
+		background-color: #FF9933;
+		color: #FFFFFF;
+		cursor: pointer;
+	}
+</style>
+
+<@end@>
+
+
+
+
+</body></html>

@@ -1,0 +1,2406 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<title>
+		Edit Profile Definition - <$pName$> <$if not cName$>(no condition)<$else$>(condition: <$cName$>)<$endif$>
+	</title>
+	
+	<$include iris_styles$>
+	<$include iris_ajax_js$>
+	
+	<script type="text/javascript">
+		
+		var workflowSteps 	= new Array();
+		var metadataFields 	= new Array();
+		
+		var workflowConfigs = new Array();
+		var contentTypeConfigs = new Array();
+		
+		var curTab = 'workflows';
+		var changes = false,leavingPage=false;
+		
+		var curWorkflow = '';
+		var curStep = '';
+		var curContentType = '';
+		
+		var urlPrefix = '<$CgiFileName$>'; //'idc_cgi_isapi.dll';
+		
+		var lastWorkflow='',lastStep='';
+		
+		var ctSwapList,wfSwapList,stepSwapList;
+		
+		// called on page load. Stores all required ResultSets/binder
+		// variables into Javascript arrays for easy access.
+		function init() {
+			
+			// store workflow step names against their descriptions and workflow names
+			<$executeService("IRIS_GET_STEP_NAMES")$>
+			<$counter=0$>
+			<$loop rsStepNames$>workflowSteps[<$counter$>] = (new WorkflowStep('<$WFNAME$>','<$STEPNAME$>','<$STEPDESCRIPTION$>'));
+			<$counter = counter+1$><$endloop$>
+			
+			// store field names against their captions
+			<$executeService("IRIS_GET_FIELD_NAMES")$>
+			<$counter=0$>
+			<$loop rsFieldNames$>metadataFields[<$counter$>] = (new MetadataField('<$FIELDNAME$>','<$FIELDCAPTION$>'));
+			<$counter = counter+1$><$endloop$>
+			
+			// collect all workflow/step ResultSet data parsed from 
+			// XML profile and load into WorkflowConfig objects
+			var props,fieldSpec,wfc,wfStepName,steps,step,stepFieldSpec,stepCount;
+			
+			<$counter=0$>
+			<$loop rsWorkflowConfig$>
+				props 		 	= new Properties('<$rsWorkflowConfig.hideReject$>','<$rsWorkflowConfig.approveText$>','<$rsWorkflowConfig.rejectText$>','<$rsWorkflowConfig.validationClass$>');						
+				fieldSpec 	= new FieldSpec('<$rsWorkflowConfig.visible$>','<$rsWorkflowConfig.required$>','<$rsWorkflowConfig.label$>',makeCustomDisplayFieldArray('<$rsWorkflowConfig.customDisplayFields$>'));
+				
+				steps = new Array();
+				stepCount = 0;
+				
+				<$loop rsStepConfig$>
+					<$if rsWorkflowConfig.wfName like rsStepConfig.wfName$>
+					
+						stepFieldSpec = new FieldSpec('<$rsStepConfig.visible$>','<$rsStepConfig.required$>','<$rsStepConfig.label$>',makeCustomDisplayFieldArray('<$rsStepConfig.customDisplayFields$>'));	
+						step = new StepConfig('<$rsStepConfig.stepName$>',new Properties('<$rsStepConfig.hideReject$>','<$rsStepConfig.approveText$>','<$rsStepConfig.rejectText$>','<$rsStepConfig.validationClass$>'),stepFieldSpec);
+						steps[stepCount] = step;	
+						stepCount++;		
+				<$endif$><$endloop$>
+				wfc					= new WorkflowConfig('<$rsWorkflowConfig.wfName$>',props,fieldSpec,steps);
+				workflowConfigs[<$counter$>] = wfc;
+				
+			<$counter = counter+1$><$endloop$>
+			
+			// collect all content type ResultSet data and load into
+			// ContentTypeConfig objects
+			<$counter=0$>
+			<$loop rsContentTypeConfig$>		
+				fieldSpec		= new FieldSpec('<$rsContentTypeConfig.visible$>','<$rsContentTypeConfig.required$>','<$rsContentTypeConfig.label$>',makeCustomDisplayFieldArray('<$rsContentTypeConfig.customDisplayFields$>'));
+				contentTypeConfigs[<$counter$>] = new ContentTypeConfig('<$rsContentTypeConfig.ctName$>',fieldSpec);
+			<$counter = counter+1$><$endloop$>
+						
+			// generate SwapList object for Content Type selection
+			var ctOpts = new Array();
+			
+			<$executeService("IRIS_GET_CONTENT_TYPES")$>
+			<$counter=0$>
+			
+			<$loop rsContentTypes$>
+			 var opt = document.createElement("option");opt.text = '<$rsContentTypes.DOCTYPE$>';opt.value = '<$rsContentTypes.DOCTYPE$>';
+			 ctOpts[<$counter$>] = opt;
+			<$counter = counter+1$><$endloop$>
+			
+			var selTypes = new Array();
+			for (i=0;i<contentTypeConfigs.length;i++) {
+				// gather selected content types from profile data
+				selTypes[i] = contentTypeConfigs[i].ctName;
+			}
+		
+			ctSwapList = new SwapList("ctSwapList",ctOpts, selTypes,  document.getElementsByName('usedContentTypes')[0],
+																																document.getElementsByName('unusedContentTypes')[0],
+																																document.getElementById('add_ct_btn'),
+																																document.getElementById('rem_ct_btn'),
+																																document.getElementById('selContentType'));
+			ctSwapList.init();
+			
+			
+			// generate SwapList object for Workflow selection
+			var wfOpts = new Array();
+			
+			<$executeService("IRIS_GET_WORKFLOW_NAMES")$>
+			<$counter=0$>
+			
+			<$loop rsWorkflowNames$>
+			 var opt = document.createElement("option");opt.text = '<$rsWorkflowNames.dWfName$>';opt.value = '<$rsWorkflowNames.dWfName$>';
+			 wfOpts[<$counter$>] = opt;
+			<$counter = counter+1$><$endloop$>
+			
+			var selWfs = new Array();
+			for (i=0;i<workflowConfigs.length;i++) {
+				// gather selected workflows from profile data
+				selWfs[i] = workflowConfigs[i].wfName;
+			}
+			
+			wfSwapList = new SwapList("wfSwapList",wfOpts, selWfs,		document.getElementsByName('usedWorkflows')[0],
+																																document.getElementsByName('unusedWorkflows')[0],
+																																document.getElementById('add_wf_btn'),
+																																document.getElementById('rem_wf_btn'),
+																																document.getElementById('selWorkflow'));															
+			wfSwapList.init();
+			
+			// generate SwapList for Workflow Step selection
+			stepSwapList = new SwapList("stepSwapList",null,null,			document.getElementsByName('usedSteps')[0],
+																																document.getElementsByName('unusedSteps')[0],
+																																document.getElementById('add_step_btn'),
+																																document.getElementById('rem_step_btn'),
+																																document.getElementById('selStep'));	
+		
+			setConfigSelectorEnabled(false);
+		}
+		
+		// Returns a workflow configuration belonging to the
+		// given workflow, if one exists. Otherwise returns
+		// null.
+		function getWorkflowConfig(wfName) {
+			for (i=0;i<workflowConfigs.length;i++) {
+				if (workflowConfigs[i].wfName == wfName)
+					return workflowConfigs[i];
+			}
+			
+			return null;
+		}
+		
+		// Searches the given workflow configuration for a
+		// step configuration with a matching name.
+		function getStepConfig(wfc,stepName) {
+			
+			var steps = wfc.steps;
+			
+			for (i=0;i<steps.length;i++) {
+				var sc = steps[i];
+				if (sc.stepName == stepName)
+					return sc;
+			}
+			
+			return null;
+		}
+		
+		function getContentTypeConfig(ctName) {
+			for (i=0;i<contentTypeConfigs.length;i++) {
+				if (contentTypeConfigs[i].ctName == ctName)
+					return contentTypeConfigs[i];
+			}
+			
+			return null;
+		}
+		
+		function makeCustomDisplayFieldArray(str) {
+			
+			if (str == '' || str == null)
+				return null;
+			
+			cdfStrings = str.split(",");
+					
+			cdfList = new Array();
+					
+			for (i=0;i<cdfStrings.length;i++) {
+				cdfSplit = cdfStrings[i].split("~");
+				cdf		= new CustomDisplayField(cdfSplit[0],cdfSplit[1],cdfSplit[2]);
+						
+				cdfList[i] = cdf;
+			}
+			
+			return cdfList;
+		}
+		
+		// AJAX-related functions
+		// =================================
+		
+		// used for constructing and dispatching AJAX request
+		function submitProfileInfo(frm) {
+			
+			request = null;
+	    setupRequest();
+	    
+	    var props;
+	    
+	    if (curTab != 'content_types') {
+	    	// gather Properties attributes
+	    	
+		    var hideRejectCheck = frm.elements['hideReject_check'];
+		    if (hideRejectCheck.checked)
+		    	frm.elements['hideReject'].value="true"
+		    else
+		    	frm.elements['hideReject'].value="false"
+		    
+		    var hideReject 			= frm.elements['hideReject'].value;
+		    var approveText 		= frm.elements['approveText'].value;
+		    var rejectText 			= frm.elements['rejectText'].value;
+		    var validationClass = frm.elements['validationClass'].value;
+		    
+		    props = new Properties(hideReject,approveText,rejectText,validationClass); 
+		  }
+		  
+		  // generate comma-separated config strings
+	    var visible = '',required = '',label = '',includesAndCaptions = '';
+	    
+	    // gather visible field list
+	    var visFields = document.getElementsByName("visFields")[0].options;
+	    
+	    for (i=0;i<visFields.length;i++) {
+	    	var field = visFields[i].value;
+	    	
+	    	if (visible != '')
+	    		visible = visible + ",";
+	    	
+	    	visible = visible + field;
+	    	
+	    	// locate configuration elements for this field
+	    	if (field != 'div') {
+	    	
+		    	var required_check = document.getElementById(field + "_required");
+		    	if (required_check == null) alert("alert - couldn't find " + field);
+		    	
+		    	if (required_check.checked) {
+		    		
+		    		if (required != '')
+		    			required = required + ",";
+		    	
+		    		required = required + field;
+		    	}
+		    	
+		    	var label_check = document.getElementById(field + "_label");
+		    	if (label_check.checked) {
+		    		
+		    		if (label != '')
+		    			label = label + ",";
+		    		
+		    		label = label + field;
+		    	}
+		    	
+		    	var include_text = document.getElementById(field + "_include").value;
+		    	var custCaption_text = document.getElementById(field + "_custCaption").value;
+		    	if (include_text != '' | custCaption_text != '') {
+		    		
+		    		if (includesAndCaptions != '')
+		    			includesAndCaptions = includesAndCaptions + ",";
+		    			
+		    		includesAndCaptions  = includesAndCaptions + (field + "~" + custCaption_text + "~" + include_text);
+		    	}
+	    	}
+	    }
+	    
+	    // update Javascript objects
+	    updateConfigObjects(curWorkflow,curStep,curContentType,props,visible,required,label,includesAndCaptions);
+	    
+	    // the list of 'in-use' workflows and steps are also passed in the URL. 
+	    // this allows specific configurations to be removed from the profile. 
+	    var wfList = '',stepList = '',ctList = '';
+	    
+	    if (curTab == 'workflows') {
+	    
+		    for (i=0;i<wfSwapList.usedList.options.length;i++) {
+		    	if (wfList != '')
+		    		wfList += ',';
+		    		
+		    	wfList = wfList + wfSwapList.usedList.options[i].value;
+		    }
+		    
+		    for (i=0;i<stepSwapList.usedList.options.length;i++) {
+		    	if (stepList != '')
+		    		stepList += ',';
+		    		
+		    	stepList = stepList + stepSwapList.usedList.options[i].value;
+		    }
+		  } else {
+		  	
+		  	for (i=0;i<ctSwapList.usedList.options.length;i++) {
+		    	if (ctList != '')
+		    		ctList += ',';
+		    		
+		    	ctList = ctList + ctSwapList.usedList.options[i].value;
+		    }
+		  	
+		  }  
+		    
+	    // place all parameters into URL
+	  	var requestPrefix;
+	  	
+	  	if (!leavingPage)
+	  		requestPrefix = urlPrefix + "?IdcService=IRIS_UPDATE_PROFILE<$include add_idc_token_to_url$>&pName=<$pName$>&cName=<$#local.cName$>";
+	  	else
+	  		requestPrefix = "<$HttpCgiPath$>?IdcService=IRIS_UPDATE_PROFILE<$include add_idc_token_to_url$>&pName=<$pName$>&cName=<$#local.cName$>";
+	  	
+	  	if (curTab == 'workflows') {
+	  		requestPrefix+= "&wfList=" + wfList + "&stepList=" + stepList + "&wfName=" + curWorkflow 
+	  										+ "&stepName=" + curStep + "&hideReject=" + hideReject + 
+	  										"&approveText=" + approveText + "&rejectText=" + rejectText
+	  										+ "&validationClass=" + validationClass;
+	  	} else {
+	  		requestPrefix+= "&ctList=" + ctList + "&ctName=" + curContentType;
+	  	}
+	  	
+	    var requestString = requestPrefix + "&visible=" + visible + "&required=" + required + "&label=" + label + "&customFields=" + includesAndCaptions + "&IsJava=1" ;
+			
+			// add a parameter with random value to the request - this prevents
+			// some browsers such as IE returning cached responses
+			requestString = requestString + "&rnd=" + Math.random();
+
+			if (leavingPage) {
+				frm.action = requestString;
+				frm.elements['RedirectUrl'].value = location.href;
+				frm.submit();
+				return;
+			}
+
+			var saveBtns = document.getElementsByName("save_profile_btn");
+			for (i=0;i<saveBtns.length;i++)
+				saveBtns[i].disabled = true;
+			
+			frm.style.display = "none";
+			
+			var loadingDiv = document.getElementById("loading_div");
+			loadingDiv.style.display = "block";
+			
+			changes = false;
+			
+			// send AJAX request
+	    request.onreadystatechange=handleResponse;
+	    request.open("GET",requestString,true);   
+	    request.send(null);			
+		}
+		
+		// handles AJAX response
+		function handleReadyResponse(request) {
+			
+			var saveBtns = document.getElementsByName("save_profile_btn");
+			for (i=0;i<saveBtns.length;i++)
+				saveBtns[i].disabled = false;
+			
+			var frm = document.forms['profile_edit_form'];
+			frm.style.display = "";
+			
+			var loadingDiv = document.getElementById("loading_div");
+			loadingDiv.style.display = "none";
+		}
+		
+		// objects used for holding reference data
+		// =================================
+		
+		// object for holding workflow/step info
+		function WorkflowStep(wfName,stepName,stepDescription) {
+			this.wfName = wfName;
+			this.stepName = stepName;
+			this.stepDescription = stepDescription;
+		}
+		
+		// object for holding field names and captions
+		function MetadataField(fieldName,fieldCaption) {
+			this.fieldName = fieldName;
+			this.fieldCaption = fieldCaption;
+		}
+		
+		// objects for holding XML node data
+		// =================================
+		function WorkflowConfig(wfName,properties,fieldSpec,steps) {
+			this.wfName = wfName;
+			this.properties = properties;
+			this.fieldSpec = fieldSpec;
+			this.steps = steps;
+		}
+		
+		function StepConfig(stepName,properties,fieldSpec) {
+			this.stepName = stepName;
+			this.properties = properties;
+			this.fieldSpec = fieldSpec;
+		}
+		
+		function ContentTypeConfig(name,fieldSpec) {
+			this.ctName = name;
+			this.fieldSpec = fieldSpec;
+		}
+		
+		function Properties(hideReject,approveText,rejectText, validationClass) {
+			this.hideReject = hideReject;
+			this.approveText = approveText;
+			this.rejectText = rejectText;
+			this.validationClass = validationClass;
+		}
+		
+		function FieldSpec(visible,required,label,customDisplayFields) {
+			this.visible = visible;
+			this.required = required;
+			this.label = label;
+			this.customDisplayFields = customDisplayFields;
+		}
+		
+		function CustomDisplayField(name,custCaption,include) {
+			this.name = name;
+			this.include = include;
+			this.custCaption = custCaption;
+		}
+		// =================================
+
+		function SwapList(name,options,selOptions,usedList,unusedList,addBtn,remBtn,syncSelect) {
+			
+			this.name = name;
+			
+			this.options = options;
+			this.selOptions = selOptions;
+			this.usedList = usedList;
+			this.unusedList = unusedList;
+			
+			this.addBtn = addBtn;
+			this.remBtn = remBtn;
+			
+			// optional Select element. This list is
+			// kept in sync with the contents of the
+			// used items list
+			this.syncSelect = syncSelect;
+	
+			this.init			= swapListInit;
+			this.addItems = addItems;
+			this.remItems = remItems;
+			
+			this.clear 		= clearSwapList;
+			this.setEnabled = setEnabled;
+			
+		}
+		
+		// clears both option lists, then fills the
+		// unused list with the original options
+		function swapListInit() {
+			
+			this.usedList.options.length = 0;
+			this.unusedList.options.length = 0;
+			
+			this.usedList.id = this.name;
+			this.unusedList.id = this.name;
+			
+			this.addBtn.disabled = true;
+			this.remBtn.disabled = true;
+			
+			var opts = this.options;
+			
+			for (i=0;i<opts.length;i++) {
+				
+				var opt = document.createElement("option");
+				opt.text = opts[i].text;
+				opt.value = opts[i].value;
+				
+				addOptionToSelect(opt,this.unusedList);
+			}
+			
+			if (this.selOptions) {
+				// move any matching options to the in-use list
+				for (i=0;i<this.selOptions.length;i++) {
+					
+					var opts = this.unusedList.options;
+					
+					for (j=0;j<opts.length;j++) {
+						if (opts[j].value == this.selOptions[i])
+							opts[j].selected = true;
+					}
+					
+				}
+				
+				this.addItems();	
+			}
+			
+			if (this.syncSelect)
+				updateSelectElement(this.syncSelect,this.usedList);
+			
+			// register change event handlers on option lists
+			this.usedList.onchange = updateUsedList;
+			this.unusedList.onchange = updateUnusedList;
+			
+			if (this.usedList.captureEvents) {
+				this.usedList.captureEvents(Event.CHANGE);
+				this.unusedList.captureEvents(Event.CHANGE);
+			}
+			
+		}
+		
+		// moves all selected items from the unused list
+		// into the used list
+		function addItems() {
+			
+			var opts = this.unusedList.options;
+			var selOpts = new Array();
+			
+			var selCount = 0;
+			
+			// gather selected options into an array
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+					var opt = document.createElement("option");
+					opt.text = opts[i].text;
+					opt.value = opts[i].value;
+					
+					selOpts[selCount] = opt;
+					selCount++;
+				}
+			}
+			
+			// add selected options to Used list
+			for (j=0;j<selOpts.length;j++) {
+				addOptionToSelect(selOpts[j],this.usedList);
+			}
+			
+			// remove selected options from Unused list
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+						this.unusedList.remove(i);
+						i--;
+				}
+			}
+			
+			if (this.syncSelect)
+				updateSelectElement(this.syncSelect,this.usedList);
+			
+			this.addBtn.disabled = true;
+		}
+		
+		// moves all selected items from the used list
+		// into the unused list
+		function remItems() {
+			
+			var opts = this.usedList.options;
+			var selOpts = new Array();
+			
+			var selCount = 0;
+			
+			// gather selected options into an array
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+					var opt = document.createElement("option");
+					opt.text = opts[i].text;
+					opt.value = opts[i].value;
+					
+					selOpts[selCount] = opt;
+					selCount++;
+				}
+			}
+			
+			// add selected options to Used list
+			for (j=0;j<selOpts.length;j++) {
+				addOptionToSelect(selOpts[j],this.unusedList);
+			}
+			
+			// remove selected options from Unused list
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+						this.usedList.remove(i);
+						i--;
+				}
+			}
+			
+			if (this.syncSelect)
+				updateSelectElement(this.syncSelect,this.usedList);
+			
+			this.remBtn.disabled = true;
+		}
+		
+		function clearSwapList() {
+			this.options = new Array();
+			this.selOptions = new Array();
+			this.init();
+		}
+		
+		// used to enable/disable SwapList controls
+		function setEnabled(enable) {
+			
+			this.usedList.disabled = !enable;
+			this.unusedList.disabled = !enable;
+			
+			this.addBtn.disabled = true;
+			this.remBtn.disabled = true;
+			
+		}
+		
+		// =========================================
+		
+		// change event on Unused list
+		function updateUnusedList() {
+			
+			var swapList = eval(this.id);
+			var addBtn = swapList.addBtn;
+			
+			if (this.selectedIndex > -1) {
+				addBtn.disabled = false;
+			} else {
+				addBtn.disabled = true;
+			}
+		}
+		
+		// change event on Used list
+		function updateUsedList() {
+			
+			var swapList = eval(this.id);
+			var remBtn = swapList.remBtn;
+			
+			if (this.selectedIndex > -1) {
+				remBtn.disabled = false;
+			} else {
+				remBtn.disabled = true;
+			}
+		}
+
+		
+		// Profile updates are performed through AJAX, so the Javascript
+		// objects used to hold configuration objects will not be automatically
+		// updated by a page-reload. Instead, they must be updated on-the-fly
+		// via this function.
+		function updateConfigObjects(wfName,stepName,ctName,properties,visible,required,label,includesAndCaptions) {
+			
+			// construct new FieldSpec object
+			var fs = new FieldSpec(visible,required,label,makeCustomDisplayFieldArray(includesAndCaptions));
+			
+			if (curTab == 'workflows') {
+				// updating WorkflowConfig/StepConfig object
+				
+				var wfc = getWorkflowConfig(wfName);		
+						
+				if (wfc == null) {
+					// no existing WorkflowConfig for this workflow, construct one now
+					wfc = new WorkflowConfig(wfName);
+					workflowConfigs[workflowConfigs.length] = wfc;
+				} 
+					
+				if (stepName != null && stepName != '') {
+					// StepConfig object needs updating, make a new one					  
+				  step = new StepConfig(stepName,properties,fs);
+					
+					var steps = wfc.steps;
+					if (steps != null) {
+						
+						var found = false;
+						
+						for (i=0;i<steps.length;i++) {
+							var thisStep = steps[i];
+							
+							if (thisStep.stepName == stepName) {
+								steps[i] = step;
+								found = true;
+							}
+						}
+						
+						if (!found)
+							steps[steps.length] = step;
+					
+					} else {
+						steps = new Array();
+						steps[0] = step;
+					}
+					
+					wfc.steps = steps;
+				
+				} else {
+					// WorkflowConfig needs updating				
+					wfc.properties = properties;
+					wfc.fieldSpec = fs;
+				}
+			
+			} else {
+				// updating ContentType object
+				
+				var ct = getContentTypeConfig(ctName);
+				
+				if (ct == null) {
+					// no existing ContentTypeConfig for this workflow, construct one now
+					ct = new ContentTypeConfig(ctName);
+				}
+					
+				ct.fieldSpec = fs;
+				contentTypeConfigs[contentTypeConfigs.length] = ct;
+			
+			}
+		}
+
+		// add workflow to in-use list
+		function addWorkflow() {
+			wfSwapList.addItems();
+			
+			updateSelWorkflow(wfSwapList.syncSelect);
+		}
+		
+		// remove workflow from in-use list
+		function remWorkflow() {
+			wfSwapList.remItems();
+			
+			updateSelWorkflow(wfSwapList.syncSelect);
+		}
+		
+		function addContentType() {
+			ctSwapList.addItems();
+			
+			updateSelContentType(ctSwapList.syncSelect);
+		}
+		
+		function remContentType() {
+			ctSwapList.remItems();
+			
+			updateSelContentType(ctSwapList.syncSelect);
+		}
+		
+		function addStep() {
+			stepSwapList.addItems();
+			
+		}
+		
+		function remStep() {
+			stepSwapList.remItems();
+		}
+		
+		// Copies the option elements from the given select element 'toCopy'
+		// into the element 'toUpdate'. Adds an empty option at the
+		// begining of the list to be updated. 
+		function updateSelectElement(toUpdate,toCopy) {
+			
+			// clear contents of list to be updated
+			listSize = toUpdate.options.length;
+			
+			for (i=0;i<listSize;i++) {
+				toUpdate.remove(0);
+			}
+				
+			// add empty option to list
+			var opt = document.createElement('option');
+			opt.value = '';
+			opt.text = '';
+			opt.selected=true;
+			addOptionToSelect(opt,toUpdate,0);
+			
+			// now copy over all options from list to be copied
+			for(i=0;i<toCopy.options.length;i++) {
+				
+				var thisOpt = document.createElement('option');
+				thisOpt.value = toCopy.options[i].value;
+				thisOpt.text = toCopy.options[i].text;
+				
+				addOptionToSelect(thisOpt,toUpdate);
+			}
+		}
+		
+		// Cross-browser method for adding options
+		// to select lists.
+		function addOptionToSelect(opt,sel,index) {
+			
+			if (!index)
+				index = sel.options.length;
+			
+			try {
+				var oldOpt = sel.options[index];			
+				sel.add(opt, oldOpt);
+			} catch (ex) {
+				sel.add(opt, index);
+			}
+		}
+		
+		// enables/disables the workflow radio buttons
+		function setConfigSelectorEnabled(enable) {
+			
+			var radioBtns = document.getElementsByName("configSelector");
+			var selStep = document.getElementById("selStep");
+			
+			radioBtns[0].checked = true;
+			selStep.enabled = false;
+			
+			if (enable) {	
+				for (i=0; i<radioBtns.length; i++) {
+					radioBtns[i].disabled = false;
+				}				
+			} else {
+				
+				for (i=0; i<radioBtns.length; i++) {
+					radioBtns[i].disabled = true;
+				}
+			}
+		}
+		
+		// called on click event to radio buttons.
+		function updateConfigSelector() {
+			
+			var radioBtns = document.getElementsByName("configSelector");
+			var selStep = document.getElementById("selStep");
+			
+			for (i=0; i<radioBtns.length; i++) {
+				if (radioBtns[i].checked) {
+					if (radioBtns[i].value == 'default') {
+						selStep.disabled = true;
+						stepSwapList.setEnabled(false);
+						curStep = '';
+						
+						updateCurrentlyEditing(curWorkflow,'');
+					} else {
+						selStep.disabled = false;
+						stepSwapList.setEnabled(true);
+						
+						var curVal = selStep.options[selStep.selectedIndex].value;
+						
+						if (curVal != '') {
+							curStep = curVal;
+							
+							updateCurrentlyEditing(curWorkflow,curStep);
+						} else {							
+							updateCurrentlyEditing('','');
+						}
+					}
+				}
+			}
+		}
+		
+		// Clears the step selection list and fills it based
+		// on the currently-selected workflow
+		function refreshStepList() {
+			
+			if (curWorkflow != '') {
+			
+				var wfSteps = new Array();
+				var k = 0;
+				
+				// collect step names belonging to current workflow
+				for (j=0;j<workflowSteps.length;j++) {
+					wfStep = workflowSteps[j];
+					
+					if (wfStep.wfName == curWorkflow) {
+						var opt = document.createElement('option');
+						
+						opt.value = wfStep.stepName;
+						opt.text = wfStep.stepName;
+						
+						wfSteps[k] = opt;
+						k++;
+					}
+				}
+				
+				// update the options for the step SwapList object
+				stepSwapList.options = wfSteps;
+				
+				var wfc = getWorkflowConfig(curWorkflow);
+				var selSteps = new Array();
+				
+				if (wfc != null) {
+					for (i=0;i<wfc.steps.length;i++) {
+						
+						selSteps[i] = wfc.steps[i].stepName;
+					}
+					stepSwapList.selOptions = selSteps;
+				}
+			
+			} else {
+				// wipe all list contents
+				stepSwapList.options = new Array();
+				stepSwapList.selOptions = new Array();
+			}
+			
+			stepSwapList.init();
+		}
+		
+		/*
+		function refreshStepList() {
+			
+			curStep = '';
+			
+			// clear contents of step list
+			var listSize = selStep.options.length;
+
+			for (i=0;i<listSize;i++) {
+				selStep.remove(0);
+			}
+			
+			// add empty option to list
+			var opt = document.createElement('option');
+			opt.value = '';
+			opt.text = '';
+			opt.selected=true;
+			
+			addOptionToSelect(opt,selStep,0);
+			
+			if (curWorkflow != '') {
+			
+				var wfSteps = new Array();
+				var k = 0;
+				
+				for (j=0;j<workflowSteps.length;j++) {
+					wfStep = workflowSteps[j];
+					
+					if (wfStep.wfName == curWorkflow) {
+						var opt = document.createElement('option');
+						
+						opt.value = wfStep.stepName;
+						opt.text = wfStep.stepName;
+						
+						wfSteps[k] = opt;
+						k++;
+					}
+				}
+				
+				// add workflow step entries to list
+				for (j=0;j<wfSteps.length;j++) {
+					addOptionToSelect(wfSteps[j],selStep);
+				}
+			}
+		}
+		*/
+			
+		// called on change event to the selected workflow list
+		function updateSelWorkflow(selWorkflow) {
+			
+			if (selWorkflow.selectedIndex == -1) {
+				selWorkflow.options[0].selected=true;
+			}
+			
+			var selOpt = selWorkflow.options[selWorkflow.selectedIndex];
+			
+			if (selOpt.value.length == 0) {
+				// No workflow selected		
+				if (curWorkflow == '')
+					return;
+				
+				curWorkflow = '';
+
+				updateCurrentlyEditing(curWorkflow,'');	
+				setConfigSelectorEnabled(false);
+				
+			} else {
+				// Valid workflow selected
+				curWorkflow = selOpt.value;
+				
+				updateCurrentlyEditing(curWorkflow,'');
+				setConfigSelectorEnabled(false);
+				setConfigSelectorEnabled(true);
+			}
+			
+			refreshStepList();
+			
+			var radioBtns = document.getElementsByName("configSelector");
+			var selStep = document.getElementById("selStep");
+			
+			radioBtns[0].checked = true;
+			stepSwapList.setEnabled(false);
+			selStep.disabled = true;
+		}
+		
+		// called on change event to the selected step list
+		function updateSelStep(selStep) {
+			
+			if (selStep.selectedIndex == -1) {
+				selStep.options[0].selected=true;
+			}
+			
+			var selOpt = selStep.options[selStep.selectedIndex];
+				
+			if (selOpt.value == '') {
+				curStep = '';
+				
+				updateCurrentlyEditing('','');
+			} else {
+				curStep = selOpt.value;
+				
+				updateCurrentlyEditing(curWorkflow,curStep);
+			}
+		}
+		
+		// called on change event to the selected content type list
+		function updateSelContentType(selType) {
+			
+			if (selType.selectedIndex == -1) {
+				selType.options[0].selected=true;
+			}
+			
+			var selOpt = selType.options[selType.selectedIndex];
+			
+			if (selOpt.value.length == 0) {
+				// No content type selected
+				
+				if (curContentType == '')
+					return;
+				
+				curContentType = '';				
+			} else {
+				// Valid workflow selected
+				curContentType = selOpt.value;
+			}
+			
+			updateCurrentlyEditing(curContentType,'');
+		}
+		
+		// Refreshes form element values based on the selected workflow/step/
+		// content type.
+		// This function will show/hide the form elements and fill them with
+		// any saved configuration data.
+		function updateCurrentlyEditing(wfName,stepName) {
+			
+			var currentlyEditing = document.getElementById("currently_editing");
+			var editDiv = document.getElementById("edit_div");
+			
+			var frm = document.forms['profile_edit_form'];
+			
+			var savedConfig;
+			var foundConfig = false;
+			
+			if (curTab == 'workflows') {
+			
+				// Update the form's header first - this tells the user exactly which
+				// configuration they are editing.
+			
+				if (wfName == '' & stepName == '') {
+					// Workflow not selected (nothing selected!)
+					currentlyEditing.innerHTML = "<b>None.</b>";
+					
+					editDiv.style.visibility="hidden";
+				} else if (stepName == '') {
+					// Step not selected.
+					currentlyEditing.innerHTML = "<b>default settings</b> for workflow '<b>" + wfName + "</b>'";
+					
+					editDiv.style.visibility="";
+				} else {
+					// Step selected.
+					currentlyEditing.innerHTML = "step '<b>" + stepName + "</b>' in workflow '<b>" + wfName + "</b>'";
+					
+					editDiv.style.visibility="";
+				}
+				
+				if (lastWorkflow == wfName && lastStep == stepName)
+					return;
+					
+				if (!checkForChanges())
+					return;
+					
+				changes = false;
+					
+				lastWorkflow = wfName;
+				lastStep = stepName;
+			
+				// Attempt to locate saved config data for this workflow/step			
+				savedConfig = getWorkflowConfig(wfName);
+				
+				if (savedConfig != null) {
+					// saved configuration settings found for this workflow.
+					foundConfig = true;
+					
+					if (stepName != null && stepName != '') {
+						// step selected - look for saved workflow step configuration
+						foundConfig = false;
+						
+						var steps = savedConfig.steps;			
+							
+						if (steps != null) {				
+							for (i=0;i<steps.length;i++) {
+								var step = steps[i];
+								
+								if (step.stepName == stepName) {
+									// saved configuration settings found for this workflow step
+									foundConfig = true;
+									savedConfig = step;
+								}
+							}
+						}
+					}
+				}
+			
+			} else if (curTab == 'content_types') {
+				
+				if (wfName == '') {
+					// Content type not selected (nothing selected!)
+					currentlyEditing.innerHTML = "<b>None.</b>";
+					
+					editDiv.style.visibility="hidden";
+				} else {
+					
+					currentlyEditing.innerHTML = "content type '<b>" + wfName + "</b>'";
+					editDiv.style.visibility="";
+				}
+				
+				// Attempt to locate saved config data for this workflow/step			
+				savedConfig = getContentTypeConfig(wfName);
+				
+				if (savedConfig != null) {
+					// saved configuration settings found for this workflow.
+					foundConfig = true;
+				}
+			}
+			
+			if (foundConfig) {
+				// load saved configuration data into HTML form elements
+				
+				if (savedConfig.properties) {	
+					frm.elements['approveText'].value = savedConfig.properties.approveText;
+					frm.elements['rejectText'].value = savedConfig.properties.rejectText;
+					frm.elements['validationClass'].value = savedConfig.properties.validationClass;
+					
+					if (savedConfig.properties.hideReject == 'true')
+						frm.elements['hideReject_check'].checked = true;
+					else
+						frm.elements['hideReject_check'].checked = false;
+				}
+			
+				syncVisibleFields(savedConfig.fieldSpec.visible);
+			
+			} else {
+				// no saved config data for this workflow/step yet. Reset all
+				// form fields to their default values
+				
+				frm.elements['approveText'].value = '';
+				frm.elements['rejectText'].value = '';
+				frm.elements['validationClass'].value = '';
+				
+				frm.elements['hideReject_check'].checked = false;
+				
+				syncVisibleFields('');
+			}
+			
+			updateHideReject(document.getElementsByName("hideReject_check")[0]);
+			updateVisFields(document.getElementsByName("visFields")[0]);
+		}
+		
+		// change event on 'hide reject' checkbox element
+		function updateHideReject(check) {
+			
+			var rejectText = document.getElementsByName("rejectText")[0];
+			
+			if (check.checked) {
+				rejectText.disabled = true;
+			} else {
+				rejectText.disabled = false;
+			}
+		}
+		
+		// Visible fields region
+		// =================================
+		
+		// Syncs the 'Visible fields' region with the profile data
+		function syncVisibleFields(visible) {
+			
+			// reset visible/invis field lists
+			var visFields = document.getElementsByName("visFields")[0];
+			var invisFields = document.getElementsByName("invisFields")[0];
+			
+			// reset field config rows
+			clearDivs();
+			
+			visFields.options.length = 0;
+			invisFields.options.length = 0;
+			
+			// refill invisible fields list
+			for (i=0;i<metadataFields.length;i++) {
+				var mdf = metadataFields[i];
+				var opt = document.createElement('option');
+				
+				opt.value =	mdf.fieldName;
+				opt.text = mdf.fieldCaption;
+			
+				addOptionToSelect(opt,invisFields,invisFields.options.length);
+			}
+			
+			// construct option elements required for Visible Fields select list
+			if (visible != '') {
+				var opts = document.getElementsByName("invisFields")[0].options;
+				var visOpts = new Array();
+				
+				var fields = visible.split(",");			
+						
+				for (i=0;i<fields.length;i++) {
+					var field = fields[i];
+					
+					if (field == 'div') {
+								
+						// divider entry found.			
+						var div = document.createElement("option");
+						div.value = "div";
+						div.text = " [divider]";
+						
+						visOpts[i] = div;
+					
+					} else {
+						
+						for (j=0;j<opts.length;j++) {
+							if (opts[j].value == fields[i]) {
+								
+								var visOpt = document.createElement("option");
+								visOpt.value = opts[j].value;
+								visOpt.text = opts[j].text;
+								
+								invisFields.options[j] = null;
+								
+								visOpts[i] = visOpt;
+							}
+						}
+					}
+				}
+				
+				for (k=0;k<visOpts.length;k++) {
+					// add option to visible field list
+					addOptionToSelect(visOpts[k],visFields);
+					
+					// add field config row
+					var field = visOpts[k].value;	
+					
+					if (curTab == 'workflows')
+						wfc = getWorkflowConfig(curWorkflow);
+					else
+						wfc = getContentTypeConfig(curContentType);
+					
+					if (wfc != null) {
+						var fieldSpec;
+						
+						if (curStep != '') {
+							var sc = getStepConfig(wfc,curStep);
+							if (sc != null)
+								fieldSpec = sc.fieldSpec;		
+							
+						} else {
+							fieldSpec = wfc.fieldSpec;
+						}
+						
+						reqFields = fieldSpec.required;
+						
+						var isReq = false;
+						var reqFields = fieldSpec.required.split(",");
+						
+						for (j=0;j<reqFields.length;j++) {
+							if (reqFields[j] == field) {
+								isReq = true; 
+								break;
+							}
+						}
+						
+						var isLabel = false;
+						var labelFields = fieldSpec.label.split(",");
+						
+						for (j=0;j<labelFields.length;j++) {
+							if (labelFields[j] == field) {
+								isLabel = true; 
+								break;
+							}
+						}
+						
+						var include = '';
+						var custCaption = '';
+						var custFields = fieldSpec.customDisplayFields;
+						
+						if (custFields != null) {
+							
+							for (j=0;j<custFields.length;j++) {
+								var cdf = custFields[j];
+								
+								if (cdf.name == field) {
+									include = cdf.include;
+									custCaption = cdf.custCaption;
+								}
+							}
+						}
+						
+						addDiv(visOpts[k].text,visOpts[k].value,isReq,isLabel,custCaption,include);
+				
+					} else {
+						// no saved config info for this workflow/step
+						addDiv(visOpts[k].text,field);
+					}
+				}
+			}
+		}
+		
+		// metafield added to visible list
+		function addField() {
+			
+			changeConfigField();
+			
+			var visFields 	= document.getElementsByName("visFields")[0];
+			var invisFields = document.getElementsByName("invisFields")[0];
+		
+			var unusedOpts = invisFields.options;
+			var newOpts = new Array();
+			
+			var j = 0;
+			
+			for (i=0;i<unusedOpts.length;i++) {
+				
+				if (unusedOpts[i].selected) {
+						// Find any selected options and record them
+						var opt = document.createElement('option');
+					
+						opt.value = unusedOpts[i].value;
+						opt.text = unusedOpts[i].text;
+						
+						newOpts[j] = opt;
+						j++;
+				}
+			}
+			
+			for (k=0;k<newOpts.length;k++) {	
+				// Add new option elements
+				addOptionToSelect(newOpts[k],visFields);
+				
+				addDiv(newOpts[k].text,newOpts[k].value);
+			}
+			
+			
+			for (i=0;i<unusedOpts.length;i++) {
+				// Remove elements from the unused workflow list
+				if (unusedOpts[i].selected) {
+						invisFields.remove(i);
+						i--;
+				}
+			}
+			
+			document.getElementById("add_field_btn").disabled = true;			
+		}
+		
+		// inserts a divider element into the list of visible fields.
+		// the divider will be placed before the first selected element.
+		// if no element is selected, the divider is placed at the end
+		// of the list
+		function insertDivider() {
+			
+			var opt = document.createElement("option");
+			var selOpt;
+			
+			opt.value = "div";
+			opt.text = " [divider]";
+			
+			var visFields 	= document.getElementsByName("visFields")[0];
+			
+			if (visFields.options.length > 0) {
+			
+				if (visFields.selectedIndex > -1) {
+					index = visFields.selectedIndex+1;
+					selOpt = visFields.options[index];
+				} else {
+					selOpt = visFields.options[visFields.options.length];
+					index = visFields.options.length;	
+				}
+				
+				addOptionToSelect(opt,visFields,index);
+			
+				insertDiv(index,'','div');
+			
+			} else {
+				visFields.options[0] = opt;			
+				addDiv('','div');				
+			}			
+		}
+		
+		// swaps the (first) selected option in the visible
+		// field list with the option	before it
+		function moveFieldUp() {
+			
+			changeConfigField();
+			
+			var visFields 	= document.getElementsByName("visFields")[0];
+			
+			if (visFields.options.length > 0) {	
+				var index = visFields.selectedIndex;
+			
+				if (index > 0) {
+					
+					var opt1 = visFields.options[index];
+					var opt2 = visFields.options[index-1];
+					
+					var newOpt1 = document.createElement("option");
+					newOpt1.value = opt1.value;
+					newOpt1.text = opt1.text;
+					
+					var newOpt2 = document.createElement("option");
+					newOpt2.value = opt2.value;
+					newOpt2.text = opt2.text;
+					
+					visFields.options[index-1] = newOpt1;
+					visFields.options[index] = newOpt2;
+				}
+			}
+			
+			for (i=0;i<visFields.options.length;i++)
+				visFields.options[i].selected = false;
+			
+			visFields.options[index-1].selected = true;
+			
+			swapDivs(index,index-1);
+			
+			updateVisFields(visFields);
+		}
+		
+		// swaps the (first) selected option in the visible
+		// field list with the option	after it
+		function moveFieldDown() {
+			
+			changeConfigField();
+			
+			var visFields 	= document.getElementsByName("visFields")[0];
+			
+			if (visFields.options.length > 0) {	
+				var index = visFields.selectedIndex;
+			
+				if (index < visFields.options.length-1) {
+					
+					var opt1 = visFields.options[index];
+					var opt2 = visFields.options[index+1];
+					
+					var newOpt1 = document.createElement("option");
+					newOpt1.value = opt1.value;
+					newOpt1.text = opt1.text;
+					
+					var newOpt2 = document.createElement("option");
+					newOpt2.value = opt2.value;
+					newOpt2.text = opt2.text;
+					
+					visFields.options[index+1] = newOpt1;
+					visFields.options[index] = newOpt2;
+				}
+			}
+			
+			for (i=0;i<visFields.options.length;i++)
+				visFields.options[i].selected = false;
+			
+			visFields.options[index+1].selected = true;
+			
+			swapDivs(index+1,index);
+			
+			updateVisFields(visFields);
+		}
+		
+		function remField() {
+			
+			changeConfigField();
+			
+			var visFields 	= document.getElementsByName("visFields")[0];
+			var invisFields = document.getElementsByName("invisFields")[0];
+		
+			var usedOpts = visFields.options;
+			var delOpts = new Array();
+			
+			var j = 0;
+			
+			for (i=0;i<usedOpts.length;i++) {
+				
+				if (usedOpts[i].selected) {
+						// Find any selected options and record them
+						var opt = document.createElement('option');
+						
+						opt.value = usedOpts[i].value;
+						opt.text = usedOpts[i].text;
+						
+						delOpts[j] = opt;
+						j++;
+				}
+			}
+			
+			for (k=0;k<delOpts.length;k++) {	
+				// Add new option elements
+				if (delOpts[k].value != "div")
+					addOptionToSelect(delOpts[k],invisFields);			
+			}
+			
+			var indices = new Array();
+			var selCount = 0;
+			
+			for (i=0;i<usedOpts.length;i++) {
+				// Remove elements from the used field list
+				if (usedOpts[i].selected) {
+						indices[selCount] = i;
+						selCount++;		
+						visFields.remove(i);
+						
+						i--;
+				}
+			}
+			
+			for (l=0;l<selCount;l++) {
+				remDiv(indices[l]);
+			}
+			
+			updateVisFields(visFields);
+		}
+		
+		// called on change event to visible fields list
+		function updateVisFields(optlist) {
+			
+			opts = optlist.options;
+			var sel = false;
+			var firstSel = -1;
+			
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+					
+					if (firstSel == -1)
+						firstSel = i;
+						
+					document.getElementById("rem_field_btn").disabled = false;
+					sel = true;
+				}
+			}
+			
+			if (!sel) {
+				document.getElementById("rem_field_btn").disabled = true;
+			}
+			// Enable/disable up/down field buttons
+		
+			upButton = document.getElementById("field_up");
+			downButton = document.getElementById("field_down");
+			
+			if (sel && firstSel > 0) {
+				upButton.disabled = false; upButton.className = "up_down_btn_avail"; upButton.src = "<$HttpWebRoot$>images/iris/arrow-up.gif";
+			} else {
+				upButton.disabled = true; upButton.className = "up_down_btn"; upButton.src = "<$HttpWebRoot$>images/iris/arrow-up-inactive.gif";
+			}
+			
+			if (sel && firstSel < (opts.length-1)) {
+				downButton.disabled = false; downButton.className = "up_down_btn_avail"; downButton.src = "<$HttpWebRoot$>images/iris/arrow-down.gif";
+			} else {
+				downButton.disabled = true; downButton.className = "up_down_btn"; downButton.src = "<$HttpWebRoot$>images/iris/arrow-down-inactive.gif";
+			}
+			
+		}
+		
+		// called on change event to invisible fiels list
+		function updateInvisFields(optlist) {
+			
+			opts = optlist.options;		
+			var sel = false;
+			
+			for (i=0;i<opts.length;i++) {
+				if (opts[i].selected) {
+					document.getElementById("add_field_btn").disabled = false;
+					sel = true;
+				}
+			}
+			
+			if (!sel)
+				document.getElementById("add_field_btn").disabled = true;
+		}
+		
+		
+		// Field config row functions
+		// =================================
+		var rowCount = 0;
+
+		// creates a div element that appears like a table row
+		function createDiv(caption,idcName,isReq,isLabel,custCaption,include) {
+			
+			var row = document.createElement("div");
+			row.className = "field_config_row";
+			
+			if (idcName == 'div')
+				return row;
+	
+			var captionDiv = document.createElement("div");
+			captionDiv.className = "field_config_label";
+	
+			captionDiv.innerHTML = caption;
+	
+			var idcNameDiv = document.createElement("div");
+			idcNameDiv.className = "field_config_label";
+			
+			idcNameDiv.innerHTML = idcName;
+	
+			var requiredDiv = document.createElement("div");
+			requiredDiv.className = "field_config_checkbox";
+			var reqCheckbox = document.createElement("input");
+			reqCheckbox.type = "checkbox";
+			reqCheckbox.name = idcName + "_required";
+			reqCheckbox.id = idcName + "_required";
+			
+			requiredDiv.appendChild(reqCheckbox);			
+			reqCheckbox.checked = isReq;
+			//if (curTab == 'content_types')
+			//	reqCheckbox.disabled = true;
+			
+			reqCheckbox.onchange = changeConfigField;
+	
+			var labelDiv = document.createElement("div");
+			labelDiv.className = "field_config_checkbox";
+			var labelCheckbox = document.createElement("input");
+			labelCheckbox.type = "checkbox";
+			labelCheckbox.name = idcName + "_label";
+			labelCheckbox.id = idcName + "_label";
+			
+			labelDiv.appendChild(labelCheckbox);
+			labelCheckbox.checked = isLabel;
+			labelCheckbox.onchange = changeConfigField;
+			
+			var custCaptionDiv = document.createElement("div");
+			custCaptionDiv.className = "field_config_text";
+			var custCaptionText = document.createElement("input");
+			custCaptionText.type = "text";
+			custCaptionText.name = idcName + "_custCaption";
+			custCaptionText.id = idcName + "_custCaption";
+
+			custCaptionDiv.appendChild(custCaptionText);
+			custCaptionText.onchange = changeConfigField;			
+
+			if (custCaption != null && custCaption != '')
+				custCaptionText.value = custCaption;
+
+			var includeDiv = document.createElement("div");
+			includeDiv.className = "field_config_text";
+			var includeText = document.createElement("input");
+			includeText.type = "text";
+			includeText.name = idcName + "_include";
+			includeText.id = idcName + "_include";
+			
+			if (include != null && include != '')
+				includeText.value = include;
+				
+			includeDiv.appendChild(includeText);
+			includeText.onchange = changeConfigField;
+	
+			row.appendChild(captionDiv);
+			row.appendChild(idcNameDiv);
+			row.appendChild(requiredDiv);
+			row.appendChild(labelDiv);
+			row.appendChild(custCaptionDiv);
+			row.appendChild(includeDiv);
+			
+			return row;
+		}
+
+		// creates and adds a div to the list
+		function addDiv(caption,idcName,isReq,isLabel,custCaption,include) {
+			
+			var cell = document.getElementById("field_config_cell");
+			var div = createDiv(caption,idcName,isReq,isLabel,custCaption,include);
+		
+			div.id = "row_" + rowCount;
+			div.name = "row_" + idcName;
+	
+			cell.appendChild(div);	
+	
+			rowCount++;
+		}
+	
+		// removes a div from the list
+		function remDiv(index) {
+			
+			var cell = document.getElementById("field_config_cell");
+			var div = document.getElementById("row_" + index);
+	
+			cell.removeChild(div);
+	
+			adjustDivIds(index+1,-1);
+	
+			rowCount--;
+		}
+		
+		// removes all div rows from the cell
+		function clearDivs() {
+			
+			var cell = document.getElementById("field_config_cell");
+			
+			while (cell.firstChild != null) {
+				cell.removeChild(cell.firstChild);
+			}
+			
+			rowCount = 0;
+		}
+	
+		// inserts a div at the specified index
+		function insertDiv(index,caption,idcName) {
+			
+			changeConfigField();
+			
+			if (index >= rowCount) {
+				addDiv(caption,idcName);
+				return;
+			}
+			
+			var cell = document.getElementById("field_config_cell");
+			var divAfter = document.getElementById("row_" + index);
+			
+			var div = createDiv(caption,idcName);
+			div.id = "row_" + index;
+	
+			adjustDivIds(index,1);	
+			cell.insertBefore(div,divAfter);
+	
+			rowCount++;
+		}
+		
+		// swaps the divs around at the given indices
+		function swapDivs(index1,index2) {
+		
+			changeConfigField();
+		
+			if (index2 > index1) {
+				var tmp = index1;
+				index1 = index2;
+				index2 = tmp;
+			}
+		
+			var cell = document.getElementById("field_config_cell");
+		
+			var div1 = document.getElementById("row_" + index1);
+			var div2 = document.getElementById("row_" + index2);
+			
+			div2.id = "row_" + index1;
+			
+			var newDiv1 = div1.cloneNode(true);
+				
+			newDiv1.id = "row_" + index2;
+				
+			cell.removeChild(div1);
+			cell.insertBefore(newDiv1,div2);	
+		}
+	
+		// used for adjusting all div id attributes after an insert/delete operation
+		function adjustDivIds(index,change) {
+			
+			var divs = new Array();
+	
+			for (i=index; i<rowCount; i++) {
+				var thisDiv = document.getElementById("row_" + i);			
+				divs[i-index] = thisDiv;
+			}
+	
+			for (i=index; i<rowCount; i++) {			
+				var thisDiv = divs[i-index];
+				thisDiv.id = "row_" + (i+change);
+			}
+			
+		}
+		
+		// called on change event to most config. fields
+		function changeConfigField() {
+			changes = true;
+		}
+		
+		function checkForChanges() {
+			if (changes) {
+				var conf = confirm("You have unsaved changes to the current configuration. Are you sure you wish to continue?");
+				return conf;
+			}
+			
+			return true;
+		}
+		
+		function checkForChangesOnExit() {
+			if (changes) {
+					var conf = confirm("You have unsaved changes to the current configuration. Click OK to save now, or Cancel to continue without saving.");
+					if (conf) {
+						leavingPage = true;
+						submitProfileInfo(document.forms['profile_edit_form']);
+					}
+			}
+		}
+		
+		// switch UI tab event
+		function openTab(tab) {
+			
+			if (tab == curTab)
+				return;
+			
+			if (!checkForChanges())
+				return;
+				
+			changes = false;
+			
+			curWorkflow = ''; curStep = ''; curContentType = '';
+			
+			updateCurrentlyEditing('','');
+			
+			var appRejectTable = document.getElementById("app_rej_table");
+			var wfSel	= document.getElementById("workflow_selector");
+			var typeSel = document.getElementById("content_type_selector");
+			
+			var wfTab = document.getElementById("tab_workflows");
+			var typeTab = document.getElementById("tab_content_types");
+			
+			var availTypesDiv = document.getElementById("avail_content_types_div");
+			var availWorkflowsDiv = document.getElementById("avail_workflows_div");
+			
+			document.getElementById("selWorkflow").selectedIndex = 0;
+			document.getElementById("selContentType").selectedIndex = 0;
+			
+			if (tab == 'content_types') {
+				wfTab.className = "tabOff";
+				typeTab.className = "tabOn";
+				
+				appRejectTable.style.display = "none";
+				wfSel.style.display = "none";
+				typeSel.style.display = "";
+				
+				availTypesDiv.style.display = "";
+				availWorkflowsDiv.style.display = "none";
+				
+				setConfigSelectorEnabled(false);
+				stepSwapList.clear();
+				stepSwapList.setEnabled(false);
+				document.getElementsByName("selStep")[0].selectedIndex = 0;
+				document.getElementsByName("selStep")[0].disabled = true;
+				
+			} else {
+				wfTab.className = "tabOn";
+				typeTab.className = "tabOff";
+				
+				appRejectTable.style.display = "";
+				typeSel.style.display = "none";
+				wfSel.style.display = "";
+				
+				availTypesDiv.style.display = "none";
+				availWorkflowsDiv.style.display = "";
+			}
+			
+			curTab = tab;
+		}
+		
+	</script>
+	
+	
+	
+</head>
+
+<body <$include iris_body_def_internal$> onLoad="init()" onUnload="checkForChangesOnExit()" height="100%" >
+
+<$include iris_header$>
+	
+	<table border=0 cellpadding=7 cellspacing=0 width="100%">
+		<tr>
+			<td valign=top align=center>
+	
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FFFFFF">
+					<tr>
+						<td>
+							
+							<br style="line-height:20px" />
+	
+						</td>
+					</tr>
+				</table>
+
+			<br/>
+
+			<div style="padding-left: 40px; width: 875px" align=center>
+
+			<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+					<td class="xuiPageHeadingCell">
+						<h5 class="xuiPageHeadingText" style="color:#F29303;font-size: 12pt;">Edit Profile Definition - <span style="color: #000000"><$pName$></span></h5>
+						<h6>Condition: <span style="color: #000000"><$if not cName$>(no condition)<$else$><$cName$><$endif$></span></h6>
+					</td>
+
+					<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+					</td>
+					
+				</tr>
+			</table>
+			
+			<br style="line-height:20px">
+
+			<table width='875' cellpadding=0 cellspacing=0>
+				<tr height='25'>
+					<td width='172' align='center' class="tabOn" id='tab_workflows'>
+						<a href="javascript:openTab('workflows')"><span class="tab_text">Workflow Docs</span></a>
+					</td>
+		
+					<td width='172' align='center' class="tabOff" id='tab_content_types'>
+						<a href="javascript:openTab('content_types')"><span class="tab_text" id="tab_notes_caption">Completed Docs</span></a>
+					</td>
+					
+					<td width='531'></td>
+				</tr>
+			</table>
+			
+			<!-- Available workflows panel -->
+			
+			<div id="avail_workflows_div">
+				<$include orangeContainer_top$>
+					
+					<div style="padding: 15px">
+						
+						<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td class="xuiPageHeadingCell">
+									<h4 class="xuiPageHeadingText" style="color:#F29303;">Available Workflows</h4></td>
+			
+									<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+							</tr>
+						</table>
+						
+						<br style="line-height:10px">
+						
+						<table align=center>
+							<tr>
+								<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>In use</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="usedWorkflows" multiple="multiple">
+									</select>
+									
+								</td>
+							
+								<td align="center" valign="bottom">
+									<input type="button" id="add_wf_btn" class="add_rem_button" value="<< Add" onClick="addWorkflow()" disabled="disabled"/>
+								</td>
+					
+								<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>Not in use</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="unusedWorkflows" multiple="multiple">
+									</select>
+									
+								</td>
+							</tr>
+							
+							<tr>
+								<td align="center" valign="top">
+									<input type="button" id="rem_wf_btn" class="add_rem_button" value="Remove >>" onClick="remWorkflow()" disabled="disabled"/>
+								</td>
+							</tr>
+							
+						</table>
+						
+						<br style="line-height:20px">
+						
+						<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td class="xuiPageHeadingCell">
+									<h4 class="xuiPageHeadingText" style="color:#F29303;">Workflow selector</h4></td>
+			
+								<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+							</tr>
+						</table>
+						
+						<br style="line-height:10px">
+						
+						<table>
+							<tr>
+								<td width=140>
+									Select a workflow:
+								</td>
+								
+								<td colspan=2>
+									<select name="selWorkflow" id="selWorkflow" style="width: 200px" onChange="updateSelWorkflow(this)">
+										<option value='' selected="selected">&nbsp;</option>								
+									</select>
+								</td>
+							</tr>
+							
+							<tr>
+								<td colspan=3><br style="line-height: 5px"/></td>
+							</tr>
+							
+							<tr>
+								<td></td>
+								<td align="right">
+									 <input type="radio" name="configSelector" value="default" checked="checked" onClick="updateConfigSelector()" disabled="disabled"/>
+								</td>
+								
+								<td>
+									Configure default settings for this workflow
+								</td>
+							</tr>
+							
+							<tr>
+								<td></td>
+								<td align="right">
+									 <input type="radio" name="configSelector" value="step" onClick="updateConfigSelector()" disabled="disabled"/>
+								</td>
+								
+								<td>
+									Configure step settings for this workflow
+								</td>
+							</tr>
+							
+							<tr>
+								<td colspan=3><br style="line-height: 5px"/></td>
+							</tr>
+						</table>
+						
+					</div>
+				
+				<$include orangeContainer_bottom$>
+			</div>
+			
+			<!-- Available content types panel -->
+			
+			<div id="avail_content_types_div" style="display:none">
+				<$include orangeContainer_top$>
+					
+					<div style="padding: 15px">
+						
+						<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td class="xuiPageHeadingCell">
+									<h4 class="xuiPageHeadingText" style="color:#F29303;">Available Content Types</h4></td>
+			
+									<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+							</tr>
+						</table>
+						
+						<br style="line-height:10px">
+						
+						<table align=center>
+							<tr>
+								<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>In use</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="usedContentTypes" multiple="multiple" <$if false$>onChange="updateUsedContentTypes(this)"<$endif$>>
+										
+									</select>
+								</td>
+							
+								<td align="center" valign="bottom">
+									<input type="button" id="add_ct_btn" class="add_rem_button" value="<< Add" onClick="addContentType()" disabled="disabled"/>
+								</td>
+					
+								<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>Not in use</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="unusedContentTypes" multiple="multiple" <$if false$>onChange="updateUnusedContentTypes(this)"<$endif$>>
+										
+									</select>
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="center" valign="top">
+								<input type="button" id="rem_ct_btn" class="add_rem_button" value="Remove >>" onClick="remContentType()" disabled="disabled"/>
+							</td>
+						</tr>
+							
+						</table>
+						
+					</div>
+				
+				<$include orangeContainer_bottom$>
+			</div>
+				
+			<br style="line-height:10px">
+			
+			<!-- Workflow/step selection region -->
+			<div id="workflow_selector">
+				<$include orangeContainer_top$>
+				<div style="padding: 15px">
+					
+					<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="xuiPageHeadingCell">
+								<h4 class="xuiPageHeadingText" style="color:#F29303;">Available Steps</h4></td>
+		
+							<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+								</td>
+						</tr>
+					</table>
+					
+					<br style="line-height:10px"/>
+						
+					<!-- Workflow step selection -->
+					<table align=center>	
+						<tr>
+							<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>Using specific configuration</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="usedSteps" multiple="multiple" disabled="disabled">
+									</select>
+									
+								</td>
+							
+								<td align="center" valign="bottom">
+									<input type="button" id="add_step_btn" class="add_rem_button" value="<< Add" onClick="addStep()" disabled="disabled"/>
+								</td>
+					
+								<td rowspan=2 align=center>
+									
+									<span style="optlist_label"><b>Using default configuration</b></span>
+									<br/>
+									
+									<select class="config_optlist" name="unusedSteps" multiple="multiple" disabled="disabled">
+										
+									</select>
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="center" valign="top">
+								<input type="button" id="rem_step_btn" class="add_rem_button" value="Remove >>" onClick="remStep()" disabled="disabled"/>
+							</td>
+						</tr>
+					</table>
+					
+					<br style="line-height:20px"/>
+					
+					<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="xuiPageHeadingCell">
+								<h4 class="xuiPageHeadingText" style="color:#F29303;">Step selector</h4></td>
+		
+							<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+								</td>
+						</tr>
+					</table>
+					
+					<br style="line-height:10px">
+					
+					<table>	
+						<tr>
+							<td width=140>
+								Select a step:
+							</td>
+							
+							<td colspan=2>
+								<select name="selStep" id="selStep" style="width: 200px" disabled="disabled" onChange="updateSelStep(this)">
+									<option></option>								
+								</select>
+							</td>
+							
+						</tr>
+						
+						<tr>
+							<td colspan=3><br style="line-height: 5px"/></td>
+						</tr>
+						
+					</table>
+					
+					</div>
+					<$include orangeContainer_bottom$>
+				</div>
+				
+				<br style="line-height:0px" />
+				
+				<div id="content_type_selector" style="display: none">
+					<$include orangeContainer_top$>
+						<div style="padding: 15px">
+							
+							<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+								<tr>
+									<td class="xuiPageHeadingCell">
+										<h4 class="xuiPageHeadingText" style="color:#F29303;">Content type selector</h4></td>
+				
+									<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+								</tr>
+							</table>
+								
+							<br style="line-height:10px" />
+							
+							<table>
+								<tr>
+									<td width=140>
+										Select a content type:
+									</td>
+									
+									<td>
+										<select name="selContentType" id="selContentType" style="width: 200px" onChange="updateSelContentType(this)">
+											<option value='' selected="selected">&nbsp;</option>								
+										</select>
+									</td>
+								</tr>
+							</table>
+							
+							<br style="line-height:10px" />
+								
+						</div>
+					<$include orangeContainer_bottom$>
+				</div>
+					
+					
+				<br style="line-height:20px" />
+				
+				<!-- Workflow/step edit region -->					
+				
+				<$include orangeContainer_top$>
+				<div style="padding: 15px">
+					
+				<table width='100%'>
+					<tr><td align="center">
+						Currently editing: <span style="font-size: 1.2em" id="currently_editing"><b>None</b></span>
+						<br/>
+					</tr></td>	
+				</table>
+				
+				<div id="edit_div" style="visibility:hidden">
+				
+					<div id="loading_div" style="display: none; height: 550px; width: 100%; text-align: center; margin-top: 40px;">	
+						<img src="<$HttpWebRoot$>images/iris/loading.gif" width=150 height=150 />
+					</div>
+				
+					<form name="profile_edit_form" method="POST">
+						
+						<input type="hidden" name="RedirectUrl"/>
+						
+					<div style="width: 100%; text-align: center; height: 40px">
+						<input type="button" value="Save" name="save_profile_btn" onClick="submitProfileInfo(this.form)" />
+					</div>
+				
+					<table width='100%' id="app_rej_table">
+						<tr>
+							<td class="xuiPageHeadingCell" colspan=3>
+								<h4 class="xuiPageHeadingText">Approval/rejection</h4>
+							</td>
+						</tr>
+						
+						<tr>
+							<td colspan=3>
+								<br style="line-height:10px">
+							</td>						
+						</tr>
+						
+						<tr>
+							<td width=140>
+								Approve button text: 
+							</td>
+							
+							<td>		
+								<input type="text" name="approveText" style="width: 200px"/>
+							</td>
+							
+							<td></td>
+							
+						</tr>
+						
+						<tr>
+							<td>
+								Reject button text: 
+							</td>
+							
+							<td>
+								<input type="text" name="rejectText" style="width: 200px"/>
+							</td>
+							
+							<td> 
+								<input type="checkbox" name="hideReject_check" onClick="updateHideReject(this)" /> Hide reject button
+								<input type="hidden" name="hideReject" />
+							</td>
+						</tr>
+						
+						<tr>
+							<td>
+								<br/>
+							</td>
+						</tr>
+						
+						<tr>
+							<td>
+								Validation class: 
+							</td>
+							
+							<td>
+								<input type="text" name="validationClass" style="width: 350px"/>
+							</td>
+						</tr>
+						
+					</table>
+					
+					<!-- Visible/hidden fields region -->	
+					
+					<br style="line-height:20px">
+					
+					<table width='100%'>
+						<tr>
+							<td class="xuiPageHeadingCell" colspan=3>
+								<h4 class="xuiPageHeadingText">Visible fields</h4>
+							</td>
+						</tr>	
+					</table>
+					
+					<br style="line-height:10px">
+					
+					<table align=center cellpadding=2 cellspacing=0>
+						<tr>
+							<td rowspan=2 width=34 align=center>
+								
+								<input type="image" value="Up" id="field_up" onClick="moveFieldUp(); return false;" src="<$HttpWebRoot$>images/iris/arrow-up-inactive.gif" class="up_down_btn" disabled="disabled"/>
+								
+								<input type="image" value="Down" id="field_down" onClick="moveFieldDown(); return false;" src="<$HttpWebRoot$>images/iris/arrow-down-inactive.gif" class="up_down_btn" disabled="disabled"/>
+								
+							</td>
+							
+							<td rowspan=2 align=center valign=top>
+								
+								<span style="optlist_label"><b>Visible</b></span>
+								<br/>
+								
+								<select class="config_optlist" name="visFields" multiple="multiple" onChange="updateVisFields(this)">
+								</select>
+								
+							</td>
+						
+							<td align="center" valign="bottom">
+								<input type="button" id="add_field_btn" class="add_rem_button" value="<< Add" onClick="addField()" disabled="disabled"/>
+							</td>
+				
+							<td rowspan=2 align=center valign=top>
+								
+								<span style="optlist_label"><b>Hidden</b></span>
+								<br/>
+								
+								<select class="config_optlist" name="invisFields" multiple="multiple" onChange="updateInvisFields(this)">
+									
+									<$loop rsFieldNames$>	
+										<option value="<$fieldName$>"><$fieldCaption$></option>
+									<$endloop$>
+									
+								</select>
+							</td>
+							
+							<td rowspan=2 width=34>
+								&nbsp;
+							</td>
+							
+						</tr>
+						
+						<tr>
+							<td align="center" valign="top">
+								<input type="button" id="rem_field_btn" class="add_rem_button" value="Remove >>" onClick="remField()" disabled="disabled"/>
+							</td>
+						</tr>
+						
+						<tr>
+							<td></td>
+							<td align=center>
+								<input type="button" id="add_div_btn" value="Insert divider" class="insert_div_btn" onClick="insertDivider()" />
+							</td>
+							<td colspan=3></td>
+						</tr>
+							
+					</table>
+					
+					<br style="line-height:20px" />
+					
+					<table width='100%'>
+						<tr>
+							<td class="xuiPageHeadingCell" colspan=3>
+								<h4 class="xuiPageHeadingText">Field settings</h4>
+							</td>
+						</tr>	
+					</table>
+					
+					<br style="line-height:10px" />					
+					
+					<table width='100%' cellspacing=0 cellpadding=0>
+						<tr>
+							<td>
+								<div class="field_config_label">&nbsp;</div>
+								<div class="field_config_label">&nbsp;</div>
+								<div class="field_config_checkbox">
+										<span><b>Required</b></span>
+								</div>
+								<div class="field_config_checkbox">
+										<span><b>Label-only</b></span>
+								</div>
+								<div class="field_config_text">
+										<span><b>Custom caption</b></span>
+								</div>
+								<div class="field_config_text">
+										<span><b>Custom include</b></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td id="field_config_cell">
+							
+							</td>
+						</tr>
+					</table>
+					
+					<div style="width: 100%; text-align: center; margin-top: 30px">
+						<input type="button" value="Save" name="save_profile_btn" onClick="submitProfileInfo(this.form)" />
+					</div>
+					
+				</form>
+					
+			</div> <!-- End edit_div -->
+			</div>
+			<$include orangeContainer_bottom$>	
+	
+		</td>
+	</tr>
+</table>
+
+<$include std_page_end$>
+	
+</body>
+</html>

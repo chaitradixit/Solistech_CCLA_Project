@@ -1,0 +1,5053 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Sets up all 'tracking' JavaScript values, i.e. those derived from page
+	 URLS during interactions. These are stored as member values inside the
+	 interactionTracker object.
+	 
+	 This include is also responsible for defining default IDOC values for 
+	 interaction tracking, where applicable.
+
+	 interactionTarget: The target action when navigating lookup/selection screens.
+						Passed around in the form id=interactionTrackingForm. 
+						This value is also used to map page titles on dynamic pages.
+						
+	 personId:			PERSON_ID
+	 entityId:			ORGANISATION_ID
+	 accountId:			ACCOUNT_ID
+	 
+	 campaignId:		CAMPAIGN_ID
+	 -->
+<@dynamichtml ccla_cs_set_params_js@>
+	
+	<$if not interactionTarget$>
+		<!-- Default to generic interaction target -->
+		<$interactionTargetXX = "interaction"$>
+	<$endif$>
+	
+	<$if interactionTarget like "interaction"$>
+		<$interactionPageTitle = "Record Interaction"$>
+	<$elseif interactionTarget like "clientCampaign"$>
+		<$interactionPageTitle = "Enroll client to campaign"$>
+	<$endif$>
+	
+	<script type="text/javascript">
+		
+		var interactionTracker = new Object();
+		
+		interactionTracker.personId = "<$#local.PERSON_ID$>";
+		interactionTracker.entityId = "<$#local.ORGANISATION_ID$>";
+		interactionTracker.accountId = "<$#local.ACCOUNT_ID$>";
+		
+		interactionTracker.campaignId = "<$#local.CAMPAIGN_ID$>";
+		
+		interactionTracker.interactionTarget = "<$#local.interactionTarget$>";
+		
+	</script>
+
+	
+<@end@>
+
+
+<!-- Form used for tracking an interaction involving either 
+	 organisation, person or both. -->
+<@dynamichtml ccla_cs_interaction_tracking_form@>
+<$if IsDebug$>ccla_cs_interaction_tracking_form<$endif$>
+	<form name="interactionTrackingForm" id="interactionTrackingForm" >
+		<input type="hidden" name="interactionTarget" value="<$#local.interactionTarget$>" />
+		
+		<input type="hidden" name="IdcService" value="" /><$include add_idc_token_to_form$>
+		<input type="hidden" name="RedirectUrl" value="" />
+		
+		<!-- Element ID fields -->
+		<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>" />
+		<input type="hidden" name="PERSON_ID" value="<$#local.PERSON_ID$>" />
+		
+		<!-- Campaign/process fields -->
+		<input type="hidden" name="CAMPAIGN_ID" value="<$#local.CAMPAIGN_ID$>" />
+		<input type="hidden" name="useExisting" value="<$#local.useExisting$>" />
+		
+		<!-- Identity confirmation fields -->
+		<input type="hidden" name="CONFIRM_TYPES" value="<$#local.CONFIRM_TYPES$>" />
+		<input type="hidden" name="CONFIRM_OTHER" value="<$#local.CONFIRM_OTHER$>" />
+	
+		<!--  interaction field-->
+		<input type="hidden" name="linkedInteraction" value="<$#local.linkedInteraction$>"/>
+		<input type="hidden" name="INTERACTION_TYPE" value="<$#local.INTERACTION_TYPE$>"/>
+		<input type="hidden" name="OUTCOME_ID" value="<$#local.OUTCOME_ID$>"/>
+	</form>
+
+<@end@>
+
+<@dynamichtml ccla_cs_contact_details_js@>
+	
+	<script type="text/javascript">
+		
+		// Refreshes the list of non-address contact details
+		// (e.g. phone numbers, email addresses). Should be
+		// called when the contact details are updated in some
+		// way.
+		function refreshContactDetails() {
+			var elementId = "<$ELEMENT_ID$>";
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_contact_details",
+				{
+					"ELEMENT_ID": elementId,
+					"ajaxRefresh": 1,
+					"isEdit": 1,
+					"ts":	new Date().getTime()
+				},
+				function(data) {
+					$("#contactDetailsDisplay").html(data);
+				}
+			);
+		}
+
+		function refreshContactDetailsForElement(elementId) {
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_contact_details",
+				{
+					"ELEMENT_ID": elementId,
+					"ajaxRefresh": 1,
+					"isEdit": 1,
+					"isContactUpdated": 1,
+					"ts":	new Date().getTime()
+				},
+				function(data) {
+					$("#contactDetailsDisplay").html(data);
+				}
+			);
+		}
+		
+		function updateContactDetail(elementId) {
+			// Serialize all the form data
+			var contactFormData = $("#frmContactDetails").serialize();
+			
+			// Do an AJAX POST request with the IsJson flag set,
+			// this ensures we'll get a JSON response which can be
+			// easily parsed in the callback function.
+			$.ajax({
+				url: "?" + contactFormData,
+				dataType: "json",
+				type: "POST",
+				data: {
+					"IsJson": 1,
+					ELEMENT_ID: elementId
+				},
+				success: function(data) {
+					contactSavedResponse(data);
+				}
+			});
+		}
+		
+		function deleteContactDetail(contactId) {
+			if (!confirm("Are you sure you want to delete this contact detail?"))
+				return;
+				
+			$.getJSON("?IdcService=CCLA_CS_REMOVE_CONTACT_DETAIL<$include add_idc_token_to_url$>&CONTACT_ID=" + contactId,
+				{
+					"ts": new Date().getTime(),
+					"IsJson": 1
+				},
+				function(jsonData) {
+					// Handle potential errors after deleting a contact.
+					var errorMsg = getJsonErrorMsg(jsonData);
+					$("#contactSaveErrorMsg").hide();
+					
+					if (errorMsg) {
+						// Show the error mesage from the JSON response
+						$("#contactSaveErrorMsg").html(errorMsg).show();
+					} else {
+						// Refresh the contact list.
+						refreshContactDetails();
+					}
+
+				}
+			);
+		}
+		
+		// Callback function after AJAX multiple contact data update.
+		function contactSavedResponse(jsonData) {
+			
+			var errorMsg = getJsonErrorMsg(jsonData);
+			$("#contactSaveErrorMsg").hide();
+			
+			if (errorMsg) {
+
+				// Show the error mesage from the JSON response
+				$("#contactSaveErrorMsg").html(errorMsg).show();
+			} else {
+				// Successful save/update. Grab the CONTACT_ID from the
+				// JSON response and reload the address contacts panel.
+				var elementId = jsonData.LocalData.ELEMENT_ID;
+				refreshContactDetailsForElement(elementId);
+	
+			}
+		}	
+	</script>
+	
+<@end@>
+
+<!-- Handler methods for Element Relations management, e.g.
+	 Client-Person relations.
+	 -->
+<@dynamichtml ccla_cs_element_relations_js@>
+	
+	<script type="text/javascript">
+		
+		// Determines whether the 'Select' button is displayed alongside relations
+		var allowSelectRelation 	= "<$#local.allowSelectRelation$>";
+		// Determines whether the current page is in Edit mode
+		var isEdit					= "<$#local.isEdit$>";
+		
+		// Cache the Element Type IDs.
+		var elementTypes = {
+			"Organisation": "<$#env.CCLA_ElementType_Org$>",
+			"Person": 		"<$#env.CCLA_ElementType_Person$>",
+			"Account": 		"<$#env.CCLA_ElementType_Account$>",
+			"BankAccount": 	"<$#env.CCLA_ElementType_BankAccount$>"
+		}
+		
+		// Opens the Update Bank Account Relationship screen for the given
+		// Bank Account Relation ID.
+		function updateBankAccountRelation(relationId) {
+			openPopup("?IdcService=CCLA_CS_BANK_ACCOUNT_RELATIONS_EDIT<$include add_idc_token_to_url$>"
+			 + "&BANK_ACCOUNT_RELATION_ID=" + relationId);
+		}
+		
+		// Opens the Add Bank Account Relationship screen for the given
+		// Account ID.
+		function addBankAccountRelation(accountId) {
+			openPopup("?IdcService=CCLA_CS_BANK_ACCOUNT_RELATION_ADD<$include add_idc_token_to_url$>" 
+			 + "&ACCOUNT_ID=" + accountId);
+		}
+
+		// Opens the Add Bank Account Relationship screen for the given
+		// Account ID.
+		function updateDefaultAccount(accountId) {
+			openPopup("?IdcService=CCLA_CS_BANK_ACCOUNT_UPDATE_DEFAULT<$include add_idc_token_to_url$>" 
+			 + "&ACCOUNT_ID=" + accountId);
+		}		
+	
+		// Opens the Add Client-Person relationships screen for the
+		// current Organisation/Client.
+		function addNewPersonRelation(entityId) {
+			openPopup("?IdcService=CCLA_CS_CLIENT_PERSON_RELATIONS_EDIT<$include add_idc_token_to_url$>"
+			 + "&parentElementId=" + entityId);
+		}
+		
+		// Adds a new Organisation-Person relation. Requires the form
+		// #addEntityPersonRelationForm to be present on the page.
+		//
+		// It is expected that only entityId or personId will be passed
+		// as a non-empty value, based on the context.
+		function addEntityPersonRelation(entityId, personId) {
+
+			var relationship = $("#RELATIONSHIP").val();
+			
+			if (!confirm("Are you sure you wish to link this person to " +
+			 "the organisation as a " + relationship + "?"))
+				return;
+			
+			// Populate the hidden form
+			var frm = document.forms['addEntityPersonRelationForm'];
+			
+			if (entityId)
+				frm.elements['ORGANISATION_ID'].value				= entityId;
+			if (personId)
+				frm.elements['RELATED_ELEMENT_ID'].value 	= personId;
+			
+			frm.elements['RELATIONSHIP'].value 			= relationship;
+			
+			// Now serialize the form.
+			var addEntityPersonRelationData = $("#addEntityPersonRelationForm").serialize();
+			
+			// Do an AJAX POST request with the IsJson flag set,
+			// this ensures we'll get a JSON response which can be
+			// easily parsed in the callback function.
+			$.ajax({
+			  url: "?" + addEntityPersonRelationData,
+			  dataType: "json",
+			  type: "POST",
+			  data: {"IsJson": 1},
+			  success: function(jsonData) {
+				var errMsg = getJsonErrorMsg(jsonData);
+				
+				if (errMsg)
+					alert("Failed to add relationship:\n\n" + errMsg);
+				else {
+					// Refresh the Associated Entities panel to show the new relationship.
+					var newRelationId = jsonData.LocalData.newRelationId;
+					refreshRelations('<$#local.ELEMENT_ID$>', newRelationId);
+				}
+				
+			  }
+			});
+		}
+		
+		// Refreshes either the Person-Organisation relations panel, or the Organisation-Person
+		// relations panel, or the Account-Bank Account relations panel, depending on which is present.
+		//
+		// If the passed elementId is null/empty, the method will use the local
+		// ELEMENT_ID value instead.
+		function refreshRelations(elementId, newRelationId, element1TypeId, element2TypeId, newlyAddedElementId) {
+
+			if (!elementId || elementId == "")
+				elementId = "<$#local.ELEMENT_ID$>";
+			
+			if (element2TypeId == elementTypes["BankAccount"]
+				&&
+				$("#bankAccountRelationsDisplay").size() > 0) {
+				refreshBankAccountRelations(elementId, newRelationId, element1TypeId, element2TypeId);
+				return;
+			}
+
+			if ($("#personRelationsDisplay").size() > 0) {
+				refreshPersonRelations(elementId, newRelationId, element1TypeId, element2TypeId);
+			}
+			
+			if ($("#entityRelationsDisplay").size() > 0) {
+				refreshEntityRelations(elementId, newRelationId, element1TypeId, element2TypeId);
+			}
+		}
+		
+		// Refreshes the list of Person relations for the given elementId.
+		function refreshPersonRelations(elementId, newRelationId, elementTypeId1, elementTypeId2) {
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_related_persons",
+				{
+					"ts": new Date().getTime(),
+					"ELEMENT_ID": elementId,
+					"ELEMENT_TYPE_ID_1": elementTypeId1,
+					"ELEMENT_TYPE_ID_2": elementTypeId2,
+					"ACCOUNT_ID": elementId,
+					"isEdit": isEdit,
+					"allowSelectRelation": allowSelectRelation,
+					"newRelationId": newRelationId,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#personRelationsDisplay").html(data);
+				}
+			);
+		}
+		
+		// Refreshes the list of Organisation relations for the given elementId.
+		function refreshEntityRelations(elementId, newRelationId, elementTypeId1, elementTypeId2) {
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_related_entities",
+				{
+					"ts": new Date().getTime(),
+					"ELEMENT_ID": elementId,
+					"ELEMENT_TYPE_ID_1": elementTypeId1,
+					"ELEMENT_TYPE_ID_2": elementTypeId2,
+					"isEdit": isEdit,
+					"allowSelectRelation": allowSelectRelation,
+					"newRelationId": newRelationId,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#entityRelationsDisplay").html(data);
+				}
+			);
+		}
+		
+		// Refreshes the list of Bank Account relations for the given elementId.
+		function refreshBankAccountRelations(elementId, newRelationId, elementTypeId1, elementTypeId2) {
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_related_bank_accounts",
+				{
+					"ts": new Date().getTime(),
+					"ELEMENT_ID": elementId,
+					"ELEMENT_TYPE_ID_1": elementTypeId1,
+					"ELEMENT_TYPE_ID_2": elementTypeId2,
+					"isEdit": isEdit,
+					"allowSelectRelation": allowSelectRelation,
+					"newRelationId": newRelationId,
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#bankAccountRelationsDisplay").html(data);
+				}
+			);
+			
+		}
+		
+		
+	</script>
+	
+	
+<@end@>
+
+<!-- JavaScript helper functions for AJAX requests/responses -->
+<@dynamichtml ccla_cs_ajax_js@>
+
+	<script type="text/javascript">
+	
+		// TODO: consolidate these functions, get ECS_JavaScript component.
+		//
+		// Checks the LocalData section of the passed JSON data instance.
+		// If the StatusCode value is -1, return the StatusMessage. Otherwise
+		// return false
+		function getJsonErrorMsg(jsonData) {
+
+			var statusCode = jsonData.LocalData.StatusCode;
+			
+			if (typeof(statusCode) != 'undefined') {
+				var statusCodeInt = parseInt(statusCode);
+
+				if (statusCodeInt < 0)
+					return jsonData.LocalData.StatusMessage;
+			} else
+				return false;
+		}
+		
+		
+		// Fetches a field value from the passed JSON ResultSet instance.
+		// rowIndex is optional, if not specified, the first row value
+		// is taken.
+		function getJsonResultSetValue(jsonResultSet, fieldName, rowIndex) {
+			
+			var fieldIndex = -1;
+			
+			if (typeof(rowIndex) == 'undefined')
+				rowIndex = 0;
+			
+			if (jsonResultSet.rows.length < rowIndex)
+				return false;
+			
+			for (var i=0; i<jsonResultSet.fields.length; i++) {
+				if (jsonResultSet.fields[i].name == fieldName)
+					fieldIndex = i;
+			}
+
+			if (fieldIndex == -1)
+				return false;
+			
+			return jsonResultSet.rows[rowIndex][fieldIndex];
+		}
+		
+	</script>
+
+<@end@>
+
+<!-- JavaScript helper functions for address records/data. -->
+<@dynamichtml ccla_cs_address_js@>
+	
+	<script type="text/javascript">
+		
+		var elementId = "<$ELEMENT_ID$>";
+		
+		// Stores the currently-selected address contact ID.
+		var curSelectedContactId;
+		
+		$(document).ready( function() {
+			refreshAddressFields();
+		});
+		
+		function lookupAddress() {
+			$("#addressSaveOkMsg").hide();
+			
+			var postCode = $("#POSTCODE").val();
+		
+			openPopup("?IdcService=CCLA_CS_ADDRESS_ADD<$include add_idc_token_to_url$>&ELEMENT_ID=" + elementId + 
+			 "&searchScope=address&addressChange=1&POSTCODE=" + postCode);
+		}
+		
+		// Called when a new address is displayed, including when the
+		// page is initially loaded. Sets styling and event handlers on
+		// the address fields, and stores the currently-selected address contact ID.
+		function refreshAddressFields() {
+			curSelectedContactId = $("#selContactAddress").val();
+			
+			// Sets/unsets readonly attribute on address fields
+			updateAddressLockState();
+			
+			// Add change event handler to address fields and QAS_VALID checkbox
+			$(".address-field, #QAS_VALID").bind("change", function() {
+				// Mark address data as dirty/changed.
+				$("#addressChanged").val("true");
+			});
+			
+			setAddressFieldStyles();
+		}
+		
+		// Sets special styling for read-only address fields. Must be called when
+		// a new address is displayed or when the QAS_VALID checkbox state is changed
+		function setAddressFieldStyles() {
+			// Remove read-only CSS class from all address fields
+			$(".address-field").removeClass("readonly-address-field");
+			
+			// Add read-only CSS class to locked address fields
+			$(".qas-address-field[readonly]").addClass("readonly-address-field");
+		}
+		
+		function disableAddress() {
+			var checked = $("#QAS_VALID").attr("checked","checked");
+			updateAddressLockState();
+		}
+		
+		// Triggered when the address fields are first loaded, or the 
+		// QAS_VALID checkbox is checked/unchecked.
+		//
+		// Sets the readonly state of the address fields which have the
+		// 'qas-address-field' class, based on the value of the QAS_VALID
+		// checkbox.
+		function updateAddressLockState() {
+			var checked = $("#QAS_VALID").is(":checked");
+			
+			if (checked) {	
+				// Address is marked as sourced from QAS. Lock out
+				// most of the address fields.
+				$("#QAS_VALID").removeAttr("disabled");
+				
+				$(".qas-address-field").attr("readonly","readonly");
+			
+			} else {
+				// Address is marked as no longer sourced from QAS.
+				// Allow editing of all address fields.
+				$("#QAS_VALID").attr("disabled","true");
+				
+				$(".qas-address-field").removeAttr("readonly");
+			}
+			
+			setAddressFieldStyles();
+		}
+		
+		// Triggered after the user changes the selected address, or the
+		// displayed address/contact data has been changed.
+		// (existing records only)
+		function updateSelContactAddress(contactId, saved) {
+			
+			// Check if the address data is 'dirty' first, i.e. the user has
+			// made changes but not saved.
+			if (!saved && $("#addressChanged").val() == "true") {
+				var c = confirm("You have unsaved changes to the current address." +
+				 "\n\nClick OK to discard your changes.");
+
+				if (!c) {
+					// Restore currently-selected address in option list.
+					$("#selContactAddress").val(curSelectedContactId);
+					return;
+				}
+			}
+			
+			// Returns the selected address CONTACT_ID
+			var selContactAddress = $("#selContactAddress").val();
+			
+			if (contactId)
+				selContactAddress = contactId;
+			
+			var savedStr = "";
+			
+			if (saved)
+				savedStr = "1";
+			
+			// Load the new address data dynamically
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_address_fields",
+				{
+					"ELEMENT_ID": elementId,
+					"selContactAddress": selContactAddress,
+					"saved": savedStr,
+					"ts": new Date().getTime(),
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#selContactAddress").removeAttr("disabled","disabled");
+				
+					$("#selAddressDisplay").html(data);
+					refreshAddressFields();
+				}
+			);
+		}
+		
+		// Triggered after clicking the 'Add new address' button. Selects the
+		// 'New address' option from the address select box, causing the new
+		// address form to be displayed.
+		function addNewContactAddress() {
+			
+			var selContactAddress = $("#selContactAddress").val();
+			
+			if (selContactAddress == "new") {
+				// User is already adding a new address, do nothing.
+				return;
+			} else {
+				$("#selContactAddress").val("new");
+				updateSelContactAddress();
+			}
+		}
+		
+		// Returns true if the currently-displayed address has unsaved changes.
+		// Should be called before navigating off the page, e.g. when a different
+		// form is submitted.
+		function unsavedAddressUpdates() {
+			return ($("#addressChanged").val() == "true");
+		}
+		
+		// Opens a pop-up, allowing the user to set address preference flags.
+		function setAddressPreferences() {
+			var selContactId = $("#selContactAddress").val();
+		
+			openPopup("?IdcService=CCLA_CS_ADDRESS_PREFERENCES<$include add_idc_token_to_url$>&ELEMENT_ID=" 
+			+ elementId + "&selContactId=" + selContactId + "&ts=" + new Date());
+		}
+		
+		// Saves the current address data using AJAX. Only avaibale on existing
+		// Person/Organisation records.
+		function saveAddress() {
+			
+			if ($("#addressChanged").val() != "true") {
+				alert("The address data hasn't been changed.");
+				return;
+			}
+			
+			// Reset notification panels
+			$("#addressSaveOkMsg").hide();
+			$("#addressSaveErrorMsg").hide();
+			
+			// Serialize all the form data
+			var addressFormData = $("#contactAddress").serialize();
+			
+			// Disable the address selector box
+			$("#selContactAddress").attr("disabled","disabled");
+			
+			// Disable the address update buttons
+			$("button.address-button").attr("disabled","disabled");
+			
+			// Do an AJAX POST request with the IsJson flag set,
+			// this ensures we'll get a JSON response which can be
+			// easily parsed in the callback function.
+			$.ajax({
+			  url: "?" + addressFormData,
+			  dataType: "json",
+			  type: "POST",
+			  data: {"IsJson": 1},
+			  success: function(data) {
+				addressSavedResponse(data, false);
+			  }
+			});
+
+		}
+		
+		// Removes the currently-selected contact/address record using AJAX. 
+		// Only available on existing Person/Organisation records.
+		function removeAddress() {
+			
+			if (!confirm("Are you sure you wish to permenantly remove this address?"))
+				return;
+			
+			// Reset notification panels
+			$("#addressSaveOkMsg").hide();
+			$("#addressSaveErrorMsg").hide();
+			
+			// Serialize all the form data
+			var addressFormData = $("#contactAddress").serialize();
+			
+			// Disable the address selector box
+			$("#selContactAddress").attr("disabled","disabled");
+			
+			// Disable the address update buttons
+			$("button.address-button").attr("disabled","disabled");
+			
+			// Do an AJAX POST request with the IsJson flag set,
+			// this ensures we'll get a JSON response which can be
+			// easily parsed in the callback function.
+			$.ajax({
+			  url: "?<$include add_idc_token_to_url$>",
+			  dataType: "json",
+			  type: "POST",
+			  data: {
+				"IdcService":	"CCLA_CS_REMOVE_CONTACT_DETAIL",
+				"CONTACT_ID":	curSelectedContactId,
+				"IsJson": 		1
+			  },
+			  success: function(data) {
+				addressSavedResponse(data, true);
+			  },
+			  error: function(data) {
+				addressSavedResponse(data, true);
+			  }
+			});
+			
+		}
+		
+		// Callback function after AJAX address data update.
+		function addressSavedResponse(jsonData, addressRemoved) {
+
+			var errorMsg = getJsonErrorMsg(jsonData);
+
+			if (errorMsg) {
+				// Re-enable the address selector box
+				$("#selContactAddress").removeAttr("disabled");
+				
+				// Re-enable the address update buttons
+				$("button.address-button").removeAttr("disabled");
+			
+				// Show the error mesage from the JSON response
+				$("#addressSaveErrorMsg").html(errorMsg).show();
+			} else {
+				
+				// Successful save/update. Grab the CONTACT_ID from the
+				// JSON response and reload the address contacts panel.
+				var contactId = jsonData.LocalData.CONTACT_ID;
+				
+				// Reload the address selector.
+				updateAddressSelector(contactId);
+				
+				// Reload the contact address panel.
+				updateSelContactAddress(contactId, !addressRemoved);
+				
+				if (!addressRemoved) {
+					// Open the 'Set address preferences' popup
+					setAddressPreferences();
+				}
+			}
+		}
+		
+		// Reloads the contact address selector control. Should be triggered after
+		// a new address is added, or an existing one is updated, or the default/experian
+		// flags are updated via the popup.
+		function updateAddressSelector(contactId) {
+
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_contact_address_select",
+				{
+					"ELEMENT_ID": elementId,
+					"selContactAddress": contactId,
+					"ts": new Date().getTime(),
+					"ajaxRefresh": 1
+				},
+				function(data) {
+					$("#selContactAddressContainer").html(data);
+				}
+			);
+		}
+		
+	</script>
+	
+<@end@>
+
+<!-- Displays the core Organisation fields. -->
+<@dynamichtml ccla_cs_entity_fields@>
+
+	<table width="100%">
+		<!-- set col widths -->
+		<tr>
+			<td width="20%"></td>
+			<td width="30%"></td>
+			<td width="20%"></td>
+			<td width="30%"></td>
+		</tr>
+		
+		<$if #active.ORGANISATION_ID$>
+			<tr>
+				<td>
+					<label for="NAME">Org Account Code:</label> 
+				</td>
+				<td colspan="3">
+					<span style="font-family:Courier"><$#active.ORG_ACCOUNT_CODE$></span>
+				</td>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<td>
+				<label class="required" for="ORGANISATION_NAME">Name:</label> 
+			</td>
+			<td colspan="3">
+			<$if createNew AND useName$>
+				<$orgNameValue = useName$>
+			<$else$>
+				<$orgNameValue = #active.ORGANISATION_NAME$>
+			<$endif$>
+				<input type="text" tabindex="5" name="ORGANISATION_NAME" id="ORGANISATION_NAME" value="<$orgNameValue$>" style="width: 100%" />
+			</td>
+		</tr>
+		
+		<tr>
+			<td><br/></td>
+		</tr>
+		
+		<tr>
+			<td valign="top">
+				<!-- <label class="required" for="CATEGORY_ID">Category:</label> -->
+				 <label for="CATEGORY_ID">Category:</label>
+			</td>
+			<td colspan=2>
+				
+				<!-- 	Hidden field contains the 'actual' Category ID value which gets persisted.
+						Updated via change events to the DCL selector fields. -->
+				<input type="hidden" name="CATEGORY_ID" id="CATEGORY_ID" value="<$#active.CATEGORY_ID$>" />
+			
+				<$categoryId = rsEntity.CATEGORY_ID$>
+				<$executeService("CCLA_CS_GET_ORG_CATEGORY_LISTS")$>
+				
+				<script type="text/javascript">
+					
+					$(document).ready( function() {
+						bindCategorySelectorEvents();
+					});
+					
+					function bindCategorySelectorEvents() {
+						// Bind 'change' events to active Category selectors.
+						// Selecting a category will trigger an AJAX request to
+						// refresh the available category lists.
+						$(".category-selector").bind("change", function() {
+							
+							var selCategoryId = "";
+							
+							// Determine which selector was updated.
+							if ($(this).attr("id") === "categoryId_sub") {
+								// Sub-category updated.
+								selCategoryId = $(this).val();
+							} else {
+								// One of the category levels was updated.
+								if ($(this).attr("id") === "categoryId_1") {
+									
+									if ($(this).val() === "") {
+										// Revert to parent category ID selection.
+										selCategoryId = $("#categoryId_2").val();	
+									} else {
+										selCategoryId = $(this).val();
+									}
+								} else if ($(this).attr("id") === "categoryId_sub") {
+									selCategoryId = $(this).val();
+								}
+							}
+							//If nothing is selected set selCategoryId to "" so that the service does not fail
+							if(!selCategoryId)
+								selCategoryId = "";
+
+							// Update the hidden form field.
+							$("#CATEGORY_ID").val(selCategoryId);
+							
+							$.get( "?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+								{
+									"incName": 		"ccla_cs_org_category_selectors",
+									"ajaxRefresh":	1,
+									"categoryId":	selCategoryId,
+									"ts":			new Date().getTime()
+								},
+								function(data) {
+									$("#orgCategoryDisplay").html(data);
+									bindCategorySelectorEvents();
+								}
+							);
+							
+						});	
+					}
+					
+				</script>
+
+				<div id="orgCategoryDisplay">
+					<$include ccla_cs_org_category_selectors$>
+				</div>
+				
+			</td>
+			
+		</tr>
+		
+		<input type="hidden" name="CLASSIFICATION_ID" value="<$#active.CLASSIFICATION_ID$>"/>
+		<$if false$>
+			<tr>
+				<td valign="top">
+					<label for="CLASSIFICATION_ID">Classification:</label> 
+				</td>
+				<td>
+					<select name="CLASSIFICATION_ID" tabindex="15"><option value=""></option></select>
+				</td>
+			</tr>
+		<$endif$>
+		<tr>
+			<td>
+				<label for="INCORPORATION_COUNTRY">Incorporation Country:</label> 
+			</td>
+			<td>
+				<select name="INCORPORATION_COUNTRY" style="width:200px" tabindex="20">
+					<$selectedCountry=#active.INCORPORATION_COUNTRY$>
+					<$include ccla_cs_output_country_options$>
+				</select>
+			</td>
+			<td>
+				<label for="BUSINESS_DOMICILE">Business Domicile:</label> 
+			</td>
+			<td>
+				<select name="BUSINESS_DOMICILE" style="width:200px" tabindex="25">
+					<$selectedCountry=#active.BUSINESS_DOMICILE$>
+					<$include ccla_cs_output_country_options$>
+				</select>
+			</td>
+		</tr>
+		
+		<$if not #active.isUltraCompact$>
+			<tr>
+				<td>
+					<label for="GROSS_DISTRIBUTION_NUMBER">Gross Dist. No:</label> 
+				</td>
+				<td>
+					<input 	name="GROSS_DISTRIBUTION_NUMBER" id="GROSS_DISTRIBUTION_NUMBER" tabindex="30"
+							value="<$#active.GROSS_DISTRIBUTION_NUMBER$>" />
+				</td>
+			</tr>
+
+			<tr style="height:5px">
+				<td></td>
+			</tr>		
+		
+			<tr>		
+				<$loop rsElementIdentifiers$>
+					<td>
+						<label for="ELEMENT_IDENTIFIER_<$rsElementIdentifiers.ELEMENT_IDENTIFIER_ID$>"><$rsElementIdentifiers.IDENTIFIER_NAME$>:</label>
+					</td>
+					<td>
+						<$showElementIdValue = rsElementIdentifiers.IDENTIFIER_VALUE$>
+						<$loop rsElementIdentifiersApplied$>
+							<$if strEqualsIgnoreCase(rsElementIdentifiers.IDENTIFIER_NAME,rsElementIdentifiersApplied.IDENTIFIER_NAME)$>
+								<$showElementIdValue = rsElementIdentifiersApplied.IDENTIFIER_VALUE$>
+							<$endif$>
+						<$endloop$>
+							<input 
+								type="text" 
+								name="ELEMENT_IDENTIFIER_<$rsElementIdentifiers.ELEMENT_IDENTIFIER_ID$>" 
+								value="<$showElementIdValue$>" 
+								tabindex="<$rsElementIdentifiers.rowNum + 35$>"
+							/>
+						<$showElementIdValue = ""$>
+					</td>
+					
+					<$c="Determine where to start a new row, keeping it 2 textboxes per row"$>
+					<$if (rsElementIdentifiers.#row%2)>0$>
+						</tr>
+						<tr>
+					<$endif$>
+					
+				<$endloop$>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<td>
+				<!-- Hidden fields. -->
+				<input type="hidden" name="DATE_ENROLLED"				value="<$#active.DATE_ENROLLED$>" />
+				
+				<input type="hidden" name="GSS_LOCATION_ID"				value="<$#active.GSS_LOCATION_ID$>" />
+				
+				<input type="hidden" name="ORG_ACCOUNT_CODE"			value="<$#active.ORG_ACCOUNT_CODE$>" />
+			</td>
+		</tr>
+	</table>	
+
+	
+
+
+	
+
+	
+	<$if #active.CLIENT_ORGANISATION_ID$>
+		<!-- This entity must be a registered CCLA client. -->
+
+		<br/>
+		<h3 class="ccla_data_panel_header">
+			Client info
+		</h3>
+		
+		<table class="cs-info-table" width="100%">
+			<tr>
+				<th width="15%">Client acc code:</th><td width="35%"><$#active.ORG_ACCOUNT_CODE$></td>
+				<th width="15%">Date enrolled:</th><td width="35%"><$formatDateOnly(#active.DATE_ENROLLED)$></td>
+			</tr>
+			
+		</table>
+
+	<$endif$>
+
+<@end@>
+
+<!-- Displays the Organisation Category DCLs -->
+<@dynamichtml ccla_cs_org_category_selectors@>
+	<$if IsDebug$>ccla_cs_org_category_selectors<$endif$>
+	
+	<$if ajaxRefresh$>
+		<$executeService("CCLA_CS_GET_ORG_CATEGORY_LISTS")$>
+	<$endif$>
+
+	<$if rsSelectedCategories$>
+		<$loop rsSelectedCategories$>
+			<$if #active.CATEGORY_LEVEL > 1$>
+				<select id="categoryId_<$#active.CATEGORY_LEVEL$>" style="margin: 2px 0px; display: block;" disabled="disabled">
+					<option  value="<$#active.BASE_CAT_ID$>"><$#active.BASE_CAT_NAME$></option>
+				</select>
+			<$else$>
+				<$selCategoryId = #active.CATEGORY_ID$>
+			<$endif$>
+			
+		<$endloop$>
+	<$else$>
+		<$selCategoryId = ""$>
+	<$endif$>
+
+	<select id="categoryId_1" tabindex="10" class="category-selector" style="margin: 2px 0px; display: block;">
+		<option value=""></option>
+
+		<$loop rsCategories$>
+			<option value="<$#active.CATEGORY_ID$>" 
+					<$if selCategoryId like #active.CATEGORY_ID$>selected<$endif$> ><$#active.ORG_CATEGORY_NAME$></option>
+		<$endloop$>
+	</select>
+	
+	<$if rsSubCategories$>
+		
+		<select id="categoryId_sub" tabindex="10" class="category-selector" style="margin: 2px 0px; display: block;">
+			<option value=""></option>
+			
+			<$selCategoryId = #active.CATEGORY_ID$>
+			
+			<$loop rsSubCategories$>
+				<option value="<$#active.CATEGORY_ID$>"><$#active.ORG_CATEGORY_NAME$></option>
+			<$endloop$>
+		</select>
+
+	<$endif$>
+	
+	
+<@end@>
+
+<@dynamichtml ccla_cs_aurora_client_company_display@>
+	<$if IsDebug$>ccla_cs_aurora_client_company_display<$endif$>	
+	<tr class="account-details-row">
+		<td class="first-col">	
+			<$#active.CLIENT_NUMBER$>
+		</td>	
+		<td>
+			<$#active.COMPANY_CODE$>
+		</td>
+		<td>
+		<img 	src="<$HttpImagesRoot$>ccla/clientservices/delete-record.png" 
+					title="Remove Link" style="cursor: pointer" onclick="deleteLinkDetail('<$#active.CLIENT_AURORA_MAP_ID$>')" />
+		</td>
+	</tr>
+<@end@>
+
+
+<@dynamichtml ccla_cs_aurora_person_company_display@>
+<$if IsDebug$>ccla_cs_aurora_person_company_display<$endif$>
+				<tr class="account-details-row">
+						<td class="first-col">	
+							<$#active.CORR_ID$>
+						</td>	
+						<td>
+							<$#active.COMPANY$>
+						</td>
+						<td>
+						<img 	src="<$HttpImagesRoot$>ccla/clientservices/delete-record.png" 
+									title="Remove Link" style="cursor: pointer" onclick="deleteLinkDetail('<$#active.PERSON_AURORA_MAP_ID$>')" />
+						</td>
+				</tr>
+<@end@>
+
+<@dynamichtml ccla_cs_aurora_client_company_add@>
+	<table>
+		<tr>
+			<th width="35%">Client no:</th><td width="35%"><input type="text" value="" name="CLIENT_NUMBER" id="CLIENT_NUMBER"></td>
+			<th width="35%">Company:</th><td width="35%">
+			<select name="COMPANY_ID" id="COMPANY_ID">
+			<$loop rsCompanyList$>
+				<option value="<$rsCompanyList.COMPANY_ID$>"><$rsCompanyList.COMPANY_CODE$></option>
+			<$endloop$>
+			</select></td>
+			<th></th><td><input type="button" value="Add" onclick="validateCreateClientAuroraMap()"/></td>
+		</tr>
+	</table>
+<@end@>
+
+<@dynamichtml ccla_cs_aurora_company_dropdown@>
+	<select name="COMPANY_ID" id="COMPANY_ID" >
+		<option value=""></option>
+		
+		<$loop rsCompanyList$>
+			<option value="<$rsCompanyList.COMPANY_ID$>" 
+					<$if (#local.selCompanyId like #active.COMPANY_ID)$>selected="selected"<$endif$>><$rsCompanyList.COMPANY_CODE$></option>
+		<$endloop$>
+	</select>
+<@end@>
+
+<@dynamichtml ccla_cs_aurora_person_company_add@>
+	<table>
+		<tr>
+			<th width="35%">Correspondent no:</th><td width="35%"><input type="text" value="" name="CORR_ID" id="CORR_ID"></td>
+			<th width="35%">Company:</th><td width="35%">
+			<select name="COMPANY_ID" id="COMPANY_ID">
+			<$loop rsCompanyList$>
+				<option value="<$#active.COMPANY_ID$>">
+				<$#active.COMPANY_CODE$>	
+				</option>
+			<$endloop$>
+			</select></td>
+			<th></th><td><input type="button" value="Add" onclick="validateCreatePersonAuroraMap()"/></td>
+		</tr>
+	</table>
+<@end@>
+
+<!-- Displays a list of selectable addresses for the current element.
+     Requires an rsContactDetails ResultSet to be present in the
+	 binder.
+	 
+	 Only valid for existing elements.
+	 
+	 Also displays 'Set preferences' and 'Add new' buttons.
+	 -->
+<@dynamichtml ccla_cs_address_selector@>
+<$if IsDebug$>ccla_cs_address_selector<$endif$>	
+	<table width="100%">
+		<!-- set col widths -->
+		<tr>
+			<td width="20%"></td>
+			<td width="30%"></td>
+			<td width="20%"></td>
+			<td width="30%"></td>
+		</tr>
+		
+		<tr>
+			<td>Select address: </td>
+			<td>
+				<div id="selContactAddressContainer">
+					<$include ccla_cs_contact_address_select$>
+				</div>
+			</td>
+			
+			<td colspan=2 align="right">
+				<input type="button" name="addNewAddressButton" value="Add new" onclick="addNewContactAddress()" tabindex="70" />
+				<input type="button" name="setAddressPrefsButton" value="Set preferences..." onclick="setAddressPreferences()" tabindex="75" />
+			</td>
+			
+		</tr>
+	</table>
+	
+	<div style="border-bottom: 1px solid #BBB"></div>
+	
+<@end@>
+
+<!-- Displays the contact address selector for the given ELEMENT_ID.
+	 
+	 Include is reloaded via AJAX when one of the contact addresses
+	 is updated. -->
+<@dynamichtml ccla_cs_contact_address_select@>
+	
+	<$if ajaxRefresh$>
+		<!-- Re-fetch contact details data if this is an AJAX refresh. -->
+		<$executeService("CCLA_CS_GET_CONTACT_DETAILS")$>
+	<$endif$>
+	
+	<select name="selContactAddress" id="selContactAddress" onchange="updateSelContactAddress()" tabindex="65">
+				
+				
+		<$loop rsContactDetails$>
+			<$if strEquals(rsContactDetails.METHOD_TYPE,"1")$>
+				<option value="<$#active.CONTACT_ID$>" 
+						<$if #local.selContactAddress$>
+							<$if #local.selContactAddress like #active.CONTACT_ID$>selected<$endif$>
+						<$else$>
+							<$if strEquals(rsContactDetails.IS_DEFAULT,"1")$>selected<$endif$>
+						<$endif$>
+
+				><$rsContactDetails.TYPE_LABEL$>
+				
+				<$if strEquals(rsContactDetails.IS_DEFAULT,"1")$>
+					(C)
+				<$endif$>
+				
+				</option>
+			<$endif$>
+		<$endloop$>
+		
+		<!-- New address entry -->
+		<option value="new" <$if #local.selContactAddress like "new"$>selected<$endif$> >[New address]</option>
+	</select>
+	
+<@end@>
+
+<!-- Displays the currently-selected address when on an existing
+     record page. For new records, an empty address form is displayed.
+	 -->
+<@dynamichtml ccla_cs_address_fields@>
+	
+	<$if ajaxRefresh$>
+		<!-- Re-fetch contact details data if this is an AJAX refresh.
+			 TODO: maybe just fetch the one required address contact instead? -->
+		<$executeService("CCLA_CS_GET_CONTACT_DETAILS")$>
+	<$endif$>
+	
+	<$loop rsContactDetails$>
+		<$if strEquals(rsContactDetails.METHOD_TYPE, "1")$>
+			<$if selContactAddress$>
+				<$if strEquals(selContactAddress, #active.CONTACT_ID)$>
+					<!-- Found the selected address. Display it. -->
+					<$include ccla_cs_address_fields_display$>
+							
+					<$foundAddress=1$>
+					<$break$>
+				<$endif$>
+				
+			<$else$>
+					
+				<!-- No selected address, just display the first default 
+				     one we encounter. -->
+				<$if strEquals(rsContactDetails.IS_DEFAULT, "1")$>	
+					<$include ccla_cs_address_fields_display$>
+					<$foundAddress=1$>
+					<$break$>
+				<$endif$>	
+			<$endif$>
+
+		<$endif$>
+	<$endloop$>
+	
+	<$if not (selContactAddress like "new") and not foundAddress$>
+		<!-- 	Not even a default address set! Now just display the first 
+				address found. -->
+		<$exec rsFirst("rsContactDetails")$>
+	
+		<$loop rsContactDetails$>
+			<$if strEquals(rsContactDetails.METHOD_TYPE, "1")$>
+				<$include ccla_cs_address_fields_display$>
+				<$foundAddress=1$>
+				<$break$>
+			<$endif$>
+		<$endloop$>
+		
+	<$endif$>
+	
+	<$if not foundAddress$>
+		<$if #local.ELEMENT_ID$>
+			<!-- Existing record with no addresses. -->
+			<$selContactAddress="new"$>
+			
+			<$include ccla_cs_address_fields_display$>
+			
+		<$else$>
+			<!-- New record: display a new address form.
+				 There may be QAS data present in the Binder,
+				 this can be used to pre-fill address fields.
+				 Check for this first. -->
+				 
+			<$if rsQASData$>
+				<$loop rsQASData$>
+					<$include ccla_cs_address_fields_display$>
+				<$endloop$>
+			<$else$>
+				<$include ccla_cs_address_fields_display$>
+				
+			<$endif$>
+		<$endif$>
+	
+	<$endif$>
+
+<@end@>
+
+<!-- Displays the 'Address sourced from QAS' and 'Dubious' checkbox. 
+	 Designed for use in the header of an address record. -->
+<@dynamichtml ccla_cs_address_property_fields@>
+	
+	<input type="hidden" name="ADDRESS_ID" value="<$#active.ADDRESS_ID$>">
+	<input type="hidden" name="AUTH_STATUS_ID" value="<$#active.AUTH_STATUS_ID$>">
+	
+	<input type="hidden" name="addressChanged" id="addressChanged" value="false" />
+	
+	<$if #local.moniker or #active.QAS_VALID like "1"$>
+		<!-- Address is marked as QAS Valid. -->
+		<input name="QAS_VALID" id="QAS_VALID" type="checkbox" checked onchange="updateAddressLockState()" tabindex="85" >
+	<$else$>
+		<input name="QAS_VALID" id="QAS_VALID" type="checkbox" disabled onchange="updateAddressLockState()" tabindex="85" >
+	<$endif$>	
+		
+	Sourced from QAS
+	
+	<br/>
+	
+	<input tabindex="90" type="checkbox" class="address-field" name="IS_DUBIOUS" <$if #active.IS_DUBIOUS like "1"$>checked<$endif$> /> Returned Mail
+	
+<@end@>
+
+<!-- Displays an editable set of address fields.
+	 -->
+<@dynamichtml ccla_cs_address_fields_display@>
+<$if IsDebug$>ccla_cs_address_fields_display<$endif$>
+	<$if #active.CONTACT_ID$>
+		<!-- Existing address record. -->
+	<$elseif #local.selContactAddress like "new"$>
+		<!-- New address contact for an existing record. -->
+		<$newContactAddress=1$>
+	<$else$>
+		<!-- New address for a new record. -->
+		<$newRecordAddress=1$>
+	<$endif$>
+	
+	<$if not newRecordAddress$>
+		
+		<!-- Display a form for adding/updating contact address -->
+		<form id="contactAddress" method="POST">
+			<$include add_idc_token_to_form$>
+			<$if newContactAddress$>
+				<input type="hidden" name="IdcService" value="CCLA_CS_ADD_CONTACT_ADDRESS">
+				
+			<$else$>
+				<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_CONTACT_DETAIL">
+					
+				<input type="hidden" name="CONTACT_ID" value="<$#active.CONTACT_ID$>" />
+				
+				<input type="hidden" name="IS_DEFAULT" value="<$#active.IS_DEFAULT$>" />
+				<input type="hidden" name="IS_EXPERIAN" value="<$#active.IS_EXPERIAN$>" />
+				
+				[[% Removed the below hidden input - this is now an editable field. Having multiple form
+					fields with the same name will now post them to UCM 11g as comma-separated values. %]]
+				<!-- input type="hidden" name="SUBMETHOD_ID" value="<$#active.SUBMETHOD_ID$>" -->
+			<$endif$>
+			
+			<input type="hidden" name="ELEMENT_ID" value="<$#local.ELEMENT_ID$>" />
+			<!-- Address Contact type = 1 -->
+			<input type="hidden" name="METHOD_ID"	   value="1" /> 
+			
+	<$endif$>
+	
+	
+	<table width="100%">
+
+		<!-- set col widths -->
+		<tr>
+			<td width="20%"></td>
+			<td width="30%"></td>
+			<td width="20%"></td>
+			<td width="30%"></td>
+		</tr>
+		
+		<tr>
+			<td colspan=4>
+				<!-- Used to display results from address updates. -->
+				<div>
+					<$if ajaxRefresh and saved$>
+						<div id="addressSaveOkMsg" class="message_panel info_icon">
+							Address updated.
+						</div>
+					<$endif$>
+						
+					</div>
+					<div id="addressSaveErrorMsg" class="message_panel error_icon" style="display:none">
+						
+					</div>
+				</div>
+			</td>
+		</tr>
+		
+		<tr>
+			<$if #active.CONTACT_ID$>
+				<td>Label: </td>
+				<td>
+					<!-- Existing contact address. Display a drop-down with the current label selected. -->
+					
+					<select name="SUBMETHOD_ID" class="address-field" tabindex="80">
+
+						<$thisSubMethodId = #active.SUBMETHOD_ID$>
+						
+						<$METHOD_ID="1"$>
+						<$executeService("CCLA_CS_GET_ADDRESS_METHODS")$>
+					
+						<$loop rsAddressMethods$>
+							<option value="<$rsAddressMethods.SUBMETHOD_ID$>" 
+									<$if rsAddressMethods.SUBMETHOD_ID like thisSubMethodId$>selected<$endif$>><$rsAddressMethods.SUBMETHOD_NAME$></option>
+						<$endloop$>
+					</select>
+					
+					<$if false$>
+						<input type="text" name="SUBMETHOD_NAME" id="newAddressLabel" class="address-field" value="<$#active.TYPE_LABEL$>" disabled="true" style="width:100%" tabindex="80" />
+					<$endif$>
+				</td>
+
+			<$else$>
+				<!-- New contact address. Display drop-down list of selectable labels -->
+				<td valign="top">Label: </td>
+				<td>
+					<$METHOD_ID="1"$>
+					<$executeService("CCLA_CS_GET_ADDRESS_METHODS")$>
+					
+					<!-- Pre-select the address type, based on whether or not this is an Entity or Person page. -->
+					<$if strIndexOf(IdcService, "ENTITY") > -1$>
+						<$defaultAddressMethod = #env.CCLA_CS_DefaultOrgAddressContactSubMethodId$>
+					<$else$>
+						<$defaultAddressMethod = #env.CCLA_CS_DefaultPersonAddressContactSubMethodId$>
+					<$endif$>
+					
+					<select name="SUBMETHOD_ID" id="newAddressLabel" tabindex="75">
+						<$loop rsAddressMethods$>
+							<option value="<$rsAddressMethods.SUBMETHOD_ID$>" 
+									<$if #active.SUBMETHOD_ID like defaultAddressMethod$>selected<$endif$>><$rsAddressMethods.SUBMETHOD_NAME$></option>
+						<$endloop$>
+					</select>
+					
+					<$if not newContactAddress$>
+						<!-- New Organisation/Person record. Display property selectors -->
+						<br/>
+						<br/>
+						
+						<$include ccla_cs_address_property_fields$>
+					<$endif$>
+				</td>
+				
+			<$endif$>
+	
+			<td colspan=2 valign="top">
+				<div style="text-align:right">
+					
+					<!-- Button used for looking up a new address using the QAS services -->
+					<input 	type="button"  tabindex="80"
+						name="lookupNewAddress" 
+						id="lookupNewAddress" 
+						value="Lookup address..." 
+						onclick="lookupAddress();" />
+
+				</div>
+			</td>
+		</tr>	
+		
+		<$if #active.ADDRESS_ID or newContactAddress$>
+							
+			<tr>
+				<td></td>
+				<td colspan=2>
+					<$include ccla_cs_address_property_fields$>
+				</td>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<td>
+				<br/>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				Flat: </td>
+				<td><input type="text" tabindex="95" name="FLAT" id="FLAT" value="<$#active.FLAT$>" class="address-field qas-address-field" /></td>
+				
+				<td>
+				District: </td><td><input tabindex="115" type="text" name="DISTRICT" id="DISTRICT" value="<$#active.DISTRICT$>" class="address-field qas-address-field" />
+			</td>
+
+		</tr>
+		<tr>							
+			<td>
+				Building/House Name: </td><td><input tabindex="100" type="text" name="HOUSENAME" id="HOUSENAME" value="<$#active.HOUSENAME$>" class="address-field qas-address-field" />
+			</td>
+			
+			<td>
+				Town: </td><td><input type="text" tabindex="120" name="CITY" id="CITY" value="<$#active.CITY$>" class="address-field qas-address-field" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Building Number: </td><td><input tabindex="105" type="text" name="HOUSENUMBER" id="HOUSENUMBER" value="<$#active.HOUSENUMBER$>" class="address-field qas-address-field"/>
+			</td>
+			
+			<td>
+				County: </td><td><input type="text" tabindex="125" name="COUNTY" id="COUNTY" value="<$#active.COUNTY$>" class="address-field qas-address-field" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Street: </td><td><input tabindex="110" type="text" name="STREET" id="STREET" value="<$#active.STREET$>" class="address-field qas-address-field" />			
+			</td>
+			<td>
+				Postcode: </td><td><input type="text" tabindex="130" name="POSTCODE" id="POSTCODE" value="<$#active.POSTCODE$>" class="address-field qas-address-field"  />
+			</td>
+		</tr>
+		<tr>
+			<td></td><td></td>
+			<td>
+				Country: </td><td><input type="text" tabindex="135" name="COUNTRY" id="COUNTRY" value="<$#active.COUNTRY$>" class="address-field qas-address-field" />
+			</td>
+		</tr>
+		
+		<tr>
+			<td colspan=3></td>
+
+			<td align="right">
+				
+				<$if #active.ADDRESS_ID$>
+				
+					<$displaySaveButton=""$>
+			
+					<$if #active.IS_DEFAULT == 1$>
+						<$include ccla_cs_determine_if_user_permitted_default_address_update$>
+						
+						<$if allowChangeDefaultAddress$>
+							<$displaySaveButton=1$>
+						<$endif$>
+					<$else$>
+						<$displaySaveButton=1$>
+					<$endif$>
+					
+					<$if displaySaveButton$>
+						<input type="button" onclick="removeAddress();" value="Remove" 			class="address-button" tabindex="149"/>
+						<input type="button" onclick="saveAddress();" 	value="Save changes" 	class="address-button" tabindex="150"/>
+					<$else$>
+						<span style="color:red">
+							Nominated Correspondence address - changes restricted to Data Integrity team
+						</span>
+					<$endif$>
+					
+				<$elseif newContactAddress$>
+					<input type="button" id="saveAddressBtn" onclick="saveAddress();" value="Create new address" class="address-button" tabindex="150"/>
+				
+				<$endif$>
+			</td>
+		</tr>
+		
+	</table>
+	
+	<$if not newRecordAddress$>
+		</form>
+	<$endif$>
+	
+<@end@>
+
+<!-- Displays a few common contact detail fields, designed for use on the New Organisation 
+	 screen. These will be converted into proper Contact Detail entries in the back-end.
+	 -->
+<@dynamichtml ccla_cs_new_entity_contact_fields@>
+
+<table width="100%">
+	<!-- set col widths -->
+	<tr>
+		<td width="20%"></td>
+		<td width="30%"></td>
+		<td width="20%"></td>
+		<td width="30%"></td>
+	</tr>
+	
+	<tr>
+		<td>
+			Phone no:
+		</td>
+		
+		<td>
+			<input type="text" name="PHONE" tabindex="64" value="<$#active.PHONE$>"/>
+		</td>
+
+		<td>
+			Email:
+		</td>
+		
+		<td>
+			<input type="text" name="EMAIL" tabindex="66" value="<$#active.EMAIL$>" />
+		</td>
+	</tr>
+</table>
+	
+<@end@>
+
+
+<!-- Displays a few common contact detail fields, designed for use on the New Organisation 
+	 screen. These will be converted into proper Contact Detail entries in the back-end.
+	 -->
+<@dynamichtml ccla_cs_new_person_contact_fields@>
+
+<table width="100%">
+	<!-- set col widths -->
+	<tr>
+		<td width="20%"></td>
+		<td width="30%"></td>
+		<td width="20%"></td>
+		<td width="30%"></td>
+	</tr>
+	
+	<tr>
+		<td>
+			Phone no:
+		</td>
+		
+		<td>
+			<input type="text" name="PHONE" tabindex="64" value="<$#active.PHONE$>"/>
+		</td>
+		
+		<td>
+			Email:
+		</td>
+		
+		<td>
+			<input type="text" name="EMAIL" tabindex="68" value="<$#active.EMAIL$>"/>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			Mobile no:
+		</td>
+		
+		<td>
+			<input type="text" name="MOBILE" tabindex="66" value="<$#active.MOBILE$>"/>
+		</td>
+		
+		<td>
+			Website:
+		</td>
+		
+		<td>
+			<input type="text" name="WEBSITE"tabindex="70" value="<$#active.WEBSITE$>"/>
+		</td>
+	</tr>
+	
+</table>
+	
+<@end@>
+
+
+<!-- Displays data for a single contact detail. The same
+	 form is used for adding new contact details. -->
+<@dynamichtml ccla_cs_contact_detail_display@>
+	
+	<table width="100%">
+		<tr>
+			<td width="30%"><label for="contactTypeSel">Type:</label></td>
+			<td width="70%">
+				<select name="METHOD_ID" id="contactTypeSel">
+					<$loop rsContactTypes$>
+						<$if not strEquals(rsContactTypes.METHOD_ID,"1")$>
+							<option value="<$#active.METHOD_ID$>" 
+									<$if strEquals(rsContactDetail.METHOD_ID,#active.METHOD_ID)$>selected<$endif$>><$#active.METHOD_NAME$></option>
+						<$endif$>
+					<$endloop$>
+				</select>
+				<select name="SUBMETHOD_ID" id="contactSubTypeSel">
+					
+				</select>
+			</td>
+		</tr>
+		
+		<tr>
+			<td><label for="contactValue">Value:</label></td>
+			<td>
+				<input type="text" name="VALUE" id="contactValue" value="<$#active.VALUE$>" />
+			</td>
+		</tr>
+		<!--
+		<tr>
+			<td><br/></td>
+		</tr>
+		
+		<tr>
+			<td><label for="IS_DEFAULT">Default:</label></td>
+			<td>
+				<input type="checkbox" name="IS_DEFAULT" id="IS_DEFAULT" <$if #active.IS_DEFAULT like '1'$>checked<$endif$> />
+			</td>
+		</tr>
+		
+		<tr>
+			<td><label for="IS_DUBIOUS">Returned Mail:</label></td>
+			<td>
+				<input type="checkbox" name="IS_DUBIOUS" id="IS_DUBIOUS" <$if #active.IS_DUBIOUS like '1'$>checked<$endif$> />
+			</td>
+		</tr>
+		
+		<tr>
+			<td><br/></td>
+		</tr>
+		-->
+		<$if #active.CONTACT_ID$>
+			<tr>
+				<td align="right" colspan=2><input type="submit" value="Update" /></td>
+			</tr>
+		<$else$>
+			<tr>
+				<td align="right" colspan=2><input type="submit" value="Add" /></td>
+			</tr>
+		<$endif$>
+		
+	</table>
+	
+<@end@>
+
+<!-- Builds a single-line summary for an address entry from CCLA_ADDRESS
+     in the following format:
+	
+	 <Flat>, <House Name>, <House Number> <Street>, <Postcode> 
+	 
+	 -->
+<@dynamichtml ccla_cs_get_address_summary@>
+	
+	<$addressSummary = ""$>
+	
+	<$if #active.FLAT$>
+		<$addressSummary = #active.FLAT$>
+	<$endif$>
+	
+	<$if #active.HOUSENAME$>
+		<$if addressSummary$>
+			<$addressSummary = addressSummary & ", "$>
+		<$endif$>
+		
+		<$addressSummary = #local.addressSummary & #active.HOUSENAME$>
+	<$endif$>
+	
+	<$if #active.HOUSENUMBER$>
+		<$if addressSummary$>
+			<$addressSummary = addressSummary & ", "$>
+		<$endif$>
+		
+		<$addressSummary = #local.addressSummary & #active.HOUSENUMBER$>
+	<$endif$>
+	
+	<$if #active.STREET$>
+		<$if #active.HOUSENUMBER$>
+			<$addressSummary = addressSummary & " "$>
+		<$elseif addressSummary$>
+			<$addressSummary = addressSummary & ", "$>	
+		<$endif$>
+		
+		<$addressSummary = #local.addressSummary & #active.STREET$>
+	<$endif$>
+	
+	<$if #active.POSTCODE$>
+		<$if addressSummary$>
+			<$addressSummary = addressSummary & ", "$>
+		<$endif$>
+		
+		<$addressSummary = #local.addressSummary & #active.POSTCODE$>
+	<$endif$>
+	
+<@end@>
+
+
+<!-- Displays a list of person-element relationships.
+	 Designed for display on a Person Info/Update screen. -->
+<@dynamichtml ccla_cs_person_relations@>
+	<$if IsDebug$>ccla_cs_person_relations<$endif$>	
+	
+	<a name="relationships"></a>
+	
+	<$include orangeContainer_top$>
+		
+		<div class='ccla_cs_panel_header'>
+			Relationships
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+			<$if NOT hideAssociationTitle$>
+				<h3 class="ccla_data_panel_header">Organisations</h3>
+			<$endif$>
+			
+			<form name="frmPersonRelations" id="frmPersonRelations" method="POST">
+			
+				<$include ccla_cs_common_params$>
+
+				<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$>&PERSON_ID=<$#active.PERSON_ID$>&isRelationsUpdated=true<$commonParams$>#relationships" />
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Org$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Person$>
+				
+				<input type="hidden" name="ELEMENT_ID"		value="<$#local.PERSON_ID$>" />
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+		
+				<div id="entityRelationsDisplay">
+					<$include ccla_cs_related_entities$>
+				</div>
+			
+				<$if isEdit$>
+					<br/>
+					<div align="right">
+						<input 	type="submit" value="Update" tabindex="160" />
+						<input 	type="button" value="Add organisation..." tabindex="165"
+								onclick="openPopup('?IdcService=CCLA_CS_ADD_ORG_RELATION<$include add_idc_token_to_url$>&PERSON_ID=<$#local.PERSON_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=yes&searchScope=organisation',800);" />
+					</div>
+				<$endif$>
+			
+			</form>
+		</div>
+		
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Displays a list of entity-element relationships. -->
+<@dynamichtml ccla_cs_entity_relations@>
+
+<$if IsDebug$>ccla_cs_entity_relations<$endif$>
+
+	<a name="relationships"></a>
+
+	<$include orangeContainer_top$>
+	
+	<div class='ccla_cs_panel_header'>
+		Relationships
+	</div>
+		
+	<div class='ccla_cs_panel_content'>
+		
+		<$if NOT hideAssociationTitle$>
+			<h3 class="ccla_data_panel_header">Persons</h3>
+		<$endif$>
+			
+		<$relationScope = "Person"$>
+		<$include ccla_cs_relation_ajax_update_header_message_panels$>
+		
+		<form name="frmPersonRelations" id="frmPersonRelations" method="POST">
+		
+			<$include ccla_cs_common_params$>
+		
+			<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+			<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&isRelationsUpdated=true<$commonParams$>#relationships" />
+			
+			<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Org$>
+			<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Person$>
+			
+			<input type="hidden" name="ELEMENT_ID"		value="<$#local.ORGANISATION_ID$>" />
+			
+			<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+			<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+			<div id="personRelationsDisplay">
+				<$include ccla_cs_related_persons$>
+			</div>
+		
+			<$if isEdit$>
+				<br/>
+				<div align="right">
+					<input type="button" value="Update" onclick="updateElementRelations('Person')" tabindex="155"/>
+					<$if not #active.isCompact$>
+						<input type="button" 
+							value="Add person..." 
+							onclick="openPopup('?IdcService=CCLA_CS_ADD_PERSON_RELATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=yes&searchScope=person',800);" 
+							tabindex="160"  />
+						
+						<$if false$>
+							[[% Importing of Aurora Signatories at the org/client level is disabled for now. %]]
+							<$include ccla_cs_determine_if_user_permitted_aurora_signatory_import$>
+							<$if allowImportAuroraSignatories$>
+								<input type="button" 
+									value="Import Aurora Signatories..." 
+									onclick="window.open('?IdcService=CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA&ELEMENT_ID=<$#local.ORGANISATION_ID$>','_blank','width=1000,height=700,scrollbars=1,status=1,resizable=1');" 
+									tabindex="160"  />
+							<$endif$>
+						<$endif$>
+							
+					<$endif$>
+					<input type="button" 
+						value="Quick Add Person" 
+						onclick="openPopup('?IdcService=CCLA_CS_ADD_QUICK_PERSON<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=yes&isPopup&createNew=Yes&isUltraCompact=1&TITLE=',800);" 
+						tabindex="160"/>					
+				</div>
+			
+			<$endif$>
+		</form>	
+		
+		<$if false$>
+			<$if NOT hideAssociationTitle$>
+				<br/>
+			
+				<h3 class="ccla_data_panel_header">Organisations</h3>
+			<$endif$>
+			
+			<form name="frmOrgRelations" id="frmOrgRelations" method="POST">
+				
+				<$include ccla_cs_common_params$>
+
+				<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&isRelationsUpdated=true<$commonParams$>#relationships" />
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Org$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Org$>
+				
+				<input type="hidden" name="ELEMENT_ID"		value="<$#local.ORGANISATION_ID$>" />
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+			
+				<div id="orgRelationsDisplay">
+					<$include ccla_cs_related_entities$>
+				</div>
+
+				<$if isEdit$>
+					<br/>
+					<div align="right">
+						<input type="submit" value="Update" tabindex="155"/>
+						<$if not #active.isCompact$>
+							<input type="button" 
+								value="Lookup organisation..." 
+								onclick="openPopup('?IdcService=CCLA_CS_ADD_ENTITY_RELATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=yes&searchScope=person',800);" 
+								tabindex="160"  />
+						<$endif$>					
+					</div>
+				
+				<$endif$>
+			</form>
+		<$endif$>
+		
+	</div>
+	
+	<$if false$>
+		<!-- Disabling this panel for now, it isn't relevant. -->
+		<$if NOT isEdit$>
+			<div class='ccla_cs_panel_content'>
+			
+			<$if NOT hideAssociationTitle$>
+				<h3 class="ccla_data_panel_header">Persons - Accounts</h3>
+			<$endif$>
+			
+
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Person$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Account$>
+			
+				<div id="personAccountRelationsDisplay">
+					<$include ccla_cs_all_related_entity_account_persons$>
+				</div>
+			</div>
+			
+		<$endif$>
+	<$endif$>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Displays a list of account-element relationships. -->
+<@dynamichtml ccla_cs_account_relations@>
+
+	<$if IsDebug$>ccla_cs_account_relations<$endif$>
+
+	<$include orangeContainer_top$>
+	
+	
+		<div class='ccla_cs_panel_header'>
+			Relationships
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+		
+			<h3 class="ccla_data_panel_header">Persons</h3>
+			
+			<$relationScope = "Person"$>
+			<$include ccla_cs_relation_ajax_update_header_message_panels$>
+			
+			<form name="frmPersonRelations" id="frmPersonRelations" method="POST">
+				
+				<$include ccla_cs_common_params$>
+
+				<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>&isRelationsUpdated=true"/>
+					
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Person$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Account$>
+				
+				<input type="hidden" name="ELEMENT_ID"		value="<$#local.ACCOUNT_ID$>" />
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+			
+				<div id="personRelationsDisplay">
+					<$include ccla_cs_related_persons$>
+				</div>
+
+				<$if isEdit$>
+					<br/>
+					<div align="right">
+						<input type="button" value="Update" onclick="updateElementRelations('Person')" tabindex="155" />
+						<$if not #active.isCompact$>
+							<input type="button" 
+								value="Add person..." 
+								onclick="openPopup('?IdcService=CCLA_CS_ADD_PERSON_RELATION<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#local.ACCOUNT_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&includeAssociation=Yes&searchScope=person',800);" 
+								tabindex="160"  />
+							
+							<$include ccla_cs_determine_if_user_permitted_aurora_signatory_import$>
+							<$if allowImportAuroraSignatories$>
+								<input type="button" 
+									value="Import Aurora Signatories..." 
+									onclick="window.open('?IdcService=CCLA_CS_IMPORT_AURORA_SIGNATORY_DATA&ELEMENT_ID=<$#local.ACCOUNT_ID$>','_blank','width=1000,height=700,scrollbars=1,status=1,resizable=1');" 
+									tabindex="160"  />	
+							<$endif$>
+							
+						<$endif$>
+					</div>
+				
+				<$endif$>
+			</form>	
+			
+			<br/>
+			
+			<h3 class="ccla_data_panel_header">Bank accounts</h3>
+			
+			<$relationScope = "BankAccount"$>
+			<$include ccla_cs_relation_ajax_update_header_message_panels$>
+			
+			<form name="frmBankAccountRelations" id="frmBankAccountRelations" method="POST">
+				
+				<$include ccla_cs_common_params$>
+
+				<input type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ALL_RELATIONS" /><$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" 	value="?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>&isRelationsUpdated=true"/>
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Account$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_BankAccount$>
+				
+				<input type="hidden" name="ELEMENT_ID"		value="<$#local.ACCOUNT_ID$>" />
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1" 	value="<$#local.ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2" 	value="<$#local.ELEMENT_TYPE_ID_2$>" />
+			
+				<div id="bankAccountRelationsDisplay">
+				
+					<$include ccla_cs_related_bank_accounts$>
+				</div>
+
+				<$if isEdit$>
+					<div align="right">
+						
+						<$if false$>
+							<!-- Old school standard POST submission -->
+							<input type="submit" value="Update" tabindex="155"  />
+						<$endif$>	
+						
+						<!-- AJAX submission. -->
+						<input type="button" value="Update" onclick="updateElementRelations('BankAccount')" tabindex="155" />
+						
+						<$if not #active.isCompact$>
+							<input type="button"  value="Add new bank account..." onclick="addBankAccountRelation('<$#local.ACCOUNT_ID$>')" />
+						<$endif$>
+					</div>
+				
+				<$endif$>
+			</form>	
+		
+		</div>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_entity_aurora_link_div@>
+
+	<$executeService("CCLA_CS_GET_AURORA_CLIENT_MAP")$>
+	<$include ccla_cs_entity_aurora_link$>
+
+<@end@>
+
+<!-- Displays a list of Organisation-Aurora Client Number relationships. -->
+<@dynamichtml ccla_cs_entity_aurora_link@>
+
+	<$if IsDebug$>ccla_cs_entity_aurora_link<$endif$>
+	
+				<$include orangeContainer_top$>
+			
+				<div class='ccla_cs_panel_header'>
+					Aurora Client Numbers
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<div id="auroraDetailsDisplay">
+			<$if rsAuroraClientMap$>		
+			<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+				<tr>
+					<th class="first-col">Client no</th>
+						<th width="15%">Company</th>
+						<th width="40"></th>
+					</tr>
+					<$loop rsAuroraClientMap$>
+						<$include ccla_cs_aurora_client_company_display$>
+					<$endloop$>
+						</table>
+			<$endif$>		
+					<br>
+					<table width="100%" cellpadding="0" cellspacing="0">
+					<tr align="right">
+					<td>
+					<input 	type="button" tabindex=20
+						name="addAuroraLink" 
+						id="addAuroraLink" 
+						value="Add new link..." 
+						onclick="openPopup('?IdcService=CCLA_CS_EDIT_AURORA_CLIENT_MAP<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>');" />
+						</td>
+					</tr>
+					</table>
+					</div>
+				</div>
+			
+			<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Form used for creating Organisation-Person relationships.
+	 Never submitted directly, the contents are populated in
+	 JavaScript and serialized for AJAX use instead.
+
+	 Designed for use on the Select Person/Organisation pages, so
+	 either a Person or Organisation will already be in context. -->
+<@dynamichtml ccla_cs_add_entity_person_relation_form@>
+
+	<form id="addEntityPersonRelationForm" name="addEntityPersonRelationForm" method="POST">
+		<input type="hidden" name="IdcService" value="CCLA_CS_ADD_CLIENT_PERSON_RELATION" />
+		
+		<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>" />
+		
+		<input type="hidden" name="RELATED_ELEMENT_ID" value="<$#local.PERSON_ID$>" />
+		<input type="hidden" name="RELATION_TYPE_ID" value="1" />
+		<input type="hidden" name="RELATIONSHIP" value="" />
+	</form>
+
+<@end@>
+
+<!-- Displays a Person name. If they have a fully-qualified name,
+     all the separate components are concatenated and displayed.
+	 
+	 Otherwise, the Full Name field is displayed.
+	 -->
+<@dynamichtml ccla_cs_person_name_display@>
+	
+		<$#active.FULL_NAME$>
+	
+<@end@>
+
+<!-- Displays the Interaction Cateogry optionlist. Designed to be called
+     via AJAX using the CCLA_CS_GET_INCLUDE service.
+	 
+	 If a SUBJECT_ID is present in the binder, the corresponding list of
+	 caegories is displayed from the CCLA_INTERACTION_CATEGORY table.
+	 -->
+<@dynamichtml ccla_cs_interaction_category_optionlist_display@>
+
+	<$if #local.SUBJECT_ID$>
+		<$executeService("CCLA_CS_GET_INTERACTION_CATEGORIES")$>
+	<$endif$>
+	
+	<select name="CATEGORY_ID" id="CATEGORY_ID" style="width:330px" <$if strEquals(#active.OUTCOME_ID,"1")$>disabled<$endif$>>
+		<option value=""></option>
+		
+		<$loop rsInteractionSubjectCategories$>
+			<$if #local.SUBJECT_ID like #active.INTERACTION_SUBJECT_ID$>
+				<option value="<$#active.INTERACTION_CATEGORY_ID$>"><$#active.CATEGORY$></option>
+			<$endif$>
+		<$endloop$>
+		
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_client_info@>
+<$if IsDebug$>ccla_cs_client_info<$endif$>
+
+			<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Client Info: <$rsClient.CLIENT_NAME$>
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<$loop rsClient$>
+						
+						<$include ccla_cs_display_client_info$>
+						
+						<br/>
+						
+						<h3 class="ccla_data_panel_header">Signatories</h3>
+						
+						<table class="ccla-table" width="40%">
+							
+							<$loop rsRelatedPersons$>
+								<$if #active.RELATION_TYPE like "SIGN"$>
+									<$hasSigs=1$>
+								<$endif$>
+							<$endloop$>
+							
+							
+							<$if hasSigs$>
+							
+								<$loop rsRelatedPersons$>
+									<$if #active.RELATION_TYPE like "SIGN"$>
+										<tr>
+											<td><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&personId=<$#active.PERSON_ID$>"><$#active.FULL_NAME$></a></td>
+										</tr>
+									<$endif$>
+								<$endloop$>
+							
+							<$else$>
+								<tr>
+									<td>None</td>
+								</tr>
+							<$endif$>
+						
+						</table>
+						
+						<br/>
+						
+						<h3 class="ccla_data_panel_header">AML Checklist status</h3>
+
+						<$include ccla_cs_client_legacy_aml_status$>
+						
+						<br/>
+						
+						<h3 class="ccla_data_panel_header">Actions</h3>
+						
+						<ul>
+							<li><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_CLIENT_INFO<$include add_idc_token_to_url$>&clientId=<$clientId$>&company=<$company$>&addNote=1#add_note">Add note</a></li>
+							<li><a href="<$HttpCgiPath$>?IdcService=CCLA_CS_RECORD_COMM<$include add_idc_token_to_url$>&clientId=<$clientId$>&company=<$company$>">Log activity/communication</a></li>
+							<li><a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&clientno=<$clientId$>">View documents in Iris</a></li>
+						</ul>
+						
+					<$endloop$>
+					
+				</div>
+	
+				<$include orangeContainer_bottom$>
+<@end@>	
+			
+<!-- Displays organisation info, including their registered address.
+	 Must be referenced inside an Organisation data ResultSet loop. -->
+<@dynamichtml ccla_cs_display_entity_info@>
+
+	<$if IsDebug$>ccla_cs_display_entity_info<$endif$>
+	
+	<table class="cs-info-table" width="100%">
+		<$if NOT hideName$>
+			<tr>
+				<th>Name:</th><td colspan=3><$#active.ORGANISATION_NAME$></td>
+			</tr>
+
+		<$endif$>
+		
+		<tr>
+			<th>Org Account Code:</th>
+			<td>
+				<$if not #active.isCompact OR #active.isUltraCompact$>
+				<a  <$if strIndexOf(IdcService, "CLIENT_INFO") == -1$>target="_blank"<$endif$>
+					 href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>">
+					 <$#active.ORG_ACCOUNT_CODE$>		
+				</a>
+				<$endif$>
+			</td>
+			<th>Organisation check status:</th>
+			<td>
+
+				<$include ccla_cs_display_entity_check_result$>
+		
+			</td>
+		</tr>
+		
+		<tr>
+			<th></th>
+			<td></td>
+			
+			<th>Relation check status:</th>
+			<td>
+				
+				<$include ccla_cs_display_relation_check_result$>
+				
+			</td>
+		
+		<tr>
+			<th>Category:</th>
+			<td colspan=2>
+				
+				<$selCategoryList = ""$>
+				
+				<$loop rsSelectedCategories$>
+					<$if selCategoryList$>
+						<$selCategoryList = selCategoryList & " > "$>
+					<$endif$>
+				
+					<$selCategoryList = #local.selCategoryList & #active.BASE_CAT_NAME$>
+				<$endloop$>
+				
+				<$selCategoryList$>
+			</td>
+		</tr>
+		
+		<$if false$>
+			<tr>
+				<th>Classification:</th>
+				<td colspan=2></td>
+			</tr>
+		<$endif$>
+		
+		<tr>
+			<th>Incorporation Country:</th>
+			<td>
+				<$if #active.INCORPORATION_COUNTRY$>
+					<$targetCountry=#active.INCORPORATION_COUNTRY$>
+					<$include ccla_cs_output_country$>
+				<$endif$>
+			</td>
+			<th>Business Domicile:</th>
+			<td>
+				<$if #active.BUSINESS_DOMICILE$>
+					<$targetCountry=#active.BUSINESS_DOMICILE$>
+					<$include ccla_cs_output_country$>
+				<$endif$>
+			</td>
+		</tr>
+		
+		<tr>
+			<th>Gross Dist. No:</th> 
+			<td>
+				<$#active.GROSS_DISTRIBUTION_NUMBER$>
+			</td>
+		</tr>
+		
+		<!-- Display all Aurora Client links, if present. -->
+		
+		<$if rsAuroraClientMap$>
+			<tr>
+				<th width="20%">Aurora Client links:</th>
+				<td width="30%">
+					<$loop rsAuroraClientMap$>
+						<$strLeftFill(#active.CLIENT_NUMBER,"0",5)$> (<$#active.COMPANY_CODE$>)<br/>
+					<$endloop$>
+				</td>
+			</tr>
+		<$endif$>
+		
+		<$if false$>
+			<tr>
+				<th>Aurora Client Number:</th> 
+				<td>
+					<$if #active.CLIENT_NUMBER$>
+						<$strLeftFill(#active.CLIENT_NUMBER,"0",#active.CLIENT_NUMBER_PADDING)$>
+					<$endif$>
+				</td>
+			</tr>
+		<$endif$>
+
+		<$if rsElementIdentifiersApplied$>
+			<tr>
+				<td><br/></td>
+			</tr>
+		
+			<tr>
+				<$loop rsElementIdentifiersApplied$>
+				<$rowNumber = #active.rowNumber + 1$>
+					<th>
+						<$#active.IDENTIFIER_NAME$>:
+					</th>
+					<td>
+						<$#active.IDENTIFIER_VALUE$>
+					</td>				
+					<$c="Determine where to start a new row, keeping it 2 textboxes per row"$>
+						<$if ((rowNumber%2) > 0)$>
+							</tr>
+							<tr>
+						<$endif$>
+				<$endloop$>
+			</tr>
+		<$endif$>
+
+		<!-- Set column widths -->
+		<tr>
+			<th width="20%"></th><td width="30%"></td>
+			<th width="20%"></th><td width="30%"></td>
+		</tr>
+		
+	<$if NOT hideName AND NOT hideClientInfo$>
+		</table>
+	<$endif$>
+
+<@end@>
+
+<!-- Displays the outcome of Entity Check result, when displaying a list of Entities. -->
+<@dynamichtml ccla_cs_display_listed_check_result@>
+	
+	<div 
+		<$if not suppressEntityCheckPopup$>
+			onclick="openPopup('?IdcService=CCLA_CS_ENTITY_VERIFICATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>');"
+		<$endif$>
+		
+		<$if #active.NUM_VERIFIED_SOURCES and #active.NUM_VERIFIED_SOURCES > 0$>
+			class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+		<$else$>
+			class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+		<$endif$>
+		
+	</div>
+	
+<@end@>
+
+<!-- Displays the outcome of a Relation Check result. -->
+<@dynamichtml ccla_cs_display_relation_check_result@>
+	
+	<script type="text/javascript">
+		
+		entityRelationCheckStatusClicked = function(isPassed, failReason) {
+			if (isPassed) {
+				alert("Authorising Person relations have been verified for this organisation, " +
+				 "or a Relation Check override has been set.");
+			} else {
+				alert("Relation Check status is unknown/failed for this organisation.\n\n" + failReason);
+			}
+		}
+		
+	</script>
+	
+	<$if #local.RelationCheckStatusCode like "PASSED"$>
+		<div onclick="entityRelationCheckStatusClicked(true)" class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+	<$elseif #local.RelationCheckStatusCode like "UNKNOWN"$>
+		<div onclick="entityRelationCheckStatusClicked(false, '<$js(#local.RelationCheckFailReason)$>')" class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+	<$else$>
+		<div onclick="entityRelationCheckStatusClicked(false, '<$js(#local.RelationCheckFailReason)$>')" class="check-status-box red-status-box">&nbsp;</div>&nbsp;RED
+	<$endif$>
+	
+<@end@>
+
+<!-- Displays the outcome of an Entity Check result. -->
+<@dynamichtml ccla_cs_display_entity_check_result@>
+	
+	<$if #env.CCLA_CS_EnableEntityVerification$>
+					
+		<div 
+			<$if not suppressEntityCheckPopup$>
+				onclick="openPopup('?IdcService=CCLA_CS_ENTITY_VERIFICATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>');"
+			<$endif$>
+			
+			<$if #local.EntityCheckStatusCode like "PASSED"$>
+				class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+			<$elseif #local.EntityCheckStatusCode like "FAILED"$>
+				class="check-status-box red-status-box">&nbsp;</div>&nbsp;RED
+			<$elseif #local.EntityCheckStatusCode like "UNKNOWN"$>
+				class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+			<$endif$>
+			
+		</div>
+		
+	<$else$>
+		<!-- Display legacy entity check result. -->
+
+		<div onclick="alert('Nothing here.');"
+			
+			
+			<$if #local.EntityCheckStatusCode like "PASSED"$>
+				class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+			<$elseif #local.EntityCheckStatusCode like "FAILED"$>
+				class="check-status-box red-status-box">&nbsp;</div>&nbsp;RED
+			<$elseif #local.EntityCheckStatusCode like "UNKNOWN"$>
+				class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+			<$endif$>
+			
+			<$if false$>
+				<$if rsEntityCheck.CHECK_SCORE > 0$>
+					class="check-status-box green-status-box">&nbsp;</div>&nbsp;GREEN
+				<$elseif rsEntityCheck$>
+					class="check-status-box red-status-box">&nbsp;</div>&nbsp;RED
+				<$else$>
+					class="check-status-box amber-status-box">&nbsp;</div>&nbsp;AMBER
+				<$endif$>
+			<$endif$>
+			
+		</div>
+	
+	<$endif$>
+
+<@end@>
+
+<@dynamichtml ccla_cs_display_address@>
+<$if IsDebug$>ccla_cs_display_address<$endif$>
+
+	<$if #active.FLAT$>
+		<$#active.FLAT$><br/>
+	<$endif$>
+	<$if #active.HOUSENAME$>
+		<$#active.HOUSENAME$><br/>
+	<$endif$>
+	
+	<$if #active.HOUSENUMBER$>
+		<$#active.HOUSENUMBER$> <$#active.STREET$><br/>
+	<$elseif #active.STREET$>
+		<$#active.STREET$> <br/>
+	<$endif$>
+	
+	<$if not rsAddressFields$>
+		<$addressFields = "DISTRICT,CITY,COUNTY,COUNTRY,POSTCODE"$>
+		<$exec rsMakeFromString("rsAddressFields",addressFields,"fieldName")$>
+	<$endif$>
+	
+	<$loop rsAddressFields$>
+		<$thisValue = getValue("#active",#active.fieldName)$>
+		
+		<$if thisValue$>
+			<$thisValue$><br/>
+		<$endif$>
+	<$endloop$>
+	
+<@end@>
+
+<!-- used by the organisation information page to format contacts types - email address to mailto links and websites to urls - other data is not formatted-->
+<@dynamichtml ccla_cs_format_contact@>
+	<$if IsDebug$>ccla_cs_format_contact<$endif$>	
+	
+	<$if strEquals(#active.METHOD_TYPE,"3")$>
+		<a title="Send mail to <$#active.VALUE$>" href="mailto:<$#active.VALUE$>"><$#active.VALUE$></a>
+	<$elseif strEquals(#active.METHOD_TYPE,"4")$>
+		<$webAddress = #active.VALUE$>
+		<$if strIndexOf(strUpper(webAddress),"HTTP:") lt 0$>
+			<$webAddress = "http://" & webAddress$>
+		<$endif$>
+		<a target="_blank" href="<$webAddress$>" title="Go to website <$webAddress$>" ><$webAddress$></a>
+	<$else$>
+		<$#active.VALUE$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_cs_display_readonly_contact_details@>
+	<$if IsDebug$>ccla_cs_display_readonly_contact_details<$endif$>
+	
+	<!-- Determine the label for the default address, if applicable. -->
+	<$defaultAddressName = ""$>
+	
+	<$if rsContactDetails$>
+		<$loop rsContactDetails$>
+			<$if strEquals(#active.METHOD_TYPE,"1") AND strEquals(#active.IS_DEFAULT,"1")$>
+				
+				<$defaultAddressName = #active.TYPE_LABEL$>
+				<$break$>
+				
+			<$endif$>
+		<$endloop$>
+	<$endif$>
+
+	<table class="cs-info-table" width="100%">
+		<tr>
+			<th>
+				<$if defaultAddressName$>
+					<$defaultAddressName$>
+				<$else$>
+					Address
+				<$endif$>
+			</th>
+			<th width="30%"></th>
+			<th>Other Contact Details</th>
+		</tr>
+		<tr>
+			<td>
+				<$if defaultAddressName$>
+					<$loop rsContactDetails$>
+						<$if strEquals(#active.METHOD_TYPE,"1") AND strEquals(#active.IS_DEFAULT,"1")$>
+							
+							<$include ccla_cs_display_address$>
+							<$break$>
+							
+						<$endif$>
+					<$endloop$>
+				<$else$>
+					<span class="no-data">None</span>
+				<$endif$>
+			</td>
+			<td></td>
+			<td>
+				<table class="no-padding-spacing" cellpadding="0" cellspacing="0">
+					<$if rsContactDetails$>
+						<$loop rsContactDetails$>
+							<$if NOT strEquals(#active.METHOD_TYPE,"1")$>
+								<tr>
+									<td style="text-align:right"><strong><$#active.TYPE_LABEL$>:&nbsp;</strong></td>
+									<td style="padding:3px 0"><$include ccla_cs_format_contact$></td>
+								</tr>
+							<$endif$>
+						<$endloop$>
+					<$else$>
+						N/A
+					<$endif$>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+<@end@>
+
+<@dynamichtml ccla_cs_entity_create_error_handling_js@>
+<$if IsDebug$>ccla_cs_entity_create_error_handling_js<$endif$>
+<script type="text/javascript">
+
+		var orgWindow =null;
+			
+		var forceClientNumberGeneration = "<$#env.CCLA_CS_ForceClientNumberGeneration$>";
+		var isUltraCompact				= "<$#local.isUltraCompact$>";
+		
+		// ensures all the correct parameters are set in order
+		// to create an entity
+		function validateCreateEntity() {
+		
+		// remove any previously-displayed error messages
+			clearFieldErrorMsgs();
+	
+			var hasErrors = false;
+			var doErrorExplain = true;
+
+			// Use this include for custom validation checks.
+			if (document.entityDetails.ORGANISATION_NAME.value.length ==0) {
+
+				if (!isUltraCompact) {
+					if (doErrorExplain)
+						displayFieldErrorMsg("Error creating organisation","Please correct the following errors and try again","");
+					
+					doErrorExplain=false;	
+					displayFieldErrorMsg("ORGANISATION_NAME","Name","Cannot be blank");
+					
+				} else {
+					alert("Error creating organisation, please complete all mandatory fields");
+					doErrorExplain=false;
+				}
+
+				hasErrors = true;
+			}
+			
+			// Use this include for custom validation checks.
+			
+//			if (document.entityDetails.CATEGORY_ID.value.length ==0) {
+//				if (!isUltraCompact) {
+//					if (doErrorExplain)
+//						displayFieldErrorMsg("Error creating organisation","Please correct the following errors and try again","");					
+//					doErrorExplain=false;	
+//					displayFieldErrorMsg("categoryId_1","Category","Cannot be blank");	
+//				} else {
+//					alert("Error creating organisation, please complete all mandatory fields");
+//					doErrorExplain=false;
+//				}
+//				hasErrors = true;
+//			}
+			
+			if (forceClientNumberGeneration) {
+
+				// Check Company field has been completed so we can generate
+				// a Client Number.
+				if ($("#COMPANY_ID").val() == "") {
+					if (doErrorExplain)
+						displayFieldErrorMsg("Error creating organisation",
+						 "Please correct the following errors and try again","");
+			
+					if (!isUltraCompact) {
+						displayFieldErrorMsg("COMPANY_ID","Company","Cannot be blank");
+						doErrorExplain=false;
+					} else {
+						alert("Error creating organisation, please complete all mandatory fields");
+						doErrorExplain=false;
+					}					
+					
+					hasErrors = true;
+				}
+			}
+			
+			
+			if (!hasErrors)
+				document.entityDetails.submit();
+			else {
+				if ($("#errorMessage").length > 0) {
+					var new_position = $('#errorMessage').offset();
+					window.scrollTo(new_position.left,new_position.top);
+				}
+			}
+			
+			return !hasErrors;
+		}
+
+		// Creates and returns an error message DIV element. It must
+		// be inserted into the DOM afterwards.
+		//
+		// The given msgTitle, msgBody variables determine the content
+		// of the error message.
+		function createErrorMsg(msgId, msgTitle, msgBody) {
+			
+			// create the divs which hold the error message
+			var errorMsgTitle = document.createElement("span");
+			errorMsgTitle.className = "validation_error_title";
+			errorMsgTitle.innerHTML = msgTitle + ': ';
+			
+			if (msgBody && msgBody.length > 0) {
+				var errorMsgBody = document.createElement("span");
+				errorMsgBody.innerHTML = msgBody;
+			}
+			
+			var errorMsgDiv = document.createElement("div");
+			errorMsgDiv.id				= "err_" + msgId;
+			errorMsgDiv.className = "validation_error error_icon";
+			
+			errorMsgDiv.appendChild(errorMsgTitle);
+			
+			if (errorMsgBody)
+				errorMsgDiv.appendChild(errorMsgBody);
+			
+			return errorMsgDiv;
+		}
+				// Displays a validation error message below the given field
+		// on the document indexing panel.
+		//
+		// The field element itself will also be re-styled to show it
+		// is in error.
+		function displayFieldErrorMsg(fieldName, msgTitle, msgBody) {
+			
+			// re-style field input element
+			var fieldElem = document.entityDetails[fieldName];
+			$(fieldElem).addClass("validation_error_field");
+		
+			// build the error message div
+			var errorMsg = createErrorMsg(fieldName, msgTitle, msgBody);
+			
+			// clicking the error msg div will highlight the offending field.
+			errorMsg.onclick = function() {
+				var thisField = this.id.substring(4);
+				
+				document.entityDetails[thisField].focus();
+				document.entityDetails[thisField].select();
+			}
+		// create the table cell/row to hold the div and insert
+			// it after the document field row.
+			var errorMsgDiv = document.createElement("div");
+			
+			errorMsgDiv.appendChild(errorMsg);
+	
+			errorMsgDiv.id = "FieldError_" + fieldName;
+			errorMsgDiv.className = "doc_field_error_row";
+			
+			// find the div for the error message
+			var errorMessageContainer = $("#errorMessage");
+		
+			
+			$(errorMessageContainer).append(errorMsgDiv);
+		}
+		
+		// Deletes any existing field error messages spawned by 
+		// function above.
+		function clearFieldErrorMsgs() {
+			// remove error styling on invalid fields
+			$("#entityDetails input, #entityDetails select, #entityDetails textarea").removeClass("validation_error_field");
+			
+			// delete rows used for displaying validation errors
+			$(".doc_field_error_row").remove();
+		}
+		
+		function expandOrganisation() {
+			if (!orgWindow || orgWindow.closed) {
+				orgWindow = window.open("<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_NEW<$include add_idc_token_to_url$>&createNew=Yes&isCompact=1", "Organisation", "top=100, left=100, width=832px, toolbar=0, location=0, status=0, menubar=0, directories=0, resizable=0");
+			} else  {
+				orgWindow.focus();
+			}
+		}		
+</script>
+<@end@>	
+
+<@dynamichtml ccla_cs_aurora_client_map_error_handling_js@>
+<$if IsDebug$>ccla_cs_aurora_client_map_error_handling_js<$endif$>
+<script type="text/javascript">
+			// ensures all the correct parameters are set in order
+			// to create an entity
+			function validateCreateClientAuroraMap(){
+		
+		// remove any previously-displayed error messages
+			clearFieldErrorMsgs();
+	
+			var hasErrors = false;
+			var doErrorExplain = false;
+							
+			// Use this include for custom validation checks.
+			if (document.frmAddAuroraMap.CLIENT_NUMBER.value.length ==0) {
+			if (doErrorExplain)
+				displayFieldErrorMsg("Error adding link","Please correct the following errors and try again","");
+			doErrorExplain=false;	
+			displayFieldErrorMsg("CLIENT_NUMBER","Client Number","Cannot be blank");
+			hasErrors = true;
+			}	
+			
+
+			if (!hasErrors)
+				document.frmAddAuroraMap.submit();
+			return !hasErrors;
+		}
+		
+			
+		
+		// Creates and returns an error message DIV element. It must
+		// be inserted into the DOM afterwards.
+		//
+		// The given msgTitle, msgBody variables determine the content
+		// of the error message.
+		function createErrorMsg(msgId, msgTitle, msgBody) {
+			
+			// create the divs which hold the error message
+			var errorMsgTitle = document.createElement("span");
+			errorMsgTitle.className = "validation_error_title";
+			errorMsgTitle.innerHTML = msgTitle + ': ';
+			
+			if (msgBody && msgBody.length > 0) {
+				var errorMsgBody = document.createElement("span");
+				errorMsgBody.innerHTML = msgBody;
+			}
+			
+			var errorMsgDiv = document.createElement("div");
+			errorMsgDiv.id				= "err_" + msgId;
+			errorMsgDiv.className = "validation_error error_icon";
+			
+			errorMsgDiv.appendChild(errorMsgTitle);
+			
+			if (errorMsgBody)
+				errorMsgDiv.appendChild(errorMsgBody);
+			
+			return errorMsgDiv;
+		}
+				// Displays a validation error message below the given field
+		// on the document indexing panel.
+		//
+		// The field element itself will also be re-styled to show it
+		// is in error.
+		function displayFieldErrorMsg(fieldName, msgTitle, msgBody) {
+			
+			// re-style field input element
+			var fieldElem = document.frmAddAuroraMap[fieldName];
+			$(fieldElem).addClass("validation_error_field");
+		
+			// build the error message div
+			var errorMsg = createErrorMsg(fieldName, msgTitle, msgBody);
+			
+			// clicking the error msg div will highlight the offending field.
+			errorMsg.onclick = function() {
+				var thisField = this.id.substring(4);
+				
+				document.frmAddAuroraMap[thisField].focus();
+				document.frmAddAuroraMap[thisField].select();
+			}
+		// create the table cell/row to hold the div and insert
+			// it after the document field row.
+			var errorMsgDiv = document.createElement("div");
+			
+			errorMsgDiv.appendChild(errorMsg);
+	
+			errorMsgDiv.id = "FieldError_" + fieldName;
+			errorMsgDiv.className = "doc_field_error_row";
+			
+			// find the div for the error message
+			var errorMessageContainer = $("#errorMessage");
+		
+			
+			$(errorMessageContainer).append(errorMsgDiv);
+		}
+		
+		// Deletes any existing field error messages spawned by 
+		// function above.
+		function clearFieldErrorMsgs() {
+			// remove error styling on invalid fields
+			$("#frmAddAuroraMap input, #frmAddAuroraMap select, #frmAddAuroraMap textarea").removeClass("validation_error_field");
+			
+			// delete rows used for displaying validation errors
+			$(".doc_field_error_row").remove();
+		}
+
+</script>
+<@end@>	
+
+<!-- Attaches an autocomplete widget for Organisation lookup. Requires
+	 the following IDOC parameters set:
+	 
+	  autoCompleteFieldId: 	ID attribute of the field to attach widget
+	  hiddenFieldId: 		ID attribute of the field where the selected
+							auto-complete value is placed. 
+	-->
+<@dynamichtml ccla_cs_entity_autocomplete_js@>
+	
+	<script type="text/javascript">
+	
+		$().ready(function() {	
+			
+			var autoCompleteFieldId = "<$#local.autoCompleteFieldId$>";
+			var hiddenFieldId		= "<$#local.hiddenFieldId$>";
+			
+			$("#" + autoCompleteFieldId).autocomplete({  
+				minLength: 5,
+				delay: 400,
+				
+				source: function(request, add) {
+				
+					// Reset hidden field name.
+					$("#" + hiddenFieldId).val(""); 
+					
+					// Disable add association button (if applicable)
+					$("#addAssociationButton").attr("disabled","disabled");
+					
+					// Display loading graphic (if applicable)
+					$("#" + autoCompleteFieldId + "_loading").css("visibility","visible");
+					
+					var searchParams = new Object();
+					
+					searchParams.SEARCH_NAME = request.term;
+					searchParams.searchScope = "client";
+					searchParams.ts = new Date().getTime();
+					
+					$.getJSON("?IdcService=CCLA_CS_JSON_CONTACT_LOOKUP_SUBMIT<$include add_idc_token_to_url$>", searchParams, function(jsonData) {
+						var suggestions = [];  
+						
+						// Hide loading graphic (if applicable)
+						$("#" + autoCompleteFieldId + "_loading").css("visibility","hidden");
+				
+						// Extract rsExistingClients ResultSet.
+						if (jsonData.ResultSets.rsExistingClient) {
+							var existingClients = jsonData.ResultSets.rsExistingClient;
+							for (var i=0; i<existingClients.rows.length; i++) {	
+							
+								var entityName = getJsonResultSetValue(existingClients, "NAME", i);
+								var entityId = getJsonResultSetValue(existingClients, "ORGANISATION_ID", i);
+								
+								var entry 	= 	new Object();
+								entry.value	=	entityId;
+								entry.label	=	entityName;
+								
+								suggestions.push(entry);
+							}
+							
+							if (existingClients.rows.length == 0) {
+								var entry = new Object();
+								
+								entry.label="<$#env.CCLA_CS_AutoCompleteNoResults$>";
+								entry.value='';
+								
+								suggestions.push(entry);
+							} else if (existingClients.rows.length>=10) {
+								var entry = new Object();
+								
+								entry.label="<$#env.CCLA_CS_AutoCompleteMoreResults$>";
+								entry.value="";
+								
+								suggestions.push(entry);
+							}	
+						} else {
+							var entry = new Object();
+							
+							entry.label="<$#env.CCLA_CS_AutoCompleteNoResults$>";
+							entry.value='';
+							
+							suggestions.push(entry);
+						}
+
+						//pass array to callback  
+						add(suggestions);
+					});
+					
+
+				}, 
+				select: function(event, ui)  
+				{
+					if (ui.item.value != "") {
+						$("#" + hiddenFieldId).val(ui.item.value);
+						$("#" + autoCompleteFieldId).val(ui.item.label);
+						
+						$("#addAssociationButton").removeAttr("disabled");
+					}
+					
+					// prevent value from being placed in the autocomplete text field.
+					return false;
+				}			
+			});
+		});
+	
+	</script>
+	
+<@end@>
+
+<!-- Attaches an autocomplete widget for Person lookup. Requires
+	 the following IDOC parameters set:
+	 
+	  autoCompleteFieldId: 	ID attribute of the field to attach widget
+	  hiddenFieldId: 		ID attribute of the field where the selected
+							auto-complete value is placed. 
+	-->
+<@dynamichtml ccla_cs_person_autocomplete_js@>
+	
+	<script type="text/javascript">
+	
+		$().ready(function() {	
+			
+			var autoCompleteFieldId = "<$#local.autoCompleteFieldId$>";
+			var hiddenFieldId		= "<$#local.hiddenFieldId$>";
+			
+			$("#" + autoCompleteFieldId).autocomplete({  
+
+				minLength: 3,
+				delay: 400,
+				
+				source: function(request, add) {
+					
+					// Reset hidden field name.
+					$("#" + hiddenFieldId).val(""); 
+					
+					// Disable add association button (if applicable)
+					$("#addAssociationButton").attr("disabled","disabled");
+					
+					// Display loading graphic (if applicable)
+					$("#" + autoCompleteFieldId + "_loading").css("visiblity","visible");
+					
+					var searchParams = new Object();
+					
+					searchParams.SEARCH_NAME = request.term;
+					searchParams.searchScope = "person";
+					searchParams.ts = new Date().getTime();
+					
+					$.getJSON("?IdcService=CCLA_CS_JSON_CONTACT_LOOKUP_SUBMIT<$include add_idc_token_to_url$>", searchParams, function(jsonData) {
+						var suggestions = [];  
+						
+						// Hide loading graphic (if applicable)
+						$("#" + autoCompleteFieldId + "_loading").css("visibility","hidden");
+				
+						// Extract rsExistingPersons ResultSet.
+						if (jsonData.ResultSets.rsExistingPerson) {
+							var existingPersons = jsonData.ResultSets.rsExistingPerson;
+							for (var i=0; i<existingPersons.rows.length; i++) {	
+								var personId = getJsonResultSetValue(existingPersons, "PERSON_ID", i);
+								
+								var title = getJsonResultSetValue(existingPersons, "TITLE", i);
+								var firstname = getJsonResultSetValue(existingPersons, "FIRST_NAME", i);
+								var secondname = getJsonResultSetValue(existingPersons, "LAST_NAME", i);
+								
+								var displayName = title + ' ' + firstname + ' ' + secondname;
+								
+								var fullname = getJsonResultSetValue(existingPersons, "FULL_NAME", i);
+								var postcode = getJsonResultSetValue(existingPersons, "POSTCODE", i);
+								
+								if (secondname==null || secondname.length==0)
+									displayName = fullname;
+									
+								if (postcode!=null && postcode.length!=0)
+									displayName = displayName + ", " + postcode;
+									
+								var entry = new Object();
+								
+								entry.value=personId;
+								entry.label=displayName;
+								
+								suggestions.push(entry);
+							}
+							
+							if (existingPersons.rows.length==0) {
+								var entry = new Object();
+								
+								entry.label="<$#env.CCLA_CS_AutoCompleteNoResults$>";
+								entry.value='';
+								
+								suggestions.push(entry);
+							} else if (existingPersons.rows.length>=10) {
+								var entry = new Object();
+								
+								entry.label="<$#env.CCLA_CS_AutoCompleteMoreResults$>";
+								entry.value='';
+								
+								suggestions.push(entry);
+							}
+						} else {
+							var entry = new Object();
+							
+							entry.label="<$#env.CCLA_CS_AutoCompleteNoResults$>";
+							entry.value='';
+							
+							suggestions.push(entry);
+						}
+
+						//pass array to callback  
+						add(suggestions);
+					});
+					
+				},
+				
+				select: function(event, ui)  
+				{
+					if (ui.item.value != "") {
+						$("#" + hiddenFieldId).val(ui.item.value);
+						$("#" + autoCompleteFieldId).val(ui.item.label);
+						
+						$("#addAssociationButton").removeAttr("disabled");
+					}
+					
+					// prevent value from being placed in the autocomplete text field.
+					return false;
+				}			
+			});
+		});
+	
+	</script>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_entity_bulk_update_context_selector@>
+				
+	<div class='ccla_cs_panel_header'>
+		Update Mode
+	</div>
+	
+	<div class="ccla_data_panel">
+		
+		<form name="bulkUpdateTypeForm" id="bulkUpdateTypeForm">
+			<input type="hidden" name="IdcService" value="CCLA_CS_ENTITY_BULK_EDIT" /><$include add_idc_token_to_form$>
+			<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>" />
+			
+			<input 	type="radio" 
+					value="person" 
+					name="editType" 
+					<$if editType like "person"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> People
+			<br/>
+			
+			<input 	type="radio" 
+					value="bankAccount" 
+					name="editType" 
+					<$if editType like "bankAccount"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> Bank Accounts
+			<br/>
+			
+			<input 	type="radio" 
+					value="nominatedBankAccount" 
+					name="editType" 
+					<$if editType like "nominatedBankAccount"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> Nominated Bank Accounts
+			<br/>
+			
+			<input 	type="radio" 
+					value="nominatedCorrespondent" 
+					name="editType" 
+					<$if editType like "nominatedCorrespondent"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> Nominated Correspondents
+			<br/>
+			
+			<input 	type="radio" 
+					value="accountFlag" 
+					name="editType" 
+					<$if editType like "accountFlag"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> Account Flags
+			
+			<br/>
+			
+			<input 	type="radio" 
+					value="numRequiredSignatures" 
+					name="editType" 
+					<$if editType like "numRequiredSignatures"$>checked="checked"<$endif$> 
+					onclick="this.form.submit();" /> Num Required Signatures		
+		
+		</form>
+		
+	</div>
+	
+<@end@>
+
+<!-- JavaScript to support selectable lists of CCLA accounts. -->
+<@dynamichtml ccla_cs_account_selection_js@>
+
+<script type="text/javascript">
+
+	// Selects or deselects all available accounts.
+	function toggleSelectAccounts()
+	{
+		var checkAll = $("#toggleSelectAccountsCheckbox").is(":checked");
+		
+		if (checkAll)
+			$(".account-checkbox").attr("checked","checked");
+		else
+			$(".account-checkbox").removeAttr("checked");
+	}
+	
+	// Updates the hidden form field 'commonElementIds', which stores a
+	// comma-separated list of all selected Element IDs.
+	//
+	// Also returns the list.
+	function updateSelectedAccountIds() {
+		
+		var selAccounts = "";
+		
+		$(".account-checkbox").each( function() {
+			if ($(this).is(":checked")) {
+				var thisAccountId = $(this).attr("name").substring(4);
+				
+				if (selAccounts.length > 0)
+					selAccounts += ",";
+				
+				selAccounts += thisAccountId;
+			}
+		});
+		
+		$("#commonElementIds").val(selAccounts);
+		return selAccounts;
+	}
+	
+	// Checks for a non-null 'commonElementIds' value in the DataBinder.
+	//
+	// The relevant account checkboxes will be checked, based on the IDs
+	// in the passed list.
+	function applySelectedAccountIds() {
+		// Remove any existing ticks to start with.
+		$(".account-checkbox").removeAttr("checked");
+	
+		var selAccounts = "<$#local.commonElementIds$>";
+		
+		if (selAccounts.length > 0) {
+			var accountIds = selAccounts.split(",");
+			
+			for (var i=0; i<accountIds.length; i++) {
+				$("#chk_" + accountIds[i]).attr("checked","checked");
+			}
+		}
+	}
+
+</script>
+
+<@end@>
+
+<!-- JavaScript used to support Client Aurora mapping panels -->
+<@dynamichtml ccla_cs_organisation_aurora_links_js@>
+	
+	
+	<script type="text/javascript">
+	
+		
+		
+		$(document).ready(function() {
+			
+			// Bind click event to 'Override' checkbox for new Client Numbers
+			$("#overrideClientNumber").bind("click", function() {
+				if ($("#overrideClientNumber").is(":checked")) {
+					$("#clientNumberField").removeAttr("disabled");
+					$("#clientNumberField").focus();
+				} else {
+					$("#clientNumberField").attr("disabled","disabled");
+				}
+			});
+
+			// Bind change event to all Marketing Group option lists
+			$(".marketingGroupSelector").bind("change", function() {
+				var thisId = $(this).attr("id").substring("marketingGroupSelector_".length);
+				
+				// Refetch option list HTML include via AJAX and re-display.
+				$.get("?<$include add_idc_token_to_url$>",
+					{
+						"IdcService":	"CCLA_CS_GET_INCLUDE",
+						"incName":		"ccla_cs_marketing_subgroup_selector",
+						"selMarketingGroupId":	$(this).val()
+					},
+					function(data) {
+						$("#marketingSubGroupDiv_" + thisId).html(data);
+					}
+				);
+			});
+			
+			// Bind change event to Company selector.
+			$("#addNewLink #COMPANY_ID").bind("change", function() {
+				
+				// If 'PSIC' company ID selected (ID 4), set the statement
+				// months to March, June, September, December.
+				
+				// If 'COIF','CBF','LAMIT' company IDs selected (IDs 1-3),
+				// set the statement months to June, December.
+				
+				// Otherwise set to Jan only.
+				
+				var selCompanyId = $(this).val();
+			
+				// NOTE: the below selectors were qualified with the form ID on the front as
+				// well e.g. $("#addNewLink #STATEMENTS_MONTH_1") unfortunately this was causing
+				// issues in older versions of IE so the #addNewLink bit has been removed. The
+				// STATEMENTS_MONTH_N IDs will only be displayed on the Add new link form to ensure
+				// they are unique.
+				// See Calypso issue 739
+				
+				if (selCompanyId <= 3) {
+					// COIF/CBF/LAMIT selected
+					$("#STATEMENTS_MONTH_1").val("6");
+					$("#STATEMENTS_MONTH_2").val("12");
+					$("#STATEMENTS_MONTH_3").val("0");
+					$("#STATEMENTS_MONTH_4").val("0");
+					
+				} else if (selCompanyId == 4) {
+					// PSIC selected
+					$("#STATEMENTS_MONTH_1").val("3");
+					$("#STATEMENTS_MONTH_2").val("6");
+					$("#STATEMENTS_MONTH_3").val("9");
+					$("#STATEMENTS_MONTH_4").val("12");
+					
+					// Send statements every month: False
+					$("#addNewLink #STATEMENTS_MONTH_ALL_NEW").val("0");//changed to original Added by chaitra on 24-8-2016
+				} else {
+					// Other company selected
+					$("#STATEMENTS_MONTH_1").val("1");
+					$("#STATEMENTS_MONTH_2").val("0");
+					$("#STATEMENTS_MONTH_3").val("0");
+					$("#STATEMENTS_MONTH_4").val("0");
+					
+					// Send statements every month: False
+					$("#addNewLink #STATEMENTS_MONTH_ALL_NEW").val("0");//changed to original Added by chaitra on 24-8-2016
+				}
+			
+			});
+			
+		});
+		
+	</script>
+	
+<@end@>
+
+
+
+<@dynamichtml ccla_cs_marketing_subgroup_selector@>
+	
+	<$executeService("CCLA_CS_GET_MARKETING_SUBGROUPS")$>
+	
+	<$thisMarketingSubGroupId = rsAuroraClientMap.MARKETING_SUBGROUP_ID$>
+	
+	<select name="MARKETING_SUBGROUP_ID" <$if not (selMarketingGroupId)$>disabled<$endif$> 
+			class="marketingSubGroupSelector" id="marketingSubGroupSelector_<$selectorIdSuffix$>" style="width:160px">
+		<option value=""></option>
+
+		<$loop rsMarketingSubGroups$>
+			<$if rsMarketingSubGroups.MARKETING_GROUP_ID like selMarketingGroupId$>
+				<option value="<$#active.MARKETING_SUBGROUP_ID$>"
+						<$if #active.MARKETING_SUBGROUP_ID like thisMarketingSubGroupId$>selected<$endif$>><$#active.MARKETING_SUBGROUP_NAME$></option>
+			<$endif$>
+		<$endloop$>
+		
+		<$thisMarketingSubGroupId = ""$>
+		<$selMarketingGroupId = ""$>
+	</select>
+	
+<@end@>
+
+<!-- Panel for editing/adding CLIENT_AURORA_MAP entries to
+     existing Org records -->
+<@dynamichtml ccla_cs_organisation_aurora_links@>
+	
+	<a name="clientAuroraMap"></a>
+	
+	<$include ccla_cs_organisation_aurora_links_js$>
+	
+	<$if #local.clientAuroraMapUpdated or #local.clientAuroraMapAdded$>
+		<div class="message_panel info_icon">
+			Aurora Client link added/updated
+		</div>
+	<$endif$>
+	
+	<$include orangeContainer_top$>
+
+	<div class='ccla_cs_panel_header'>
+		Aurora Client Details 
+	</div>
+	
+	<div class="ccla_cs_panel_content" id="auroraLinkDiv" >
+		<$if rsAuroraClientMap$>
+			<$panelIncName="ccla_cs_existing_links_content"$>
+			<$openByDefault=0$>
+			<$notAjaxData=1$>
+			<$panelId="existingLinks"$>
+			<$panelToggleLabel="Existing links (" & rsAuroraClientMap.#numRows & ")"$>
+			<$include ccla_cs_ajax_panel_display$>
+			
+		<$endif$>
+		
+		<$if not rsAuroraClientMap or #env.CCLA_CS_AllowMultipleAuroraClientMaps or userHasRole("admin")$>
+			
+			<$panelIncName="ccla_cs_add_new_link_content"$>
+			<$openByDefault=0$>
+			<$notAjaxData=1$>
+			<$panelId="addNewLink"$>
+			<$panelToggleLabel="Add new link"$>
+			<$include ccla_cs_ajax_panel_display$>
+		
+			<br/>
+		<$endif$>
+		
+	</div>
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+
+<@dynamichtml ccla_cs_existing_links_content@>
+[[% Display existing CLIENT_AURORA_MAP entries %]]			
+	
+	<script type="text/javascript">
+		function removeLinkDetail(obj) {
+			if (confirm('Are you sure you want to remove this aurora link?')) {
+				obj.IdcService.value = 'CCLA_CS_REMOVE_CLIENT_AURORA_MAP';
+				obj.submit();
+			}
+		}
+	</script>
+	
+	<$loop rsAuroraClientMap$>
+		
+		<form>
+			<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_CLIENT_AURORA_MAP" /><$include add_idc_token_to_form$>
+			<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&clientAuroraMapUpdated=1#clientAuroraMap" />
+			
+			<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>" />
+				
+			<$selectorIdSuffix = #active.CLIENT_AURORA_MAP_ID$>
+			<$include ccla_cs_client_aurora_map_fields$>
+
+			<div align="right">
+				<$if #env.CCLA_EnableAuroraMappingUpdates$>
+					<input type="submit" value="Update link" />
+				<$endif$>
+				
+				<$if UserIsAdmin$>
+					<input type="button" name="removeLink" value="Remove link" onclick="removeLinkDetail(this.form)"/>
+				<$endif$>
+			</div>
+			
+		</form>
+		
+		<br/>
+		<div style="border-bottom: 1px solid rgb(187, 187, 187);"></div>
+		
+	<$endloop$>
+<@end@>
+
+<@dynamichtml ccla_cs_add_new_link_content@>
+<form>
+	<input type="hidden" name="IdcService" value="CCLA_CS_ADD_CLIENT_AURORA_MAP" /><$include add_idc_token_to_form$>
+	<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&clientAuroraMapAdded=1#clientAuroraMap" />
+	
+	<input type="hidden" name="ORGANISATION_ID" value="<$#local.ORGANISATION_ID$>" />
+	
+	<$selectorIdSuffix = "new"$>
+	<$include ccla_cs_client_aurora_map_fields$>
+	
+	<div align="right">
+		<input type="submit" value="Add client link" />
+	</div>
+</form>
+<@end@>
+
+
+<!-- Displays panel for adding a single CLIENT_AURORA_MAP entry to
+     new Org records -->
+<@dynamichtml ccla_cs_organisation_aurora_link_new@>
+	
+	<a name="clientAuroraMap"></a>
+	
+	<$include ccla_cs_organisation_aurora_links_js$>
+	
+	<$include orangeContainer_top$>
+	
+	<div class='ccla_cs_panel_header'>
+		Aurora Client Details
+	</div>
+		
+	<div class='ccla_cs_panel_content' id="auroraLinkDiv">
+		
+		<$selectorIdSuffix = "new"$>
+		<$include ccla_cs_client_aurora_map_fields$>
+		
+	</div>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Displays fields used for editing/adding entries to the CLIENT_AURORA_MAP table. -->
+<@dynamichtml ccla_cs_client_aurora_map_fields@>
+	
+	<table width="100%">
+			
+		<!-- set col widths -->
+		<tr>
+			<td width="20%"></td>
+			<td width="30%"></td>
+			<td width="20%"></td>
+			<td width="30%"></td>
+		</tr>
+			
+		<tr>
+			<$if #active.CLIENT_AURORA_MAP_ID$>
+				<td>
+					Company:
+				</td>
+				<td>
+					<b><$#active.COMPANY_CODE$></b>
+					<input type="hidden" name="COMPANY_ID" value="<$#active.COMPANY_ID$>" />
+					
+					<input type="hidden" name="CLIENT_AURORA_MAP_ID" value="<$#active.CLIENT_AURORA_MAP_ID$>" />
+				</td>
+				
+				<td>
+					Client Number:
+				</td>
+				<td>
+					<$strLeftFill(#active.CLIENT_NUMBER,'0',5)$>
+					<input type="hidden" name="CLIENT_NUMBER" value="<$#active.CLIENT_NUMBER$>" />
+					
+					<input type="hidden" name="CONTRIBUTER_TYPE_CODE" value="<$#active.CONTRIBUTER_TYPE_CODE$>" />
+					<input type="hidden" name="SUBDIVISION_CODE" value="<$#active.SUBDIVISION_CODE$>" />
+					<input type="hidden" name="CONTRIBUTER_CODE" value="<$#active.CONTRIBUTER_CODE$>" />
+				</td>
+				
+			<$else$>
+				[[% New Client Aurora Mapping form. %]]
+			
+				<td>
+					<label 	<$if #env.CCLA_CS_ForceClientNumberGeneration$>class="required"<$endif$> 
+							for="COMPANY_ID">Company:</label>
+				</td>
+
+				<td>
+					<$include ccla_cs_aurora_company_dropdown$>
+				</td>
+				
+				<td>
+					Client Number:
+				</td>
+				
+				<td>
+					<$exec rsFirst("rsAuroraClientMap")$>
+					
+					<$if #env.CCLA_CS_EnableClientNumberGeneration$>
+					
+						<input 	type="hidden" 
+									name="generateClientNumber"
+									value="1" />
+
+						<input 	type="text" 
+								name="clientNumber" 
+								id="clientNumberField" 
+								disabled="disabled" 
+								style="width: 5em;" value="<$rsAuroraClientMap.CLIENT_NUMBER$>" />
+						<input type="checkbox" name="overrideClientNumber" id="overrideClientNumber" /> Override
+
+					<$endif$>
+				</td>
+					
+			<$endif$>
+
+		</tr>
+
+		<$if false and #active.CLIENT_AURORA_MAP_ID$>
+			<tr>
+				<td>
+					Contributor Type Code:
+				</td>
+				<td>
+					<$#active.CONTRIBUTER_TYPE_CODE$>
+					
+				</td>
+				<td>
+					Sub-division Code:
+				</td>
+				<td>
+					<$#active.SUBDIVISION_CODE$>
+					
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					Contributor Code:
+				</td>
+				<td>
+					<$#active.CONTRIBUTER_CODE$>
+					
+				</td>
+				
+			</tr>
+		<$endif$>
+
+		<tr>
+			<td><br/></td>
+		</tr>
+		
+		<$if #env.CCLA_DisplayNewAuroraMappingFields$>
+		
+			<tr>
+				<td>
+					Send statement every month
+				</td>
+				<td>
+					<$optionListName = "STATEMENTS_MONTH_ALL"$>
+					
+					<$if not #active.CLIENT_AURORA_MAP_ID$>
+						[[% Use custom ID for the new record form, to avoid ID conflicts with existing records. %]]
+						<$optionListId = "STATEMENTS_MONTH_ALL_NEW"$>
+					<$endif$>
+					
+					<$optionListValue = #active.STATEMENTS_MONTH_ALL$>
+					<$optionListDefaultValue = "0"$><!--changed to original Added by chaitra on 24-8-2016-->
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+			</tr>
+			
+			<tr>
+				<td>Statement months</td>
+				<td colspan=2>
+					
+					<$includeMonthFieldIds = ""$>
+					
+					<$if not #active.CLIENT_AURORA_MAP_ID or selectorIdSuffix like "new"$>
+						<$includeMonthFieldIds = 1$>
+					<$endif$>
+				
+					<$fieldValue = #active.STATEMENTS_MONTH_1$>
+					<$if not fieldValue$>
+						<$fieldValue = "6"$>
+					<$endif$>
+					
+					<select name="STATEMENTS_MONTH_1" <$if includeMonthFieldIds$>id="STATEMENTS_MONTH_1"<$endif$>>
+						<option value="0"></option>
+						
+						<$include ccla_cs_display_month_select_options$>
+					</select>
+					
+					<$fieldValue = #active.STATEMENTS_MONTH_2$>
+					<$if not fieldValue$>
+						<$fieldValue = "12"$>
+					<$endif$>
+				
+					<select name="STATEMENTS_MONTH_2" <$if includeMonthFieldIds$>id="STATEMENTS_MONTH_2"<$endif$>>
+						<option value="0"></option>
+						
+						<$include ccla_cs_display_month_select_options$>
+					</select>
+					
+					<$fieldValue = #active.STATEMENTS_MONTH_3$>
+					<$if not fieldValue$>
+						<$fieldValue = "0"$>
+					<$endif$>
+				
+					<select name="STATEMENTS_MONTH_3" <$if includeMonthFieldIds$>id="STATEMENTS_MONTH_3"<$endif$>>
+						<option value="0"></option>
+						
+						<$include ccla_cs_display_month_select_options$>
+					</select>
+					
+					<$fieldValue = #active.STATEMENTS_MONTH_4$>
+					<$if not fieldValue$>
+						<$fieldValue = "0"$>
+					<$endif$>
+				
+					<select name="STATEMENTS_MONTH_4" <$if includeMonthFieldIds$>id="STATEMENTS_MONTH_4"<$endif$>>
+						<option value="0"></option>
+						
+						<$include ccla_cs_display_month_select_options$>
+					</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					Income Dist. Reports:
+				</td>
+				<td>
+					<$optionListName = "INCOME_DIST_REPORT_IND"$>
+					<$optionListValue = #active.INCOME_DIST_REPORT_IND$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+				<td>
+					Income Dist. Report Paper:
+				</td>
+				<td>
+					<$optionListName = "INCOME_DIST_REPORT_PAPER_IND"$>
+					<$optionListValue = #active.INCOME_DIST_REPORT_PAPER_IND$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+			</tr>
+
+			<tr>
+				<td>
+					No. of Deposit Statements
+				</td>
+				<td>
+					<$fieldValue = #active.DEPOSIT_NO_OF_STATEMENTS$>
+					<$if not fieldValue$>
+						<$fieldValue = "1"$>
+					<$endif$>
+				
+					<input type="text" name="DEPOSIT_NO_OF_STATEMENTS" value="<$#local.fieldValue$>" />
+				</td>
+				
+				<td>
+					No. of Unitised Statements
+				</td>
+				<td>
+					<$fieldValue = #active.UNITISED_NO_OF_STATEMENTS$>
+					<$if not fieldValue$>
+						<$fieldValue = "1"$>
+					<$endif$>
+				
+					<input type="text" name="UNITISED_NO_OF_STATEMENTS" value="<$#local.fieldValue$>" />
+				</td>
+				
+			</tr>
+
+			<tr>
+				<td>
+					Bulk Deposit Statements
+				</td>
+				<td>
+					<$optionListName = "BULK_DEPOSIT_STATEMENT_IND"$>
+					<$optionListValue = #active.BULK_DEPOSIT_STATEMENT_IND$>
+					<$optionListDefaultValue = "1"$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+				<td>
+					Deposit &amp; Withdrawal Books
+				</td>
+				<td>
+					<$optionListName = "DEPOSIT_WITHDRAW_BOOKS_IND"$>
+					<$optionListValue = #active.DEPOSIT_WITHDRAW_BOOKS_IND$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+			</tr>
+
+			<tr>
+				<td>
+					Auto Stationary Order
+				</td>
+				<td>
+					<$optionListName = "AUTO_STATIONARY_ORDERED_IND"$>
+					<$optionListValue = #active.AUTO_STATIONARY_ORDERED_IND$>
+					<$optionListDefaultValue = "1"$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+
+			</tr>
+
+			<tr>
+				<td>
+					Marketing Group
+				</td>
+				<td>
+					<select name="MARKETING_GROUP_ID" style="width:160px" 
+							class="marketingGroupSelector" id="marketingGroupSelector_<$selectorIdSuffix$>">
+						<option value=""></option>
+						
+						<$selMarketingGroupId = rsAuroraClientMap.MARKETING_GROUP_ID$>
+						
+						<$loop rsMarketingGroups$>
+							<option value="<$#active.MARKETING_GROUP_ID$>"
+									<$if #active.MARKETING_GROUP_ID like selMarketingGroupId$>selected<$endif$>><$#active.MARKETING_GROUP_NAME$></option>
+						<$endloop$>
+					
+					</select>
+					
+				</td>
+				
+				<td>
+					Marketing Sub-Group
+				</td>
+				<td>
+					<div id="marketingSubGroupDiv_<$selectorIdSuffix$>">
+						<$include ccla_cs_marketing_subgroup_selector$>
+					</div>
+				</td>
+
+			</tr>
+
+			<tr>
+				<td>
+					Account Group
+				</td>
+				<td>
+					<select name="ACCOUNT_GROUP_ID" style="width:160px">
+						<option value=""></option>
+						
+						<$thisAccountGroupId = rsAuroraClientMap.ACCOUNT_GROUP_ID$>
+						
+						<$loop rsAccountGroups$>
+							<option value="<$#active.ACCOUNT_GROUP_ID$>"
+									<$if #active.ACCOUNT_GROUP_ID like thisAccountGroupId$>selected<$endif$>><$#active.ACCOUNT_GROUP_NAME$></option>
+						<$endloop$>
+						
+						<$thisAccountGroupId = ""$>
+					</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					QRS Client
+				</td>
+				<td>
+					<$optionListName = "QUARTERLY_RPT_CLIENT_IND"$>
+					<$optionListValue = #active.QUARTERLY_RPT_CLIENT_IND$>
+					
+					<$include ccla_cs_display_yesno_optionlist$>
+				</td>
+				
+				<td>
+					QRS Manager Initials
+				</td>
+				<td>
+					<input type="text" name="QUARTERLY_RPT_MANAGER_INITS" value="<$#active.QUARTERLY_RPT_MANAGER_INITS$>" />
+				</td>
+
+			</tr>
+		
+		<$endif$>
+		
+	</table>
+	
+<@end@>
+
+<!-- Used to display option elements for months of the year. -->
+<@dynamichtml ccla_cs_display_month_select_options@>
+	
+	<$monthCounter = 1$>
+					
+	<$loopwhile monthCounter <= 12$>
+		<option value="<$#local.monthCounter$>" <$if #local.fieldValue like #local.monthCounter$>selected<$endif$>><$formatDateWithPattern('01/' & #local.monthCounter & '/2000','MMM')$></option>
+		<$monthCounter = monthCounter + 1$>
+	<$endloop$>
+
+<@end@>
+
+<!-- Account IVS Checking result/override controls. Designed for display on the
+     Update Account page. -->
+<@dynamichtml ccla_cs_account_ivs_checking_fields@>
+
+	<a name="accountIVSChecking"></a>
+	
+	<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_header'>
+			IVS Checking
+		</div>
+		
+		<$if #local.accountIVSCheckUpdated$>
+			<div class="message_panel info_icon">
+				IVS Checking overrides updated.
+			</div>
+			
+			<br/>
+		<$endif$>
+		
+		<div class='ccla_cs_panel_content'>
+			
+			<table width="100%" class="cs-info-table">
+				<tr>
+					<th width=200>IVS check status:</th>
+					
+					<td>
+						<$include ccla_cs_account_ivs_check_status_display$>
+					</td>
+				</tr>
+			</table>
+			
+			<br/>
+		
+			<form method="POST" id="accountIVSCheckForm">
+				<input 	type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ELEMENT_ATTRIBUTES_APPLIED" /><$include add_idc_token_to_form$>
+				
+				<input 	type="hidden" name="ELEMENT_ID"			value="<$#local.ACCOUNT_ID$>" />
+				
+				<input 	type="hidden" name="selectionType"		value="VERIFY_ONLY" />
+				<input 	type="hidden" name="attributeTypeId"	value="<$#env.CCLA_AttributeType_AccountIVSChecking$>" />
+			
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ACCOUNT_EDIT<$include add_idc_token_to_url$><$#local.commonParams$>&accountIVSCheckUpdated=1&ACCOUNT_ID=<$#local.ACCOUNT_ID$>#relationChecking" />
+				
+				<$useVerificationSourceName=1$>
+				<$attributeTypeId = #env.CCLA_AttributeType_AccountIVSChecking$>
+				<$include ccla_cs_element_attribute_overrides_display$>
+				
+				<table width="100%">
+					<tr>
+						<td valign="bottom" align="right">
+							<input type="submit" value="Save changes" />
+						</td>
+					</tr>
+				</table>
+				
+			</form>
+		</div>
+		
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Relation Checking result/override controls. Designed for display on the
+     Update Organisation page. -->
+<@dynamichtml ccla_cs_relation_checking_fields@>
+
+	<a name="relationChecking"></a>
+	
+	<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_header'>
+			Relation Checking
+		</div>
+		
+		<$if #local.relationCheckUpdated$>
+			<div class="message_panel info_icon">
+				Relation Checking overrides updated.
+			</div>
+			
+			<br/>
+		<$endif$>
+		
+		<div class='ccla_cs_panel_content'>
+			
+			<table width="100%" class="cs-info-table">
+				<tr>
+					<th width=200>Relation check status:</th>
+					
+					<td>
+						<$suppressRelationCheckPopup=1$>
+						<$include ccla_cs_display_relation_check_result$>
+					</td>
+				</tr>
+			</table>
+			
+			<br/>
+		
+			<form method="POST" id="relationCheckForm">
+				<input 	type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ELEMENT_ATTRIBUTES_APPLIED" /><$include add_idc_token_to_form$>
+				
+				<input 	type="hidden" name="ELEMENT_ID"			value="<$#local.ORGANISATION_ID$>" />
+				
+				<input 	type="hidden" name="selectionType"		value="VERIFY_ONLY" />
+				<input 	type="hidden" name="attributeTypeId"	value="<$#env.CCLA_AttributeType_RelationVerification$>" />
+			
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$><$commonParams$>&relationCheckUpdated=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>#relationChecking" />
+				
+				<$useVerificationSourceName=1$>
+				<$attributeTypeId = #env.CCLA_AttributeType_RelationVerification$>
+				<$include ccla_cs_element_attribute_overrides_display$>
+				
+				<table width="100%">
+					<tr>
+						<td valign="bottom" align="right">
+							<input type="submit" value="Save changes" />
+						</td>
+					</tr>
+				</table>
+				
+			</form>
+		</div>
+		
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!-- Entity checking/verification/override panel. Designed for display on the
+     Update Organisation page. -->
+<@dynamichtml ccla_cs_entity_verification_fields@>
+
+	<a name="entityChecking"></a>
+	
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+				
+			// Attach click events to verification checkboxes. When a user
+			// ticks a 'Checked' checkbox, the 'Found' checkbox will be cleared
+			// and vice-versa.
+			$("#verificationSourceForm input[type='checkbox']").bind("click", function() {
+				
+				if ($(this).is(":checked")) {
+					var isFound = $(this).attr("id").indexOf("elemAttribTrue") == 0;
+					var attribId;
+					
+					// Extract the attribute ID.
+					if (isFound)
+						attribId = $(this).attr("id").substring("elemAttribTrue_".length);
+					else
+						attribId = $(this).attr("id").substring("elemAttribFalse_".length);
+					
+					if (isFound) {
+						// Tick 'checked' checkbox.
+						$("#elemAttribFalse_" + attribId).attr("checked","checked");
+					} else {
+						// Untick 'found' checkbox.
+						$("#elemAttribTrue_" + attribId).removeAttr("checked","checked");
+					}
+				}
+			});
+				
+		});
+		
+		// Sets the supporting document to dID for the Attribute ID specified 
+		// in the callback parameters.
+		function doDocSelectCallback(dID, dDocName, dRevisionID, callbackParams) {
+			
+			var attribId = callbackParams.split(",")[0];
+			
+			// Update the hidden Document ID form field for this Attribute
+			$("#elemAttribSupportingDocGuid_" + attribId).val(dDocName + ":" + dRevisionID);
+			
+			// Enable the 'Checked' checkbox
+			$("#elemAttribFalse_" + attribId).attr("disabled","");
+			// Enable and tick the 'Found' checkbox
+			$("#elemAttribTrue_" + attribId).attr("disabled","").attr("checked","checked");
+			
+			// Force display of the Document Link anchor/image, and update
+			// the dDocName it is referencing.						
+			$("#elemAttribSupportingDocLink_" + attribId)
+			 .css("display","")
+			 .attr("href","?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=" + dDocName);
+			
+			// Hide the Add Document Link anchor/image					
+			$("#elemAttribSupportingDocLinkAdd_" + attribId)
+			 .css("display","none");
+			
+			// Force display of the Remove Document Link anchor/image
+			$("#elemAttribSupportingDocLinkRemove_" + attribId)
+			 .css("display","");
+		}
+		
+		// Removes an existing supporting document link.
+		function removeAttribSupportingDoc(attribId) {
+			
+			// Update the hidden Document ID form field for this Attribute
+			$("#elemAttribSupportingDocGuid_" + attribId).val("");
+			
+			// Disable the 'Checked' checkbox
+			$("#elemAttribFalse_" + attribId).attr("disabled","disabled");
+			// Disable and untick the 'Found' checkbox
+			$("#elemAttribTrue_" + attribId).attr("disabled","disabled").attr("checked","");
+			
+			// Hide the Document Link anchor/image
+			$("#elemAttribSupportingDocLink_" + attribId)
+			 .css("display","none");
+			
+			// Display the Document Link anchor/image					
+			$("#elemAttribSupportingDocLinkAdd_" + attribId)
+			 .css("display","");
+			 
+			// Hide the Remove Document Link anchor/image
+			$("#elemAttribSupportingDocLinkRemove_" + attribId)
+			 .css("display","none");
+		}
+		
+	</script>
+
+	<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_header'>
+			Entity Checking/Verification
+		</div>
+		
+		<$if #local.entityCheckUpdated$>
+			<div class="message_panel info_icon">
+				Entity Checking details updated.
+			</div>
+			
+			<br/>
+		<$endif$>
+		
+		<div class='ccla_cs_panel_content'>
+			
+			<table width="100%" class="cs-info-table">
+				<tr>
+					<th width=200>Organisation check status:</th>
+					
+					<td>
+						<$suppressEntityCheckPopup=1$>
+						<$include ccla_cs_display_entity_check_result$>
+					</td>
+				</tr>
+			</table>
+			<br/>
+			
+			<$panelIncName="ccla_cs_entity_verification_fields_content"$>
+			<$openByDefault=0$>
+			<$notAjaxData=1$>
+			<$panelId="entityVerifFields"$>
+			<$panelToggleLabel="Show/Hide"$>
+			<$include ccla_cs_ajax_panel_display$>		
+		</div>
+		
+	<$include orangeContainer_bottom$>
+
+<@end@>
+
+<@dynamichtml ccla_cs_entity_verification_fields_content@>
+	<form method="POST" id="verificationSourceForm">
+	<input 	type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ELEMENT_ATTRIBUTES_APPLIED" /><$include add_idc_token_to_form$>
+	
+	<input 	type="hidden" name="ELEMENT_ID"			value="<$#local.ORGANISATION_ID$>" />
+	
+	<input 	type="hidden" name="selectionType"		value="VERIFY_ONLY" />
+	<input 	type="hidden" name="attributeTypeId"	value="<$#env.CCLA_AttributeType_EntityVerification$>" />
+
+	<input 	type="hidden" name="RedirectUrl" 
+			value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_EDIT<$include add_idc_token_to_url$><$commonParams$>&entityCheckUpdated=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>#entityChecking" />
+	
+	<br/>
+	
+	<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+		<tbody>
+			<tr>
+				<th class="first-col">
+					Source Name
+				</th>
+
+				<th width="65">Suppt. Doc</th>
+				
+				<th align=left width="110">Last Checked By</td>
+				<th align=left width="110">Check Date</td>
+				
+				<th width="60">Searched</th>
+				<th width="60">Found</th>
+			</tr>
+			
+			<$loop rsElementAttributes$>
+				<$if #active.VERIFICATION_SOURCE_ID$>
+				
+					<$if #active.IS_OVERRIDE == 0$>
+					
+						<$attribStatus = "", checkedBy = "", checkDate = "", supptDocGuid = "", supptDocName = ""$>
+						<$attribDisabled = ""$>
+						
+						<$exec rsFirst("rsElementAttributesApplied")$>
+						
+						<$loop rsElementAttributesApplied$>
+							<$if rsElementAttributesApplied.ELEMENT_ATTRIBUTE_ID == rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>
+								<$attribStatus = rsElementAttributesApplied.ATTRIBUTE_STATUS$>
+								<$checkedBy = strReplace(rsElementAttributesApplied.LAST_UPDATED_BY,"CCLA\\","")$>
+								<$checkDate = rsElementAttributesApplied.LAST_UPDATED$>
+								<$supptDocGuid = rsElementAttributesApplied.DOC_GUID$>
+								<$supptDocName=strSubstring(supptDocGuid,0, strIndexOf(supptDocGuid,":"))$>     								
+								<$break$>
+							<$endif$>
+						<$endloop$>
+					
+						<tr class="account-details-row">
+							<td class="first-col">
+								<$#active.VER_SOURCE_NAME$>
+								
+								<$if #active.VER_SOURCE_NAME like "Legacy System"$>
+									(<$#active.ELEMENT_ATTRIBUTE_NAME$>)
+								<$endif$>
+								
+								<$if #active.ELEMENT_IDENTIFIER_ID$>
+									<$requiredIdentifierId = #active.ELEMENT_IDENTIFIER_ID$>
+								
+									<$if not rsFindRowPrimary("rsElementIdentifiersApplied", requiredIdentifierId)$>
+										
+										<$exec rsFirst("rsElementIdentifiers")$>
+										
+										<$loop rsElementIdentifiers$>
+											<$if #active.ELEMENT_IDENTIFIER_ID == requiredIdentifierId$>
+												<$requiredIdentiferName = #active.IDENTIFIER_NAME$>
+												<$break$>
+											<$endif$>
+										<$endloop$>
+										
+										<br/>
+										<span style="color:red">Requires '<$requiredIdentiferName$>' identifier</span>
+										
+										<$attribDisabled = 1$>
+									<$endif$>
+								<$endif$>
+								
+								<$if #active.SUPPORTING_DOC_REQUIRED like "1" and not #local.supptDocGuid$>
+									<br/>
+									<span style="color:red">Supporting document must be linked</span>
+									
+									<$attribDisabled = 1$>
+								<$endif$>
+								
+							</td>
+							
+							<td align="center">
+								<$if #active.SUPPORTING_DOC_REQUIRED like "1"$>
+									
+									<!-- Display anchor/image which opens the previously-linked document, if applicable -->
+									<a 	href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#local.supptDocName$>"
+										id="elemAttribSupportingDocLink_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+										target="_blank"
+										title="Open the linked document"
+										
+										<$if not #local.supptDocGuid$>
+											style="display:none;"
+										<$endif$>
+										
+										><img 	src="<$HttpImagesRoot$>ccla/link.gif" /></a>
+									
+									<!-- Display anchor/image which opens the Iris Filing Cabinet, allowing a document to
+										 be linked. -->			
+									<$loop rsAuroraClientMap$>
+										<$auroraClientDocSearchParams = "&clientno=" & strLeftFill(#active.CLIENT_NUMBER,'0',5)$>
+									<$endloop$>	 
+																				 
+									<a 	href="?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&selectMode=1&callbackParams=<$#active.ELEMENT_ATTRIBUTE_ID$>&<$#local.auroraClientDocSearchParams$>"
+										target="docSelect"
+										id="elemAttribSupportingDocLinkAdd_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+										title="Link to a document which supports this Verification Source"
+										
+										<$if #local.supptDocGuid$>
+											style="display:none;"
+										<$endif$>
+										
+										><img 	src="<$HttpImagesRoot$>ccla/add_doc.png"/></a>
+
+									<!-- Display anchor/image which removes an existing Document Link -->		
+									<a 	href="javascript:removeAttribSupportingDoc(<$#active.ELEMENT_ATTRIBUTE_ID$>);"
+										id="elemAttribSupportingDocLinkRemove_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+										title="Remove the link to this document"
+										
+										<$if not #local.supptDocGuid$>
+											style="display:none;"
+										<$endif$>
+										
+										><img 	src="<$HttpImagesRoot$>ccla/rem_doc.png" /></a>
+									
+									<!-- Hidden field used to store the linked document GUID value -->
+									<input type="hidden" 	name="elemAttribSupportingDocGuid_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+															id="elemAttribSupportingDocGuid_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+															value="<$#local.supptDocGuid$>" />
+									
+									
+								<$else$>
+									
+									&nbsp;
+								
+								<$endif$>
+							</td>
+							
+							<td>
+								<$#local.checkedBy$>&nbsp;
+							</td>
+							
+							<td>
+								<$#local.checkDate$>&nbsp;
+							</td>
+							
+							<td align="center">
+							
+								<$if #active.SET_BY_USER like "0"$>
+									<$if attribStatus like "0"$>
+										<img src="images/ccla/tick.gif">
+									<$else$>
+										&nbsp;
+									<$endif$>
+								<$else$>
+									<input type="checkbox" 	id="elemAttribFalse_<$#active.ELEMENT_ATTRIBUTE_ID$>" 
+															name="elemAttribFalse_<$#active.ELEMENT_ATTRIBUTE_ID$>" 
+															<$if attribStatus like "0"$>checked<$endif$> />
+								<$endif$>
+								
+							</td>
+							<td align="center">
+							
+								<$if #active.SET_BY_USER like "0"$>
+									<$if attribStatus like "1"$>
+										<img src="images/ccla/tick.gif">
+									<$else$>
+										<img src="images/ccla/cross.png">
+									<$endif$>
+								<$else$>
+									<input type="checkbox" 	id="elemAttribTrue_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+															name="elemAttribTrue_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+															<$if attribStatus like "1"$>checked<$endif$>
+															<$if attribDisabled$>disabled="disabled"<$endif$>	/>
+								<$endif$>
+								
+							</td>
+						</tr>
+						
+					<$endif$>
+				<$endif$>
+				
+			<$endloop$>
+		</tbody>
+	</table>
+	
+	<br/>
+	
+	<$useVerificationSourceName=1$>
+	<$attributeTypeId = #env.CCLA_AttributeType_EntityVerification$>
+	<$include ccla_cs_element_attribute_overrides_display$>
+	
+	<table width="100%">
+		<tr>
+			<td valign="bottom" align="right">
+				<input type="submit" value="Save changes" />
+			</td>
+		</tr>
+	</table>
+	
+</form>
+<@end@>
+
+
+<!-- Displays a table of available 'override' attributes for the given
+	 attributeTypeId in the binder. This should correspond to the
+	 Element Attribute Type who's overrides you wish to display.
+	 
+	 The include must be wrapped in a form to allow updates.
+	 
+	 -->
+<@dynamichtml ccla_cs_element_attribute_overrides_display@>
+	
+	<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+		<tbody>
+			<tr>
+				<th class="first-col">
+					Override
+				</th>
+				
+				<th align=left width="110">Override User</td>
+				<th align=left width="110">Date</td>
+				
+				<th width="60">&nbsp;</th>
+				<th width="60">Enabled</th>
+			</tr>
+			
+			<$loop rsElementAttributes$>
+				
+				<$if 	(#active.IS_OVERRIDE == 1)
+						and
+						(#active.ELEMENT_ATTRIBUTE_TYPE_ID == #local.attributeTypeId)$>
+					
+					<$attribStatus = "", checkedBy = "", checkDate = "", hasACL = ""$>
+					<$attribDisabled = ""$>
+				
+					<$exec rsFirst("rsElementAttributesApplied")$>
+					
+					<$loop rsElementAttributesApplied$>
+						<$if rsElementAttributesApplied.ELEMENT_ATTRIBUTE_ID == rsElementAttributes.ELEMENT_ATTRIBUTE_ID$>
+							<$attribStatus = rsElementAttributesApplied.ATTRIBUTE_STATUS$>
+							<$checkedBy = strReplace(rsElementAttributesApplied.LAST_UPDATED_BY,"CCLA\\","")$>
+							<$checkDate = rsElementAttributesApplied.LAST_UPDATED$>
+							<$break$>
+						<$endif$>
+					<$endloop$>
+					
+					<$if #active.USER_GROUPS$>
+						<$hasACL = 1$>
+						<$attribDisabled=1$>
+						
+						<$exec rsMakeFromString("rsAttribGroups", #active.USER_GROUPS, "userGroup")$>
+						
+						<$loop rsAttribGroups$>
+							<$if userHasRole(#active.userGroup) or userHasRole("admin")$>
+								<$attribDisabled=""$>
+								<$break$>
+							<$endif$>
+						<$endloop$>
+						
+					<$endif$>
+					
+					<tr class="account-details-row">
+						<td class="first-col">
+							<$if #local.useVerificationSourceName$>
+								<$#active.VER_SOURCE_NAME$>
+							<$else$>
+								<$#active.ELEMENT_ATTRIBUTE_NAME$>
+							<$endif$>
+							
+							<$if hasACL and attribDisabled$>
+								<br/>
+								<span style="color:red">Restricted to <$#active.USER_GROUPS$></span>
+							<$endif$>
+						</td>
+						
+						<td>
+							<$#local.checkedBy$>&nbsp;
+						</td>
+						
+						<td>
+							<$#local.checkDate$>&nbsp;
+						</td>
+						
+						<td>&nbsp;</td>
+						
+						<td align="center">
+						
+							<input type="checkbox" 	id="elemAttribTrue_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+													name="elemAttribTrue_<$#active.ELEMENT_ATTRIBUTE_ID$>"
+													<$if attribStatus like "1"$>checked<$endif$>
+													<$if attribDisabled$>disabled="disabled"<$endif$>	/>
+						</td>	
+					</tr>
+					
+				<$endif$>
+				
+			<$endloop$>
+		
+		</tbody>
+	</table>
+	
+
+<@end@>
+
+<!-- Person Identity Checking attributes display. Designed for display on the
+     Update Person page. -->
+<@dynamichtml ccla_cs_person_identity_check_attributes@>
+
+	<a name="identityChecking"></a>
+	
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+				
+			// Attach click events to verification checkboxes. When a user
+			// ticks a 'Checked' checkbox, the 'Found' checkbox will be cleared
+			// and vice-versa.
+			$("#identityCheckAttributesForm input[type='checkbox']").bind("click", function() {
+				
+				if ($(this).is(":checked")) {
+					var isFound = $(this).attr("id").indexOf("elemAttribTrue") == 0;
+					var attribId;
+					
+					// Extract the attribute ID.
+					if (isFound)
+						attribId = $(this).attr("id").substring("elemAttribTrue_".length);
+					else
+						attribId = $(this).attr("id").substring("elemAttribFalse_".length);
+					
+					if (isFound) {
+						// Tick 'checked' checkbox.
+						$("#elemAttribFalse_" + attribId).attr("checked","checked");
+					} else {
+						// Untick 'found' checkbox.
+						$("#elemAttribTrue_" + attribId).removeAttr("checked","checked");
+					}
+				}
+			});
+				
+		});
+		
+	</script>
+
+	<$include orangeContainer_top$>
+		<div class='ccla_cs_panel_header'>
+			Identity Checking Overrides
+		</div>
+		
+		<$if #local.identityCheckUpdated$>
+			<div class="message_panel info_icon">
+				Identity Checking details updated.
+			</div>
+			
+			<br/>
+		<$endif$>
+		
+		<div class='ccla_cs_panel_content'>
+			
+			<p>
+				These flags will not affect a person's global Identity Check status, 
+				as seen in the coloured boxes on various screens. However they will
+				give the person a free pass when their status is checked as part of
+				an Account IVS check.
+			</p>
+						
+				
+			<form method="POST" id="identityCheckAttributesForm">
+				<input 	type="hidden" name="IdcService" 		value="CCLA_CS_UPDATE_ELEMENT_ATTRIBUTES_APPLIED" /><$include add_idc_token_to_form$>
+				
+				<input 	type="hidden" name="ELEMENT_ID"			value="<$#local.PERSON_ID$>" />
+				
+				<input 	type="hidden" name="selectionType"		value="ALL" />
+				<input 	type="hidden" name="attributeTypeId"	value="<$#env.CCLA_AttributeType_PersonIVSChecking$>" />
+			
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_EDIT<$include add_idc_token_to_url$><$commonParams$>&identityCheckUpdated=1&PERSON_ID=<$#local.PERSON_ID$>#identityChecking" />
+				
+				<br/>
+				
+				<$attributeTypeId = #env.CCLA_AttributeType_PersonIVSChecking$>
+				<$include ccla_cs_element_attribute_overrides_display$>
+				
+				<table width="100%">
+					<tr>
+						<td valign="bottom" align="right">
+							<input type="submit" value="Save changes" />
+						</td>
+					</tr>
+				</table>
+				
+			</form>
+		</div>
+		
+	<$include orangeContainer_bottom$>
+
+<@end@>
+
+
+
+<!--Used on Bulk Update page.
+ 
+	Displays list of all persons related to the current Organisation and
+	their Accounts. -->
+<@dynamichtml ccla_cs_entity_bulk_update_person_selector@>
+	
+	<$include orangeContainer_top$>
+			
+		<div class='ccla_cs_panel_header'>
+			Related People
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+		
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+			
+				<input type="hidden" name="singleAdd" id="singleAdd" value="">
+				<!-- set to 'true' when using the 'add new' option -->
+				<input type="hidden" name="RELATIONSHIP" value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>">
+
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_ADD_OR_REMOVE_RELATIONS_BULK"><$include add_idc_token_to_form$>
+				<input type="hidden" name="added" value="1">
+				
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Person$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Account$>
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1"	value="<$ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2"	value="<$ELEMENT_TYPE_ID_2$>" />
+				
+				<!-- Build list of related element IDs -->
+				<$relatedElementIds = ""$>
+				
+				<$loop rsRelatedPersons$>
+					<$if relatedElementIds$>
+						<$relatedElementIds = relatedElementIds & ","$>
+					<$endif$>
+				
+					<$relatedElementIds = relatedElementIds & #active.PERSON_ID$>
+				<$endloop$>
+				
+				<input type="hidden" name="relatedElementIds" id="relatedElementIds" value="<$relatedElementIds$>" />
+				<input type="hidden" name="commonElementIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->
+		
+				<p>
+					Below is a list of everyone related to this organisation. 
+					To update more than one account at a time, tick the checkboxes
+					for the accounts you want to update above and then choose the relationship(s) you want to add or remove below.
+				</p>
+				
+				<p>
+					Clicking 'Add' will add the relationships to the selected account(s), clicking 'Remove' 
+					will remove the relationships from the selected account(s).
+				</p>
+				
+				<p>
+					To add a relationship to someone who does not currently have a link to the accounts, click 'Add Person'. 
+					<$if false$>To switch roles for two people then click 'Switch Person'.<$endif$>
+				</p>
+				
+				<input 	type="button" value="Add person..." onClick="addPersonToSelectedAccounts();"/>
+				&nbsp;
+											&nbsp;
+				<input type="button" value="Quick Add Person" 
+						onclick="quickAddPersonToSelectedAccounts()"/>	
+				
+				<br/>
+				<br/>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating relationships...</div>
+				
+				<div id="divAccountPeople">
+				
+					<$isEdit="true"$>
+					<$isBulkEdit="true"$>
+					
+					<$if not rsRelatedPersons$>
+						<div class="no-info">None</div>
+					<$else$>
+						<$include ccla_cs_related_persons_display$>
+					<$endif$>
+				</div>
+				
+				<br>
+				
+				<div style="overflow: auto">
+					<div style="float: left">
+						<input type="button" value="Select All" onclick="selectAllChecks()">
+						&nbsp;
+						<input type="button" value="Select None" onclick="deselectAllChecks()">
+
+					</div>
+					
+					<div style="float: right">
+						<input type="button" value="Add" onclick="addOrRemoveRelations('add')">
+						&nbsp;
+						<input type="button" value="Remove" onclick="addOrRemoveRelations('remove')">
+
+					</div>
+					
+					<br/>
+				</div>
+				
+			</form>
+		</div>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+<!--Used on Bulk Update page.
+ 
+	Displays list of all persons related to the current Organisation and
+	their Accounts. -->
+<@dynamichtml ccla_cs_entity_bulk_update_nominatedCorrespondent_selector@>
+	
+	<$include orangeContainer_top$>
+			
+		<div class='ccla_cs_panel_header'>
+			Related People
+		</div>
+		
+		<div class='ccla_cs_panel_content'>
+		
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+			
+				<input type="hidden" name="singleAdd" id="singleAdd" value="">
+				<!-- set to 'true' when using the 'add new' option -->
+				<input type="hidden" name="RELATIONSHIP" value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>">
+
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_ADD_OR_REMOVE_RELATIONS_BULK"><$include add_idc_token_to_form$>
+				<input type="hidden" name="added" value="1">
+				
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+					
+				<!-- Nominated/Default Property ID -->
+				<input type="hidden" name="PROPERTY_ID" value="<$#env.CCLA_PropertyId_Default$>" />
+				<input type="hidden" name="PROPERTY_STATUS" value="1" />
+				
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Person$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_Account$>
+				
+				<input type="hidden" name="ELEMENT_TYPE_ID_1"	value="<$ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2"	value="<$ELEMENT_TYPE_ID_2$>" />
+				
+				<!-- Force single select -->
+				<$singleSelectRelation=1$>
+				
+				<!-- Build list of related element IDs -->
+				<$relatedElementIds = ""$>
+				
+				<$loop rsRelatedPersons$>
+					<$if relatedElementIds$>
+						<$relatedElementIds = relatedElementIds & ","$>
+					<$endif$>
+				
+					<$relatedElementIds = relatedElementIds & #active.PERSON_ID$>
+				<$endloop$>
+				
+				<input type="hidden" name="relatedElementIds" id="relatedElementIds" value="<$relatedElementIds$>" />
+				<input type="hidden" name="commonElementIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->
+		
+				<p>
+					Choose the person you want to add or remove the Nominated Correspondent property from below.
+				</p>
+				
+				<p>
+					Clicking 'Add' will add the Correspondent relationship with the 'Nominated' flag to the selected accounts. Any 
+					previously-nominated correspondents on the selected accounts will be removed automatically.
+				</p>
+					
+					Clicking 'Remove' will remove the 'Nominated' flag from any existing Correspondent relationships on the 
+					selected accounts and person, but the Correspondent relationship will be preserved.
+				</p>
+				
+				<br/>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating relationships...</div>
+				
+				<div id="divAccountPeople">
+				
+					<$isEdit="true"$>
+					<$isBulkEdit="true"$>
+					
+					<!-- Restrict the displayed Relation Name columns to 'Correspondent' only -->
+					<$exec rsMakeFromString("rsDisplayRelationNames", "80", "relatioNameId")$>
+
+					<$if not rsRelatedPersons$>
+						<div class="no-info">None</div>
+					<$else$>
+						<$include ccla_cs_related_persons_display$>
+					<$endif$>
+				</div>
+				
+				<br>
+				
+				<div style="overflow: auto">
+					
+					<div style="float: right">
+						<input type="button" value="Add" onclick="addOrRemoveRelations('add')">
+						&nbsp;
+						<input type="button" value="Remove" onclick="addOrRemoveRelations('remove')">
+
+					</div>
+					
+					<br/>
+				</div>
+				
+			</form>
+		</div>
+	
+	<$include orangeContainer_bottom$>
+	
+<@end@>
+
+
+<!--Used on Bulk Update page.
+ 
+	Displays list of all bank accounts linked to all Accounts owned
+	by the Organisation. -->
+<@dynamichtml ccla_cs_entity_bulk_update_bankAccount_selector@>
+
+	<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Related Bank Accounts
+		</div>
+		<div class='ccla_cs_panel_content'>
+			
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+				<input type="hidden" name="ACTION" value="">
+				<input type="hidden" name="added" value="1">
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_ADD_OR_REMOVE_RELATIONS_BULK"><$include add_idc_token_to_form$>
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+				
+				<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">
+			
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Account$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_BankAccount$>
+
+				<input type="hidden" name="RELATION_TYPE_ID" id="RELATION_TYPE_ID" value="3" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_1"	value="<$ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2"	value="<$ELEMENT_TYPE_ID_2$>" />	
+				
+				<input type="hidden" name="singleAdd" id="singleAdd" value="">
+				<input type="hidden" name="RELATIONSHIP" id="RELATIONSHIP" value="">
+
+				<!-- Build list of related element IDs -->
+				<$relatedElementIds = ""$>
+				
+				<$loop rsRelatedBankAccounts$>
+					<$if relatedElementIds$>
+						<$relatedElementIds = relatedElementIds & ","$>
+					<$endif$>
+				
+					<$relatedElementIds = relatedElementIds & #active.BANK_ACCOUNT_ID$>
+				<$endloop$>						
+				<input type="hidden" name="relatedElementIds" id="relatedElementIds" value="<$relatedElementIds$>" />
+				<input type="hidden" name="commonElementIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->		
+			
+				<p>
+					Below is a list of all bank accounts linked to the CCLA accounts for this organisation. 
+					To update more than one account at a time, tick the checkboxes
+					for the accounts you want to update and then choose the bank accounts you want to add or remove below. 
+				</p>
+				
+				<p>
+					Clicking 'Remove' will remove the bank account details from the selected account(s).
+				</p>
+				
+				<p>
+					To add a new bank account to the selected accounts, click 'Add Bank Account'
+				</p>
+				
+				<input 	type="button" value="Add Bank Account..." 
+				onclick="addBankAccountToSelectedAccounts();" />
+				
+				<br/>
+				<br/>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating relationships...</div>
+				
+				<div id="divAccountBankDetail">
+
+					<$isBulkEdit="true"$>
+					<$displayBankAccountRelations=1$>
+					
+					<$include ccla_cs_related_bank_accounts_display$>
+				</div>
+				<br>
+				
+				<div style="overflow: auto">
+					<div style="float: left">
+						<input type="button" value="Select All" onclick="selectAllChecks()">
+						&nbsp;
+						<input type="button" value="Select None" onclick="deselectAllChecks()">
+
+					</div>
+					
+					<div style="float: right">
+						<input type="button" value="Add" onclick="addOrRemoveRelations('add')">
+						&nbsp;
+						<input type="button" value="Remove" onclick="addOrRemoveRelations('remove')">
+
+					</div>
+					
+					<br/>
+				</div>
+			
+			</form>
+		</div>
+	<$include orangeContainer_bottom$>	
+
+<@end@>
+
+<!--Used on Bulk Update page.
+
+	Displays list of all bank accounts linked to all Accounts owned
+	by the Organisation.
+
+	Sets nominated/default property against Income/Withdrawal Bank Account
+	relations. 
+	
+	Uses 'single-select mode' on each column of ticks, so you can only
+	select one Bank Account per relation.
+	-->
+<@dynamichtml ccla_cs_entity_bulk_update_nominatedBankAccount_selector@>
+
+	<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Related Bank Accounts
+		</div>
+		<div class='ccla_cs_panel_content'>
+			
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+				<input type="hidden" name="ACTION" value="">
+				<input type="hidden" name="added" value="1">
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_ADD_OR_REMOVE_RELATIONS_BULK"><$include add_idc_token_to_form$>
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+				
+				<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">
+			
+				<$ELEMENT_TYPE_ID_1 = #env.CCLA_ElementType_Account$>
+				<$ELEMENT_TYPE_ID_2 = #env.CCLA_ElementType_BankAccount$>
+
+				<input type="hidden" name="RELATION_TYPE_ID" id="RELATION_TYPE_ID" value="3" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_1"	value="<$ELEMENT_TYPE_ID_1$>" />
+				<input type="hidden" name="ELEMENT_TYPE_ID_2"	value="<$ELEMENT_TYPE_ID_2$>" />	
+				
+				<!-- Nominated/Default Property ID -->
+				<input type="hidden" name="PROPERTY_ID" value="<$#env.CCLA_PropertyId_Default$>" />
+				<input type="hidden" name="PROPERTY_STATUS" value="1" />
+	
+				<input type="hidden" name="singleAdd" id="singleAdd" value="">
+				<input type="hidden" name="RELATIONSHIP" id="RELATIONSHIP" value="">
+
+				<!-- Build list of related element IDs -->
+				<$relatedElementIds = ""$>
+				
+				<$loop rsRelatedBankAccounts$>
+					<$if relatedElementIds$>
+						<$relatedElementIds = relatedElementIds & ","$>
+					<$endif$>
+				
+					<$relatedElementIds = relatedElementIds & #active.BANK_ACCOUNT_ID$>
+				<$endloop$>						
+				<input type="hidden" name="relatedElementIds" id="relatedElementIds" value="<$relatedElementIds$>" />
+				<input type="hidden" name="commonElementIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->		
+			
+				<p>
+					Below is a list of all bank accounts linked to the CCLA accounts for this organisation. 
+					
+					You can choose a single nominated Withdrawal, a single nominated Income Bank Account or both.
+				</p>
+				
+				<p>
+					Selecting no nominated Bank Account for either Income/Withdrawal will not remove the currently
+					nominated Bank Account, if one exists.
+				</p>
+				
+				<p>
+					To add a new bank account to the selected accounts, click 'Add Bank Account'
+				</p>
+				
+				<input 	type="button" value="Add Bank Account..." 
+				onclick="addBankAccountToSelectedAccounts();" />
+				
+				<br><br>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating relationships...</div>
+				
+				<div id="divAccountBankDetail">
+
+					<$isBulkEdit="true"$>
+					<$displayBankAccountRelations=1$>
+					<!-- Force single select -->
+					<$singleSelectRelation=1$>
+					
+					<$include ccla_cs_related_bank_accounts_display$>
+				</div>
+				<br>
+				
+				<div style="overflow: auto">
+					<div style="float: left">
+						<$if false$>
+							<input type="button" value="Select All" onclick="selectAllChecks()">
+							&nbsp;
+						<$endif$>
+						<input type="button" value="Select None" onclick="deselectAllChecks()">
+
+					</div>
+					
+					<div style="float: right">
+						<input type="button" value="Set nominated" onclick="addOrRemoveRelations('add')">
+						
+						<$if false$>
+							&nbsp;
+							<input type="button" value="Remove" onclick="addOrRemoveRelations('remove')">
+						<$endif$>
+						
+					</div>
+					
+					<br/>
+				</div>
+			
+			</form>
+		</div>
+	<$include orangeContainer_bottom$>	
+
+<@end@>
+
+<!--Used on Bulk Update page.
+ 
+	Displays static list of all Account Flags -->
+<@dynamichtml ccla_cs_entity_bulk_update_accountFlag_selector@>
+
+	<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Account Flags
+		</div>
+		<div class='ccla_cs_panel_content'>
+			
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+				<input type="hidden" name="ACTION" value="">
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_ADD_OR_REMOVE_ACCOUNT_FLAGS_BULK"><$include add_idc_token_to_form$>
+				<input type="hidden" name="added" value="1">
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+				
+				<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">	
+				
+				<input type="hidden" name="accountIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->		
+			
+				<p>
+					Below is a list of all available Account Flags. 
+					To update more than one account at a time, tick the checkboxes
+					for the accounts you want to update and then choose the 
+					Account Flags you want to add or remove below. 
+				</p>
+				
+				<p>
+					Clicking 'Remove' will remove the Account Flags from the selected account(s).
+				</p>
+
+				<br/>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating flags...</div>
+				
+				<div id="divAccountBankDetail">
+
+					<$isBulkEdit="true"$>
+					<$hideAccountFlagTitle=1$>
+					
+					<$include ccla_cs_account_flag_display$>
+				</div>
+				<br>
+				
+				<div style="overflow: auto">
+					<div style="float: left">
+						<input type="button" value="Select All" onclick="selectAllChecks()">
+						&nbsp;
+						<input type="button" value="Select None" onclick="deselectAllChecks()">
+
+					</div>
+					
+					<div style="float: right">
+						<input type="button" value="Add" onclick="addOrRemoveRelations('add')">
+						&nbsp;
+						<input type="button" value="Remove" onclick="addOrRemoveRelations('remove')">
+
+					</div>
+					
+					<br/>
+				</div>	
+			
+			</form>
+		</div>
+	<$include orangeContainer_bottom$>	
+
+<@end@>
+
+<!--Used on Bulk Update page.
+ 
+	Displays static list of all Account Flags -->
+<@dynamichtml ccla_cs_entity_bulk_update_numRequiredSignatures_selector@>
+
+	<$include orangeContainer_top$>
+
+		<div class='ccla_cs_panel_header'>
+			Num Required Signatures
+		</div>
+		<div class='ccla_cs_panel_content'>
+			
+			<form name="frmBulkUpdate" id="frmBulkUpdate" method="POST">
+				<input type="hidden" name="ACTION" value="">
+				<input type="hidden" name="IdcService" id="IdcService" value="CCLA_CS_SET_MULTIPLE_ACCOUNTS_DATA"><$include add_idc_token_to_form$>
+				<input type="hidden" name="added" value="1">
+				<input 	type="hidden" name="RedirectUrl" 
+						value="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_BULK_EDIT<$include add_idc_token_to_url$>&added=1&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&editType=<$#local.editType$>" />
+				
+				<input type="hidden" name="ORGANISATION_ID" value="<$#active.ORGANISATION_ID$>">	
+				
+				<input type="hidden" name="accountIds" id="commonElementIds" value="" /> <!-- Set by js to reflect selected accounts -->
+				
+				<input type="hidden" name="relationUpdateType" id="relationUpdateType" value="" /> <!-- Set by js to add/remove -->		
+			
+				<p>
+					Select the number of required signatures you wish to set against all selected accounts.
+				<br/>
+				
+				<!-- This panel is displayed after the user executes a bulk update. -->
+				<div id="relationsSavingMsg" class="message_panel loading_icon hiddenPanel">Updating required signatures...</div>
+				
+				<div id="divAccountBankDetail">
+					
+					<$include ccla_cs_num_required_signatures_select$>
+					
+				</div>
+				<br>
+				
+				<div style="overflow: auto">
+					
+					<div style="float: right">
+						<input type="button" value="Update" onclick="setMultipleAccountsData()">
+					</div>
+					
+					<br/>
+				</div>	
+			
+			</form>
+		</div>
+	<$include orangeContainer_bottom$>	
+
+<@end@>
+	
+</body></html>

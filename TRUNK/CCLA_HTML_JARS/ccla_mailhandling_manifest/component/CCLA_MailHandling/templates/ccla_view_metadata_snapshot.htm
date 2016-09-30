@@ -1,0 +1,79 @@
+﻿<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		View metadata snapshot
+	</title>
+	
+	<$include iris_styles$>
+	
+	<$include iris_common_js$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+		
+			<$include orangeContainer_top$>
+			
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>View metadata snapshot: <$rsDocMetaAudit.dDocName$></b>
+				</div>
+					
+				<div style="margin: 5px">
+					
+					<table>
+						<tr>
+							<td>Audit ID:</td>
+							<td><$rsDocMetaAudit.DOCMETA_AUDIT_ID$></td>
+						</tr>
+						<tr>
+							<td>Content ID:</td>
+							<td><$rsDocMetaAudit.dDocName$></td>
+						</tr>
+					</table>
+					
+					<h3>Field Values</h3>
+					
+					<div style="height: 300px; overflow-y: scroll; padding: 5px;">
+					
+						<table border=1>
+							<$fieldIndex = 0$>	
+								
+							<$loopwhile fieldIndex < rsNumFields("rsDocMetaAudit")$>
+								<$fieldName = rsFieldByIndex("rsDocMetaAudit", fieldIndex)$>
+								<$fieldValue = getValue("rsDocMetaAudit", fieldName)$>
+								
+								<tr>
+									<td><b><$#local.fieldName$>:</b></td>
+									<td><$#local.fieldValue$>&nbsp;</td>
+								</tr>
+								
+								<$fieldIndex = fieldIndex+1$>
+							<$endloop$>
+							
+						</table>
+						
+					</div>
+					
+					
+					<div align="center">
+						<input type="button" value="Close" onclick="window.parent.closePopup()" />
+					</div>
+				</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+		
+	</div>
+
+</body>
+</html>

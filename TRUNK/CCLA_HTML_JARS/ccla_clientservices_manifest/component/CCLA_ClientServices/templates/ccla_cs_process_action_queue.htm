@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Process Action Queue Monitor
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Process Action Queue Monitor
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<form method="POST">
+					
+						<table class="ccla-table" cellspacing="0">
+							<tr>
+								<td>Monitor status</td><td><$#local.queueMonitorStatus$></td>
+							</tr>
+							<tr>
+								<td>Last check time</td><td><$#local.lastCheckTime$></td>
+							</tr>
+							<tr>
+								<td>Sleep interval (s)</td><td>
+									<$if #local.queueMonitorStatus like 'Running'$>
+										<$#local.sleepInterval$>
+									<$else$>
+										<input type="text" name="sleepInterval" value="<$#local.sleepInterval$>" />
+									<$endif$>
+								</td>
+							</tr>
+						</table>
+											
+						<br/>
+					
+					
+						<input type="hidden" name="IdcService" value="CCLA_CS_SET_QUEUE_MONITOR_ENABLED" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_PROCESS_ACTION_QUEUE<$include add_idc_token_to_url$>" />
+						
+						<$if not (#local.queueMonitorStatus like 'Running')$>
+							<input type="hidden" name="enable" value="1" />
+						<$endif$>
+					
+						<input type="submit" name="queue_action" value="<$if #local.queueMonitorStatus like 'Running'$>Stop<$else$>Start<$endif$>" />
+					</form>
+					
+					<br/>
+					
+					<form method="post">
+						<input type="hidden" name="IdcService" value="CCLA_CS_ADD_ITEMS_TO_ACTION_QUEUE" /><$include add_idc_token_to_form$>
+						
+						SQL Query: 
+						<br/>
+						<textarea name="sqlQuery" style="width: 400px; height: 200px;"><$#local.sqlQuery$></textarea>
+						<br/>
+						Action:
+						<br/>
+						<input type="text" name="action" value="<$#local.action$>" />
+						<br/>
+						<input type="submit" value="Add query items" />
+						
+						<$if #local.itemCount$>
+							<br>
+							<b><$itemCount$> items were added to the action queue.</b>
+						<$endif$>
+						
+						<br/>
+					</form>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+			</div>
+		</div>
+	
+	</body>
+</html>

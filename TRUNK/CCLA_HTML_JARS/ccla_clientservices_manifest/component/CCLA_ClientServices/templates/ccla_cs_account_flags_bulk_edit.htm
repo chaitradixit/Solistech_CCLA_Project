@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Bulk Add/Remove Account Flags
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Bulk Add/Remove Account Flags
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<p>
+						The query below must return ACCOUNT_ID and ACCOUNT_FLAG_ID columns.
+					</p>
+					 
+					<form method="post">
+						<input 	type="hidden" name="IdcService" value="CCLA_CS_BULK_ADD_OR_REMOVE_ACCOUNT_FLAGS" /><$include add_idc_token_to_form$>
+						
+						SQL Query: 
+						<br/>
+						<textarea name="queryText" style="width: 400px; height: 200px;"><$#local.queryText$></textarea>
+						<br/>
+						Remove/Add:
+						<br/>
+						<select name="isRemove">
+							<option value="">Add</option>
+							<option value="1">Remove</option>
+						</select>
+						<br/>
+						<br/>
+						<input type="submit" value="Bulk Add/Remove" />
+
+					</form>
+					
+					<br/>
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+			</div>
+		</div>
+	
+	</body>
+</html>

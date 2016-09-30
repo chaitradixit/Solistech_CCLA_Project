@@ -1,0 +1,209 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Supporting Documents
+		</title>
+		
+		<$include iris_jquery_js$>
+		
+		<script type="text/javascript">
+			function removeDependantDoc(rootDocName, depDocName){
+				$.post(
+					'<$HttpCgiPath$>'
+					, 
+					$('#' + rootDocName + '_' + depDocName + '_del_form').serialize()
+					,
+					function(data){
+						refreshDependantDocs(rootDocName);
+					}
+				);
+			}
+			
+			function addDependantDoc(rootDocName){
+				$.post(
+					'<$HttpCgiPath$>'
+					, 
+					$('#' + rootDocName + '_add_form').serialize()
+					,
+					function(data){
+						refreshDependantDocs(rootDocName);
+					}
+				);
+			}
+			
+			function refreshDependantDocs(rootDocName){
+				var url = '?IdcService=CCLA_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_iris_get_dependant_docs_for_root_doc&rootDocName=' + rootDocName;
+				
+				var d = new Date();
+				
+				$.get(
+					url + '&rt=' + d.getTime(),
+					function(rtnHtml){
+						$('#' + rootDocName + '_Container').html(rtnHtml);
+				});
+			}
+			
+			function reloadDocDropdown(rootDocName, bundleRef){
+				
+				var url = '?IdcService=CCLA_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_get_root_docs_rs_for_envelope_select&bundleRef=' + bundleRef;
+				
+				var d = new Date();
+				
+				$.get(
+					url + '&rt=' + d.getTime(),
+					function(rtnHtml){
+						$('#dependantDocNames_' + rootDocName).html(rtnHtml);
+				});
+			}
+		</script>
+		
+		<style type="text/css">
+			*{
+				margin:0;
+				padding:0;
+			}
+			
+			body{
+				font-family:Arial;
+				padding:20px;
+			}
+			
+			h1{
+				font-size:0.9em;
+			}
+			
+			span{
+				font-size:0.8em;
+				font-weight:bold;
+			}
+			
+			.dependant_container{
+				margin-bottom:20px;
+				padding:20px;
+				border-bottom:1px solid #AAA;
+			}
+			
+			.document_table{
+				font-size:0.8em;
+				margin-bottom:10px;
+				margin-top:5px;
+			}
+			
+			.document_table th{
+				text-align:left;	
+			}
+			
+			.document_table th,
+			.document_table td{
+				padding:5px;
+			}
+			
+			.support_doc_container{
+				border:1px solid #CCC;
+			}
+			
+			.rootDoc td{
+				background-color:#DDD;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<$if isTrue(#active.potentialOldBundle)$>
+			
+				<form id="initForm" name="initForm" method="POST">
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="performInit" 	value="1"/>
+					<input type="hidden" name="bundleRef" 		value="<$bundleRef$>"/>
+					<input type="hidden" name="isSupporting" 	value="1"/>
+					<input type="hidden" name="RedirectUrl" id="RedirectUrl"	value=""/>
+					<input type="hidden" name="IdcService" 		value="CCLA_DEP_DOCS_INIT_DEPENDANT_DOCS_FOR_ENVELOPE"/>
+				</form>
+				<p>
+					If your bundle was created before 07/12/09 it might not show all the supporting documents that you expect below. Click 
+					<a href="#" 
+					onClick="document.getElementById('RedirectUrl').value=window.location.href;document.initForm.submit();">here</a> to repopulate the supporting documents for this envelope.
+				</p>
+			<$endif$>
+			
+			<$executeService("IRIS_BATCH_GET_ITEMS")$>
+			
+			<$include ccla_get_root_docs_rs_for_envelope$>
+			
+			<!--For each APP/MAND, try and print it's supporting docs-->
+			<$loop rsBatchItems$>
+				<$isAppOrMand=0$>
+				
+				<$if strEquals(rsBatchItems.xDocumentClass, "MAND") 
+					or strEquals(rsBatchItems.xDocumentClass, "APP")$>
+					<$isAppOrMand=1$>
+				<$endif$>
+				
+				<$if isTrue(isAppOrMand)$>
+					<div class="dependant_container">
+					
+						<$rootDocName=rsBatchItems.dDocName$>
+						<h1>Supporting Documents for: <$rsBatchItems.xDocumentClass$> (<$rootDocName$>)</h1>
+						
+						<table border="1" class="document_table" cellspacing="0" cellpadding="0">
+							<thead>
+								<tr>
+									<th>Content ID</th>
+									<th>Bundle Ref</th>
+									<th>Document Class</th>
+									<th>Company</th>
+									<th>Client No</th>
+									<th>Account No</th>
+									<th>Document Date</th>
+									<th>&nbsp;</th>
+								</tr>
+						
+								<tr class="rootDoc">
+									<td><$rsBatchItems.dDocName$>&nbsp;</td>
+									<td><$rsBatchItems.xBundleRef$>&nbsp;</td>
+									<td><$rsBatchItems.xDocumentClass$>&nbsp;</td>
+									<td><$rsBatchItems.xCompany$>&nbsp;</td>
+									<td><$rsBatchItems.xClientNumber$>&nbsp;</td>
+									<td><$rsBatchItems.xAccountNumber$>&nbsp;</td>
+									<td><$rsBatchItems.xDocumentDate$>&nbsp;</td>
+									<td>&nbsp;</td>
+								</tr>
+							</thead>
+						
+							<tbody id="<$rootDocName$>_Container">
+								<$include ccla_iris_get_dependant_docs_for_root_doc$>
+							</tbody>
+						
+						</table>
+				<$else$>
+					<!--The bundle document is not MAND/APP-->
+					
+				<$endif$>
+			
+				<$if isTrue(isAppOrMand) and rsNonRootDocsInEnvelope and rsNonRootDocsInEnvelope.#numRows > 0$>
+					<form action="<$HttpCgiPath$>" method="POST" id="<$rootDocName$>_add_form">
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="IdcService" 		value="CCLA_DEP_DOCS_SET_DEPENDANT_DOCS_FOR_ROOT_DOC"/>
+						<input type="hidden" name="rootDocName" 	value="<$rootDocName$>"/>
+						<input type="hidden" name="RedirectUrl" 	value="?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_DEP_DOCS_MANAGER&bundleRef=<$bundleRef$>"/>
+						<input type="hidden" name="isSupporting" 	value="1"/>
+						
+						<span>Add Supporting Doc: </span>
+						
+						<input type="text" value="<$bundleRef$>" onKeyPress="{if (event.keyCode==13){reloadDocDropdown('<$rootDocName$>', this.value);return false;}}" size="10"/>
+						
+						<select name="dependantDocNames" id="dependantDocNames_<$rootDocName$>">
+							<$include ccla_get_root_docs_rs_for_envelope_select$>
+						</select>
+						
+						<input type="button" 
+						onclick="addDependantDoc('<$rootDocName$>');" 
+						value="Add"/>
+					</form>
+					</div>
+				<$endif$>
+			<$endloop$>
+		</div>
+	</body>
+</html>

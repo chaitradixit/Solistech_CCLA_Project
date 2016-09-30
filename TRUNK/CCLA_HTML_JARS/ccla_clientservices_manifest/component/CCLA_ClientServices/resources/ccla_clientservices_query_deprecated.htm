@@ -1,0 +1,503 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices query
+</title>
+</head>
+<body>
+
+<@table CCLA_ClientServices_Queries_Deprecated@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByProcessId</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE PROCESS_ID=?</td>
+	<td>processId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersRequiringAction</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE PROCESS_ID=?
+AND (TRANSFER_TYPE = 'all' OR TRANSFER_TYPE = 'amount')</td>
+	<td>processId int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddFundTransfer</td>
+	<td>INSERT INTO CS_FUND_TRANSFERS
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)</td>
+	<td>newTransferId int
+	    activityId int
+	    personId int
+	    company varchar
+	    clientId varchar
+	    accountNumber varchar
+	    fund varchar
+	    transferType varchar
+	    transferAmount int
+	    processId int
+	    toAccount varchar
+	    toFund varchar
+	    auroraStatus varchar
+	    jobId varchar
+	    accountStatus varchar
+	    falseFlag varchar
+	    falseFlag varchar
+		emptyString
+		falseFlag
+		falseFlag
+		falseFlag
+		emptyString
+		emptyString</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateFundTransfer</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+		SET ACTIVITY_ID=?, 
+		CORRESPONDENT_ID=?,
+		TRANSFER_TYPE=?,
+		TRANSFER_AMOUNT=?,
+		ACCOUNT_STATUS=?
+		WHERE TRANSFER_ID=?</td>
+	<td>activityId int
+	    personId int
+	    transferType varchar
+	    transferAmount int
+	    accountStatus varchar
+	    transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_AddCorrespondentQuestion</td>
+	<td>INSERT INTO CS_CORRESPONDENT_QUESTIONS
+VALUES (?,?,?,?,?,?,?,?,?,?)</td>
+	<td>newQuestionId int
+	    processId varchar
+	    userId varchar
+	    personId varchar
+	    company varchar
+	    questionCategory varchar
+	    questionText varchar
+	    answerText varchar
+	    outcome varchar
+	    curDate date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetCorrespondentQuestionsByCorrespondentId</td>
+	<td>SELECT * FROM CS_CORRESPONDENT_QUESTIONS
+WHERE CORRESPONDENT_ID = ?
+ORDER BY QUESTION_DATE DESC</td>
+	<td>correspondentId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByAccount</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS
+WHERE COMPANY=? AND CLIENT_ID=? AND ACCOUNT_NUMBER=?</td>
+	<td>company varchar
+	    clientId varchar
+	    accountNumber varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_DeleteFundTransfersByProcessId</td>
+	<td>DELETE FROM CS_FUND_TRANSFERS
+WHERE PROCESS_ID = ?</td>
+	<td>processId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersForGivenAmount</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE 
+(TRANSFER_TYPE = 'amount')</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetPendingFundTransfers</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE 
+(TRANSFER_TYPE = 'all' OR TRANSFER_TYPE = 'amount')
+AND ((TO_ACCOUNT IS NULL) OR (TO_ACCOUNT = ''))
+AND TRANSFER_ID NOT IN (SELECT TRANSFER_ID FROM CS_FUND_TRANSFERS WHERE ACCOUNT_STATUS = 'suspended')</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetPendingFundTransfersByFund</td>
+	<td>SELECT * FROM (
+	SELECT * FROM CS_FUND_TRANSFERS
+	WHERE (TO_FUND IS NULL OR TO_FUND='')
+	AND (TRANSFER_TYPE='amount' OR TRANSFER_TYPE='all')
+	AND FUND=?
+	ORDER BY TRANSFER_ID ASC
+) WHERE ROWNUM <= ?</td>
+	<td>fund varchar
+	    rowCount int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetUnbatchedTransfersByFund</td>
+	<td>SELECT * FROM (
+	SELECT * FROM CS_FUND_TRANSFERS
+	WHERE (AURORA_BATCH_ID IS NULL)
+	AND FUND=?
+	AND CLIENT_CONFIRMED='1'
+	AND (ACCOUNT_STATUS <> 'suspended' OR ACCOUNT_STATUS IS NULL)
+	AND (TRANSFER_TYPE='amount' OR TRANSFER_TYPE='all')
+	ORDER BY TRANSFER_ID ASC
+) WHERE ROWNUM <= ?</td>
+	<td>fund varchar
+	    rowCount int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByBatchStatus</td>
+	<td>SELECT * FROM (
+	SELECT * FROM CS_FUND_TRANSFERS
+	WHERE FUND=?
+	AND BATCHED_IN_AURORA=?
+	ORDER BY TRANSFER_ID ASC
+) WHERE ROWNUM <= ?</td>
+	<td>fund varchar
+		batchStatus varchar
+	    rowCount int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateFundTransferTo</td>
+	<td>UPDATE CS_FUND_TRANSFERS 
+SET
+TO_ACCOUNT=?,
+TO_FUND=?,
+JOB_ID=?,
+AURORA_STATUS=?
+WHERE TRANSFER_ID=?</td>
+	<td>toAccount varchar
+	toFund varchar
+	jobId varchar
+	auroraStatus varchar
+	transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateFundTransferBatchStatus</td>
+	<td>UPDATE CS_FUND_TRANSFERS 
+SET
+BATCHED_IN_AURORA=?
+WHERE TRANSFER_ID=?</td>
+	<td>batchedInAurora varchar
+	transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByFormId</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE
+PROCESS_ID IN
+(SELECT PROCESS_ID FROM CCLA_FORMS WHERE FORM_ID=?)
+AND TRANSFER_ID NOT IN (SELECT TRANSFER_ID FROM CS_FUND_TRANSFERS WHERE ACCOUNT_STATUS = 'suspended')</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_SetFundTransfersConfirmed</td>
+	<td>UPDATE CS_FUND_TRANSFERS 
+SET CLIENT_CONFIRMED = '1'
+WHERE
+PROCESS_ID IN
+(SELECT PROCESS_ID FROM CCLA_FORMS WHERE FORM_ID=?)</td>
+	<td>FORM_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_SetFundTransfersConfirmedByClientId</td>
+	<td>UPDATE CS_FUND_TRANSFERS 
+SET CLIENT_CONFIRMED = '1'
+WHERE
+PROCESS_ID IN
+(SELECT PROCESS_ID FROM CCLA_FORMS WHERE FORM_ID=?)
+AND CLIENT_ID=?</td>
+	<td>FORM_ID int
+	    CLIENT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetResponseFundTransfersByFormId</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE
+PROCESS_ID IN
+(SELECT PROCESS_ID FROM CCLA_FORMS WHERE FORM_ID=?)
+AND TO_ACCOUNT IS NOT NULL AND TO_FUND IS NOT NULL
+AND CLIENT_ID=?
+AND TRANSFER_ID NOT IN (SELECT TRANSFER_ID FROM CS_FUND_TRANSFERS WHERE ACCOUNT_STATUS = 'suspended')</td>
+	<td>formId int
+	    clientId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateCorrespondentDetails</td>
+	<td>UPDATE CS_PERSON_DETAILS
+SET PERSON_NAME=?, 
+PERSON_SALUTATION=?, 
+PERSON_TYPE=?,
+PERSON_SUB_TYPE=?,
+PHONE=?,
+FAX=?,
+EMAIL=?,
+LAST_UPDATED=TO_DATE(?,'dd/MM/yyyy HH24:MI'),
+PERSON_NOTES=?,
+JOB_TITLE=?,
+DATE_OF_BIRTH=?,
+WEBSITE_URL=?,
+AML_ID=?,
+FIRST_NAME=?,
+LAST_NAME=?
+WHERE PERSON_ID=?</td>
+	<td>personName varchar
+	    personSalutation varchar
+	    personType varchar
+	    personSubType varchar
+	    phone varchar
+	    fax varchar
+	    email varchar
+	    lastUpdated varchar
+	    personNotes varchar
+	    jobTitle varchar
+	    dob date
+	    websiteUrl varchar
+	    amlId int
+	    firstName varchar
+	    lastName varchar
+	    personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_SetAddressDetails</td>
+	<td>INSERT INTO CS_ADDRESSES VALUES
+(?,?,?,?,?,?,?,?,?,TO_DATE(?,'dd/MM/yyyy HH24:MI'))</td>
+	<td>addressId int
+	    organisation varchar
+	    building varchar
+	    street varchar
+	    towncity varchar
+	    locality varchar
+	    postcode varchar
+	    county varchar
+	    country varchar
+	    lastUpdated varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAddressDetails</td>
+	<td>UPDATE CS_ADDRESSES SET 
+ORGANISATION=?,
+BUILDING=?,
+STREET=?,
+TOWN_CITY=?,
+LOCALITY=?,
+POSTCODE=?,
+COUNTY=?,
+COUNTRY=?,
+LAST_UPDATED=TO_DATE(?,'dd/MM/yyyy HH24:MI')
+WHERE ADDRESS_ID=?</td>
+	<td>organisation varchar
+	    building varchar
+	    street varchar
+	    towncity varchar
+	    locality varchar
+	    postcode varchar
+	    county varchar
+	    country varchar
+	    lastUpdated varchar
+	    addressId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetAddressIdForPersonId</td>
+	<td>SELECT ADDRESS_ID FROM CS_PERSON_DETAILS 
+WHERE PERSON_ID=?</td>
+	<td>personId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByFormIdAndClientId</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE
+PROCESS_ID IN
+(SELECT PROCESS_ID FROM CCLA_FORMS WHERE FORM_ID=?)
+AND CLIENT_ID=?</td>
+	<td>formId int
+	    clientId int</td>
+</tr>
+<tr>
+	<td>qClientServices_InsertFundTransferNote</td>
+	<td>INSERT INTO CS_FUND_TRANSFERS_NOTES VALUES (?,?)</td>
+	<td>transferId int
+	    note varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateFundTransferNote</td>
+	<td>UPDATE CS_FUND_TRANSFERS_NOTES
+SET NOTE=?
+WHERE TRANSFER_ID=?</td>
+	<td>note varchar
+	    transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransferBatches</td>
+	<td>SELECT DISTINCT(AURORA_BATCH_ID), IS_SUBMITTED_FOR_AUTH, HAS_BATCH_ERRORS, AUTH_STATUS FROM CS_FUND_TRANSFERS
+WHERE AURORA_BATCH_ID IS NOT NULL
+ORDER BY AURORA_BATCH_ID ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersByBatchId</td>
+	<td>SELECT * FROM CS_FUND_TRANSFERS WHERE AURORA_BATCH_ID=?</td>
+	<td>batchId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateSubmittedForAuthByBatchId</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+SET IS_SUBMITTED_FOR_AUTH=? WHERE
+AURORA_BATCH_ID=?</td>
+	<td>submittedForAuth varchar
+		batchId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateSubmittedForAuthAndAuthStatusByBatchId</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+SET IS_SUBMITTED_FOR_AUTH=?, AUTH_STATUS=? WHERE
+AURORA_BATCH_ID=?</td>
+	<td>submittedForAuth varchar
+		authStatus varchar
+		batchId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAuthStatusByBatchId</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+SET AUTH_STATUS=? WHERE
+AURORA_BATCH_ID=?</td>
+	<td>authStatus varchar
+		batchId varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_SuspendTransfer</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+SET IS_SUSPENDED=?, AURORA_BATCH_ID=?, HAS_BATCH_ERRORS=?, IS_SUBMITTED_FOR_AUTH=?, AUTH_STATUS=? WHERE
+TRANSFER_ID=?</td>
+	<td>isSuspended varchar
+		emptyString varchar
+		resetFlag varchar
+		resetFlag varchar
+		resetFlag varchar
+		transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateTransferAccountStatus</td>
+	<td>UPDATE CS_FUND_TRANSFERS
+SET ACCOUNT_STATUS=? WHERE TRANSFER_ID=?</td>
+	<td>accountStatus varchar
+		transferId int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetExtendedAccountByAccNumExt</td>
+	<td>SELECT * FROM CCLA_ACCOUNTS acc
+		LEFT JOIN CCLA_PERSONS per ON (acc.ACC_CORCODE = per.PERSON_ID)
+		LEFT JOIN CCLA_CLIENTS cl ON 
+		(acc.ACC_COMPANY = cl.COMPANY AND acc.ACC_CLIENTID = cl.CLIENT_ID)
+		WHERE acc.ACCNUMEXT = ?</td>
+	<td>accNumExt varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_CreateContactEntityLink</td>
+	<td>insert into CCLA_CONTACT_MAP
+values (?,?,?,?,?,?,?,?,?)</td>
+	<td>CONTACT_ID int
+		ELEMENT_ID int
+		TYPE int
+	    NAME varchar
+	    VALUE varchar
+	    ADDRESS_ID varchar
+	    PREFERENCE varchar
+		IS_DEFAULT int		
+		IS_DUBIOUS int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetClientAccounts_old</td>
+	<td>SELECT * FROM CCLA_ACCOUNT acc
+		WHERE ACC_CLIENT_ID = ?
+		ORDER BY ACC_FUNDCODE, ACCOUNTNUMBER</td>
+	<td>ORGANISATION_ID int</td>
+</tr>
+
+<tr>
+	<td>qClientServices_GetEntityTypes_old</td>
+	<td>SELECT * FROM CCLA_ENTITY_TYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_GetEntitySubTypes_old</td>
+	<td>SELECT * FROM CCLA_ENTITY_SUBTYPE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAddress</td>
+	<td>UPDATE CCLA_ADDRESSES SET 
+ADDR_LINE1=?,
+ADDR_LINE2=?,
+ADDR_LINE3=?,
+ADDR_LINE4=?,
+ADDR_CITY=?,
+ADDR_COUNTY=?,
+ADDR_COUNTRY=?,
+ADDR_POSTCODE=?,
+DATE_LAST_UPDATED=SYSDATE
+WHERE ADDRESS_ID=?</td>
+	<td>ADDR_LINE1 varchar
+	    ADDR_LINE2 varchar</td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateAccount_Old</td>
+	<td>UPDATE CCLA_ACCOUNT SET
+		ACC_CLIENT_ID=?,
+		AURORA_ACCOUNT=?,
+		DATE_LAST_REFRESH=?,
+		ACCOUNTNUMBER=?,
+		FUND_CODE=?,
+		ACCNUMEXT=?,
+		SUBTITLE=?,
+		ACCOUNT_STATUS_ID=?,
+		DATE_OPENED=?,
+		ACC_LSTAMDDTE=?,
+		ACC_CASH=?,
+		ACC_UNITS=?,
+		SHARE_CLASS=?,
+		REQ_SIGNATURES=?,
+		INCOME_DISTRIBUTION_METHOD=?,
+		MANDATED_ACCOUNT_ID=?,
+		IS_EXCLUSIVE=?,
+		AML_CHECK_OVERRIDE_USER=?,
+		ACC_ISEXTERNALACCOUNT=?,
+		ACC_NOTES=?,
+		LAST_UPDATED=SYSDATE
+		WHERE ACCOUNT_ID = ?</td>
+	<td>ACC_CLIENT_ID int
+		AURORA_ACCOUNT int
+		DATE_LAST_REFRESH date
+		ACCOUNTNUMBER int
+		FUND_CODE varchar
+		ACCNUMEXT varchar
+		SUBTITLE varchar
+		ACCOUNT_STATUS_ID varchar
+		DATE_OPENED date
+		ACC_LSTAMDDTE date
+		ACC_CASH varchar
+		ACC_UNITS varchar
+		SHARE_CLASS varchar
+		REQ_SIGNATURES int
+		INCOME_DISTRIBUTION_METHOD varchar
+		MANDATED_ACCOUNT_ID varchar
+		IS_EXCLUSIVE int
+		AML_CHECK_OVERRIDE_USER varchar
+		ACC_ISEXTERNALACCOUNT int
+		ACC_NOTES varchar
+		ACCOUNT_ID int</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFunds_OLD</td>
+	<td>SELECT * FROM CCLA_FUNDS
+	ORDER BY FND_CODE</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qClientServices_UpdateOverrideAuthenticateRecord</td>
+	<td>update IDENTITY_CHECK set 
+IS_EXPERIAN_AUTHENTICATED='1', AUTHENTICATION_INDEX = 0, DECISION = NULL, 
+DECISION_TEXT=?, CHECK_DATE=SYSDATE,EXPIRY_DATE=ADD_MONTHS(SYSDATE, 12), 
+RISK_CONDITIONS=NULL,RISK_CONDITIONS_TEXT=NULL,REF_NO=NULL,MANUAL_OVERRIDE=1
+where PERSON_ID=?</td>
+	<td>DECISION_TEXT varchar
+	    PERSON_ID int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

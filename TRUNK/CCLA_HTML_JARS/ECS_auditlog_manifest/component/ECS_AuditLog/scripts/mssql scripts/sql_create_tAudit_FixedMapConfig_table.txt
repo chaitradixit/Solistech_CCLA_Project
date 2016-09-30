@@ -1,0 +1,4 @@
+CREATE TABLE tAudit_FixedMapConfig
+(AC_ACTION nvarchar(32),
+AC_FIELD nvarchar(32),
+AC_VALUE nvarchar(64))

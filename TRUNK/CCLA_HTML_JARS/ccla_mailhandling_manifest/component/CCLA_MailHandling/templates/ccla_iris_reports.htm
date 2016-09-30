@@ -1,0 +1,181 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include iris_styles$>
+
+	<title>
+		CCLA Iris Reports
+	</title>
+	
+	<$include iris_jquery_js$>
+	
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#wfName').change(function() {
+			$("#wf").submit();
+		});
+	});
+	
+	</script>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+
+	<$include float_menu_header$>
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "startDate,endDate"$>
+	
+	<$SF_startDate_type="input"$>
+	<$SF_startDate_shortname="startDate"$>
+	
+	<$SF_endDate_type="input"$>
+	<$SF_endDate_shortname="endDate"$>
+	<$include epoch_calendar_header$>
+	<$include ccla_date_masking_js$>
+	
+</head>
+
+<body <$include iris_body_def_internal$> onload="prepareCalendars()">
+	
+	<$include ecs_popup_div_header$>
+
+	<!-- Viewable layout -->
+	<$include iris_header$>
+
+<div style="padding: 10px;text-align:center;">
+	
+	<h3 class="white">CCLA Iris Reports</h3>
+	
+	<div class="grey_bg white_border" style="width:800px;padding:10px;">
+	<h4>Workflow approvals</h4>
+	
+	<form action="<$HttpCgiPath$>" id="wf" name="wf">
+
+		<input type="hidden" name="IdcService" value="CCLA_IRIS_REPORTS"/>
+		<$include add_idc_token_to_form$>
+		<table>
+		  <tr>
+			<td>Workflow:</td>
+			<td>
+			  <select name="wfName" id="wfName">
+				<option value=""></option>
+				
+				<$loop rsWfNames$>
+					<option value="<$#active.dWfName$>" <$if #local.wfName like #active.dWfName$>selected="selected"<$endif$>>
+						<$#active.dWfName$>
+					</option>
+				<$endloop$>
+
+			  </select>
+			</td>
+		  </tr>
+	
+		  <tr>
+			<td>Step:</td>
+			<td>
+				<select name="wfStepName" onchange="document.forms['wf'].submit()">
+
+					<option value=""></option>	
+			  
+					<$loop rsWfStepNames$>
+						<$if #active.WFNAME like #local.wfName$>
+							<option value="<$#active.STEPNAME$>" <$if #local.wfStepName like #active.STEPNAME$>selected="selected"<$endif$>>
+								<$#active.STEPNAME$>
+							</option>
+						<$endif$>
+					<$endloop$>
+
+			  </select>
+			</td>
+		  </tr>
+		  <tr>
+			<td>Start Date:</td>
+			<td>
+				<input name="startDate" id="startDate" value="<$#local.startDate$>" onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateMask(event,this);"/>
+				<image alt="date picker" src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="startDate_picker" id="startDate_picker" class="calbutton"/>
+			</td>
+		  </tr>
+		  <tr>
+			<td>End Date:</td>
+			<td>
+				<input name="endDate" id="endDate" value="<$#local.endDate$>" onFocus="javascript: inFocus=true;" onBlur="javascript: padOutDate(this);inFocus=false;" onKeyDown="javascript:return dDateMask(event,this);"/>
+				<image alt="date picker" src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="endDate_picker" id="endDate_picker" class="calbutton"/>
+			</td>
+		  </tr>
+		  <tr>
+			<td>&nbsp;</td>
+			<td align="right"><input type="Submit" value="Go"/>
+		  </tr>
+		</table>
+	</form>
+
+	<hr/>
+	
+	<$if wfName and wfStepName and startDate and endDate$>
+		<$executeService("CCLA_GET_WF_ACTION_COUNTS")$>
+		
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Username</th>
+					<th>Workflow action count</th>
+				</tr>
+			</thead>
+			<tbody>
+				<$loop rsWfActionCounts$>
+					<tr>
+						<td><$#active.lUser$></td>
+						<td><$#active.ACTIONCOUNT$></td>
+					</tr>
+				<$endloop$>
+			</tbody>
+		</table>
+		
+		<hr/>
+	<$endif$>
+	
+	<h4>Response slip listing (warning: slow)</h4>
+	
+	<form action="<$HttpCgiPath$>" id="wf" name="wf">
+		<$include add_idc_token_to_form$>
+		<input type="hidden" name="IdcService" value="CCLA_IRIS_REPORTS"/>
+		<input type="hidden" name="getResponseSlips" value="1" />
+		
+		<input type="Submit" value="Go"/>
+		
+	</form>
+	
+	<hr/>
+	
+	<$if getResponseSlips$>
+		<table border=1>
+			<tr>
+				<th>Content ID</th><th>Correspondent ID</th><th>Correspondence Pref</th><th>Release date</th>
+			</tr>
+			
+			<$executeService("CCLA_GET_RESPONSE_SLIPS")$>
+			
+			Fetched <$getValue("rsResponseSlips","#numRows")$> response slips with completed Correspondence IDs.
+			
+			<br/><br/>
+			
+			<$loop rsResponseSlips$>
+				<tr>
+					<td><$#active.dDocName$></td>
+					<td><$#active.xClientNumber$></td>
+					<td><$#active.xUnits$></td>
+					<td><$#active.dInDate$></td>
+				</tr>
+			<$endloop$>
+			
+		</table>
+	<$endif$>
+	</div>
+</div>	
+	
+</body></html>

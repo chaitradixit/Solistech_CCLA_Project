@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$processTarget = rsProcess.TARGET$>
+		
+		<title>
+			Process info  
+				<$if processTarget like "client"$>
+					- <$rsProcessEntity.NAME$>
+					
+					<$interactionTarget = "clientCampaign"$>
+				<$elseif processTarget like "correspondent"$>
+					- 	<$loop rsProcessPerson$>
+							<$include ccla_cs_person_name_display$>
+						<$endloop$>
+						
+					<$interactionTarget = "personCampaign"$>
+				<$endif$>
+				
+				- <$rsProcess.NAME$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+			<$include ccla_cs_set_params_js$>
+		<script type="text/javascript">
+				function openPDF()
+		{
+		window.open ('<$HttpWebRoot$>groups/public/documents/document/ccla_003724.pdf')
+		}
+			
+			function refreshProcessDetail() {
+			var entityId = "<$#active.ORGANISATION_ID$>";
+			var enrolmentId = "<$#active.CAMPAIGN_ENROLMENT_ID$>";
+			var personId = "<$#active.PERSON_ID$>";
+			var campaignId = "<$#active.CAMPAIGN_ID$>";
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_psdf_reg_process_info",
+				{
+					"ORGANISATION_ID": entityId,
+					"PERSON_ID":personId,
+					"CAMPAIGN_ENROLMENT_ID":enrolmentId,
+					"CAMPAIGN_ID":campaignId,
+					"ajaxRefresh": 1,
+					"ts":	new Date().getTime()
+				},
+				function(data) {
+					$("#intentionListingDiv").html(data);
+				}
+			);
+		}
+		
+		function refreshContactOption()
+		{
+			var elementId = document.recipientForm.PERSON_ID.value;
+				$.post("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_select_contact_method",
+					{
+						"CONTACT_PERSON_ID": elementId,
+						"ajaxRefresh": 1
+					},
+					function(data) {
+						$("#prefContactMethod").html(data);
+					}
+				);
+		}
+		function submitContactOption()
+		{
+			var contactMethod = document.recipientForm.CONTACT_ADDRESS_ID.value;
+			if (contactMethod == null || contactMethod.length==0)
+			{
+			alert ('Please ensure you choose a contact address for the recipient. If no methods are available choose another person or add an address for the chosen recipient');
+			return false;
+			} else {
+			document.recipientForm.submit();
+			}
+		}		
+		</script>
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+	<div  id="cs_page_container" class="cs-page-container">
+			
+			<$if NOT hideActionButtons$>
+				<$buttonContext = "entity"$>
+				<$include ccla_cs_action_buttons$>
+			<$endif$>
+			<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<div id='ccla_cs_content' class="cs-content-container" >
+		
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Process Info
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<table width="100%" class="cs-info-table">
+						<tr>
+							<th>Campaign:</th><td><$rsProcess.NAME$></td>
+							<th>Date started:</th><td><$rsProcess.PROCESS_DATE$></td>
+						</tr>
+						
+						<tr>
+							<th>Process ID:</th><td><$rsProcess.PROCESS_ID$></td>
+							<th>Last action:</th><td><$rsProcess.LAST_ACTION$></td>
+						</tr>
+						
+						<tr>
+							<th>Status:</th><td><$rsProcess.PROCESS_STATUS$></td>
+						</tr>
+					</table>
+					
+					<$if processTarget like "client"$>
+						
+					<$include ccla_cs_process_contact_method$>
+					
+					<$endif$>
+					
+					<!-- Attempt to display a custom process_info include, based on the parent
+					     campaign's IDOC_INCLUDE_INFIX value. If this isn't present, use a default
+						 include instead.
+						 -->
+					<$if rsProcess.IDOC_INCLUDE_INFIX$>
+						<$inc("ccla_cs_" & rsProcess.IDOC_INCLUDE_INFIX & "_process_info")$>
+					<$else$>
+						<$include ccla_cs_default_process_info$>
+					<$endif$>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				
+				
+				<$include ccla_cs_process_actions_panel$>
+				
+				<$include orangeContainer_top$>
+				
+					<$if processTarget like "client"$>
+					
+						<div class='ccla_cs_panel_header'>
+							Organisation
+						</div>
+						
+						<div class='ccla_cs_panel_content'>
+							
+							<div style="padding-top:5px"></div>
+							<$hideClientInfo="true"$>
+							<$include ccla_cs_display_entity_info$>
+							
+							<div style="padding-top:5px"></div>
+
+							<$include ccla_cs_display_readonly_contact_details$>
+							
+							<div style="padding-top:5px"></div>
+							
+						</div>
+					
+					<$endif$>
+			
+				<$include orangeContainer_bottom$>
+				
+				
+
+				<$include ccla_cs_entity_process_list$>
+				
+				
+
+				<$include orangeContainer_top$>
+				
+					<div class='ccla_cs_panel_header'>
+						Generated Forms
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+						
+						<$if not rsProcessForms$>
+				
+							<p>No forms have been generated for this process.</p>
+							
+						<$else$>
+						
+							<table width="100%" cellpadding=0 cellspacing=0 class="accounts-table">
+								<tr>
+									<th class="first-col" width="10%">Form ID</th>
+									<th width="20%">Type</th>
+									<$if processTarget like "person"$>$>
+										<th width="10%">Client ID</th>
+									<$else$>	
+										<th width="10%">Person ID</th>
+									<$endif$>
+									
+									<th width="10%">Status</th>
+									<th width="20%">Content ID</th>
+									<th width="10%">Created</th>
+									<th width="7%">Printed</th>
+									<th width="13%">Returned</th>
+								</tr>
+							
+								<$loop rsProcessForms$>
+									<tr class="account-details-row">
+										<td class="first-col">
+											<a href="javascript:openPopup('?IdcService=CCLA_CS_FORM_INFO_POPUP<$include add_idc_token_to_url$>&formId=<$#active.FORM_ID$>&ts=' + new Date());"><$#active.FORM_ID$></a>
+										</td>
+										<td>
+											<$#active.FORM_TYPE$>
+										
+											<$if #active.FORM_SUBTYPE$>
+												<br/>
+												<span style="color:#666; font-size: 0.8em;"><$#active.FORM_SUBTYPE$></span>
+											<$endif$>
+											
+										</td>
+										
+										<$if processTarget like "person"$>
+											<td><$strLeftFill(#active.CLIENT_ID,"0",5)$></td>
+										<$else$>
+											<td><$#active.PERSON_ID$></td>
+										<$endif$>
+										
+										<td><$if #active.FORM_STATUS$><$#active.FORM_STATUS$><$else$>&nbsp;<$endif$></td>
+										<td>
+											<$if #active.GENERATED like "1"$>
+												<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.BASE_DOCNAME$>"><$#active.BASE_DOCNAME$></a>
+											<$else$>
+												<span style="color:#666;"><$#active.BASE_DOCNAME$></span>
+											<$endif$>
+											
+										</td>
+										<td><$#active.CREATE_DATE$></td>
+										<td>
+											<$if #active.PRINTED like "1"$>Yes<$else$>No<$endif$>
+										
+										</td>
+										<td>
+											<$if #active.RETURNED_DOCNAME$>
+												<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&dDocName=<$#active.RETURNED_DOCNAME$>"><$#active.RETURNED_DOCNAME$></a>
+											<$else$>
+												No
+											<$endif$>
+										</td>
+									</tr>
+								<$endloop$>
+							</table>
+						
+						<$endif$>
+						
+					</div>
+			
+				<$include orangeContainer_bottom$>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

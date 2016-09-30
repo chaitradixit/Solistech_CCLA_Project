@@ -1,0 +1,192 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IrisProfiles service
+</title>
+</head>
+<body>
+
+<@table IrisProfiles_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>IRIS_PROFILE_LISTING</td>
+	<td>Service
+		8
+		IRIS_PROFILE_LISTING
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IRIS_PROFILE_EDIT</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		8
+		IRIS_PROFILE_EDIT
+		null
+		null<br>
+		null</td>
+	<td>3:loadDefinitionIntoBinder:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_WORKFLOW_NAMES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QWorkflowNames:rsWorkflowNames::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_FIELD_NAMES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QFieldNames:rsFieldNames::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_STEP_NAMES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QStepNames:rsStepNames::null</td>
+</tr>
+<tr>
+	<td>IRIS_UPDATE_PROFILE</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		32
+		REDIRECT_TEMPLATE
+		null
+		null<br>
+		null</td>
+	<td>3:updateDefinition:::null
+		3:prepareRedirect:<$HttpCgiPath$>?IdcService=IRIS_PROFILE_EDIT&pName=<$pName$>::null</td>
+</tr>
+<tr>
+	<td>IRIS_CREATE_NEW_PROFILE</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		IRIS_PROFILE_LISTING
+		null
+		null<br>
+		null</td>
+	<td>3:createNewProfile:::null</td>
+</tr>
+<tr>
+	<td>IRIS_CHECKIN_NEW_PROFILE</td>
+	<td>DocService
+		34
+		null
+		null
+		documents<br>
+		!csUnableToCheckIn(dDocName)</td>
+	<td>3:prepareCheckinSecurity::0:null
+		3:checkSecurity::0:null
+		3:doSubService:CHECKIN_NEW_SUB:12:null
+		3:prepareRedirect:IdcService=IRIS_PROFILE_LISTING&newProfileStatus=<$#active.newProfileStatus$>&newProfileName=<$#active.newProfileName$>::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_CONTENT_TYPES</td>
+	<td>Service
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QContentTypes:rsContentTypes::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_PROFILE_INFO</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:loadDefinitionForDocument:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DELETE_PROFILE</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteProfile:::null
+		3:prepareRedirect:IdcService=IRIS_PROFILE_LISTING&delProfile=<$#active.delProfile$>::null</td>
+</tr>
+<tr>
+	<td>IRIS_PROFILE_CONDITIONS</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		IRIS_PROFILE_CONDITIONS
+		null
+		null<br>
+		null</td>
+	<td>3:loadConditionsIntoBinder:::null</td>
+</tr>
+<tr>
+	<td>IRIS_UPDATE_CONDITION</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:updateCondition:::null</td>
+</tr>
+<tr>
+	<td>IRIS_DELETE_CONDITION</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:deleteCondition:::null</td>
+</tr>
+<tr>
+	<td>IRIS_COPY_CONDITION</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:copyDefinition:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_PROFILE_CACHE_INFO</td>
+	<td>com.ecs.stellent.iris.definition.ProfileCache
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getProfileCacheInfo:::null</td>
+</tr>
+<tr>
+	<td>IRIS_GET_CONDITION_FOR_PARAMS</td>
+	<td>com.ecs.stellent.iris.definition.XMLProfileReader
+		32
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getConditionForParams:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

@@ -1,0 +1,122 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IRIS_BatchDocuments htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml IRIS_STATUS_CustomIncludeScript@>
+	<$xStatus$>
+<@end@>
+
+<@dynamichtml QUICKDATE_long_CustomIncludeScript@>
+	<$formatDateWithPattern(dInDate,"dd/MM/yy HH:mm")$>
+<@end@>
+
+<@dynamichtml TITLE_CustomIncludeScript@>
+	<a onclick="openDoc('<$dDocName$>',event)"><$dDocTitle$></a>
+<@end@>
+
+<@dynamichtml BUNDLEREF_cabinet_display@>
+	<a onclick="openBundle('','<$getValue("SearchResults",#env.Iris_batchIdField)$>',event)"><$getValue("SearchResults",#env.Iris_batchIdField)$></a>
+<@end@>
+
+<@dynamichtml DEPARTMENT_CustomIncludeScript@>
+	<$if xDepartment$>
+		<$getViewDisplayValue("vDepartments",xDepartment)$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml SUBDEPT_CustomIncludeScript@>
+	<$if xSubDept$>
+		<$getViewDisplayValue("vSubDepts",xSubDept)$>
+	<$endif$>
+<@end@>
+
+<@dynamichtml BUNDLEREF_CustomIncludeScript@>
+	<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&bundleRef=<$getValue("SearchResults",#env.Iris_batchIdField)$>"><$getValue("SearchResults",#env.Iris_batchIdField)$></a>
+<@end@>
+
+<@dynamichtml SCANDATE_CustomIncludeScript@>
+  <$if xStartDate$>
+
+  	<$if formatDateWithPattern(xStartDate,"HH:mm") like '00:00'$>
+  		<$formatDateWithPattern(xStartDate,Iris_shortDatePattern)$>
+  	<$else$>
+  		<$formatDateWithPattern(xStartDate,Iris_longDatePattern)$>
+  	<$endif$>
+  <$endif$>
+<@end@>
+
+<@dynamichtml DUEDATE_CustomIncludeScript@>
+
+  <$if xPaymentDate$>
+  	<$dueDate = formatDateWithPattern(xPaymentDate,Iris_shortDatePattern)$>
+
+  	<$if bundleIsOverdue$>
+  		<!-- This bundle is incomplete and past its due date! -->
+  		<span style="font-weight:bold; color: #FF0000;"><$dueDate$></span>
+  	<$else$>
+  		<$dueDate$>
+  	<$endif$>
+
+  <$endif$>
+
+  <$dueDate = ''$>
+<@end@>
+
+<@dynamichtml ACKDATE_CustomIncludeScript@>
+
+  <$if xAcknowledgeDate$>
+  	<$formatDateWithPattern(xAcknowledgeDate,Iris_shortDatePattern)$>
+  <$endif$>
+
+<@end@>
+
+<@dynamichtml RESPDATE_CustomIncludeScript@>
+
+  <$if xOrderDate$>
+  	<$formatDateWithPattern(xOrderDate,Iris_shortDatePattern)$>
+  <$endif$>
+
+<@end@>
+
+<!-- Displays the approver alias name or approver's full name. -->
+<@dynamichtml APPROVER_batch_CustomIncludeScript@>
+
+	<$if xApprover$>
+		<$if strIndexOf(xApprover,"a:") == 0$>
+			<$thisApprover = strSubstring(xApprover,2)$>
+		<$else$>
+			<$thisApprover = getValueForSpecifiedUser(xApprover,"dFullName")$>
+		<$endif$>
+	<$endif$>
+
+	<$#local.thisApprover$>
+
+	<$thisApprover = ""$>
+
+<@end@>
+
+<!-- Custom select list of batch statuses -->
+<@dynamichtml BUNDLESTATUS_CustomFilterScript@>
+
+	<$bundleStatusList = "Open,Assigned,Completed"$>
+	<$exec rsMakeFromString("rsStatus",bundleStatusList,"status")$>
+
+	<select name=st id=st class="sfSelect" <$if autoSearch$>onChange="document.forms['SEARCHFILTER'].submit();"<$endif$>>
+		<option value=""></option>
+
+		<$include blank_string_option$>
+
+		<$loop rsStatus$>
+			<option value="<$rsStatus.status$>" <$if #local.st like rsStatus.status$>selected="selected"<$endif$>>
+				<$rsStatus.status$>
+			</option>
+		<$endloop$>
+	</select>
+<@end@>
+
+</body></html>

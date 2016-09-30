@@ -1,0 +1,25 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+CreateDate=10/05/2012 12:04
+blFieldTypes=CreateDate date
+ComponentName=ECS_AuditLog
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Manifest
+2
+entryType
+location
+component
+ECS_AuditLog/ECS_AuditLog.hda
+componentExtra
+ECS_AuditLog/readme.txt
+componentClasses
+ECS_AuditLog/classes/ECSAuditLog.jar
+componentExtra
+ECS_AuditLog/scripts/
+componentExtra
+ECS_AuditLog/configuration_guide.txt
+componentExtra
+ECS_AuditLog/config/
+@end
+

@@ -1,0 +1,609 @@
+------------------------------------------------------------------------
+r20831 | tm | Tue May 14 16:16:20 BST 2013
+
+c
+------------------------------------------------------------------------
+r20822 | tm | Tue May 14 15:17:19 BST 2013
+
+Removed call to deprecated class
+------------------------------------------------------------------------
+r20240 | camli | Fri Feb 01 11:37:59 GMT 2013
+
+fixed PSDF issues
+------------------------------------------------------------------------
+r20238 | tm | Fri Feb 01 11:29:00 GMT 2013
+
+Widened closing units column
+------------------------------------------------------------------------
+r18872 | camli | Tue Jul 10 12:19:10 BST 2012
+
+updated template
+------------------------------------------------------------------------
+r18869 | camli | Mon Jul 09 16:55:24 BST 2012
+
+updated services
+------------------------------------------------------------------------
+r18868 | camli | Mon Jul 09 16:54:37 BST 2012
+
+initial version of results
+------------------------------------------------------------------------
+r18867 | camli | Mon Jul 09 16:53:54 BST 2012
+
+updated templates
+------------------------------------------------------------------------
+r18859 | camli | Fri Jul 06 17:35:31 BST 2012
+
+added create movement method.
+------------------------------------------------------------------------
+r18851 | camli | Fri Jul 06 12:21:02 BST 2012
+
+added shareclass calculate method.
+------------------------------------------------------------------------
+r18847 | camli | Fri Jul 06 10:40:55 BST 2012
+
+added discrepancy logic.
+------------------------------------------------------------------------
+r18845 | camli | Fri Jul 06 10:40:14 BST 2012
+
+added discrepancy report to template
+------------------------------------------------------------------------
+r18844 | camli | Fri Jul 06 10:39:40 BST 2012
+
+initial version of discrepancy report
+------------------------------------------------------------------------
+r18837 | camli | Thu Jul 05 18:24:43 BST 2012
+
+added units/cash to closing units for account.
+------------------------------------------------------------------------
+r18833 | camli | Thu Jul 05 14:54:39 BST 2012
+
+added new reporting services.
+------------------------------------------------------------------------
+r18610 | camli | Tue Jun 12 13:21:21 BST 2012
+
+updated release details
+------------------------------------------------------------------------
+r18580 | PAULT | Fri Jun 08 14:40:09 BST 2012
+
+ipad style changes
+------------------------------------------------------------------------
+r18550 | PAULT | Wed Jun 06 17:59:23 BST 2012
+
+ipad style changes
+------------------------------------------------------------------------
+r18491 | camli | Tue May 29 11:05:52 BST 2012
+
+updated fix info.
+------------------------------------------------------------------------
+r18479 | camli | Mon May 28 12:40:19 BST 2012
+
+fixed issue with big decimal calculations.Used correct syntax of compareTo instead of equals
+------------------------------------------------------------------------
+r18434 | PAULT | Fri May 25 14:28:42 BST 2012
+
+updated manifest.hda
+------------------------------------------------------------------------
+r18355 | PAULT | Thu May 24 14:22:36 BST 2012
+
+added final readme entry notes
+------------------------------------------------------------------------
+r18342 | PAULT | Thu May 24 11:43:37 BST 2012
+
+buildComponent.xml
+------------------------------------------------------------------------
+r18323 | PAULT | Thu May 24 10:32:31 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18322 | PAULT | Thu May 24 10:31:53 BST 2012
+
+buildComponent.xml and build.properties
+------------------------------------------------------------------------
+r18321 | PAULT | Thu May 24 10:29:16 BST 2012
+
+test
+------------------------------------------------------------------------
+r18320 | PAULT | Thu May 24 10:28:38 BST 2012
+
+test
+------------------------------------------------------------------------
+r18319 | PAULT | Thu May 24 10:27:29 BST 2012
+
+changed build.properties
+------------------------------------------------------------------------
+r18139 | PAULT | Mon May 21 17:25:14 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18138 | PAULT | Mon May 21 17:25:13 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18137 | PAULT | Mon May 21 17:25:12 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18136 | PAULT | Mon May 21 17:25:09 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18135 | PAULT | Mon May 21 17:25:08 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18134 | PAULT | Mon May 21 17:25:04 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18133 | PAULT | Mon May 21 17:25:03 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18132 | PAULT | Mon May 21 17:25:02 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18131 | PAULT | Mon May 21 17:25:01 BST 2012
+
+adding ccla_transactions
+------------------------------------------------------------------------
+r18130 | PAULT | Mon May 21 17:24:50 BST 2012
+
+removing old code
+------------------------------------------------------------------------
+r16950 | camli | Thu Mar 15 16:22:14 GMT 2012
+
+added loging.
+------------------------------------------------------------------------
+r16320 | camli | Mon Jan 30 16:25:30 GMT 2012
+
+added DecimalFormatting to FundEOD and FundAudit objects in EndOfDayService.
+------------------------------------------------------------------------
+r16319 | camli | Mon Jan 30 14:12:37 GMT 2012
+
+added formatting to date on re-run.
+------------------------------------------------------------------------
+r16317 | camli | Fri Jan 27 17:38:16 GMT 2012
+
+refactored psdf end of day to be ran from multiple dates and force transactions
+------------------------------------------------------------------------
+r16149 | camli | Tue Jan 10 14:36:13 GMT 2012
+
+added checks for units in psdf transfer instructions. Cannot be null or 0.
+------------------------------------------------------------------------
+r15983 | camli | Mon Dec 12 15:53:46 GMT 2011
+
+added new methods
+------------------------------------------------------------------------
+r15982 | camli | Mon Dec 12 15:12:11 GMT 2011
+
+added getFWFacade to usePooling
+------------------------------------------------------------------------
+r15981 | camli | Mon Dec 12 15:08:02 GMT 2011
+
+added getAllTransactionsForEOD method
+------------------------------------------------------------------------
+r15965 | tm | Thu Dec 08 19:06:39 GMT 2011
+
+Fixed try-catch block to catch and re-throw all Exceptions
+------------------------------------------------------------------------
+r15937 | camli | Tue Dec 06 15:18:24 GMT 2011
+
+removed redundant imports
+------------------------------------------------------------------------
+r15406 | tm | Tue Sep 27 16:31:23 BST 2011
+
+Removed old Cache references
+------------------------------------------------------------------------
+r14661 | tm | Thu Jul 14 11:02:04 BST 2011
+
+Fixed classpath, added bin to ignore
+------------------------------------------------------------------------
+r14660 | tm | Thu Jul 14 11:01:38 BST 2011
+
+Classpath
+------------------------------------------------------------------------
+r14269 | katie | Thu Jun 30 09:07:26 BST 2011
+
+fixed typo
+------------------------------------------------------------------------
+r14261 | katie | Wed Jun 29 11:40:42 BST 2011
+
+changed to only look for REIN type accounts
+------------------------------------------------------------------------
+r14189 | katie | Fri Jun 24 17:05:09 BST 2011
+
+updated to include service to create end of month instructions for moving money from pi to pc accounts
+------------------------------------------------------------------------
+r14056 | katie | Thu Jun 16 15:17:47 BST 2011
+
+added net and gross yield calculations to end of day, and report/summary screens.
+------------------------------------------------------------------------
+r14005 | katie | Tue Jun 14 15:05:26 BST 2011
+
+added new idoc function to round numbers and added some new fields to end of day report
+------------------------------------------------------------------------
+r13982 | katie | Fri Jun 10 16:50:11 BST 2011
+
+bug fix
+------------------------------------------------------------------------
+r13956 | katie | Fri Jun 10 13:33:50 BST 2011
+
+reporting changes for end of day
+------------------------------------------------------------------------
+r13949 | katie | Thu Jun 09 16:46:46 BST 2011
+
+changes to allow end of days to be run retrospectively
+------------------------------------------------------------------------
+r13719 | katie | Fri May 27 14:48:41 BST 2011
+
+added extra debugging
+------------------------------------------------------------------------
+r13712 | katie | Thu May 26 17:34:09 BST 2011
+
+fix for finishing end of day when no transactions present
+------------------------------------------------------------------------
+r13701 | katie | Thu May 26 11:09:11 BST 2011
+
+added yield value to report (income per unit multiplied by 365) as requested by CCLA
+------------------------------------------------------------------------
+r13698 | katie | Thu May 26 09:21:51 BST 2011
+
+last minute changes for go live
+------------------------------------------------------------------------
+r13642 | katie | Tue May 24 11:36:05 BST 2011
+
+updated to ensure accounts marked as 'internal' (via element attribute) enter into correct share class
+------------------------------------------------------------------------
+r13625 | camli | Mon May 23 17:31:26 BST 2011
+
+added missing params
+------------------------------------------------------------------------
+r13623 | katie | Mon May 23 17:18:50 BST 2011
+
+added check for seed funders and early investors and update to those share classes
+------------------------------------------------------------------------
+r13547 | camli | Thu May 19 18:13:38 BST 2011
+
+added TotalRateExpense, TotalCashExpense, TotalNetIncomeDistribution.
+------------------------------------------------------------------------
+r13535 | katie | Thu May 19 15:31:02 BST 2011
+
+misc changes to seed fund
+------------------------------------------------------------------------
+r13518 | katie | Thu May 19 10:03:18 BST 2011
+
+fixed to exclude disabled share classes from EOD totals
+------------------------------------------------------------------------
+r13484 | katie | Wed May 18 11:41:27 BST 2011
+
+Added formatNumber function (idoc)
+------------------------------------------------------------------------
+r13450 | camli | Tue May 17 15:02:40 BST 2011
+
+added rounding and decimal places to properties file.
+------------------------------------------------------------------------
+r13446 | camli | Tue May 17 13:32:22 BST 2011
+
+fixed rounding rule issue
+------------------------------------------------------------------------
+r13444 | camli | Tue May 17 12:29:20 BST 2011
+
+converted to take into account that FundPrice is in pence.
+------------------------------------------------------------------------
+r13441 | camli | Tue May 17 11:09:21 BST 2011
+
+added checks to exclude share class from normal movement calculations 
+------------------------------------------------------------------------
+r13435 | katie | Tue May 17 10:50:50 BST 2011
+
+updated name of a query
+------------------------------------------------------------------------
+r13389 | katie | Mon May 16 09:47:56 BST 2011
+
+removed unnecessary import
+------------------------------------------------------------------------
+r13385 | camli | Fri May 13 17:21:16 BST 2011
+
+add rem out code to persist the closing cash/units to the AccountValue obj. Need to check with KD whether we can enable this.
+------------------------------------------------------------------------
+r13359 | camli | Thu May 12 14:17:16 BST 2011
+
+added total net income distribution to report. This should be added to the report which will require DB change. NOT DONE AS DEMO IS TOMORROW.
+------------------------------------------------------------------------
+r13358 | camli | Thu May 12 11:25:35 BST 2011
+
+corrected logic for calculating days
+------------------------------------------------------------------------
+r13357 | camli | Thu May 12 11:04:08 BST 2011
+
+added more debug!
+------------------------------------------------------------------------
+r13356 | camli | Thu May 12 11:01:07 BST 2011
+
+added debug
+------------------------------------------------------------------------
+r13351 | camli | Thu May 12 09:54:19 BST 2011
+
+added getLastCompleted method 
+------------------------------------------------------------------------
+r13349 | camli | Thu May 12 09:52:30 BST 2011
+
+re-calculated management expenses as daily fees
+------------------------------------------------------------------------
+r13338 | camli | Wed May 11 13:54:21 BST 2011
+
+exclude chareclass if it is disabled.
+------------------------------------------------------------------------
+r13337 | camli | Wed May 11 13:53:49 BST 2011
+
+fixed null pointer
+------------------------------------------------------------------------
+r13023 | katie | Tue Apr 26 15:15:54 BST 2011
+
+added more checks to see if eod has already run
+------------------------------------------------------------------------
+r13020 | katie | Tue Apr 26 14:18:00 BST 2011
+
+updated so that share class movements are used to update account share classes when end of day is finalised
+------------------------------------------------------------------------
+r13007 | katie | Tue Apr 26 09:43:49 BST 2011
+
+updated rate expense to be calculated as a percentage of the total units held in that share class multiplied by NAV (as requested by CCLA on 21 April)
+------------------------------------------------------------------------
+r12703 | katie | Thu Apr 07 17:53:40 BST 2011
+
+added some more comments
+------------------------------------------------------------------------
+r12697 | katie | Thu Apr 07 15:19:20 BST 2011
+
+removed old classes
+------------------------------------------------------------------------
+r12678 | katie | Thu Apr 07 10:57:14 BST 2011
+
+removed old classes
+------------------------------------------------------------------------
+r12677 | katie | Thu Apr 07 10:56:23 BST 2011
+
+removed old classes
+------------------------------------------------------------------------
+r12674 | katie | Thu Apr 07 09:51:33 BST 2011
+
+fixed problem with account share class being null
+------------------------------------------------------------------------
+r12658 | katie | Wed Apr 06 17:13:59 BST 2011
+
+moved share class classes to core component
+------------------------------------------------------------------------
+r12644 | katie | Wed Apr 06 15:41:33 BST 2011
+
+put in logic so that share class group is taken into account when doing end of day calculations
+------------------------------------------------------------------------
+r12594 | katie | Tue Apr 05 17:52:40 BST 2011
+
+end of day commit!
+------------------------------------------------------------------------
+r12581 | katie | Mon Apr 04 17:40:54 BST 2011
+
+added delete methods
+------------------------------------------------------------------------
+r12574 | katie | Mon Apr 04 15:56:51 BST 2011
+
+4pm commit
+------------------------------------------------------------------------
+r12555 | katie | Fri Apr 01 16:21:16 BST 2011
+
+added share class group classes
+------------------------------------------------------------------------
+r12521 | katie | Thu Mar 31 15:26:04 BST 2011
+
+add share class override
+------------------------------------------------------------------------
+r12520 | katie | Thu Mar 31 15:24:04 BST 2011
+
+add share class override
+------------------------------------------------------------------------
+r12518 | katie | Thu Mar 31 15:05:41 BST 2011
+
+move share class to core component
+------------------------------------------------------------------------
+r12443 | katie | Wed Mar 30 11:04:53 BST 2011
+
+added total share class expense directly to the binder
+------------------------------------------------------------------------
+r12354 | katie | Thu Mar 24 18:02:13 GMT 2011
+
+put in changes so completed eod cannot be rerun
+------------------------------------------------------------------------
+r12348 | katie | Thu Mar 24 15:43:54 GMT 2011
+
+Added FundEOD object
+------------------------------------------------------------------------
+r12330 | katie | Wed Mar 23 15:15:48 GMT 2011
+
+finished auditing
+------------------------------------------------------------------------
+r12310 | katie | Tue Mar 22 17:45:03 GMT 2011
+
+adding auditing
+------------------------------------------------------------------------
+r12278 | katie | Mon Mar 21 11:14:52 GMT 2011
+
+added is_enabled to incomeexpense
+------------------------------------------------------------------------
+r12272 | katie | Fri Mar 18 17:27:57 GMT 2011
+
+eod commit
+------------------------------------------------------------------------
+r12237 | katie | Thu Mar 17 17:43:28 GMT 2011
+
+updated for new java objects
+------------------------------------------------------------------------
+r12184 | katie | Tue Mar 15 10:39:44 GMT 2011
+
+Changes to fund pricing after 1st demo
+------------------------------------------------------------------------
+r12175 | katie | Mon Mar 14 10:26:53 GMT 2011
+
+moved ref_instruction_data names into transactionglobals file
+------------------------------------------------------------------------
+r12168 | tm | Fri Mar 11 18:21:40 GMT 2011
+
+Removed TransactionType
+------------------------------------------------------------------------
+r12151 | katie | Thu Mar 10 15:52:29 GMT 2011
+
+moved instruction classes into cclacore
+------------------------------------------------------------------------
+r12149 | katie | Thu Mar 10 15:48:12 GMT 2011
+
+Refactored for new schema
+------------------------------------------------------------------------
+r12098 | katie | Fri Mar 04 16:32:17 GMT 2011
+
+added some comments
+------------------------------------------------------------------------
+r12064 | katie | Thu Mar 03 15:41:11 GMT 2011
+
+Add/editing transactions
+------------------------------------------------------------------------
+r12032 | katie | Mon Feb 28 09:41:40 GMT 2011
+
+morning check in
+------------------------------------------------------------------------
+r11966 | katie | Tue Feb 22 18:11:59 GMT 2011
+
+eod commit
+------------------------------------------------------------------------
+r11943 | katie | Fri Feb 18 17:38:17 GMT 2011
+
+friday commit
+------------------------------------------------------------------------
+r11895 | katie | Thu Feb 17 17:15:56 GMT 2011
+
+pm commit
+------------------------------------------------------------------------
+r11881 | katie | Wed Feb 16 17:43:29 GMT 2011
+
+eod commit
+------------------------------------------------------------------------
+r11873 | katie | Wed Feb 16 12:37:54 GMT 2011
+
+lunchtime commit
+------------------------------------------------------------------------
+r11846 | katie | Mon Feb 14 17:42:54 GMT 2011
+
+query name updated
+------------------------------------------------------------------------
+r11822 | katie | Mon Feb 14 12:02:09 GMT 2011
+
+new classes
+------------------------------------------------------------------------
+r11815 | katie | Mon Feb 14 09:07:05 GMT 2011
+
+to fix paths because of refactored clientservices component
+------------------------------------------------------------------------
+r11744 | katie | Wed Feb 09 18:08:09 GMT 2011
+
+end of day
+------------------------------------------------------------------------
+r11742 | katie | Wed Feb 09 16:04:46 GMT 2011
+
+pm commit
+------------------------------------------------------------------------
+r11738 | katie | Tue Feb 08 15:00:18 GMT 2011
+
+pm commit
+------------------------------------------------------------------------
+r11726 | katie | Mon Feb 07 17:48:45 GMT 2011
+
+eod commit
+------------------------------------------------------------------------
+r11717 | katie | Mon Feb 07 11:54:13 GMT 2011
+
+updates from schema change
+------------------------------------------------------------------------
+r11704 | katie | Thu Feb 03 18:04:56 GMT 2011
+
+updates to end of day service
+
+------------------------------------------------------------------------
+r11693 | katie | Tue Feb 01 17:49:51 GMT 2011
+
+new classes
+------------------------------------------------------------------------
+r11682 | katie | Fri Jan 28 17:00:40 GMT 2011
+
+updated
+------------------------------------------------------------------------
+r11679 | katie | Thu Jan 27 17:45:47 GMT 2011
+
+new
+------------------------------------------------------------------------
+r11678 | katie | Thu Jan 27 17:16:23 GMT 2011
+
+new schema
+------------------------------------------------------------------------
+r11669 | katie | Mon Jan 24 11:39:58 GMT 2011
+
+added comments and did some refactoring
+------------------------------------------------------------------------
+r11667 | katie | Mon Jan 24 10:49:28 GMT 2011
+
+added comments and did some refactoring
+------------------------------------------------------------------------
+r11655 | katie | Thu Jan 20 18:02:24 GMT 2011
+
+eod commit
+------------------------------------------------------------------------
+r11654 | katie | Thu Jan 20 17:03:43 GMT 2011
+
+pm commit
+------------------------------------------------------------------------
+r11641 | katie | Wed Jan 19 11:48:30 GMT 2011
+
+safety commit
+------------------------------------------------------------------------
+r11640 | katie | Tue Jan 18 16:01:06 GMT 2011
+
+pm commit
+------------------------------------------------------------------------
+r11639 | katie | Tue Jan 18 10:24:26 GMT 2011
+
+refactored and updated
+------------------------------------------------------------------------
+r11636 | katie | Mon Jan 17 14:56:58 GMT 2011
+
+new services
+------------------------------------------------------------------------
+r11633 | katie | Fri Jan 14 18:52:11 GMT 2011
+
+add method
+------------------------------------------------------------------------
+r11630 | katie | Fri Jan 14 14:43:35 GMT 2011
+
+adding income/expense methods
+------------------------------------------------------------------------
+r11625 | katie | Thu Jan 13 18:14:46 GMT 2011
+
+updated from long to bigdecimals
+------------------------------------------------------------------------
+r11619 | katie | Thu Jan 13 16:37:35 GMT 2011
+
+NEW
+------------------------------------------------------------------------
+r11618 | katie | Thu Jan 13 15:05:38 GMT 2011
+
+new
+------------------------------------------------------------------------
+r11607 | pault | Tue Jan 11 16:31:52 GMT 2011
+
+Configuration of Component CCLA_Transactions
+------------------------------------------------------------------------
+r11606 | pault | Tue Jan 11 16:31:48 GMT 2011
+
+Initial setup of Component CCLA_Transactions
+------------------------------------------------------------------------
+r11604 | pault | Tue Jan 11 16:31:44 GMT 2011
+
+Automatic component setup for CCLA_Transactions

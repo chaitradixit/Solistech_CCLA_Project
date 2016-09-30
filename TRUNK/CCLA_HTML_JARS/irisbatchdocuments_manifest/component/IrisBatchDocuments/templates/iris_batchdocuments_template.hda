@@ -1,0 +1,74 @@
+﻿<?hda version="10.1.3.3.3 (080807)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet IRIS_BatchDocuments_
+5
+name
+class
+formtype
+filename
+description
+IRIS_BATCH_DOCS_PREVIEW
+Document
+PreviewFrames
+iris_batch_docs_preview.htm
+null
+IRIS_BATCH_DOCS_THUMBS
+RootPage
+HomePage
+iris_batch_docs_thumbs.htm
+Display batch item thumbnails
+IRIS_BATCH_DOCS_LISTING
+Search
+DocumentList
+iris_batch_docs_listing.htm
+null
+IRIS_BATCH_ACTIONS
+RootPage
+HomePage
+iris_batch_actions.htm
+null
+IRIS_BATCH_ACTION_CONFIRM
+Pages
+ConfirmPage
+iris_batch_action_confirm.htm
+confirmation page
+IRIS_CLASSIFIED_ITEMS
+Document
+DocumentList
+iris_classified_items.htm
+null
+IRIS_BATCH_MAIL_NOTIFICATION
+Workflow
+MessagePage
+iris_batch_mail_notification.htm
+Mail notifcation template
+IRIS_BATCH_REVIEWER_MAIL
+Document
+DocumentList
+iris_batch_reviewer_mail.htm
+Notification mail for batch items
+IRIS_THUMB_PREVIEW
+Document
+DocumentInfoPage
+iris_batch_doc_thumbs.htm
+Legacy template, overrides IrisCore template. Unused
+IRIS_BATCH_DOC_PANEL
+Document
+UpdateDocInfoPage
+iris_batch_doc_panel.htm
+Displays the doc metadata panel for batch items. Called via AJAX
+IRIS_DUAL_INDEX_CONFIGURATION
+Document
+UpdateDocInfoPage
+iris_dual_index_configuration.htm
+Allows user to configure which fields to dual index for each document class
+IRIS_BATCH_DUAL_INDEX_RESULTS
+Document
+UpdateDocInfoPage
+iris_batch_dual_index_results.htm
+Displays Dual Index comparison results for a given bundle or document
+@end
+

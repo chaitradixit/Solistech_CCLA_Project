@@ -1,0 +1,1239 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_reports query
+</title>
+</head>
+<body>
+
+<@table CCLA_reports_queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qEnvelopesByDate_summary</td>
+	<td>SELECT to_char(r.dInDate,'yyyymmdd') as RDATE,count(*) as DOCS,max(m.xClientNumber) as CLIENT, max(m.xAccountNumber) as ACCOUNT, xBundleRef AS ENV, xBatchNumber AS WORKFLOW_ID
+FROM DocMeta m, revisions r
+WHERE(r.dDocType = 'Document' OR r.dDocType = 'ChildDocument')
+AND r.dInDate >= ? and r.dInDate <= ?
+AND r.dRevRank = 0
+and (r.dStatus <> 'DELETED') and (r.dStatus <> 'EXPIRED')
+and m.dID = r.dID 
+GROUP BY to_char(r.dInDate,'yyyymmdd'),xBundleRef, xBatchNumber
+ORDER BY to_char(r.dInDate,'yyyymmdd'),xBundleRef, xBatchNumber</td>
+	<td>fromDate date
+	    toDate date</td>
+</tr>
+<tr>
+	<td>qEnvelopesByDate_full</td>
+	<td>SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, r.dInDate, xBundleRef as ENV,xDocumentClass as DOC,xClientNumber as CLIENT,xAccountNumber as ACCOUNT,xFund,xAmount,xUnits,xWorkflowDate,xScanDate,r.dID,r.dDocName, xBatchNumber AS WORKFLOW_ID
+FROM DocMeta m, revisions r
+WHERE r.dInDate >= ? and r.dInDate <= ?
+and r.dRevRank = 0
+and (r.dStatus <> 'DELETED') and (r.dStatus <> 'EXPIRED')
+and (r.dDocType = 'Document' OR r.dDocType = 'ChildDocument')
+and m.dID = r.dID 
+ORDER BY to_char(r.dInDate,'yyyymmdd'),xBundleRef</td>
+	<td>fromDate date
+	    toDate date</td>
+</tr>
+<tr>
+	<td>qEnvelopesByDate_noWfDate</td>
+	<td>SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, r.dInDate, xBundleRef as ENV,xDocumentClass as DOC,xClientNumber as CLIENT,xAccountNumber as ACCOUNT,xFund,xAmount,xUnits,xWorkflowDate,xScanDate,r.dID,r.dDocName, xBatchNumber AS WORKFLOW_ID
+FROM DocMeta m, revisions r
+WHERE r.dInDate >= ? and r.dInDate <= ?
+and r.dRevRank = 0
+and (r.dStatus <> 'DELETED') and (r.dStatus <> 'EXPIRED')
+and (m.xWorkflowDate < ? or m.xWorkflowDate IS NULL)
+and (r.dDocType = 'Document' OR r.dDocType = 'ChildDocument')
+and m.dID = r.dID 
+ORDER BY to_char(r.dInDate,'yyyymmdd'),xBundleRef</td>
+	<td>fromDate date
+	    toDate date
+		longTimeAgo date</td>
+</tr>
+<tr>
+	<td>qSummary</td>
+	<td>SELECT e.RDATE, ENVS, SCANENVS, DOCS, UPLOADS, ALLDOCS
+FROM
+(
+SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, count(distinct(xBatchNumber)) as ENVS
+FROM DocMeta m, Revisions r
+WHERE m.dID=r.dID
+AND m.xBatchNumber > 0 
+AND r.dInDate >= ? and r.dInDate <= ?
+GROUP BY to_char(r.dInDate,'yyyymmdd')
+) e
+
+LEFT JOIN
+
+(
+SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, count(distinct(xBatchNumber)) as SCANENVS
+FROM DocMeta m, Revisions r
+WHERE m.dID=r.dID
+AND m.xBatchNumber > 0 
+AND r.dInDate >= ? and r.dInDate <= ?
+AND m.xSource LIKE 'Scan%' 
+GROUP BY to_char(r.dInDate,'yyyymmdd')
+) s
+ON (e.RDATE = s.RDATE)
+
+LEFT JOIN
+
+(
+SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, count(r.dID) as DOCS
+FROM DocMeta m, Revisions r
+WHERE m.dID=r.dID
+AND r.dInDate >= ? and r.dInDate <= ?
+AND m.xSource LIKE 'Scan%' 
+GROUP BY to_char(r.dInDate,'yyyymmdd')
+) d 
+ON (e.RDATE = d.RDATE)
+
+LEFT JOIN
+
+(
+SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, count(r.dID) as UPLOADS
+FROM DocMeta m, Revisions r
+WHERE m.dID = r.dID
+AND r.dInDate >= ? and r.dInDate <= ?
+AND (m.xSource <> 'Scan' OR m.xSource IS NULL)
+GROUP BY to_char(r.dInDate,'yyyymmdd')
+) u 
+
+ON (e.RDATE = u.RDATE)
+
+LEFT JOIN
+
+(
+SELECT to_char(r.dInDate,'yyyymmdd') as RDATE, count(r.dID) as ALLDOCS
+FROM DocMeta m, Revisions r
+WHERE m.dID = r.dID
+GROUP BY to_char(r.dInDate,'yyyymmdd')
+) a 
+
+ON (e.RDATE = a.RDATE)
+
+
+ORDER BY e.RDATE</td>
+	<td>fromDate date
+	    toDate date
+	    fromDate date
+	    toDate date
+	    fromDate date
+	    toDate date
+	    fromDate date
+	    toDate date</td>
+</tr>
+<tr>
+	<td>qIrisSummary</td>
+	<td>SELECT to_char(r.dInDate,'yyyymmdd') AS RDATE, 
+            SUM(
+              CASE
+    		WHEN r.dDocType = 'Bundle' THEN 1
+    		ELSE 0
+  	      END
+	    ) AS ENVELOPES,
+		SUM(
+		CASE
+			WHEN m.xSource = 'User Upload' AND r.dDocType='Document' THEN 1
+			ELSE 0
+		END
+		) AS UPLOADED_DOCS, 
+		SUM(
+		  CASE
+			WHEN (NOT(m.xSource = 'User Upload') OR (m.xSource IS NULL)) AND r.dDocType='Document' THEN 1
+			ELSE 0
+		  END
+		) AS SCANNED_DOCS, 
+		SUM(
+		  CASE
+			WHEN r.dDocType='Document' THEN 1
+			ELSE 0
+		  END
+		) AS ALL_DOCS
+		FROM DocMeta m, Revisions r
+		WHERE m.dID=r.dID
+		AND r.dRevRank = 0
+		AND r.dStatus = 'RELEASED'
+		AND r.dInDate >= ? and r.dInDate <= ? 
+		GROUP BY to_char(r.dInDate,'yyyymmdd')
+		ORDER BY RDATE</td>
+	<td>fromDate date
+		toDate date</td>
+</tr>
+<tr>
+	<td>qOdcSummary</td>
+	<td>SELECT     COUNT(*) AS numBatches, ecStatus AS batchStatus
+FROM         ecBatches
+WHERE     (ecFileCabinetID IN
+                          (SELECT     ecID
+                            FROM          ecFileCabinets
+                            WHERE      (ecName = ?)))
+GROUP BY ecStatus</td>
+	<td>fileCabinet varchar</td>
+</tr>
+<tr>
+	<td>qScannedDocs</td>
+	<td>SELECT * FROM REVISIONS INNER JOIN DOCMETA ON (REVISIONS.DID = DOCMETA.DID)
+WHERE REVISIONS.DREVRANK = 0 AND DOCMETA.XSOURCE = 'Scan'</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qEnvelopeSummary</td>
+	<td>SELECT to_char(r.dInDate,'dd/mm/yyyy') AS CHECKIN_DATE, COUNT(*) AS NUM_BUNDLES FROM REVISIONS r INNER JOIN DOCMETA dm ON
+(r.DID = dm.DID)
+WHERE r.dDocType = 'Bundle'
+AND r.dInDate >= ? and r.dInDate <= ?
+GROUP BY to_char(r.dInDate,'dd/mm/yyyy')</td>
+	<td>fromDate date
+	    toDate date</td>
+</tr>
+<tr>
+	<td>qWfNumDocsInWf</td>
+	<td>SELECT MIN(WORKFLOWHISTORY.DACTIONDATE)  AS DACTIONDATE, WORKFLOWHISTORY.DDOCNAME  FROM WORKFLOWDOCUMENTS
+INNER JOIN WORKFLOWS ON WORKFLOWS.DWFID = WORKFLOWDOCUMENTS.DWFID
+INNER JOIN WORKFLOWHISTORY ON (WORKFLOWHISTORY.DDOCNAME = WORKFLOWDOCUMENTS.DDOCNAME AND WORKFLOWHISTORY.DACTION='Checkin')
+WHERE WORKFLOWS.DWFNAME = ?
+GROUP BY WORKFLOWHISTORY.DDOCNAME</td>
+	<td>workflowName varchar</td>
+</tr>
+<tr>
+	<td>qWfDocsWithActionInDate</td>
+	<td>SELECT WORKFLOWHISTORY.*
+FROM WORKFLOWHISTORY
+INNER JOIN DOCMETA
+ON DOCMETA.DID=WORKFLOWHISTORY.DID
+WHERE DOCMETA.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND WORKFLOWHISTORY.DWFNAME = ?
+AND WORKFLOWHISTORY.DACTION=? 
+AND WORKFLOWHISTORY.DACTIONDATE >= ?
+AND  WORKFLOWHISTORY.DACTIONDATE <= ?</td>
+	<td>workflowName varchar
+	    workflowAction varchar
+	    startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>qWfDistinctDocsWithActionInDate</td>
+	<td>SELECT wf.*
+FROM WORKFLOWHISTORY wf
+INNER JOIN DOCMETA dm
+ON dm.DID=wf.DID
+INNER JOIN Revisions r
+ON dm.did = r.did
+WHERE (dm.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND wf.DWFNAME = ?
+AND wf.DACTION= ? 
+AND wf.DACTIONDATE >= ?
+AND wf.DACTIONDATE <= ?
+AND r.drevrank = 0</td>
+	<td>workflowName varchar
+	    workflowAction varchar
+	    startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>qWfDocsWithActionInDateExSwordfish</td>
+	<td>SELECT WORKFLOWHISTORY.*
+FROM WORKFLOWHISTORY
+INNER JOIN DOCMETA
+ON DOCMETA.DID=WORKFLOWHISTORY.DID
+WHERE (DOCMETA.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND WORKFLOWHISTORY.DWFNAME = ?
+AND WORKFLOWHISTORY.DACTION=? 
+AND WORKFLOWHISTORY.DACTIONDATE >= ?
+AND  WORKFLOWHISTORY.DACTIONDATE <= ?
+AND NOT DDOCAUTHOR = 'SF Migrator'</td>
+	<td>workflowName varchar
+	    workflowAction varchar
+	    startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>qWfDistinctDocsWithActionInDateExSwordfish</td>
+	<td>SELECT wf.*
+FROM WORKFLOWHISTORY wf
+INNER JOIN DOCMETA dm
+ON dm.DID=wf.DID
+INNER JOIN Revisions r
+ON dm.did = r.did
+WHERE (dm.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND (wf.DWFNAME = 'MandateUpload' OR wf.DWFNAME = 'AutoMandateUpload')
+AND wf.DACTION= ? 
+AND wf.DACTIONDATE >= ?
+AND wf.DACTIONDATE <= ?
+AND r.drevrank = 0
+AND NOT r.DDOCAUTHOR = 'SF Migrator'</td>
+	<td>workflowAction varchar
+	    startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>qWfNumDocsSimple</td>
+	<td>SELECT WORKFLOWDOCUMENTS.DDOCNAME
+FROM WORKFLOWDOCUMENTS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qWfDocsAtDate</td>
+	<td>SELECT WORKFLOWHISTORY.DID
+FROM WORKFLOWHISTORY
+INNER JOIN DOCMETA
+ON DOCMETA.DID=WORKFLOWHISTORY.DID
+WHERE (DOCMETA.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND WORKFLOWHISTORY.DACTIONDATE <= ?
+AND WORKFLOWHISTORY.DWFNAME = 'DocumentUpload'
+AND WORKFLOWHISTORY.DACTION='Checkin'
+AND WORKFLOWHISTORY.DID NOT IN (
+  SELECT WORKFLOWHISTORY.DID
+  FROM WORKFLOWHISTORY
+  WHERE (((WORKFLOWHISTORY.DWFNAME ='VerifyMandate') OR (WORKFLOWHISTORY.DWFNAME ='DocumentUpload')) AND WORKFLOWHISTORY.DACTION='Exit')
+  AND WORKFLOWHISTORY.DACTIONDATE <= ?)
+  </td>
+	<td>date1 date
+	    date2 date</td>
+</tr>
+<tr>
+	<td>qWfDistinctDocsAtDate</td>
+	<td>SELECT r.ddocname
+FROM WORKFLOWHISTORY wf
+INNER JOIN DOCMETA dm
+ON dm.DID=wf.DID
+INNER JOIN REVISIONS r
+ON r.DID = dm.DID
+WHERE (dm.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND wf.DACTIONDATE <= ?
+AND (wf.DWFNAME IN ('MandateUpload','AutoMandateUpload'))
+AND wf.DACTION='Checkin'
+AND r.dRevRank = 0
+AND wf.ddocname NOT IN (
+  SELECT wf.ddocname
+  FROM WORKFLOWHISTORY wf
+  INNER JOIN DOCMETA dm
+  ON dm.DID=wf.DID
+  INNER JOIN REVISIONS r
+  ON r.DID = dm.DID
+  WHERE (((wf.DWFNAME ='VerifyMandate') OR (wf.DWFNAME ='DocumentUpload')) AND (wf.DACTION='Exit')
+  AND wf.DACTIONDATE <= ?
+  AND r.dRevRank = 0))
+</td>
+	<td>date1 date
+	    date2 date</td>
+</tr>
+<tr>
+	<td>qWfIrisDocsAtDate</td>
+	<td>SELECT WORKFLOWHISTORY.DID
+FROM WORKFLOWHISTORY
+INNER JOIN DOCMETA
+ON DOCMETA.DID=WORKFLOWHISTORY.DID
+WHERE (DOCMETA.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND WORKFLOWHISTORY.DACTIONDATE <= ?
+AND WORKFLOWHISTORY.DWFNAME IN ('MandateUpload','AutoMandateUpload')
+AND WORKFLOWHISTORY.DACTION='Checkin'
+AND WORKFLOWHISTORY.DID NOT IN (
+  SELECT WORKFLOWHISTORY.DID
+  FROM WORKFLOWHISTORY
+  WHERE WORKFLOWHISTORY.DACTION='Exit'
+  AND WORKFLOWHISTORY.DACTIONDATE <= ?)
+</td>
+	<td>date1 date
+	    date2 date</td>
+</tr>
+<tr>
+	<td>qWfDistinctIrisDocsAtDate</td>
+	<td>SELECT r.ddocname
+FROM WORKFLOWHISTORY wf
+INNER JOIN DOCMETA dm
+ON dm.DID=wf.DID
+INNER JOIN REVISIONS r
+ON r.DID = dm.DID
+WHERE dm.XDOCUMENTCLASS IN ('MAND','AUTOMAND'))
+AND wf.DACTIONDATE <= ?
+AND wf.DWFNAME IN ('MandateUpload','AutoMandateUpload')
+AND wf.DACTION='Checkin'
+AND r.dRevRank = 0
+AND wf.ddocname NOT IN (
+  SELECT wf.ddocname
+  FROM WORKFLOWHISTORY wf
+  INNER JOIN DOCMETA dm
+  ON dm.DID=wf.DID
+  INNER JOIN REVISIONS r
+  ON r.DID = dm.DID
+  WHERE wf.DACTION='Exit'
+  AND wf.DACTIONDATE <= ?
+  AND r.dRevRank = 0)
+</td>
+	<td>date1 date
+	    date2 date</td>
+</tr>
+<tr>
+	<td>qClientServices_GetFundTransfersForReport</td>
+	<td>SELECT 
+FT.TRANSFER_ID,
+FT.CORRESPONDENT_ID,
+FT.CLIENT_ID,
+FT.FUND,
+FT.TRANSFER_TYPE,
+FT.TRANSFER_AMOUNT,
+FT.AURORA_STATUS,
+FT.CLIENT_CONFIRMED,
+FT.BATCHED_IN_AURORA,
+FT.TO_ACCOUNT,
+CS_ACCOUNTS.ACC_UNITS AS UNITS
+FROM CS_FUND_TRANSFERS FT
+LEFT JOIN CS_ACCOUNTS ON 
+(FT.CLIENT_ID = CS_ACCOUNTS.ACC_CLIENTID_CH AND FT.ACCOUNT_NUMBER = CS_ACCOUNTS.ACC_ACCOUNTNUMBER_CH)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qFlaggedBundlesByDate</td>
+	<td>SELECT auditLog.LREF AS BUNDLE_DOCNAME, 
+auditLog.LUSER AS FLAG_USER, auditLog.LPARAM4 AS FLAG_DOCNAME, auditLog.LPARAM5 AS FLAG_DOC_CLASS,
+auditLog.LDATE AS FLAG_DATE, auditLog.LPARAM6 AS DOCMETA_AUDIT_ID,
+flagReasons.FLAG_REASON,
+bundleDocMeta.xStatus AS CURRENT_BUNDLE_STATUS, bundleDocMeta.xBundleRef AS BUNDLE_REF
+
+FROM TAUDITLOGS auditLog 
+
+LEFT JOIN Revisions r ON (r.dDocName = auditLog.LREF)
+LEFT JOIN DocMeta bundleDocMeta ON (r.dID = bundleDocMeta.dID)
+INNER JOIN CCLA_FLAG_REASONS flagReasons ON (auditLog.LPARAM1 = flagreasons.flag_reason_id)
+
+WHERE (r.dRevRank = 0 OR r.dRevRank IS NULL)
+AND LACTION = 'FLAG-BUNDLE'
+
+AND LDATE >= ? 
+AND LDATE < ?
+ORDER BY auditLog.LDATE ASC</td>
+	<td>startDate date
+	    endDate date</td>
+</tr>
+<tr>
+	<td>qFlaggedBundles</td>
+	<td>SELECT dDocName FROM Revisions r INNER JOIN DocMeta dm 
+ON (r.dID = dm.dID)
+WHERE r.dRevRank = 0
+AND r.dDocType = 'Bundle'
+AND dm.xStatus = 'Flagged'</td>
+	<td></td>
+</tr>
+<tr>
+	<td>QgetWorkflowStepName</td>
+	<td>select wfs.dwfstepname from workflowdocuments wfd 
+inner join workflowsteps wfs on wfd.dwfcurrentstepid=wfs.dwfstepid
+where wfd.ddocname=?</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qDocumentsProcessedByHourAndUserAndStepNameAndDocClass</td>
+	<td>SELECT TO_DATE(PROCESS_DATE, 'dd/mm/yyyy') AS PROCESS_DATE, PROCESS_HOUR, dUser, dWfStepName, xDocumentClass, NUM_DOCS_PROCESSED FROM (
+  
+		  SELECT dUser, dWfStepName, PROCESS_DATE, PROCESS_HOUR, xDocumentClass, COUNT(*) AS NUM_DOCS_PROCESSED FROM (
+		  
+			SELECT wfh.dWfStepName,
+			wfh.dUser,
+			dm.xDocumentClass,
+			TO_CHAR(wfh.dActionDate, 'dd/mm/yyyy') AS PROCESS_DATE, 
+			TO_CHAR(wfh.dActionDate, 'hh24') || ':00' AS PROCESS_HOUR
+			FROM WORKFLOWHISTORY wfh
+			
+			INNER JOIN Revisions bundleRevisions ON (wfh.dID = bundleRevisions.dID)
+			INNER JOIN DocMeta bundleDocMeta ON (wfh.dID = bundleDocMeta.dID)
+			
+		  INNER JOIN DocMeta dm ON (dm.xBundleRef = bundleDocMeta.xBundleRef)
+		  INNER JOIN Revisions r ON (dm.dID = r.dID AND r.dRevRank = 0 AND r.dDocType IN ('Document', 'ChildDocument'))
+			
+			WHERE WFH.DWFNAME = 'CCLA_MailHandling' AND WFH.DACTION = 'Approve'
+			AND wfh.dActionDate >= ?
+			AND wfh.dActionDate < ?
+			
+			ORDER BY wfh.dActionDate, wfh.dUser, wfh.dWfStepName, dm.xDocumentClass
+		  )
+		  
+		  GROUP BY PROCESS_DATE, dUser, dWfStepName, PROCESS_HOUR, xDocumentClass
+
+		) ORDER BY PROCESS_DATE, PROCESS_HOUR, dUser, dWfStepName, xDocumentClass</td>
+	<td>startDate date
+		endDate date</td>
+</tr>
+<tr>
+	<td>qDocumentsProcessedByUserAndStepNameAndDocClass</td>
+	<td>SELECT TO_DATE(PROCESS_DATE, 'dd/mm/yyyy') AS PROCESS_DATE, dUser, dWfStepName, xDocumentClass, NUM_DOCS_PROCESSED FROM (
+  
+			SELECT dUser, dWfStepName, PROCESS_DATE, xDocumentClass, COUNT(*) AS NUM_DOCS_PROCESSED FROM (
+
+				SELECT wfh.dWfStepName,
+				wfh.dUser,
+				dm.xDocumentClass,
+				TO_CHAR(wfh.dActionDate, 'dd/mm/yyyy') AS PROCESS_DATE
+				FROM WORKFLOWHISTORY wfh
+				
+				INNER JOIN Revisions bundleRevisions ON (wfh.dID = bundleRevisions.dID)
+				INNER JOIN DocMeta bundleDocMeta ON (wfh.dID = bundleDocMeta.dID)
+				
+				INNER JOIN DocMeta dm ON (dm.xBundleRef = bundleDocMeta.xBundleRef)
+				INNER JOIN Revisions r ON (dm.dID = r.dID AND r.dRevRank = 0 AND r.dDocType IN ('Document', 'ChildDocument'))
+
+				WHERE WFH.DWFNAME = 'CCLA_MailHandling' AND WFH.DACTION = 'Approve'
+				AND wfh.dActionDate >=  ?
+				AND wfh.dActionDate <  ?
+
+				ORDER BY wfh.dActionDate, wfh.dUser, wfh.dWfStepName, dm.xDocumentClass
+			)
+			GROUP BY dUser, dWfStepName, PROCESS_DATE, xDocumentClass
+		) ORDER BY PROCESS_DATE, dUser, dWfStepName, xDocumentClass</td>
+	<td>startDate date
+		endDate date</td>
+</tr>
+<tr>
+	<td>qMinMaxProcessHoursByStepName</td>
+	<td>SELECT minMax.*, 
+		((TO_NUMBER(SUBSTR(MAX_PROCESS_HOUR, 1, 2)) - TO_NUMBER(SUBSTR(MIN_PROCESS_HOUR, 1, 2))) + 1) AS NUM_HOURS
+		FROM (
+			SELECT TO_DATE(PROCESS_DATE, 'dd/mm/yyyy') AS PROCESS_DATE, dWfStepName, 
+			MIN(PROCESS_HOUR) AS MIN_PROCESS_HOUR,  
+			MAX(PROCESS_HOUR) AS MAX_PROCESS_HOUR
+			FROM (
+				SELECT dWfStepName, PROCESS_DATE, PROCESS_HOUR FROM (
+				
+					SELECT wfh.dWfStepName,
+					TO_CHAR(wfh.dActionDate, 'dd/mm/yyyy') AS PROCESS_DATE, 
+					TO_CHAR(wfh.dActionDate, 'hh24') || ':00' AS PROCESS_HOUR
+					FROM WORKFLOWHISTORY wfh
+					
+					WHERE WFH.DWFNAME = 'CCLA_MailHandling' AND WFH.DACTION = 'Approve'
+					AND wfh.dActionDate >= ?
+					AND wfh.dActionDate < ?
+					
+					ORDER BY wfh.dActionDate, wfh.dWfStepName
+				
+				)
+				GROUP BY PROCESS_DATE, dWfStepName, PROCESS_HOUR
+			) GROUP BY TO_DATE(PROCESS_DATE, 'dd/mm/yyyy'), dWfStepName
+
+		) minMax ORDER BY PROCESS_DATE, dWfStepName</td>
+	<td>startDate date
+		endDate date</td>
+</tr>
+<tr>
+	<td>qReports_GetUCMBundleDocCounts</td>
+	<td>SELECT 
+		DOC_SOURCE || '_' || DOC_SCAN_USER AS ROW_KEY,
+		DOC_SOURCE, DOC_SCAN_USER, COUNT(*) AS NUM_BUNDLES, SUM(NUM_DOCS) AS NUM_DOCS FROM (
+		  SELECT dm.xBundleRef, COUNT(*) AS NUM_DOCS, dm.xSource AS DOC_SOURCE, dm.xScanUser AS DOC_SCAN_USER 
+		  FROM Revisions r INNER JOIN DocMeta dm ON (r.dID = dm.dID AND r.dRevRank = 0)
+		  WHERE r.dDocType = 'Document' AND dm.xBundleRef IS NOT NULL
+		  AND r.dInDate >= TRUNC(?)
+		  AND r.dInDate <= (TRUNC(?)+1)
+		  GROUP BY dm.xSource, dm.xScanUser, dm.xBundleRef
+		) GROUP BY DOC_SOURCE, DOC_SCAN_USER</td>
+	<td>reportDate date
+		reportDate date</td>
+</tr>
+<tr>
+	<td>qReports_GetODCBundleDocCounts</td>
+	<td>SELECT 
+		ODC_SOURCE || '_' || ODC_SCAN_USER AS ROW_KEY,
+		ODC_SOURCE, ODC_SCAN_USER, COUNT(*) AS NUM_BUNDLES, SUM(NUM_DOCS) AS NUM_DOCS FROM (
+
+		  WITH V_ODC_DOC_COMMIT AS (
+			SELECT ecFileCabinet As FILE_CABINET_NAME,  
+			ecBatch AS ODC_BATCH_NAME, ecActionDataInt AS DOC_PAGE_COUNT, ecActionDataText1 AS ODC_ENVELOPE_ID,
+			ecActionDataText2 AS ODC_SCAN_USER, ecActionDataText3 AS ODC_SOURCE, ecActionDataText4 AS DOC_FORM_ID,
+			TO_DATE(ecDate || LPAD(ecTime, 6, '0'), 'yyyymmddHH24miss') AS ODC_COMMIT_DATE
+			FROM ecAudit 
+			WHERE ecActionId = 1001
+			ORDER BY ecDate DESC, LPAD(ecTime, 6, '0') DESC
+		  )
+		  
+		  SELECT COUNT(*) AS NUM_DOCS, ODC_ENVELOPE_ID, ODC_SOURCE, ODC_SCAN_USER
+		  FROM V_ODC_DOC_COMMIT
+		  WHERE ODC_COMMIT_DATE >= TRUNC(?)
+		  AND ODC_COMMIT_DATE < (TRUNC(?)+1)
+		  
+		  GROUP BY ODC_SOURCE, ODC_SCAN_USER, ODC_ENVELOPE_ID
+		)
+
+		GROUP BY ODC_SOURCE, ODC_SCAN_USER</td>
+	<td>reportDate date
+		reportDate date</td>
+</tr>
+<tr>
+	<td>qReports_GetODCBatchesByFilingCabinetAndStatus</td>
+	<td>SELECT FILE_CABINET_NAME || '_' || BATCH_STATUS AS ROW_KEY, 
+		FILE_CABINET_NAME, BATCH_STATUS, COUNT(*) AS NUM_BATCHES FROM (
+
+		  SELECT fc.ecName AS FILE_CABINET_NAME, 
+		  b.ecName AS BATCH_NAME, b.ecStatus AS BATCH_STATUS, b.ecDateTime AS DATE_BATCH_CREATED,
+		  b.ecuncommittedpagecount AS BATCH_UNCOMMIT_PAGE_COUNT, b.eccommittedpagecount AS BATCH_COMMIT_PAGE_COUNT
+		  FROM ecFileCabinets fc
+		  INNER JOIN ecBatches b ON (fc.ecId = b.ecFileCabinetId)
+
+		) GROUP BY FILE_CABINET_NAME, BATCH_STATUS
+		ORDER BY FILE_CABINET_NAME, BATCH_STATUS</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qReports_GetODCCommitDocumentAudits</td>
+	<td>
+		SELECT * FROM (
+			SELECT ecFileCabinet As FILE_CABINET_NAME,  
+			ecBatch AS ODC_BATCH_NAME, ecActionDataInt AS DOC_PAGE_COUNT, ecActionDataText1 AS ODC_ENVELOPE_ID,
+			ecActionDataText2 AS ODC_SCAN_USER, ecActionDataText3 AS ODC_SOURCE, ecActionDataText4 AS DOC_FORM_ID,
+			TO_DATE(ecDate || LPAD(ecTime, 6, '0'), 'yyyymmddHH24miss') AS ODC_COMMIT_DATE
+			FROM ecAudit 
+			WHERE ecActionId = 1001
+		) WHERE ODC_COMMIT_DATE >= TRUNC(?)
+		  AND ODC_COMMIT_DATE < (TRUNC(?)+1)
+		  ORDER BY ODC_COMMIT_DATE DESC</td>
+	<td>reportDate date
+		reportDate date</td>
+</tr>
+<tr>
+	<td>qReports_GetODCFileCabinetNames</td>
+	<td>SELECT ecName AS FILE_CABINET_NAME FROM ecFileCabinets
+		ORDER BY ecName</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qReports_GetDocumentVolumesByDateRange</td>
+	<td>SELECT * FROM (
+			SELECT DSTATUS, DDOCTYPE, XDOCUMENTCLASS, XSOURCE, XSTATUS, XCOMPANY, 
+			COUNT(*) AS NUM_DOCS, TO_CHAR(DINDATE, 'mm/yyyy') AS CREATE_DATE,
+			TO_CHAR(DINDATE, 'MON') AS CREATE_MONTH, TO_CHAR(DINDATE, 'yyyy') AS CREATE_YEAR
+			FROM Revisions r
+			INNER JOIN DocMeta dm ON (r.dID = dm.dID AND r.dRevRank = 0 AND dStatus = 'RELEASED')
+
+			WHERE dDocType IN ('Document','ChildDocument')
+			AND DINDATE >= ? AND DINDATE < ?
+
+			GROUP BY DSTATUS, DDOCTYPE, XDOCUMENTCLASS, XSOURCE, XSTATUS, XCOMPANY, 
+			TO_CHAR(DINDATE, 'mm/yyyy'), TO_CHAR(DINDATE, 'MON'), TO_CHAR(DINDATE, 'yyyy')
+			ORDER BY TO_DATE(TO_CHAR(DINDATE, 'mm/yyyy'), 'mm/yyyy'), XDOCUMENTCLASS, DDOCTYPE, XSOURCE, XSTATUS, XCOMPANY
+		) docCounts</td>
+	<td>startDate date
+		endDate date</td>
+</tr>
+<tr>
+	<td>qReports_GetClientDataExport</td>
+	<td>-- Inner view that provides Person attributes plus their 'best' address.
+		-- Best address will be the default one, where it exists, if not it will be the
+		-- non-default one.
+		WITH PERSON_FULL AS (
+		  
+		  SELECT p.PERSON_ID, p.PERSON_ACCOUNT_CODE,
+		  p.FULL_NAME, p.SALUTATION, TO_CHAR(p.DATE_OF_BIRTH, 'dd/mm/yyyy') AS DATE_OF_BIRTH,
+		  p.IS_DECEASED,
+		  elem.DO_NOT_CONTACT_FLAG,
+		  
+		  bestAddr.FLAT,
+		  bestAddr.HOUSENAME,
+		  bestAddr.HOUSENUMBER,
+		  bestAddr.STREET,
+		  bestAddr.DISTRICT,
+		  bestAddr.CITY,
+		  bestAddr.COUNTY,
+		  bestAddr.COUNTRY,
+		  bestAddr.POSTCODE,
+		  
+		  bestAddr.RETURNED_MAIL
+		  
+		  FROM PERSON p
+		  
+		  INNER JOIN ELEMENT elem ON (p.PERSON_ID = elem.ELEMENT_ID)
+		  
+		  LEFT JOIN (
+		  
+			SELECT cp.ELEMENT_ID AS PERSON_ID, 
+			cp.IS_DUBIOUS AS RETURNED_MAIL,
+			a.* FROM ADDRESS a
+			INNER JOIN CONTACT_POINT cp ON (
+			  a.ADDRESS_ID = cp.ADDRESS_ID
+			)
+			
+			INNER JOIN (
+			  SELECT p.PERSON_ID, 
+			  
+			  defaultAddr.DEFAULT_ADDR_CONTACT_ID,
+			  nonDefaultAddr.OTHER_ADDR_CONTACT_ID,
+			  
+			  DECODE(defaultAddr.DEFAULT_ADDR_CONTACT_ID, NULL,
+				nonDefaultAddr.OTHER_ADDR_CONTACT_ID, 
+				defaultAddr.DEFAULT_ADDR_CONTACT_ID) AS BEST_ADDR_CONTACT_ID
+				
+			  FROM PERSON p
+			  
+			  LEFT JOIN (
+				-- Default address Contact Point
+				SELECT dcp.ELEMENT_ID, dcp.CONTACT_ID AS DEFAULT_ADDR_CONTACT_ID
+				FROM CONTACT_POINT dcp 
+				INNER JOIN ADDRESS da ON (
+				  dcp.ADDRESS_ID = da.ADDRESS_ID
+				)
+				WHERE dcp.IS_DEFAULT = 1
+			  
+			  ) defaultAddr ON (
+				  defaultAddr.ELEMENT_ID = p.PERSON_ID
+			  )
+			  
+			  LEFT JOIN (
+				-- Newest non-default address Contact Point
+				SELECT cp.ELEMENT_ID, MAX(cp.CONTACT_ID) AS OTHER_ADDR_CONTACT_ID
+				FROM CONTACT_POINT cp 
+				INNER JOIN ADDRESS a ON (
+				  cp.ADDRESS_ID = a.ADDRESS_ID
+				)
+				WHERE (cp.IS_DEFAULT IS NULL OR cp.IS_DEFAULT = 0)
+				GROUP BY cp.ELEMENT_ID
+				
+			  ) nonDefaultAddr ON (
+				nonDefaultAddr.ELEMENT_ID = p.PERSON_ID
+			  )
+			) bestAddr ON (
+			  cp.CONTACT_ID = bestAddr.BEST_ADDR_CONTACT_ID
+			)
+		  ) bestAddr ON (
+			p.PERSON_ID = bestAddr.PERSON_ID
+		  )
+      
+      
+		  -- Filter for persons marked as Data Protection/Do Not Contact
+		  WHERE elem.DO_NOT_CONTACT_FLAG = ?
+	  
+		  -- Filter for persons marked as Deceased
+		  AND p.IS_DECEASED = ?
+	  
+		  AND bestAddr.RETURNED_MAIL = ?
+      
+		),
+
+		ORG_CORR AS (
+		  -- Returns either:
+		  -- 1. The Nominated Org Correspondent, if one exists, or
+		  -- 2. The single Org Correspondent relation, providing there is only 1!
+		  SELECT numCorrRels.ORGANISATION_ID,
+		  DECODE(nomCorr.NOM_CORR_ID, NULL, 
+			DECODE(numCorrRels.NUM_CORR_RELATIONS, 1, firstCorr.FIRST_CORR_ID, NULL),
+			  nomCorr.NOM_CORR_ID) AS PERSON_ID,
+		  'Correspondent' AS PERSON_ROLE
+		  
+		  -- Fetch count of corr relations
+		  FROM (
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, COUNT(*) AS NUM_CORR_RELATIONS
+			FROM RELATIONS r
+			WHERE r.RELATION_NAME_ID = 1
+			GROUP BY ELEMENT_ID1
+		  ) numCorrRels
+		  
+		  -- Join to (first) corr relation
+		  INNER JOIN (
+			SELECT MIN(ELEMENT_ID2) AS FIRST_CORR_ID, 
+			ELEMENT_ID1 AS ORGANISATION_ID
+			FROM RELATIONS r
+			WHERE r.RELATION_NAME_ID = 1
+			
+			GROUP BY ELEMENT_ID1
+		  ) firstCorr ON (
+			numCorrRels.ORGANISATION_ID = firstCorr.ORGANISATION_ID
+		  )
+		  
+		  -- Left-join to nominated corr relation (if one exists)
+		  LEFT JOIN (
+		  
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+			ELEMENT_ID2 AS NOM_CORR_ID,
+			rrn.RELATION AS PERSON_ROLE
+			FROM RELATIONS r
+			INNER JOIN REF_RELATION_NAMES rrn ON (
+			  r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+			)
+			INNER JOIN RELATION_PROPERTY_APPLIED rpa ON (
+			  r.RELATION_ID = rpa.RELATION_ID
+			  AND
+			  rpa.RELATION_PROPERTY_ID = 31
+			)
+		  
+			WHERE r.RELATION_NAME_ID = 1
+		  
+		  ) nomCorr ON (
+			numCorrRels.ORGANISATION_ID = nomCorr.ORGANISATION_ID
+		  )
+		)
+
+		SELECT org.ORG_ACCOUNT_CODE, 
+
+		clMap.CLIENT_NUMBER,
+
+		comp.COMPANY_CODE,
+		numAccounts.NUM_ACCOUNTS AS NUM_OPEN_ACCOUNTS,
+		org.ORGANISATION_NAME,
+
+		TO_CHAR(
+		  DECODE(numAccounts.FIRST_ACC_OPENED, NULL,
+			org.DATE_ADDED,
+			numAccounts.FIRST_ACC_OPENED
+		  )
+		, 'dd/mm/yyyy')  AS DATE_ORG_ENROLLED,
+
+		charityRef.IDENTIFIER_VALUE AS CHARITY_REF,
+
+		DECODE(verifiedOrgs.ELEMENT_ID, NULL, 0, 1) AS ORG_VERIFIED,
+
+		DECODE(corr.PERSON_ROLE, NULL, 0, 1) AS IS_CORR,
+		DECODE(authPerson.PERSON_ROLE, NULL, 0, 1) AS IS_AUTH_PERSON,
+		DECODE(signatory.PERSON_ROLE, NULL, 0, 1) AS IS_SIGNATORY,
+
+		persons.*
+
+		FROM ORGANISATION org
+
+		INNER JOIN CLIENT_AURORA_MAP clMap ON (org.ORGANISATION_ID = clMap.ORGANISATION_ID)
+		INNER JOIN REF_COMPANY comp ON (clMap.COMPANY_ID = comp.COMPANY_ID)
+
+		LEFT JOIN (
+		  SELECT eaa.ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED eaa
+		  INNER JOIN REF_ELEMENT_ATTRIBUTES rea ON (
+			eaa.ELEMENT_ATTRIBUTE_ID = rea.ELEMENT_ATTRIBUTE_ID
+		  )
+		  WHERE rea.ELEMENT_ATTRIBUTE_TYPE_ID = 1
+		  AND eaa.ATTRIBUTE_STATUS = 1
+		  GROUP BY eaa.ELEMENT_ID
+		) verifiedOrgs ON (
+		  org.ORGANISATION_ID = verifiedOrgs.ELEMENT_ID
+		)
+
+		-- Charity Ref 
+		LEFT JOIN ELEMENT_IDENTIFIERS_APPLIED charityRef ON (
+		  charityRef.ELEMENT_ID = org.ORGANISATION_ID
+		  AND
+		  charityRef.ELEMENT_IDENTIFIER_ID = 1
+		)
+
+		-- Join and aggregate against Accounts table
+		INNER JOIN (
+		  SELECT acc.ORGANISATION_ID, f.COMPANY_ID, COUNT(*) AS NUM_ACCOUNTS, 
+		  MIN(DATE_OPENED) AS FIRST_ACC_OPENED
+		  FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		  INNER JOIN FUND f ON (f.FUND_CODE = acc.FUND_CODE)
+		  
+		  WHERE acc.AURORA_ACCOUNT = 1
+		  
+		  -- Ignore closed accounts
+		  AND acc.ACCOUNT_STATUS_ID <> 2
+		  
+		  GROUP BY ORGANISATION_ID, COMPANY_ID
+		) numAccounts ON (
+		  org.ORGANISATION_ID = numAccounts.ORGANISATION_ID
+		  AND
+		  comp.COMPANY_ID = numAccounts.COMPANY_ID
+		)
+
+		-- Select all unique Person IDs with desired links to Org
+		LEFT JOIN (
+		  
+		  SELECT ORGANISATION_ID, PERSON_ID FROM (
+			-- Auth Persons and Signatories
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+			ELEMENT_ID2 AS PERSON_ID,
+			rrn.RELATION AS PERSON_ROLE
+			FROM RELATIONS r
+			INNER JOIN REF_RELATION_NAMES rrn ON (
+			  r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+			)
+			
+			WHERE rrn.RELATION IN ('Authorising Person','Signatory')
+			
+			UNION
+			
+			SELECT * FROM ORG_CORR
+			
+		  ) GROUP BY ORGANISATION_ID, PERSON_ID
+		  
+		) uniqueRelPersonIds ON (
+		  org.ORGANISATION_ID = uniqueRelPersonIds.ORGANISATION_ID
+		)
+
+		-- Fetch extended data for unique linked persons
+		INNER JOIN PERSON_FULL persons ON (
+		  uniqueRelPersonIds.PERSON_ID = persons.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  SELECT * FROM ORG_CORR
+		) corr ON (
+		  corr.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  corr.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  -- Auth. Person
+		  SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+		  ELEMENT_ID2 AS PERSON_ID,
+		  rrn.RELATION AS PERSON_ROLE
+		  FROM RELATIONS r
+		  INNER JOIN REF_RELATION_NAMES rrn ON (
+			r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+		  )
+		  
+		  WHERE rrn.RELATION IN ('Authorising Person')
+		) authPerson ON (
+		  authPerson.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  authPerson.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  -- Sig
+		  SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+		  ELEMENT_ID2 AS PERSON_ID,
+		  rrn.RELATION AS PERSON_ROLE
+		  FROM RELATIONS r
+		  INNER JOIN REF_RELATION_NAMES rrn ON (
+			r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+		  )
+		  
+		  WHERE rrn.RELATION IN ('Signatory')
+		) signatory ON (
+		  signatory.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  signatory.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		-- COIF/CBF Company filter
+		WHERE clMap.COMPANY_ID = ?
+		-- Filter out unverified Orgs.
+		AND verifiedOrgs.ELEMENT_ID IS NOT NULL
+		
+		-- Filter out persons with no address
+		AND persons.POSTCODE IS NOT NULL
+		-- Filter out CCLA postcodes
+		AND persons.POSTCODE <> 'EC4V 4ET'
+
+		ORDER BY COMP.COMPANY_ID, CLIENT_NUMBER, 
+		DECODE(corr.PERSON_ROLE, NULL, 
+		  DECODE(authPerson.PERSON_ROLE, NULL, 3, 2)
+		,1),
+
+		persons.FULL_NAME
+		</td>
+	<td>includeDataProtection varchar
+		includeDeceased varchar
+		includeReturnedMail varchar
+		companyId int</td>
+</tr>
+<tr>
+	<td>qReports_GetClientDataExportRecordCount</td>
+	<td>SELECT COUNT(*) AS ROW_COUNT FROM (
+		-- Inner view that provides Person attributes plus their 'best' address.
+		-- Best address will be the default one, where it exists, if not it will be the
+		-- non-default one.
+		WITH PERSON_FULL AS (
+		  
+		  SELECT p.PERSON_ID, p.PERSON_ACCOUNT_CODE,
+		  p.FULL_NAME, p.SALUTATION, TO_CHAR(p.DATE_OF_BIRTH, 'dd/mm/yyyy') AS DATE_OF_BIRTH,
+		  p.IS_DECEASED,
+		  elem.DO_NOT_CONTACT_FLAG,
+		  
+		  bestAddr.FLAT,
+		  bestAddr.HOUSENAME,
+		  bestAddr.HOUSENUMBER,
+		  bestAddr.STREET,
+		  bestAddr.DISTRICT,
+		  bestAddr.CITY,
+		  bestAddr.COUNTY,
+		  bestAddr.COUNTRY,
+		  bestAddr.POSTCODE,
+		  
+		  bestAddr.RETURNED_MAIL
+		  
+		  FROM PERSON p
+		  
+		  INNER JOIN ELEMENT elem ON (p.PERSON_ID = elem.ELEMENT_ID)
+		  
+		  LEFT JOIN (
+		  
+			SELECT cp.ELEMENT_ID AS PERSON_ID, 
+			cp.IS_DUBIOUS AS RETURNED_MAIL,
+			a.* FROM ADDRESS a
+			INNER JOIN CONTACT_POINT cp ON (
+			  a.ADDRESS_ID = cp.ADDRESS_ID
+			)
+			
+			INNER JOIN (
+			  SELECT p.PERSON_ID, 
+			  
+			  defaultAddr.DEFAULT_ADDR_CONTACT_ID,
+			  nonDefaultAddr.OTHER_ADDR_CONTACT_ID,
+			  
+			  DECODE(defaultAddr.DEFAULT_ADDR_CONTACT_ID, NULL,
+				nonDefaultAddr.OTHER_ADDR_CONTACT_ID, 
+				defaultAddr.DEFAULT_ADDR_CONTACT_ID) AS BEST_ADDR_CONTACT_ID
+				
+			  FROM PERSON p
+			  
+			  LEFT JOIN (
+				-- Default address Contact Point
+				SELECT dcp.ELEMENT_ID, dcp.CONTACT_ID AS DEFAULT_ADDR_CONTACT_ID
+				FROM CONTACT_POINT dcp 
+				INNER JOIN ADDRESS da ON (
+				  dcp.ADDRESS_ID = da.ADDRESS_ID
+				)
+				WHERE dcp.IS_DEFAULT = 1
+			  
+			  ) defaultAddr ON (
+				  defaultAddr.ELEMENT_ID = p.PERSON_ID
+			  )
+			  
+			  LEFT JOIN (
+				-- Newest non-default address Contact Point
+				SELECT cp.ELEMENT_ID, MAX(cp.CONTACT_ID) AS OTHER_ADDR_CONTACT_ID
+				FROM CONTACT_POINT cp 
+				INNER JOIN ADDRESS a ON (
+				  cp.ADDRESS_ID = a.ADDRESS_ID
+				)
+				WHERE (cp.IS_DEFAULT IS NULL OR cp.IS_DEFAULT = 0)
+				GROUP BY cp.ELEMENT_ID
+				
+			  ) nonDefaultAddr ON (
+				nonDefaultAddr.ELEMENT_ID = p.PERSON_ID
+			  )
+			) bestAddr ON (
+			  cp.CONTACT_ID = bestAddr.BEST_ADDR_CONTACT_ID
+			)
+		  ) bestAddr ON (
+			p.PERSON_ID = bestAddr.PERSON_ID
+		  )
+      
+      
+		  -- Filter for persons marked as Data Protection/Do Not Contact
+		  WHERE elem.DO_NOT_CONTACT_FLAG = ?
+	  
+		  -- Filter for persons marked as Deceased
+		  AND p.IS_DECEASED = ?
+	  
+		  AND bestAddr.RETURNED_MAIL = ?
+      
+		),
+
+		ORG_CORR AS (
+		  -- Returns either:
+		  -- 1. The Nominated Org Correspondent, if one exists, or
+		  -- 2. The single Org Correspondent relation, providing there is only 1!
+		  SELECT numCorrRels.ORGANISATION_ID,
+		  DECODE(nomCorr.NOM_CORR_ID, NULL, 
+			DECODE(numCorrRels.NUM_CORR_RELATIONS, 1, firstCorr.FIRST_CORR_ID, NULL),
+			  nomCorr.NOM_CORR_ID) AS PERSON_ID,
+		  'Correspondent' AS PERSON_ROLE
+		  
+		  -- Fetch count of corr relations
+		  FROM (
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, COUNT(*) AS NUM_CORR_RELATIONS
+			FROM RELATIONS r
+			WHERE r.RELATION_NAME_ID = 1
+			GROUP BY ELEMENT_ID1
+		  ) numCorrRels
+		  
+		  -- Join to (first) corr relation
+		  INNER JOIN (
+			SELECT MIN(ELEMENT_ID2) AS FIRST_CORR_ID, 
+			ELEMENT_ID1 AS ORGANISATION_ID
+			FROM RELATIONS r
+			WHERE r.RELATION_NAME_ID = 1
+			
+			GROUP BY ELEMENT_ID1
+		  ) firstCorr ON (
+			numCorrRels.ORGANISATION_ID = firstCorr.ORGANISATION_ID
+		  )
+		  
+		  -- Left-join to nominated corr relation (if one exists)
+		  LEFT JOIN (
+		  
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+			ELEMENT_ID2 AS NOM_CORR_ID,
+			rrn.RELATION AS PERSON_ROLE
+			FROM RELATIONS r
+			INNER JOIN REF_RELATION_NAMES rrn ON (
+			  r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+			)
+			INNER JOIN RELATION_PROPERTY_APPLIED rpa ON (
+			  r.RELATION_ID = rpa.RELATION_ID
+			  AND
+			  rpa.RELATION_PROPERTY_ID = 31
+			)
+		  
+			WHERE r.RELATION_NAME_ID = 1
+		  
+		  ) nomCorr ON (
+			numCorrRels.ORGANISATION_ID = nomCorr.ORGANISATION_ID
+		  )
+		)
+
+		SELECT org.ORG_ACCOUNT_CODE, 
+
+		clMap.CLIENT_NUMBER,
+
+		comp.COMPANY_CODE,
+		numAccounts.NUM_ACCOUNTS AS NUM_OPEN_ACCOUNTS,
+		org.ORGANISATION_NAME,
+
+		TO_CHAR(
+		  DECODE(numAccounts.FIRST_ACC_OPENED, NULL,
+			org.DATE_ADDED,
+			numAccounts.FIRST_ACC_OPENED
+		  )
+		, 'dd/mm/yyyy')  AS DATE_ORG_ENROLLED,
+
+		charityRef.IDENTIFIER_VALUE AS CHARITY_REF,
+
+		DECODE(verifiedOrgs.ELEMENT_ID, NULL, 0, 1) AS ORG_VERIFIED,
+
+		DECODE(corr.PERSON_ROLE, NULL, 0, 1) AS IS_CORR,
+		DECODE(authPerson.PERSON_ROLE, NULL, 0, 1) AS IS_AUTH_PERSON,
+		DECODE(signatory.PERSON_ROLE, NULL, 0, 1) AS IS_SIGNATORY,
+
+		persons.*
+
+		FROM ORGANISATION org
+
+		INNER JOIN CLIENT_AURORA_MAP clMap ON (org.ORGANISATION_ID = clMap.ORGANISATION_ID)
+		INNER JOIN REF_COMPANY comp ON (clMap.COMPANY_ID = comp.COMPANY_ID)
+
+		LEFT JOIN (
+		  SELECT eaa.ELEMENT_ID FROM ELEMENT_ATTRIBUTE_APPLIED eaa
+		  INNER JOIN REF_ELEMENT_ATTRIBUTES rea ON (
+			eaa.ELEMENT_ATTRIBUTE_ID = rea.ELEMENT_ATTRIBUTE_ID
+		  )
+		  WHERE rea.ELEMENT_ATTRIBUTE_TYPE_ID = 1
+		  AND eaa.ATTRIBUTE_STATUS = 1
+		  GROUP BY eaa.ELEMENT_ID
+		) verifiedOrgs ON (
+		  org.ORGANISATION_ID = verifiedOrgs.ELEMENT_ID
+		)
+
+		-- Charity Ref 
+		LEFT JOIN ELEMENT_IDENTIFIERS_APPLIED charityRef ON (
+		  charityRef.ELEMENT_ID = org.ORGANISATION_ID
+		  AND
+		  charityRef.ELEMENT_IDENTIFIER_ID = 1
+		)
+
+		-- Join and aggregate against Accounts table
+		INNER JOIN (
+		  SELECT acc.ORGANISATION_ID, f.COMPANY_ID, COUNT(*) AS NUM_ACCOUNTS, 
+		  MIN(DATE_OPENED) AS FIRST_ACC_OPENED
+		  FROM V_ACCOUNT_EXTENDED_CLIENT acc
+		  INNER JOIN FUND f ON (f.FUND_CODE = acc.FUND_CODE)
+		  
+		  WHERE acc.AURORA_ACCOUNT = 1
+		  
+		  -- Ignore closed accounts
+		  AND acc.ACCOUNT_STATUS_ID <> 2
+		  
+		  GROUP BY ORGANISATION_ID, COMPANY_ID
+		) numAccounts ON (
+		  org.ORGANISATION_ID = numAccounts.ORGANISATION_ID
+		  AND
+		  comp.COMPANY_ID = numAccounts.COMPANY_ID
+		)
+
+		-- Select all unique Person IDs with desired links to Org
+		LEFT JOIN (
+		  
+		  SELECT ORGANISATION_ID, PERSON_ID FROM (
+			-- Auth Persons and Signatories
+			SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+			ELEMENT_ID2 AS PERSON_ID,
+			rrn.RELATION AS PERSON_ROLE
+			FROM RELATIONS r
+			INNER JOIN REF_RELATION_NAMES rrn ON (
+			  r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+			)
+			
+			WHERE rrn.RELATION IN ('Authorising Person','Signatory')
+			
+			UNION
+			
+			SELECT * FROM ORG_CORR
+			
+		  ) GROUP BY ORGANISATION_ID, PERSON_ID
+		  
+		) uniqueRelPersonIds ON (
+		  org.ORGANISATION_ID = uniqueRelPersonIds.ORGANISATION_ID
+		)
+
+		-- Fetch extended data for unique linked persons
+		INNER JOIN PERSON_FULL persons ON (
+		  uniqueRelPersonIds.PERSON_ID = persons.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  SELECT * FROM ORG_CORR
+		) corr ON (
+		  corr.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  corr.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  -- Auth. Person
+		  SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+		  ELEMENT_ID2 AS PERSON_ID,
+		  rrn.RELATION AS PERSON_ROLE
+		  FROM RELATIONS r
+		  INNER JOIN REF_RELATION_NAMES rrn ON (
+			r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+		  )
+		  
+		  WHERE rrn.RELATION IN ('Authorising Person')
+		) authPerson ON (
+		  authPerson.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  authPerson.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		LEFT JOIN (
+		  -- Sig
+		  SELECT ELEMENT_ID1 AS ORGANISATION_ID, 
+		  ELEMENT_ID2 AS PERSON_ID,
+		  rrn.RELATION AS PERSON_ROLE
+		  FROM RELATIONS r
+		  INNER JOIN REF_RELATION_NAMES rrn ON (
+			r.RELATION_NAME_ID = rrn.RELATION_NAME_ID
+		  )
+		  
+		  WHERE rrn.RELATION IN ('Signatory')
+		) signatory ON (
+		  signatory.ORGANISATION_ID = org.ORGANISATION_ID
+		  AND
+		  signatory.PERSON_ID = uniqueRelPersonIds.PERSON_ID
+		)
+
+		-- COIF/CBF Company filter
+		WHERE clMap.COMPANY_ID = ?
+		-- Filter out unverified Orgs.
+		AND verifiedOrgs.ELEMENT_ID IS NOT NULL
+		
+		-- Filter out persons with no address
+		AND persons.POSTCODE IS NOT NULL
+		-- Filter out CCLA postcodes
+		AND persons.POSTCODE <> 'EC4V 4ET'
+
+		ORDER BY COMP.COMPANY_ID, CLIENT_NUMBER, 
+		DECODE(corr.PERSON_ROLE, NULL, 
+		  DECODE(authPerson.PERSON_ROLE, NULL, 3, 2)
+		,1),
+
+		persons.FULL_NAME
+		)</td>
+	<td>includeDataProtection varchar
+		includeDeceased varchar
+		includeReturnedMail varchar
+		companyId int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

@@ -1,0 +1,542 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<$if strEqualsIgnoreCase(#active.IdcService,"CCLA_CS_INTERACTION_EDIT")$>
+		<$isEdit = 1$>
+		<$endif$>		
+		<title>
+			<$if isEdit$>Review<$else$>Record<$endif$> Interaction
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_panel_js$>
+		
+		<$include ecs_javascript_datepicker_include$>
+		
+		<script type="text/javascript">
+		
+			$(document).ready( function() {
+				<$if chooseNextAction$>
+					<$if isUpdated$><$lastAction="isUpdated=1"$><$elseif isAdded$><$lastAction="isAdded=1"$><$endif$>
+					openPopup('?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_CS_DIALOG&isInteraction=1&<$lastAction$>&PERSON_ID=<$#active.PERSON_ID$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>&INTERACTION_ID=<$#active.INTERACTION_ID$>');
+				<$endif$>	
+			});				
+			
+			// IDOC includes for dynamically loaded info panels
+			var infoPanel		= "ccla_cs_interaction_info_panel";
+			var accPanel		= "ccla_cs_accounts_panel";
+			var clientPanel 	= "ccla_cs_client_info_panel";
+			var personPanel		= "ccla_cs_person_info_panel";
+			var docsPanel		= "ccla_cs_client_docs_panel";
+			var commLogPanel	= "ccla_cs_comms_log_panel";
+			var activitiesPanel = "ccla_cs_activities_panel";
+			var campaignPanel 	= "ccla_cs_campaigns_panel";
+			
+			var panelMapping	= {
+				"info":		infoPanel,
+				"acc":		accPanel,
+				"client": 	clientPanel,
+				"corr": 	personPanel,
+				"docs": 	docsPanel,
+				"log": 		commLogPanel,
+				"activities": activitiesPanel,
+				"campaigns": campaignPanel
+			};
+						
+			<$if #active.isCompact$>
+				selectedPanel = activitiesPanel;
+			<$else$>
+				selectedPanel = infoPanel;
+			<$endif$>
+					
+			$("document").ready( function() {
+				refreshCategoryList();
+				prepareCalendars();
+							
+				loadPanelContent(selectedPanel, getBaseParams(), true);
+				
+				refreshFollowUpState();
+				
+				checkQueryDisabled();
+				
+				$(".jquery_date").datepicker({
+					dateFormat: 'dd/mm/yy',
+					showOn: 'button', 
+					buttonImage: 'epoch/images/epoch_calendar.gif', 
+					buttonImageOnly: true
+				});
+				
+				// Tie change event to 'Cause' option list.
+				$("#causeId").bind("change", function() {
+					var categoryId = $("#causeId").val();
+					$("#subCauseId").attr("disabled","disabled");
+					
+					$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+						{ 
+							"incName":		"ccla_spp_int_get_complaint_subcategory_options",
+							"categoryId": 	categoryId,
+							"ts":	new Date().getTime()
+						},
+						function(data) {
+							$("#subCauseId").removeAttr("disabled");
+							$("#subCauseId").html(data);
+						}
+					);
+				});
+				
+			});
+			
+			// Triggered on page load and changes to the Subject
+			// option list. Reloads the Category option list using
+			// AJAX.
+			function refreshCategoryList() {
+				
+				var subjectId = $("#SUBJECT_ID").val();
+				var outcomeValue = $("#OUTCOME_ID").val();
+				
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+					  {
+						"incName": "ccla_cs_interaction_category_optionlist_display",
+						"OUTCOME_ID":	outcomeValue,
+						"SUBJECT_ID": subjectId,
+						"ts":	new Date().getTime()
+					  },
+					  function(data) {
+						$("#categoryList").html(data);
+						
+						//Select the relevant dropdrown option
+						$('#categoryList select').val($('#tempCatId').val());
+					  }
+				);
+			}
+			
+			/*Updates the state of the follow up tickbox*/
+			function refreshOutcome()
+			{
+				var outcomeVal = $('#OUTCOME_ID').val();
+				if ($('#followUp:checked').val() != 'on') {
+					$('#OUTCOME_ID').val('1');	
+					
+					if (outcomeVal!=1) {
+						$("#OUTCOME_TYPE_ID").attr('disabled',false);
+						$("#OUTCOME_TEXT").attr('disabled',false);
+					}
+					//$("#OUTCOME_TYPE_ID").attr('disabled',false);
+					//$("#OUTCOME_TEXT").attr('disabled',false);
+				} 
+				updateFollowUpFields();
+				toggleOutcomeFields();
+			}
+			
+			/*Updates the state of the follow up tickbox*/
+			function refreshFollowUpState(){
+				var outcomeVal = $('#OUTCOME_ID').val();
+				if(outcomeVal != "1"){
+					$('#followUp').attr('checked',true);
+					$('#followUp').attr('disabled',false);
+				}else if(outcomeVal == "1"){
+					$('#followUp').attr('checked',false);
+				}
+				updateFollowUpFields();
+				toggleOutcomeFields();
+			}
+			
+			function submitCommDetailsForm() {
+				
+				var frm = document.forms['interactionDetailsForm'];
+				
+				// Check that a subject was selected
+				var subject = frm.elements['SUBJECT_ID'].value;
+				
+				if (subject == "") {
+					alert("Please select a subject before continuing.");
+					frm.elements['SUBJECT_ID'].focus();
+					return;
+				}
+				
+				// Check if a note/category was entered
+				var note		= frm.elements['NOTE'].value;
+				var category	= frm.elements['CATEGORY_ID'].value;
+				
+				/*
+				if (category == "") {
+					alert("Please select a category before continuing.");
+					frm.elements['CATEGORY_ID'].focus();
+					return;
+				}
+				*/
+				
+				// Check that an outcome was selected
+				var outcome = frm.elements['OUTCOME_ID'].value;
+				
+				if (outcome == "") {
+					alert("Please select an outcome before continuing.");
+					frm.elements['OUTCOME_ID'].focus();
+					return;
+				}
+
+				if (outcome == "1") {
+					var outcomeType = frm.elements['OUTCOME_TYPE_ID'].value;
+					var outcomeDescription = frm.elements['OUTCOME_TEXT'].value;
+					if (outcomeType.length==0 || outcomeDescription.length==0)
+					{
+					alert("Please enter an outcome type and description.");
+					frm.elements['OUTCOME_TEXT'].focus();
+					return;
+					}
+				}
+				
+				var isQuery = frm.elements['IS_QUERY'].checked;
+				var isEdit = '<$isEdit$>';
+				
+				if(isQuery & !isEdit=='1'){
+					var queryCause 			= frm.elements['causeId'].value;
+					var querySummary 		= frm.elements['summary'].value;
+					var queryIdentified 	= frm.elements['howIdentified'].value;
+					var queryAction 		= frm.elements['requiredAction'].value;
+					var queryDateIdentified = frm.elements['dateIdentified'].value;
+					var queryDateOccurred 	= frm.elements['dateOccurred'].value;
+					
+					//Ensure that an organisation is selected
+					var orgID = frm.elements['ORGANISATION_ID'].value;
+					var numOfOrgs = frm.elements['ORGANISATION_ID'].options.length;
+					
+					if (orgID.length == 0 && numOfOrgs > 1) {
+							alert('Please ensure you have selected an organisation');
+							return;
+					}
+					
+					
+					//Ensure all query fields are fill in
+					if(queryCause.length == 0 || querySummary.length == 0 || 
+						queryIdentified.length == 0 || queryAction.length == 0 || 
+						queryDateIdentified.length == 0 || queryDateOccurred.length == 0){
+							alert('Please ensure all query fields are filled in before continuing.');
+							return;
+					}
+					
+					// Ensure a query sub-cause has been selected, if they are available
+					var numQuerySubCauses  = frm.elements['subCauseId'].options.length;
+
+					if (numQuerySubCauses > 1 && frm.elements['subCauseId'].value == "") {
+						alert("Please ensure you have selected a sub cause for the query.");
+						
+						return;
+					}
+				}
+				
+				// Check for follow-up info
+				
+				var followUp = frm.elements['followUp'].checked;
+				
+				if (followUp) {
+					var assignee = frm.elements['ASSIGNEE'].value; 
+					var deadline = frm.elements['DEADLINE'].value;
+					
+					if (assignee == "" || deadline == "") {
+						alert(	"You have flagged this communication for follow-up, but not " +
+								"specified an assignee/deadline. Please change this before continuing.");
+						return;
+					}
+				}
+				/*
+				// Resolve the selected client campaign.
+				var selCampaign = getSelectedRadioValue(frm, "clientCampaign");
+				frm.elements['campaignId'].value = selCampaign;
+				*/
+				
+				//Enable inputs so they submit
+				$('#DEADLINE,#assignee,#NOTE,#OUTCOME_ID,#OUTCOME_TYPE_ID,#OUTCOME_TEXT,#FUND_CODE,#ACCOUNT_ID.#INTERACTION_TYPE').attr('disabled',false);
+				
+				/*
+				$(".jquery_date").datepicker({
+					dateFormat: 'dd/mm/yy',
+					showOn: 'button', 
+					buttonImage: 'epoch/images/epoch_calendar.gif', 
+					buttonImageOnly: true,
+					onSelect: function(input, inst) { return; }
+				});
+				*/
+				
+				frm.submit();
+			}
+			
+			function addNote(){
+				$.post(
+					'<$HttpCgiPath$>'
+					, 
+					$('#newNote').serialize()
+					,
+					function(data){
+						loadPanelContent(activitiesPanel, getBaseParams(), true);
+					}
+				);
+			}
+			
+			function updateFollowUpFields() {
+				var frm = document.forms['commDetailsForm'];
+				var followUp = frm.elements['followUp'].checked;
+				
+				if (followUp) {
+					frm.elements['ASSIGNEE'].disabled = false;
+					frm.elements['DEADLINE'].disabled = false;					
+					$("#DEADLINE").datepicker("enable");
+				} else {
+					frm.elements['ASSIGNEE'].disabled = true;
+					frm.elements['DEADLINE'].disabled = true;
+					frm.elements['ASSIGNEE'].value = '';
+					frm.elements['DEADLINE'].value = '';;
+					$("#DEADLINE").datepicker("disable");
+				}
+			}
+			
+			function toggleQueryJobFields() {
+				var queryChecked = $("#IS_QUERY").is(":checked");
+				
+				if (queryChecked){
+					$("#queryJobFields").slideDown(function(){
+						$("#queryJobFields .calbutton").show();
+					});
+				}else{
+					$("#queryJobFields").slideUp(function(){
+						$("#queryJobFields .calbutton").hide();
+					});
+				}					
+			}
+
+			function checkQueryDisabled() {
+				var interactionID = "<$#active.INTERACTION_ID$>";
+				var frm = document.forms['commDetailsForm'];
+				
+				var ele = frm.elements['ORGANISATION_ID'];
+				
+				if (ele && ele.value!=null && ele.value!="") {
+					frm.elements['IS_QUERY'].disabled = false;
+				} else {
+					frm.elements['IS_QUERY'].disabled = true;
+								
+				}				
+			}
+			
+			function toggleOutcomeFields() {
+				var outcomeVal = $('#OUTCOME_ID').val();
+				var isComplete = false;
+				if (outcomeVal == "1")
+					isComplete = true;
+				if (isComplete){
+					$("#outcomeCompleted").slideDown(function(){
+						$("#outcomeCompleted .calbutton").show();
+					});
+					$("#outcomeCompletedType").slideDown(function(){
+						$("#outcomeCompletedType .calbutton").show();
+					});		
+					$("#interaction-list-message").addClass("display-none");
+					$("#interaction-list-message-close").removeClass("display-none");
+					$("#outcomeCompletedType").removeClass("display-none");
+
+					
+				}else{
+					$("#outcomeCompleted").slideUp(function(){
+						$("#outcomeCompleted .calbutton").hide();
+					});
+					$("#outcomeCompletedType").slideUp(function(){
+						$("#outcomeCompletedType .calbutton").hide();
+					});	
+					$("#interaction-list-message-close").addClass("display-none");
+					$("#interaction-list-message").removeClass("display-none");	
+					$("#outcomeCompletedType").addClass("display-none");	
+				}					
+			}
+			
+			function blankAssociatedField(objFieldChanged, objFieldToBlank){
+				if($(objFieldChanged).val().length > 0){
+					$(objFieldToBlank).val('');
+				}
+			}
+			
+			
+			function doInteractionAction(actiontype,interactionId,personId,organisationId)
+			{
+				var frm = document.forms['interactionDetailsForm'];
+			if (actiontype == 'addnote' || actiontype=='close' || actiontype == 'createnew')
+			{
+				var subjectId=frm.SUBJECT_ID.value;
+				var categoryId=frm.CATEGORY_ID.value;
+				var fundCode = frm.FUND_CODE.value;
+				var accountId = frm.ACCOUNT_ID.value;
+				var redirectUrl = '?IdcService=CCLA_CS_INTERACTION_NEW<$include add_idc_token_to_url$>&PERSON_ID=' + personId + '&ORGANISATION_ID=' + organisationId;
+				if (actiontype!='createnew')
+					redirectUrl += '&linkedInteraction=' + interactionId + '&SUBJECT_ID=' + subjectId + '&CATEGORY_ID=' + categoryId + '&FUND_CODE=' + fundCode + '&ACCOUNT_ID=' + accountId;
+				if (actiontype == 'close')
+					redirectUrl += '&outcomeId=1&action=close&interactionType=Close Interaction';
+				if (actiontype=='addnote')
+					redirectUrl += '&interactionType=Note&createType=yes';
+				window.location.href=redirectUrl;
+			}
+			if (actiontype == 'followup')
+			{
+			var IdcService = 'CCLA_CS_SELECT_PERSON_ENTITY';
+			var redirectUrl = '?interactionTarget=interaction&IdcService=' + IdcService + '<$include add_idc_token_to_url$>&INTERACTION_TYPE=Outgoing Call&PERSON_ID=' + personId + '&ORGANISATION_ID=' + organisationId + '&linkedInteraction=' + interactionId;
+			window.location.href=redirectUrl;
+			}	
+			if (actiontype == 'answercall')
+			{
+			var redirectUrl = '?IdcService=CCLA_CS_CONTACT_LOOKUP<$include add_idc_token_to_url$>&interactionTarget=interaction';
+			window.location.href=redirectUrl;
+			}
+			if (actiontype == 'gotolisting')
+			{
+			var redirectUrl = '?IdcService=CCLA_CS_INTERACTION_LISTING<$include add_idc_token_to_url$>';
+			window.location.href=redirectUrl;
+			}			
+			}
+			
+			function createLink(interactionId)
+			{
+				var frm = document.forms['frmCreateInteractionLink'];
+				document.forms['frmCreateInteractionLink'].submit();
+			}
+			
+			function showAllInteractions()
+			{
+			var t='';
+			var commForm = document.forms['interactionDetailsForm'];
+			if (document.forms['frmCreateInteractionLink'])
+			{
+				      for (i=0; i<document.frmCreateInteractionLink.showInteractionType.length; i++)
+					  {
+						 if (document.frmCreateInteractionLink.showInteractionType[i].checked==true)
+						 {
+							t =t +document.frmCreateInteractionLink.showInteractionType[i].value
+						 }
+					  }
+			}
+			if (t=='all' || !(document.forms['frmCreateInteractionLink']))
+			{
+				var orgId = commForm.ORGANISATION_ID.value;
+				var personId = "<$#active.PERSON_ID$>";
+				var interactionId = "<$#active.INTERACTION_ID$>";
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_interaction_listing_by_person_org",
+					{
+						"ORGANISATION_ID": orgId,
+						"PERSON_ID": personId,
+						"INTERACTION_ID": interactionId,
+						"showAll": "true",
+						"ts":new Date(),
+						"ajaxRefresh": 1
+					},
+					function(data) {
+						$("#interactionholder").html(data);
+					}
+				);	
+			} else if (t=='linked')
+			{
+				var orgId = "<$#active.ORGANISATION_ID$>";
+				var personId = "<$#active.PERSON_ID$>";
+				var interactionId = "<$#active.INTERACTION_ID$>";
+				$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_interaction_listing_by_person_org",
+					{
+						"ORGANISATION_ID": orgId,
+						"PERSON_ID": personId,
+						"INTERACTION_ID": interactionId,
+						"showAll": "",
+						"ts":new Date(),
+						"ajaxRefresh": 1
+					},
+					function(data) {
+						$("#interactionholder").html(data);
+					}
+				);
+			}
+			}
+
+			function checkAll()
+			{
+			var myfrm = document.forms['commDetailsForm'];
+			if (document.forms['frmCreateInteractionLink'])
+			{
+				myfrm = document.forms['frmCreateInteractionLink'];
+			}
+			else
+			{	
+				myfrm = document.forms['commDetailsForm'];
+			}	
+				for(i=0; i<myfrm.elements.length; i++)
+				{
+					if(myfrm.elements[i].type=="checkbox" && myfrm.elements[i].name.indexOf('chk_') ==0)
+					{
+					if (myfrm.selectAll.checked)
+						myfrm.elements[i].checked=true;
+					else
+						myfrm.elements[i].checked=false;
+					}
+				}
+			}		
+	
+		function refreshInteractionOrganisation()
+		{
+			// this refreshes the org id if on the interaction new page
+			var commForm = document.forms['interactionDetailsForm'];
+			var orgId = commForm.ORGANISATION_ID.value;
+			
+			if (orgId!=null && orgId!="") {
+				commForm.IS_QUERY.disabled = false;
+			} else {
+				commForm.IS_QUERY.disabled = true;
+			}
+			
+			if (document.frmCreateInteractionLink)
+			{
+				var interactionLinkForm = document.frmCreateInteractionLink;
+				orgId = commForm.ORGANISATION_ID.value;
+				interactionLinkForm.ORGANISATION_ID.value = orgId;
+			}
+					
+			showAllInteractions();
+		}
+		</script>
+	
+	</head>
+	<body <$include iris_body_def_internal$> class="popupBody">
+			<$include ecs_popup_div_header$>		
+			<$include iris_header$>
+			<div id="cs_page_container" class="cs-page-container"  style="width:1100px;" >
+
+			<$if NOT hideActionButtons$>
+				<$buttonContext = "person"$>
+				<$include ccla_cs_action_buttons$>
+			<$endif$>
+			<div id="ccla_cs_right_content" class="cs-right-content-container">
+			
+			<div id='ccla_cs_content' class="cs-content-container" style="width:930px;" >
+			
+			<$if #local.INTERACTION_ID$>
+				<$executeService("CCLA_CS_INTERACTION_GET_BY_ID")$>
+			<$endif$>		
+
+			<$if rsInteraction$>
+				<$loop rsInteraction$>
+					<$include ccla_cs_record_interaction$>
+				<$endloop$>
+			<$else$>
+				<$include ccla_cs_record_interaction$>
+			<$endif$>
+			
+		</div>	
+
+		</div>			
+	</body>
+</html>

@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Quick Add Person
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>	
+	<script type="text/javascript">
+
+		// Determines whether a new association was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;	
+	
+		// ID of the newly-created relation
+		var newRelationId = "<$#local.newRelationId$>";
+		
+		// One of the below will be non-null, this implies which relation is
+		// being created (either Org-Person or Org-Account)
+		var personId		= "<$#local.PERSON_ID$>";
+		var orgId			= "<$#local.ORGANISATION_ID$>";
+		var elementTypeId1	= "<$#local.ELEMENT_TYPE_ID_1$>";
+		var elementTypeId2	= "<$#local.ELEMENT_TYPE_ID_2$>";
+		var isParentCallback = <$if isParentCallback$>true<$else$>false<$endif$>;
+		
+
+		$(document).ready(function() {
+			if (added && window.parent && personId != "" && newRelationId=="") { 
+				alert("shouldnt be here");
+				/*	
+				$('#RELATED_ELEMENT_ID').val(personId);
+				$('#addAssociation').submit();
+				*/
+				
+			}
+			
+			if (newRelationId != "" && window.parent && !isParentCallback) {
+				// Refresh background page to display newly-added relation.
+				window.parent.closePopup();
+				window.parent.refreshRelations(orgId, newRelationId, elementTypeId1, elementTypeId2);
+			} else if (newRelationId != "" && window.parent && isParentCallback) {
+				window.parent.closePopup();
+				window.parent.doSelectCallback(personId);
+			}
+			
+		});
+	
+		
+		function doSelectCallback(entityId){
+			$('#RELATED_ELEMENT_ID').val(entityId);
+			$('#addAssociation').submit();
+		}
+
+		function submitQuickAddPerson() {
+			if (validateDocFields()) {
+				// Disable the form submit button and submit the form.
+				$("#submitQuickAddPersonButton").val("Saving, please wait...").attr("disabled","disabled");
+				document.forms["personDetails"].submit();
+			}	
+			return;	
+		}
+
+		function setSalutation()
+		{
+			var salutation = document.personDetails.SALUTATION.value;
+			var title = document.getElementById('TITLE_ID')[document.getElementById('TITLE_ID').selectedIndex].innerHTML;
+			var secondName = document.personDetails.LAST_NAME.value;
+			
+			if ((salutation.length==0) && (title.length>0) && (secondName.length>0)) {
+				document.personDetails.SALUTATION.value = title + ' ' + secondName;
+			}
+		}		
+		
+		if (!maleTitles && !femaleTitles) {
+		
+		<$loop rsAllTitles$>
+			<$if strEquals(#active.GENDER_ID,"1")$>
+				<$maleList = maleList & strMComma & "'" & #active.TITLE_ID & "'"$>
+				<$strMComma=","$>
+			<$elseif strEquals(#active.GENDER_ID,"2")$>
+				<$femaleList = femaleList & strFComma & "'" & #active.TITLE_ID & "'"$>
+				<$strFComma=","$>
+			<$endif$>
+		<$endloop$>
+			
+		var maleTitles 		= new Array(<$maleList$>);
+		var femaleTitles 	= new Array(<$femaleList$>); 
+		}
+		// Sets the gender, based on the selected title. If the selected title
+		// doesn't appear in the male/femaleTitles arrays, the gender is left
+		// alone (e.g. Dr)
+		//
+		// Triggered by blur event on title field
+		function setGender() {
+			
+			var title = document.getElementById('TITLE_ID')[document.getElementById('TITLE_ID').selectedIndex].value;
+			var gender = document.getElementById('GENDER_ID')[document.getElementById('GENDER_ID').selectedIndex].value;
+			
+			if (title.length > 0) {	
+				for (var i=0; i<maleTitles.length; i++) {
+					if (title == maleTitles[i]) {
+						document.personDetails.GENDER_ID.value = "1";
+						return;
+					}
+				}
+				
+				for (var i=0; i<femaleTitles.length; i++) {
+					if (title == femaleTitles[i]) {
+						document.personDetails.GENDER_ID.value = "2";
+						return;
+					}
+				}
+			}
+		}
+		
+		function validateGender() {
+			var title = document.getElementById('TITLE_ID')[document.getElementById('TITLE_ID').selectedIndex].value;
+			var gender = document.getElementById('GENDER_ID')[document.getElementById('GENDER_ID').selectedIndex].value;
+			
+			if (title && gender) {
+				if (gender=="2") {
+					for (var i=0; i<maleTitles.length; i++) {
+						if (title == maleTitles[i]) {
+							alert('Cannot set a female gender for this title');	
+							document.personDetails.GENDER_ID.value = "1";
+						}
+					}
+				} else if (gender=="1") {
+					for (var i=0; i<femaleTitles.length; i++) {
+						if (title == femaleTitles[i]) {
+							alert('Cannot set a male gender for this title');
+							document.personDetails.GENDER_ID.value = "2";
+						}
+					}
+				}
+			}
+		}		
+		<$include person_error_handling_js$>
+	</script>
+
+</head>
+
+<body class="popupBody">
+	
+	<!-- This form isn't used now. Relation is created at the same times as the Person record.
+		Keeping here for now, just in case. -->
+	<$if false$>
+		<form name="addAssociation" id="addAssociation" method="POST">
+						
+		<input  type="hidden" name="IdcService" value="CCLA_CS_ADD_ELEMENT_RELATION"><$include add_idc_token_to_form$>
+		<input 	type="hidden" name="RedirectUrl" 
+				value="?IdcService=CCLA_CS_ADD_QUICK_PERSON<$include add_idc_token_to_url$>&isParentCallback=<$#local.isParentCallback$>&PERSON_ID=<$#local.PERSON_ID$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ACCOUNT_ID=<$#local.ACCOUNT_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&showAllSearchFields=true&added=1&newRelationId=" />
+		
+			<$if #local.ORGANISATION_ID$>
+				<input type="hidden" name="PARENT_ELEMENT_ID" 	id="PARENT_ELEMENT_ID" value="<$#local.ORGANISATION_ID$>" />
+				<input type="hidden" name="RELATED_ELEMENT_ID" 	id="RELATED_ELEMENT_ID" />	
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultOrgPersonRelationNameId$>" />
+
+
+			<$elseif #local.ACCOUNT_ID$>
+
+				<input type="hidden" name="PARENT_ELEMENT_ID"  	id="PARENT_ELEMENT_ID" />
+				<input type="hidden" name="RELATED_ELEMENT_ID" 	id="RELATED_ELEMENT_ID" value="<$#local.ACCOUNT_ID$>" />
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>" />
+			<$endif$>
+		
+		</form>
+	<$endif$>
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class='ccla_cs_panel_content'>
+			<form name="personDetails" id="personDetails" method="POST">
+			<input  type="hidden" name="IdcService" value="CCLA_CS_ADD_PERSON"><$include add_idc_token_to_form$>
+			<input 	type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CS_ADD_QUICK_PERSON<$include add_idc_token_to_url$>&isParentCallback=<$#local.isParentCallback$>&isBulkAssociation=<$#active.isBulkAssociation$>&isCompact=1&added=1&isFromExpanded=<$#active.isFromExpanded$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&PERSON_ID=" />
+			
+			<!-- 	Fields used to automatically create the Peron-Account or Org-Person relation when creating
+					the new person -->
+			<$if #local.ORGANISATION_ID$>
+				<input type="hidden" name="relatedEntityId" 	value="<$#local.ORGANISATION_ID$>" />
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultOrgPersonRelationNameId$>" />
+			<$elseif #local.ACCOUNT_ID$>
+				<input type="hidden" name="relatedAccountId" 	value="<$#local.ACCOUNT_ID$>" />
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>" />
+			<$endif$>
+			
+			<table width="100%">
+	
+			<!-- set col widths -->
+			<tr>
+				<td width="20%"></td>
+				<td width="30%"></td>
+				<td width="20%"></td>
+				<td width="30%"></td>
+			</tr>
+			<$include ccla_cs_person_details_top$>
+			<input type="hidden" id="SOURCE_ID" name="SOURCE_ID" value="2"/>
+			<$if not #active.added$>
+				<table width="100%">
+					<tr align="right"><td align="right">
+						<input 	id="submitQuickAddPersonButton" 
+								tabindex="60" type="button" 
+								value="Save Details" onClick="submitQuickAddPerson()"/>
+					</td></tr>
+				</table>
+			<$endif$>
+			</form>
+		</div>
+			
+	</div>
+</body>
+</html>

@@ -1,0 +1,406 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_Paginator htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml iris_paginator_header@>
+
+	<$include iris_paginator_styles$>
+	<$include iris_paginator_js$>
+
+<@end@>
+
+<@dynamichtml iris_paginator_styles@>
+
+	<style type="text/css">
+	
+		/* Styles for browse icons */
+			
+			.pn_large {
+				padding: 0.3em 0.1em 0.3em 0.1em;
+				margin: 2px 10px 2px 10px;
+			}
+			
+			.pn_icon_rest {
+				height: 15px;
+				display: inline;
+				border: 1px solid #999999; 
+				background-color: #F6F6DD;
+				margin: 2px;
+				text-align: center;
+				cursor: pointer;
+			}
+			
+			.pn_icon_inactive {
+				height: 15px;
+				border: 1px solid #BBBBBB; 
+				background-color: #DDDDDD;
+				color: #999999;
+				margin: 2px;
+				text-align: center;
+			}
+			
+			.pn_icon_hover {
+				height: 15px;
+				display: inline;
+				margin: 2px;
+				text-align: center;
+				cursor: pointer;
+				border: 1px solid #000000;
+				background-color: #DADAF0;
+			}
+			
+			.pn_icon_sel {
+				height: 15px;
+				display: inline;
+				border: 1px solid #000000;
+				font-weight: bold;
+				color: #FFFFFF;
+				background-color: #F29303; /* #DADAF0; */
+				margin: 2px;
+				text-align: center;
+			}
+			
+			.pn_small {
+				padding: 0.3em 0.5em 0.3em 0.5em;
+			}
+			
+			.browse_ellipsis {
+				display: inline;
+				border: none;
+				margin: 2px 0px 2px 0px;
+				text-align: center;
+				padding: 0.3em 0.0em 0.1em 0.0em;
+			}
+			
+			#browse_panel a {
+				text-decoration: none;
+			}
+			
+	</style>
+
+<@end@>
+
+<!-- 	Used to work out the paginator window limits (i.e. what
+			indicies the window starts and ends on, and whether or
+			not to display left/right ellipsis).
+			
+			Three variables should already be defined before calling the
+			include:
+				
+				pn_size: 			maximum visible window size. Choose an odd number
+											for this, so that the currently-selected index
+											will appear in the middle
+				pn_total:			the total number of indicies in the complete set
+				
+				pn_current:		the curently-selected index
+			
+			These variables are optional:
+				
+				pn_start:			where the index counting will start (default: 1)
+				pn_debug:			switch on debugging
+				
+				pn_use_ellipsis:	whether or not to display '...' when there are
+													more records to display
+-->
+<@dynamichtml iris_paginator_compute_window@>
+	
+	<$pn_leeway = pn_size/2$>
+	
+	<$if not pn_size$>
+		<$pn_size = 5$>
+	<$endif$>
+	
+	<$if not pn_start$>
+		<$pn_start = 1$>
+		<$pn_end = pn_total$>
+	<$else$>
+		<$pn_end = (pn_start-1) + pn_total$>
+	<$endif$>
+	
+	<$if not pn_use_rs$>
+	
+		<$if pn_current <= pn_start$>
+		<$else$>
+			<$pn_prev = pn_current - 1$>
+		<$endif$>
+		
+		<$if pn_current >= pn_end$>
+		<$else$>
+			<$pn_next = pn_current + 1$>
+		<$endif$>
+		
+	<$else$>
+	
+		<$if pn_current <= pn_start$>
+		<$else$>
+			<$exec rsSetRow(pn_rs,(pn_current-2))$>
+			<$pn_prev = getValue(pn_rs,pn_rs_row)$>
+		<$endif$>
+		
+		<$if pn_current >= pn_end$>
+		<$else$>
+			<$exec rsSetRow(pn_rs,(pn_current))$>
+			<$pn_next = getValue(pn_rs,pn_rs_row)$>
+		<$endif$>
+		
+	<$endif$>
+	
+		
+	<$if pn_current <= (pn_start-1) + pn_leeway$>
+		<!-- Window appears at start of indicies -->
+		<$pn_win_start = pn_start$>
+		<$if (pn_total lt pn_size)$>
+			<$pn_win_end = pn_end$>
+		<$else$>
+			<$pn_win_end = pn_win_start + (pn_size - 1)$>
+		<$endif$>
+			
+	<$elseif pn_current >= (pn_end - pn_leeway)$>
+		<!-- Window appears at end of indicies -->
+		<$pn_win_end = pn_end$>
+		<$if pn_end < pn_size$>
+			<$pn_win_start = pn_start$>
+		<$else$>
+			<$pn_win_start = pn_end - (pn_size - 1)$>
+		<$endif$>
+							
+	<$else$>
+		<!-- Window appears between max/min indicies -->			
+		<$pn_win_start = pn_current - pn_leeway$>
+		<$pn_win_end = pn_current + pn_leeway$>
+	<$endif$>
+	
+	
+	<$if pn_use_ellipsis$>
+		<!-- Now check to see if we need ellipsis at each side -->
+		<$if pn_win_start > pn_start$>
+			<$pn_left_ellipsis = 1$>
+			<$pn_win_start = pn_win_start + 1$>
+		<$endif$>
+		
+		<$if pn_win_end < pn_end$>
+			<$pn_right_ellipsis = 1$>
+			<$pn_win_end = pn_win_end - 1$>	
+		<$endif$>
+		
+	<$endif$>
+	
+	<$if pn_debug$>
+		<$trace("pn_win_start: " & pn_win_start)$>
+		<$trace("pn_win_end: " & pn_win_end)$>
+		<$trace("pn_total: " & pn_total & ", pn_start: " & pn_start & ", pn_end: " & pn_end)$>
+		<$if pn_use_ellipsis$>
+			<$trace("Left ellipsis: " & pn_left_ellipsis)$>
+			<$trace("Right ellipsis: " & pn_right_ellipsis)$>
+		<$endif$>
+		
+	<$endif$>	
+	
+<@end@>
+
+<!-- Javascript functions to support document browse controls -->
+<@dynamichtml iris_paginator_js@>
+
+<script>
+
+	function add_browse_hilite(theDiv)
+	{
+		if (theDiv) {
+			contents = theDiv.innerHTML;
+		
+			if (contents) {
+				if (contents.match('&lt;&lt;') != null | contents.match('&gt;&gt;') != null)
+				{
+					theDiv.className = 'pn_icon_hover pn_large';
+				} else {
+					theDiv.className = 'pn_icon_hover pn_small';
+				}
+			}
+		}
+	}
+	
+	function rem_browse_hilite(theDiv)
+	{
+		if (theDiv) {
+			contents = theDiv.innerHTML;
+			
+			if (contents) {
+				if (contents.match('&lt;&lt;') != null | contents.match('&gt;&gt;') != null)
+				{
+					theDiv.className = 'pn_icon_rest pn_large';
+				} else {
+					theDiv.className = 'pn_icon_rest pn_small';
+				}
+			}
+		}
+	}
+	
+</script>
+
+<@end@>
+
+
+<!-- Used for displaying the paginator. -->
+<@dynamichtml iris_paginator_display_window@>
+
+	<$if not pn_div_attributes$>
+		<$pn_div_attributes = "onmouseover='add_browse_hilite(this)' onmouseout='rem_browse_hilite(this)'"$>
+	<$endif$>
+		
+	<$if not pn_width$>
+		<$pn_width = 300$>
+	<$endif$>
+	
+	<$if not pn_height$>
+		<$if not pn_header$>
+			<$pn_height = 30$>
+		<$else$>
+			<$pn_height = 55$>
+		<$endif$>
+	<$endif$>
+	
+	<table height=<$pn_height$> width=<$pn_width$> align=center cellpadding=0 cellspacing=0>
+	
+			<$if pn_header$>
+	
+				<tr height=15>
+					<td colspan=3 align=center>
+						<$pn_header$>
+					</td>
+				</tr>
+			
+			<$endif$>
+			
+			<tr height=40>
+				<td width='55' id='browse_panel'>
+
+					<$if pn_prev$>
+						<!-- Display active links for first/previous item -->
+						<$if pn_use_rs$>
+							<$exec rsSetRow(pn_rs,pn_start-1)$>
+							<$startID = getValue(pn_rs,pn_rs_row)$>
+						<$else$>
+							<$startID = pn_start$>
+						<$endif$>
+						
+						<a href='<$pn_link_prefix & startID$>'><div class='pn_icon_rest pn_large' style="float: left" <$pn_div_attributes$>>
+							<<
+						</div></a>
+					
+						<a href='<$pn_link_prefix & pn_prev$>'><div class='pn_icon_rest pn_small' style="float: left" <$pn_div_attributes$>>
+							<
+						</div></a>
+						
+					<$else$>
+						<!-- Display inactive links for first/previous item -->
+						
+						<div class='pn_icon_inactive pn_large' style="float: left">
+							<a><<</a>
+						</div>
+						
+						
+						<div class='pn_icon_inactive pn_small' style="float: left">
+							<a><</a>
+						</div>
+					
+					<$endif$>
+					
+				</td>
+		
+				<td align=center valign=center id='browse_panel'>
+				
+					<$if #local.pn_left_ellipsis$>
+						
+						<div class='browse_ellipsis'>
+						...
+						</div>
+						
+					<$endif$>
+						
+					<!-- 	All or part of the selection can be immediately accessed through this direct
+								set of links -->
+					<$counter = pn_win_start$>
+						
+					<$loopwhile (counter <= pn_win_end)$>
+						
+						<$if pn_current like counter$>
+							<!-- Currently-selected item. -->
+							<a><div class='pn_icon_sel pn_small'><$counter$></div></a>
+							
+						<$else$>
+							
+							<$if pn_use_rs$>
+								<$exec rsSetRow(pn_rs,counter-1)$>
+								<$thisID = getValue(pn_rs,pn_rs_row)$>
+							<$else$>
+								<$thisID = counter$>
+							<$endif$>
+							
+							<!-- Display a link to this item -->						
+							<a href='<$pn_link_prefix & thisID$>'><div class='pn_icon_rest pn_small' <$pn_div_attributes$>><$counter$></div></a>
+							
+						<$endif$>
+							
+							
+				
+						<$counter = counter + 1$>
+						
+					<$endloop$>
+				
+					<$if pn_right_ellipsis$>
+				
+						<div class='browse_ellipsis'>
+							...
+						</div>
+					
+					<$endif$>
+				
+					
+		
+				</td>
+				
+				<td width='55' id='browse_panel'>
+					
+						
+					
+					<$if pn_next$>
+						<!-- Display active links for next/last item -->
+						<$exec rsSetRow(pn_rs,pn_end-1)$>
+						<$endID = getValue(pn_rs,pn_rs_row)$>
+						
+						<a href='<$pn_link_prefix & endID$>'><div class='pn_icon_rest pn_large' style="float: right" <$pn_div_attributes$>>
+							>>
+						</div></a>	
+					
+						<a href='<$pn_link_prefix & pn_next$>'><div class='pn_icon_rest pn_small' style="float: right" <$pn_div_attributes$> tabindex=100>
+							>
+						</div></a>
+					
+					<$else$>
+						<!-- Display inactive links for next/last item -->
+						
+						<div class='pn_icon_inactive pn_large' style="float: right">
+							<a>>></a>
+						</div>
+						
+						<div class='pn_icon_inactive pn_small' style="float: right">
+							<a>></a>
+						</div>
+						
+					<$endif$>
+		
+				</td>
+	
+			</tr>
+
+		</table>
+
+<@end@>
+
+
+</body></html>

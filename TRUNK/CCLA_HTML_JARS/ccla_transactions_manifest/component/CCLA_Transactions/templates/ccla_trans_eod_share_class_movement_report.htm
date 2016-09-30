@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		PSIC Share Class Movements for Today
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<$if #local.ORGANISATION_ID$>
+		<!-- Org/Person relationship -->
+		<$ELEMENT_ID = ORGANISATION_ID$>
+
+	<$elseif #local.ACCOUNT_ID$>
+		<!-- Person/Account relationship -->
+		<$ELEMENT_ID = ACCOUNT_ID$>
+
+	<$endif$>
+	
+	<script type="text/javascript">
+
+	</script>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_contact_lookup_js$>
+	<$include ccla_cs_contact_lookup_mini_styles$>
+</head>
+
+<body <$include iris_body_def_internal$>>
+
+	
+		<$include ecs_popup_div_header$>
+		
+			<$include iris_header$>
+
+	
+	<div  id="cs_page_container" class="cs-page-container">
+
+
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		
+			<div id='ccla_cs_content' class="cs-content-container" >
+			
+							<$include orangeContainer_top$>
+							<div class='ccla_cs_panel_header'>
+								PSDF Share Class Movements for <$formatDateWithPattern(dateCurrent(),"dd/MM/yyyy")$>
+								</div>
+							<$if rsSCM$>
+								<$if  #active.EOD_COMPLETED == 1$>
+									<p>Today's end of day has completed, these share classes have been applied (in UCM)</p>
+								<$endif$>							
+							<table cellpadding="0" cellspacing="0"  width="100%" class="accounts-table">
+							<tr class="account-details-row">
+								<th width="30%">Organisation</th>
+								<th width="10%">Aurora Client No</th>
+								<th width="10%">Account Number</th>
+								<th width="20%">Account Title</th>
+								<th width="15%">Current Share Class</th>
+								<th width="15%">New Share Class</th>
+
+							</tr>
+							<$loop rsSCM$>						
+								<tr  class="account-details-row" >
+									<td><a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$rsSCM.ORGANISATION_NAME$></a></td>
+									<td><$rsSCM.CLIENT_NUMBER$></td>
+									<td><a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>"><$strLeftFill(#active.ACCOUNTNUMBER,"0",8)$></a></td>
+									<td><$rsSCM.SUBTITLE$>&nbsp;</td>
+									<td><$if rsSCM.PREVIOUS_SHARE_CLASS_NAME$><$rsSCM.PREVIOUS_SHARE_CLASS_NAME$><$else$>n/a<$endif$></td>
+									<td><strong><$rsSCM.NEW_SHARE_CLASS_NAME$></strong>&nbsp;</td>
+								</tr>	
+							<$endloop$>
+							</table>
+							<$else$>
+								<$if #active.EOD_STARTED == 1 OR #active.EOD_COMPLETED == 1$>
+									No Share Class Movements found for today
+								<$else$>
+									Today's end of day has not yet run so there are no share class movements yet.
+								<$endif$>
+							<$endif$>							
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+</body>
+</html>

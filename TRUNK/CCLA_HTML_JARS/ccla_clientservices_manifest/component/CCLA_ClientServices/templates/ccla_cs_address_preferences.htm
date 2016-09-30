@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle = "Address Preferences"$>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		var updated = <$if updated$>true<$else$>false<$endif$>;
+		var selContactId = "<$#local.selContactId$>";
+		
+		$(document).ready( function() {
+			
+			if (updated){
+				if (selContactId) {
+					window.parent.updateAddressSelector(selContactId);
+					window.parent.updateSelContactAddress();
+				}
+				
+				window.parent.closePopup();
+			}
+		});
+		
+	</script>
+	
+	
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$pageTitle$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+					
+					<b>Correspondence</b>
+					<p>
+						This is the nominated address used for correspondence with this person/client.
+						It will be sent to Aurora and other third-party systems.
+					</p>
+					
+					<$include ccla_cs_determine_if_user_permitted_default_address_update$>
+					
+					<$if not allowChangeDefaultAddress$>
+						<p>
+							<span style="color:red">Only members of the Data Integrity team are permitted 
+							to change this</span>
+						</p>
+					<$endif$>
+					
+					
+					<b>Experian</b>
+					<p>
+						This is the nominated address used for Experian Authentication checks only.
+						All users are permitted to change this.
+					</p>
+					
+					<$loop rsContactDetails$>
+						<$if strEquals(rsContactDetails.METHOD_TYPE,"1")$>
+							<$foundAddress=1$>
+							<$break$>
+						<$endif$>
+					<$endloop$>
+					
+					
+					<$if not #active.foundAddress$>
+						No addresses found for this person/client.
+					<$else$>
+
+						<form method="POST">
+							<input type="hidden" name="ELEMENT_ID" 	value="<$#local.ELEMENT_ID$>" />
+							
+							<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_ADDRESS_PREFERENCES" /><$include add_idc_token_to_form$>
+							<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_ADDRESS_PREFERENCES<$include add_idc_token_to_url$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&selContactId=<$#local.selContactId$>&updated=1" />
+
+							<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>			
+								<tr>
+									<th class="first-col">
+										Address
+									</th>
+									<th width="15%">
+										Type
+									</th>
+									<th width="15%">
+										Correspondence
+									</th>
+									<th width="15%">
+										Experian
+									</th>
+								</tr>
+								
+								<$loop rsContactDetails$>
+									<$if strEquals(rsContactDetails.METHOD_TYPE,"1")$>
+										<tr class="account-details-row">
+											<td class="first-col">
+												<span style="font-weight:bold">
+													<$#active.NAME$>
+												</span>
+												
+												<br/>
+												
+												<$include ccla_cs_get_address_summary$>
+												
+												<$addressSummary$>
+												
+											</td>
+											
+											<td>
+												<$#active.TYPE_LABEL$>
+											</td>
+											
+											<td align="center">
+												<input 	type="radio" name="defaultAddress" 
+												
+														<$if not allowChangeDefaultAddress$>
+															disabled="disabled"
+														<$endif$>
+														
+														value="<$#active.CONTACT_ID$>" 
+														<$if #active.IS_DEFAULT like "1"$><$defaultAddressContactId = #active.CONTACT_ID$>checked<$endif$> />
+											</td>
+											
+											<td align="center">
+												<input type="radio" name="experianAddress" value="<$#active.CONTACT_ID$>"
+														<$if #active.IS_EXPERIAN like "1"$>checked<$endif$> />
+											</td>
+											
+										</tr>
+									<$endif$>
+								<$endloop$>
+							
+							</table>
+							
+							<$if not allowChangeDefaultAddress$>
+								<input type="hidden" name="defaultAddress" value="<$defaultAddressContactId$>" />
+							<$endif$>
+							
+							<br/>
+							
+							<div style="text-align:right">
+								<input type="submit" value="Save changes" />
+								<input type="button" value="Cancel" onclick="window.parent.closePopup()" />
+							<div>
+							
+						</form>
+						
+					<$endif$>
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

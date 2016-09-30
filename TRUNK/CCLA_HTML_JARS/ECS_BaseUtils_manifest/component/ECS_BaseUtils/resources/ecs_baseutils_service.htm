@@ -1,0 +1,253 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_BaseUtils service
+</title>
+</head>
+<body>
+
+<@table ECS_BaseUtils_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>UPLOAD_APPLET_TEST</td>
+	<td>Service
+		3
+		UPLOAD_APPLET_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>UPLOAD_APPLET_LITE_TEST</td>
+	<td>Service
+		3
+		UPLOAD_APPLET_LITE_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>UPLOAD_APPLET_TEST_2</td>
+	<td>Service
+		0
+		UPLOAD_APPLET_TEST_2
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LAST_UPDATE_TIME</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QitemLastUpdateTime:rsUpdateTime::null</td>
+</tr>
+<tr>
+	<td>DOC_INFO_DB_DDOCNAME</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QitemDocInfoDocname:rsDocInfoDB::null</td>
+</tr>
+<tr>
+	<td>DOC_INFO_DB_DID</td>
+	<td>Service
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QitemDocInfoDID:rsDocInfoDB::null</td>
+</tr>
+<tr>
+	<td>GENERATE_DOC_FROM_TEMPLATE</td>
+	<td>com.ecs.utils.stellent.DocGenerator
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:generateDocument:::null</td>
+</tr>
+<tr>
+	<td>DOC_INFO_LATEST</td>
+	<td>DocService
+		33
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QDocInfoLatest:DOC_INFO::null
+		3:mapNamedResultSetValues:DOC_INFO,dStatus,dStatus,dDocTitle,dDocTitle,dDocType,dDocType,dWebExtension,dWebExtension::null
+		3:checkSecurity:DOC_INFO:0:!csUnableToGetRevInfo2(dDocName)
+		3:getURLAbsolute:::null</td>
+</tr>
+<tr>
+	<td>UPDATE_DOCINFO_NOTRANS</td>
+	<td>DocService
+		2
+		null
+		null
+		documents<br>
+		!csUnableToUpdateInfo(dDocName)</td>
+	<td>3:doSubService:UPDATE_DOCINFO_SUB::null</td>
+</tr>
+<tr>
+	<td>UPDATE_DOCINFO_LATEST</td>
+	<td>com.ecs.utils.DocUtils
+		2
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:QGetDocumentReleaseState:relState::null
+		3:updateDocument:::null</td>
+</tr>
+<tr>
+	<td>UPDATE_DOCINFO_LATEST_SUB</td>
+	<td>com.ecs.utils.DocUtils
+		2
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>5:QGetDocumentReleaseState:relState::null
+		3:updateDocument:::null</td>
+</tr>
+<tr>
+	<td>ECS_VIEW_CONTENT</td>
+	<td>DocService
+		1
+		ECS_VIEW_CONTENT
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ECS_VIEW_CONTENT_FRAMED</td>
+	<td>DocService
+		1
+		ECS_VIEW_CONTENT
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>GET_SERVICE_LIST</td>
+	<td>com.ecs.utils.security.AuditServices
+		15
+		GET_SERVICE_LIST
+		null
+		null<br>
+		null</td>
+	<td>3:getServiceList:::null</td>
+</tr>
+<tr>
+	<td>GET_PUBLIC_SERVICE_LIST</td>
+	<td>com.ecs.utils.security.AuditServices
+		15
+		GET_SERVICE_LIST
+		null
+		null<br>
+		null</td>
+	<td>3:getPublicServiceList:::null</td>
+</tr>
+<tr>
+	<td>GET_SQL_FOR_QUERY</td>
+	<td>com.ecs.utils.UtilityServices
+		0
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getSQL:::null</td>
+</tr>
+<tr>
+	<td>GET_CONNECTION_POOL_STATUS</td>
+	<td>com.ecs.utils.UtilityServices
+		15
+		GET_CONNECTION_POOL_LIST
+		null
+		null<br>
+		null</td>
+	<td>3:getConnectionDetails:::null</td>
+</tr>
+<tr>
+	<td>GET_NODE_STATUS</td>
+	<td>com.ecs.utils.UtilityServices
+		0
+		GET_NODE_STATUS
+		null
+		null<br>
+		null</td>
+	<td>3:getNodeStatus:::null</td>
+</tr>
+<tr>
+	<td>UPLOAD_FILES</td>
+	<td>com.ecs.utils.uploader.UploadService
+		0
+		UPLOAD_SUCCESS
+		null
+		null<br>
+		null</td>
+	<td>3:uploadFiles:::null</td>
+</tr>
+<tr>
+	<td>ECS_BASE_UTILS_TEST</td>
+	<td>com.ecs.utils.UtilityServices
+		0
+		ECS_BASE_UTILS_ADMIN_PAGE
+		null
+		null<br>
+		null</td>
+	<td>3:getTestPage:::null</td>
+</tr>
+<tr>
+	<td>GET_METADATA_SCHEMA</td>
+	<td>com.ecs.utils.UtilityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getMetadataSchema:::null</td>
+</tr>
+<tr>
+	<td>GET_ENVIRONMENT_PARAMETERS</td>
+	<td>com.ecs.utils.UtilityServices
+		3
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEnvironment:::null</td>
+</tr>
+<tr>
+	<td>ECS_GET_ENVIRONMENT_PARAMETERS</td>
+	<td>com.ecs.utils.UtilityServices
+		15
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:getEnvironment:::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

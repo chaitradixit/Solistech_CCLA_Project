@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$processTarget = rsProcess.TARGET$>
+	
+	<$if IdcService like "CCLA_CS_SEARCH_PERSON"$>
+		<$searchType = "People"$>
+	<$elseif IdcService like "CCLA_CS_SEARCH_CLIENT"$>
+		<$searchType = "Clients"$>
+	<$endif$>
+	
+	<title>
+		Search Results<$if #local.searchType$>: <$searchType$><$endif$>
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 1050px'>
+
+			<$include orangeContainer_top$>
+				
+			<div class='ccla_cs_panel_header'>
+				Search Results<$if #local.searchType$>: <$searchType$><$endif$>
+			</div>
+		
+			<div class='ccla_cs_panel_content'>
+				qqqqq
+				<$if #local.searchType like "Clients"$>
+					bbbbbbb
+					<$include ccla_cs_client_sf$> 
+					
+				<$elseif #local.searchType like "People"$>
+					aaaaaa
+					<$include ccla_cs_person_sf$>
+				
+				<$else$>
+					ccccc
+					<$include ccla_cs_forms_sf$>
+					
+				<$endif$>
+				
+			</div>
+			
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+		
+</body>
+</html>

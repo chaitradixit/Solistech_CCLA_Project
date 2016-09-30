@@ -1,0 +1,55 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+	<title>
+		Image Preview - <$dDocName$>
+	</title>
+	
+	<$include iris_styles$>
+	<$include iris_paginator_header$>
+	
+	<$executeService("IRIS_DOC_INFO")$>
+	
+	<style type="text/css">
+		
+		.image_container {
+			margin: 20px;
+			padding: 5px;
+			border: 1px solid #CCCCCC;
+			width: auto;
+		}
+		
+		img {
+			border: none;
+		}
+		
+		.preview_header {
+			font-size: 1.4em;
+		}
+		
+		.bold {
+			font-weight: 600;
+		}
+		
+	</style>
+	
+</head>
+<body>
+	
+	<div style="text-align: center">
+		<span class="preview_header">Image title: </span><span class="preview_header bold"><$dDocTitle$></span>
+		<br/>
+		<br/>
+		<a href="<$HttpCgiPath$>?IdcService=IRIS_DOC_THUMBS<$include add_idc_token_to_url$>&sel=<$sel$><$if StartRow$>&StartRow=<$StartRow$><$endif$>">Back to thumbnails</a>
+		&nbsp;|&nbsp;
+		<a href="<$HttpCgiPath$>?IdcService=GET_FILE<$include add_idc_token_to_url$>&dDocName=<$dDocName$>&RevisionSelectionMethod=Latest">Download image</a>
+		
+		<br/>	
+			
+		<div class="image_container">
+			<img src="<$DocUrl$>" />
+		</div>
+	</div>
+	
+</body></html>

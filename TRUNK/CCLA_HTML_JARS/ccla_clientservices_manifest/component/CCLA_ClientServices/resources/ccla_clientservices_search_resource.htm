@@ -1,0 +1,1650 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_ClientServices htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml ccla_cs_toggle_info_edit_display@>
+<$if IsDebug$>ccla_cs_toggle_info_edit_display<$endif$>	
+	
+	<$include ccla_cs_common_params$>
+	
+	<$if not isNew$>
+		<div class="cs-tab-container">
+			<!-- Record info toggle -->
+			<a 	href="?IdcService=<$recordService_info$><$include add_idc_token_to_url$><$commonParams$>" title="View record info"
+				class="cs-info-tab cs-link-tab <$if isInfo$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">Info</span></a>
+			
+			<!-- Record edit toggle -->
+			<a 	href="?IdcService=<$recordService_edit$><$include add_idc_token_to_url$><$commonParams$>" title="Edit this record"
+				class="cs-info-tab cs-link-tab <$if isEdit$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">
+				<$if recordService_edit_Label$><$recordService_edit_Label$><$else$>Edit<$endif$></span></a>
+
+			<!-- Bulk update mode (Org only) -->	
+			<$if strEqualsIgnoreCase(buttonContext,"entity") and not #local.isCompact$>
+			<a 	href="?IdcService=<$recordService_bulkupdate$><$include add_idc_token_to_url$><$commonParams$>" title="Make a bulk update to this record"
+				class="cs-info-tab cs-link-tab <$if not isEdit and not isInfo$>cs-tabOn<$else$>cs-tabOff<$endif$>" ><span id="tab_text_caption" class="tab_text">Bulk Update</span></a>
+			<$endif$>
+
+			
+		</div>
+	<$endif$>
+		
+<@end@>
+
+<@dynamichtml ccla_cs_unique_identifier_search_fields@>
+	<$if IsDebug$>ccla_cs_unique_identifier_search_fields<$endif$>
+	<h3 class="ccla_data_panel_header">CCLA Identifiers</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">
+			<tr>
+				<th>Org Code:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="ORGANISATION_CODE" name="ORGANISATION_CODE" value="<$#active.ORGANISATION_CODE$>"/></td>
+				
+					<th>Person Code:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="PERSON_CODE" id="PERSON_CODE" value="<$#active.PERSON_CODE$>" /></td>
+
+
+					<th>Campaign No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="CAMPAIGN_NO" id="CAMPAIGN_NO" value="<$#active.CAMPAIGN_NO$>" /></td>
+
+			</tr>
+		</table>
+	</div>
+	
+<@end@>
+<@dynamichtml ccla_cs_org_identifier_search_fields@>
+<$if IsDebug$>ccla_cs_org_identifier_search_fields<$endif$>
+	<h3 class="ccla_data_panel_header">External Identifiers</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">
+			<tr>
+				<th>ONS No:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="EXT_IDENTIFIER_2" name="EXT_IDENTIFIER_2" value="<$#active.EXT_IDENTIFIER_2$>"/></td>
+				
+					<th>HMRC No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_5" id="EXT_IDENTIFIER_5" value="<$#active.EXT_IDENTIFIER_5$>" /></td>
+
+					<th>Crockfords:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_4" id="EXT_IDENTIFIER_4" value="<$#active.EXT_IDENTIFIER_4$>" /></td>
+
+
+			</tr>
+			<tr>
+				<th>Charity Ref:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="EXT_IDENTIFIER_1" name="EXT_IDENTIFIER_1" value="<$#active.EXT_IDENTIFIER_1$>"/></td>
+				
+					<th>Company Ref:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="EXT_IDENTIFIER_3" id="EXT_IDENTIFIER_3" value="<$#active.EXT_IDENTIFIER_3$>" /></td>
+
+					<th></th>
+					<td></td>
+
+			</tr>			
+		</table>
+	</div>
+
+
+
+<@end@>
+
+<@dynamichtml ccla_cs_organisation_account_search_fields@>
+	<$if IsDebug$>ccla_cs_organisation_account_search_fields<$endif$>
+	<h3 class="ccla_data_panel_header">Existing Organisations/Accounts</h3>
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table three-col">	
+			<tr>
+					<th>Client No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="CLIENT_NO" id="CLIENT_NO" value="<$#active.CLIENT_NO$>" /></td>
+
+					<th>Account No:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="ACCOUNT_NO" id="ACCOUNT_NO" value="<$#active.ACCOUNT_NO$>" /></td>
+		
+					<th>Fund:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="FUND" id="FUND" value="<$#active.FUND$>" /></td>
+
+			</tr>					
+			<tr>
+				<th>Corr. No.</th>
+				<td><input size="<$searchFieldSize$>" type="text" name="CORR_ID" id="CORR_ID" value="<$#active.CORR_ID$>" /></td>
+				
+				<th></th>
+				<td></td>
+				
+				<th></th>
+				<td></td>
+			</tr>
+
+		</table>
+	</div>
+<@end@>
+
+<@dynamichtml ccla_cs_person_organisation_search_fields@>
+	<$if IsDebug$>ccla_cs_person_organisation_search_fields<$endif$>
+	
+	<$if searchScope like 'address'$>
+		<h3 class="ccla_data_panel_header">ADDRESSES</h3>
+	<$else$>
+		<h3 class="ccla_data_panel_header">New or unidentified People/Organisations</h3>
+	<$endif$>	
+	
+	<div class="ccla_data_panel">
+		<table width="100%" class="ccla_search_fields_table two-col">
+			<tr>
+					<th>Person Name:</th>
+					<td width="30%"><input size="<$searchFieldSize$>" type="text" name="PERSON_NAME" id="PERSON_NAME" value="<$#active.PERSON_NAME$>" /></td>
+
+					<th>Org. Name:</th>
+					<td><input size="<$searchFieldSize$>" type="text" name="ORG_NAME" id="ORG_NAME" value="<$#active.ORG_NAME$>" /></td>
+
+					<th></th>
+					<td></td>			
+			</tr>
+			<tr>
+				<th>Postcode:</th>
+				<td><input size="<$searchFieldSize$>" type="text" name="POSTCODE" id="POSTCODE" value="<$#active.POSTCODE$>" /></td>				
+				<th>House/Flat No:</th>
+				<td><input size="<$searchFieldSize$>" type="text" id="HOUSE_NAMENUMBER"  name="HOUSE_NAMENUMBER" value="<$#active.HOUSE_NAMENUMBER$>" /></td>
+			</tr>
+			<tr>
+				<th>Email:</th>
+				<td><input size="<$searchFieldSize$>" type="text" name="EMAIL" id="EMAIL" value="<$#active.EMAIL$>" /></td>				
+				<th>&nbsp;</th>
+				<td>&nbsp;</td>
+			</tr>			
+			
+		</table>
+	</div>
+<@end@>
+<@dynamichtml ccla_cs_contact_lookup_js@>
+<$if IsDebug$>ccla_cs_contact_lookup_js<$endif$>
+	<script type="text/javascript">
+		
+		// Determines the elements which should be searched on/displayed.
+		//
+		// Possible values:
+		// -all: search over existing Entities/Persons/Accounts/other
+		// -persons: search over existing Persons only
+		// -entities: search over existing Entities/Clients only
+		// -clients: search over existing Clients only
+		// -accounts: search over existing Accounts only
+		// -other: search over other fields (event, form reference, etc) only
+		var searchScope = "<$#local.searchScope$>";
+		
+		// Determines whether QAS searching should be suppressed.
+		var suppressQAS = "<$#local.suppressQAS$>";
+		
+		// Determines whether QAS results are returned in tree format
+		var doQASTreeSearch = "<$#env.CCLA_CS_QASTreeSearch$>";
+		
+		// Name of the JavaScript callback function which will be executed
+		// on the window parent/opener after a search result is selected.
+		var callbackFunction = <$if #local.callbackFunction$><$callbackFunction$><$else$>false<$endif$>;
+		var callbackFunctionClient = <$if #local.callbackFunctionClient$><$callbackFunctionClient$><$else$>false<$endif$>;
+		
+		// Value for button by exising person/client in search results
+		var searchResultsButtonValue = "<$#local.searchResultsButtonValue$>";
+
+		// Determines whether to open up the 'create new' links in a new window (blank if not required);
+		var openLinksNewWindow = "<$#local.openLinksNewWindow$>";
+		
+		// this is the type of page eg 'Record Interaction' so it can be passed
+		// to the next screen
+		var pageTitle = "<$#local.pageTitle$>";
+		
+		// if addressChange is passed then it means it is coming from an address change cal
+		// and not from creating a new person/org
+		var addressChange = "<$#local.addressChange$>";
+		
+		// Page load functions.
+		$(document).ready( function() {
+			
+			// Bind search form elements 'keypress' event to
+			// execute a search.
+			$("#contactLookupForm input").bind('keyup', function() {
+				hideSearchBoxes(); 
+				initSearchContacts();
+			});
+			
+			// Bind search form elements 'change' event to
+			// execute a search.
+			/*
+			$("#contactLookupForm input").bind('change', function() {
+				hideSearchBoxes();
+				initSearchContacts();
+			});
+			*/
+			
+			var searchForm		= document.forms['contactLookupForm'];
+			
+			// disable search boxes that can't be used in scope
+			enableScopedBoxes(searchForm,searchScope);
+			
+			// Run a search immediately if the search fields contain
+			// cached data (i.e. the user has clicked Back)
+			var OrgCode = '';
+			var PersonCode = '';
+			var CharityRef = '';
+			var ONS = '';
+			var CompanyRef = '';
+			var Crockfords = '';
+			var HMRC = '';
+			var namePerson = '';
+			var addrPostCode	= '';			
+			var addrFlatHouse = '';
+			var corrID = '';
+			var clientNo = '';
+			var accountNumber ='';
+			var fund = '';
+			var nameOrg = '';
+			var campaignNo = '';
+			var email = '';
+		
+			if (searchForm.elements['EXT_IDENTIFIER_1'])
+				CharityRef = searchForm.elements['EXT_IDENTIFIER_1'].value;		
+			if (searchForm.elements['EXT_IDENTIFIER_2'])
+				ONS = searchForm.elements['EXT_IDENTIFIER_2'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_3'])
+				CompanyRef = searchForm.elements['EXT_IDENTIFIER_3'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_4'])
+				Crockfords = searchForm.elements['EXT_IDENTIFIER_4'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_5'])
+				HMRC = searchForm.elements['EXT_IDENTIFIER_5'].value;					
+			if (searchForm.elements['ORGANISATION_CODE'])
+				OrgCode = searchForm.elements['ORGANISATION_CODE'].value;
+			if (searchForm.elements['PERSON_CODE'])
+				PersonCode = searchForm.elements['PERSON_CODE'].value;
+			if (searchForm.elements['PERSON_NAME'])
+				namePerson = searchForm.elements['PERSON_NAME'].value;	
+			if (searchForm.elements['POSTCODE'])
+				addrPostCode	= searchForm.elements['POSTCODE'].value;				
+			if (searchForm.elements['HOUSE_NAMENUMBER'])
+				 addrFlatHouse 	= searchForm.elements['HOUSE_NAMENUMBER'].value;
+			if (searchForm.elements['CORR_ID'])
+				corrID 	= searchForm.elements['CORR_ID'].value;	
+			if (searchForm.elements['CLIENT_NO'])
+				clientNo = searchForm.elements['CLIENT_NO'].value;					
+			if (searchForm.elements['ACCOUNT_NO'])	
+				accountNumber = searchForm.elements['ACCOUNT_NO'].value;	
+			if (searchForm.elements['FUND'])
+				fund = searchForm.elements['FUND'].value;	
+			if (searchForm.elements['ORG_NAME'])
+				nameOrg = searchForm.elements['ORG_NAME'].value;	
+			if (searchForm.elements['CAMPAIGN_NO'])
+				campaignNo = searchForm.elements['CAMPAIGN_NO'].value;	
+			if (searchForm.elements['EMAIL'])
+				email = searchForm.elements['EMAIL'].value;	
+								
+			
+			if (campaignNo || nameOrg || clientNo || accountNumber 
+			|| corrID || addrFlatHouse || addrPostCode || OrgCode  || namePerson || PersonCode
+			|| ONS || CharityRef || Crockfords || CompanyRef || HMRC || email)
+				searchContacts();
+			
+		});
+		
+		function checkAuthenticate() {
+			var theForm=document.getElementById("contactLookupForm");
+			theForm.IdcService.value = "CCLA_CS_EXPERIAN_AUTHENTICATE";
+
+			return true;
+		}
+		
+		var searchTimerId;
+		
+		// Kicks off a timer for running the search method. The timer
+		// is reset if the method is called before the timer is triggered.
+		function initSearchContacts() {
+			//console.log("initSearchContacts");
+		
+			if (searchTimerId) {
+				//console.log("clearing current search timer");
+				window.clearTimeout(searchTimerId);
+			}
+			
+			searchTimerId = window.setTimeout('searchContacts()', 400);
+		}
+		
+		// Fetch list of contact search results using AJAX request.		
+		function searchContacts() {
+			//console.log("calling searchContacts");
+			var searchForm		= document.forms['contactLookupForm'];
+
+			var OrgCode = '';
+			var PersonCode = '';
+			var CharityRef = '';
+			var ONS = '';
+			var CompanyRef = '';
+			var Crockfords = '';
+			var HMRC = '';			
+			var namePerson = '';
+			var addrPostCode	= '';			
+			var addrFlatHouse 	= '';
+			var corrID = '';
+			var clientNo = '';
+			var fund = '';
+			var nameOrg = '';
+			var campaignNo = '';		
+			var accountNumber = '';
+			var email = '';
+			var includeAssociation = '<$#active.includeAssociation$>';
+			var isParentCallBack = '<$#active.isParentCallBack$>';
+			var isParentCallBackAccount = '<$#active.isParentCallBackAccount$>';
+			var isBulkAssociation = '<$#active.isBulkAssociation$>';
+			var addressChange = '<$#active.addressChange$>';
+			
+			if (searchForm.elements['EXT_IDENTIFIER_1'])
+				CharityRef = searchForm.elements['EXT_IDENTIFIER_1'].value;		
+			if (searchForm.elements['EXT_IDENTIFIER_2'])
+				ONS = searchForm.elements['EXT_IDENTIFIER_2'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_3'])
+				CompanyRef = searchForm.elements['EXT_IDENTIFIER_3'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_4'])
+				Crockfords = searchForm.elements['EXT_IDENTIFIER_4'].value;	
+			if (searchForm.elements['EXT_IDENTIFIER_5'])
+				HMRC = searchForm.elements['EXT_IDENTIFIER_5'].value;	
+			if (searchForm.elements['ORGANISATION_CODE'])
+				OrgCode = searchForm.elements['ORGANISATION_CODE'].value;
+			if (searchForm.elements['PERSON_CODE'])
+				PersonCode = searchForm.elements['PERSON_CODE'].value;				
+			if (searchForm.elements['PERSON_NAME'])
+				namePerson = searchForm.elements['PERSON_NAME'].value;		
+			if (searchForm.elements['POSTCODE'])
+				addrPostCode	= searchForm.elements['POSTCODE'].value;								
+			if (searchForm.elements['HOUSE_NAMENUMBER'])
+				addrFlatHouse 	= searchForm.elements['HOUSE_NAMENUMBER'].value;
+			if (searchForm.elements['CORR_ID'])
+				corrID 	= searchForm.elements['CORR_ID'].value;		
+			if (searchForm.elements['CLIENT_NO'])
+				clientNo = searchForm.elements['CLIENT_NO'].value;					
+			if (searchForm.elements['ACCOUNT_NO'])
+				accountNumber = searchForm.elements['ACCOUNT_NO'].value;	
+			if (searchForm.elements['FUND'])
+				fund = searchForm.elements['FUND'].value;	
+			if (searchForm.elements['ORG_NAME'])
+				nameOrg = searchForm.elements['ORG_NAME'].value;	
+			if (searchForm.elements['CAMPAIGN_NO'])
+				campaignNo = searchForm.elements['CAMPAIGN_NO'].value;					
+			if (searchForm.elements['EMAIL'])
+				email = searchForm.elements['EMAIL'].value;					
+			
+
+			var doSearch = false;
+			if (namePerson.length>2 || OrgCode.length>4 || PersonCode.length>4 || addrPostCode.length>2 || corrID.length>0 ||
+				clientNo.length>0  || nameOrg.length>3 || ONS.length>4
+				|| CharityRef.length>4	|| CompanyRef.length>4 || Crockfords.length>4 || HMRC.length>4	|| email.length>4		)
+				doSearch = true;
+			
+			if (!doSearch ||  (OrgCode.length<5 && namePerson.length<3 && addrPostCode.length<3 && corrID.length==0  && clientNo.length==0 
+						&& accountNumber.length<1 && fund.length<1 && nameOrg.length<3 && PersonCode.length<5 && ONS.length<5 && CharityRef.length<5
+						&& CompanyRef.length<5 && Crockfords.length<5 && HMRC.length<5 && email.length<5)						) 
+			{
+				// Clear the search results if the specified postcode is less than
+				// 3 characters
+				$("#contactSearchResults").html("");
+				return;
+			}
+			
+			var interactionTarget = "";
+			
+			if (document.forms["interactionTrackingForm"])
+				interactionTarget = interactionTracker.interactionTarget;
+			
+			//Awful markup needed for styling! 
+			$("#contactSearchResults").html("<table style='width:100%'><tr><td><div class='ccla_cs_panel_header'>Search Results</div><div class='ccla_cs_panel_content'>Loading &nbsp;<img src='<$HttpImagesRoot$>ccla/loading.gif'></div></td></tr></table>");
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>&incName=ccla_cs_contact_lookup",
+				  {
+					"searchScope":		searchScope,
+					"suppressQAS":		suppressQAS,
+					"QASTreeSearch":	doQASTreeSearch,
+					"ORGANISATION_CODE":	OrgCode,
+					"PERSON_CODE":	PersonCode,
+					"EXT_IDENTIFIER_1": CharityRef,
+					"EXT_IDENTIFIER_2": ONS,
+					"EXT_IDENTIFIER_3": CompanyRef,
+					"EXT_IDENTIFIER_4": Crockfords,
+					"EXT_IDENTIFIER_5": HMRC,
+					"PERSON_NAME":		namePerson,
+					"POSTCODE": 	addrPostCode,					
+					"HOUSE_NAMENUMBER": 	addrFlatHouse,
+					"CORR_ID":	corrID,
+					"CLIENT_NO":	clientNo,
+					"ACCOUNT_NO": accountNumber,	
+					"FUND": fund,
+					"ORG_NAME": nameOrg,
+					"CAMPAIGN_NO" : campaignNo,
+					"EMAIL" : email,
+					"searched":			1,
+					"searchResultsButtonValue": searchResultsButtonValue,
+					"openLinksNewWindow": openLinksNewWindow,
+					"pageTitle": pageTitle,
+					"interactionTarget": interactionTarget,
+					"includeAssociation": includeAssociation,
+					"isParentCallBack" : isParentCallBack,
+					"isParentCallBackAccount" : isParentCallBackAccount,
+					"isBulkAssociation" : isBulkAssociation,
+					"addressChange": "<$#local.addressChange$>",
+					"ts": 				new Date().getTime()
+				  },
+				  function(data) { displayContactResults(data); }
+			);
+		}
+		
+		var newestResponseTimestamp = 0;
+		
+		// Displays the returned search results HTML.
+		function displayContactResults(data) {
+			var responseTimestamp = $(data).filter("#contact_lookup_ts").eq(0);
+			var thisTimestamp = $(responseTimestamp).attr("title");
+			
+			// Ensure this is the response from the 'newest' request.
+			// This will filter out old responses that arrive out of order.
+			if (thisTimestamp && thisTimestamp > newestResponseTimestamp) {
+				newestResponseTimestamp = thisTimestamp;
+				$("#contactSearchResults").html(data);
+			}
+		}
+
+		// Hook function when an Organisation result is selected.
+		function selectEntityResult(entityId,pageTitle)
+		{
+			
+			if (interactionTracker.interactionTarget == "interaction") {
+
+				interactionTracker.entityId = entityId;
+				applyInteractionTarget();
+				
+			} else {
+				// Default Organisation record behaviour: open the Edit Organisation screen
+				window.location.href = "?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=" 
+				 + entityId;
+				
+				/*
+				if (callbackFunctionClient) {
+					if (window.parent)
+						window.parent.callbackFunctionClient(clientId,pageTitle);
+					else
+						window.opener.callbackFunctionClient(clientId,pageTitle);
+						
+				} else {
+					// Default Organisation record behaviour: open the Edit Organisation screen
+					window.location.href = "?IdcService=CCLA_CS_ENTITY_INFO&ORGANISATION_ID=" + clientId;
+				}
+				*/
+			}
+		}
+		
+		// Hook function when a Person result is selected.
+		function selectPersonResult(personId) {
+			
+			if (interactionTracker.interactionTarget == "interaction") {
+				interactionTracker.personId = personId;
+				applyInteractionTarget();
+				
+			} else {
+				// Default Person record behaviour: open the Person Info screen
+				window.location.href = "?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=" 
+				 + personId;
+			}
+		}
+		
+		// Hook function when an Account result is selected.
+		function selectAccountResult(accountId) {
+			if (callbackFunction) {
+				if (window.parent)
+					window.parent.callbackFunction(accountId);
+				else
+					window.opener.callbackFunction(accountId);
+					
+			} else {
+				// Default Person record behaviour: open the Edit Person screen
+				window.location.href = "?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=" + accountId;
+			}
+		}
+		
+		function openNewPersonRecord(association)
+		{
+			var windowBaseURL = '?IdcService=CCLA_CS_PERSON_NEW<$include add_idc_token_to_url$>&createNew=Yes';
+			if (association.length>0)
+				windowBaseURL += '&includeAssociation=' + association;
+			var searchForm		= document.forms['contactLookupForm'];
+			if (searchForm.elements['PERSON_NAME'])
+			{
+				var namePerson = searchForm.elements['PERSON_NAME'].value;	
+				windowBaseURL += '&searchName=' + namePerson;
+			}
+			window.location.href=windowBaseURL;			
+		}
+
+		function openCombinedRecord(interactionTarget)
+		{
+			var windowBaseURL = '?IdcService=CCLA_CS_COMBINED_NEW<$include add_idc_token_to_url$>';
+			if (interactionTarget.length>0)
+				windowBaseURL += '&interactionTarget=' + interactionTarget;
+			var searchForm		= document.forms['contactLookupForm'];
+			if (searchForm.elements['PERSON_NAME'])
+			{
+				var namePerson = searchForm.elements['PERSON_NAME'].value;	
+				windowBaseURL += '&personName=' + namePerson;
+			}
+			if (searchForm.elements['ORG_NAME'])
+			{
+				var orgName = searchForm.elements['ORG_NAME'].value;	
+				windowBaseURL += '&orgName=' + orgName;
+			}			
+			window.location.href=windowBaseURL;			
+		}		
+		function openNewOrgRecord()
+		{
+			var windowBaseURL = '?IdcService=CCLA_CS_ENTITY_NEW<$include add_idc_token_to_url$>&createNew=Yes';
+			var searchForm		= document.forms['contactLookupForm'];
+			if (searchForm.elements['ORG_NAME'])
+			{
+				var nameOrg = searchForm.elements['ORG_NAME'].value;	
+				windowBaseURL += '&useName=' + nameOrg;
+			}
+			window.location.href=windowBaseURL;			
+		}
+		
+		function openNewRecordWithAddress()
+		{
+			var useName = '';
+			var searchForm		= document.forms['contactLookupForm'];
+			if (searchForm.elements['ORG_NAME'])
+			{
+				useName = searchForm.elements['ORG_NAME'].value;	
+			}
+			if (searchForm.elements['PERSON_NAME'] && useName.length==0)
+			{
+				useName = searchForm.elements['PERSON_NAME'].value;	
+			}	
+			var createNewForm = document.forms['frmCreateNewPerson'];
+			if (useName.length>0)
+			{
+				if (createNewForm.elements['useName'])
+					createNewForm.elements['useName'].value = useName;
+			}
+			return true;
+		}
+		
+		function enableScopedBoxes(searchForm,searchScope)
+		{
+			var searchFields = [searchForm.elements['ORGANISATION_CODE'],searchForm.elements['PERSON_CODE'], searchForm.elements['PERSON_NAME'],
+			searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER'],
+			searchForm.elements['CORR_ID'],searchForm.elements['EXT_IDENTIFIER_1'],searchForm.elements['EXT_IDENTIFIER_2'],
+			searchForm.elements['EXT_IDENTIFIER_3'],searchForm.elements['EXT_IDENTIFIER_4'],searchForm.elements['EXT_IDENTIFIER_5'],
+			searchForm.elements['CLIENT_NO'],searchForm.elements['ACCOUNT_NO'],
+			searchForm.elements['FUND'],searchForm.elements['ORG_NAME'],searchForm.elements['CAMPAIGN_NO'], searchForm.elements['EMAIL']];	
+				if (searchScope.length>0)
+				{
+				if (searchScope.toLowerCase() == 'organisation')
+				{
+						enableList = [searchForm.elements['ORGANISATION_CODE'],searchForm.elements['EXT_IDENTIFIER_1'],searchForm.elements['EXT_IDENTIFIER_2']
+						,searchForm.elements['EXT_IDENTIFIER_3'],searchForm.elements['EXT_IDENTIFIER_4'],searchForm.elements['EXT_IDENTIFIER_5'],
+						searchForm.elements['ORG_NAME'],searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER'],searchForm.elements['CLIENT_NO']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+				}
+				if (searchScope.toLowerCase() == 'account')
+				{
+						enableList = [searchForm.elements['CLIENT_NO'],searchForm.elements['FUND'],searchForm.elements['ACCOUNT_NO']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+				}
+				if (searchScope.toLowerCase() == 'person')
+				{
+						enableList = [searchForm.elements['PERSON_CODE'],searchForm.elements['CORR_ID'],searchForm.elements['PERSON_NAME']
+						,searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER'], searchForm.elements['EMAIL']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+				}	
+				if (searchScope.toLowerCase() == 'address')
+				{
+						enableList = [searchForm.elements['HOUSE_NAMENUMBER'],searchForm.elements['POSTCODE']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+				}
+				}
+		
+		
+		}
+		
+		/* hideSearchBoxes is used to grey out search boxes for invalid combinations of searches*/
+		function hideSearchBoxes() 
+		{
+			/**** IF ignoreRules is passed then don't apply any of these rules but show every field all the time *********/
+			var ignoreRules = '<$#local.showAllSearchFields$>'; 
+			/* search scope will determine which boxes are disabled by default - this will override any rules apart from ignoreRules*/
+			var searchScope = "<$#local.searchScope$>";
+			if (ignoreRules.length==0)
+			{
+				var searchForm		= document.forms['contactLookupForm'];
+				var OrgCode = '';
+				var PersonCode = '';
+				var namePerson = '';
+				var addrPostCode = '';
+				var addrFlatHouse = '';
+				var corrID = '';
+				var clientNo = '';
+				var accountNumber = '';
+				var fund = '';
+				var nameOrg = '';
+				var campaignNo = '';
+				var CharityRef = '';
+				var ONS = '';
+				var CompanyRef = '';
+				var Crockfords = '';
+				var HMRC = '';			
+				var email = '';
+				
+				if (searchForm.elements['ORGANISATION_CODE'])
+					OrgCode = searchForm.elements['ORGANISATION_CODE'].value;
+				if (searchForm.elements['PERSON_CODE'])
+					PersonCode = searchForm.elements['PERSON_CODE'].value;					
+				if (searchForm.elements['PERSON_NAME'])
+					namePerson = searchForm.elements['PERSON_NAME'].value;	
+				if (searchForm.elements['POSTCODE'])
+					addrPostCode	= searchForm.elements['POSTCODE'].value;				
+				if (searchForm.elements['HOUSE_NAMENUMBER'])
+					 addrFlatHouse 	= searchForm.elements['HOUSE_NAMENUMBER'].value;
+				if (searchForm.elements['CORR_ID'])
+					corrID 	= searchForm.elements['CORR_ID'].value;	
+				if (searchForm.elements['CLIENT_NO'])
+					clientNo = searchForm.elements['CLIENT_NO'].value;					
+				if (searchForm.elements['ACCOUNT_NO'])	
+					accountNumber = searchForm.elements['ACCOUNT_NO'].value;	
+				if (searchForm.elements['FUND'])
+					fund = searchForm.elements['FUND'].value;	
+				if (searchForm.elements['ORG_NAME'])
+					nameOrg = searchForm.elements['ORG_NAME'].value;
+				if (searchForm.elements['CAMPAIGN_NO'])
+					campaignNo = searchForm.elements['CAMPAIGN_NO'].value;		
+				if (searchForm.elements['EXT_IDENTIFIER_1'])
+					CharityRef = searchForm.elements['EXT_IDENTIFIER_1'].value;		
+				if (searchForm.elements['EXT_IDENTIFIER_2'])
+					ONS = searchForm.elements['EXT_IDENTIFIER_2'].value;	
+				if (searchForm.elements['EXT_IDENTIFIER_3'])
+					CompanyRef = searchForm.elements['EXT_IDENTIFIER_3'].value;	
+				if (searchForm.elements['EXT_IDENTIFIER_4'])
+					Crockfords = searchForm.elements['EXT_IDENTIFIER_4'].value;	
+				if (searchForm.elements['EXT_IDENTIFIER_5'])
+					HMRC = searchForm.elements['EXT_IDENTIFIER_5'].value;	
+				if (searchForm.elements['EMAIL'])
+					email = searchForm.elements['EMAIL'].value;		
+					
+				var searchFields = [searchForm.elements['ORGANISATION_CODE'],searchForm.elements['PERSON_CODE'], searchForm.elements['PERSON_NAME'],
+				searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER'],
+				searchForm.elements['CORR_ID'],searchForm.elements['EXT_IDENTIFIER_1'],searchForm.elements['EXT_IDENTIFIER_2'],
+				searchForm.elements['EXT_IDENTIFIER_3'],searchForm.elements['EXT_IDENTIFIER_4'],searchForm.elements['EXT_IDENTIFIER_5'],
+				searchForm.elements['CLIENT_NO'],searchForm.elements['ACCOUNT_NO'],
+				searchForm.elements['FUND'],searchForm.elements['ORG_NAME'],searchForm.elements['CAMPAIGN_NO'], searchForm.elements['EMAIL']];	
+				var hasRuleApplied = false;
+				var enableList = [];
+				
+				
+				/* MAIN RULES THAT RUN WHEN ENTERING FIRST SEARCH FIELD */
+				if (PersonCode.length>0)
+					{
+						enableList = [searchForm.elements['PERSON_CODE']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}		
+				if (OrgCode.length>0 && !hasRuleApplied)
+					{				
+						enableList = [searchForm.elements['ORGANISATION_CODE']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;			
+					}
+				if (!hasRuleApplied && clientNo.length>0)
+					{
+						enableList = [searchForm.elements['CLIENT_NO'],searchForm.elements['ACCOUNT_NO'],searchForm.elements['FUND']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}	
+				if (!hasRuleApplied && (accountNumber.length>0 || fund.length>0))
+					{
+						enableList = [searchForm.elements['CLIENT_NO'],searchForm.elements['ACCOUNT_NO'],searchForm.elements['FUND']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}
+				if (!hasRuleApplied && corrID.length>0)
+					{
+						enableList = [searchForm.elements['CORR_ID']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}		
+				if (!hasRuleApplied && namePerson.length>0)
+					{
+						enableList = [searchForm.elements['PERSON_NAME'],searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER'],searchForm.elements['EMAIL']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}
+				if (!hasRuleApplied && nameOrg.length>0)
+					{
+						enableList = [searchForm.elements['ORG_NAME'],searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}	
+				if (!hasRuleApplied && (addrPostCode.length>0 || addrFlatHouse.length>0))
+					{
+						enableList = [searchForm.elements['ORG_NAME'],searchForm.elements['PERSON_NAME'],searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}	
+				if (!hasRuleApplied && CharityRef.length>0)
+					{
+						enableList = [searchForm.elements['EXT_IDENTIFIER_1']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}	
+				if (!hasRuleApplied && ONS.length>0)
+					{
+						enableList = [searchForm.elements['EXT_IDENTIFIER_2']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}	
+				if (!hasRuleApplied && CompanyRef.length>0)
+					{
+						enableList = [searchForm.elements['EXT_IDENTIFIER_3']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}						
+				if (!hasRuleApplied && Crockfords.length>0)
+					{
+						enableList = [searchForm.elements['EXT_IDENTIFIER_4']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}
+				if (!hasRuleApplied && HMRC.length>0)
+					{
+						enableList = [searchForm.elements['EXT_IDENTIFIER_5']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}
+				if (!hasRuleApplied && email.length>0)
+					{
+						enableList = [searchForm.elements['EMAIL'],searchForm.elements['PERSON_NAME']];
+						disableAllOtherSearchFields(enableList,searchFields);	
+						hasRuleApplied = true;
+					}
+				
+				
+				/* SUPPLEMENTAL RULES THAT RUN AFTER MAIN RULES ABOVE (AND ONLY IF THEY HAVE RUN) */
+				if (hasRuleApplied && nameOrg.length>0)
+					disableAllOtherSearchFields([],[searchForm.elements['PERSON_NAME'],searchForm.elements['EMAIL']]);
+				
+				if (hasRuleApplied && nameOrg.length==0 && (addrPostCode.length>0 || addrFlatHouse.length>0)) {
+					disableAllOtherSearchFields([],[searchForm.elements['EMAIL']]);
+					enableField(searchForm.elements['PERSON_NAME']);
+				}
+				
+				if (hasRuleApplied && namePerson.length>0)
+					disableAllOtherSearchFields([],[searchForm.elements['ORG_NAME']]);
+
+
+				if (hasRuleApplied && email.length>0)
+					disableAllOtherSearchFields([],[searchForm.elements['ORG_NAME'],searchForm.elements['POSTCODE'],searchForm.elements['HOUSE_NAMENUMBER']]);
+
+				if (hasRuleApplied && email.length==0 && namePerson.length>0) {
+					enableField(searchForm.elements['POSTCODE']);
+					enableField(searchForm.elements['HOUSE_NAMENUMBER']);
+				}
+				
+				if (hasRuleApplied && namePerson.length==0 && (addrPostCode.length>0 || addrFlatHouse.length>0 )) {
+					enableField(searchForm.elements['ORG_NAME']);	
+				}
+
+				if (hasRuleApplied && namePerson.length>0 && (addrPostCode.length==0 && addrFlatHouse.length==0 )) {
+					enableField(searchForm.elements['EMAIL']);	
+				}
+								
+					
+				// apply any scoping rules
+				enableScopedBoxes(searchForm,searchScope);				
+					
+				/******* ENABLE ALL FIELDS WHEN NO DATA IS ENTERED **************/		
+				if (PersonCode.length==0 && OrgCode.length==0 && clientNo.length==0 
+				&& campaignNo.length==0 && fund.length==0 && CharityRef.length==0
+				&& HMRC.length==0 && ONS.length==0 && CompanyRef.length==0 && Crockfords.length==0
+				&& accountNumber.length==0 && corrID.length==0 && namePerson.length==0
+				&& nameOrg.length==0 && addrPostCode.length==0 && addrFlatHouse.length==0 && email.length==0)
+				{
+						enableAllSearchFields(searchFields);
+						enableScopedBoxes(searchForm,searchScope);
+				}
+			}
+		}
+		
+		function disableAllOtherSearchFields(exceptionList,searchFields) 
+		{
+			for(i=0; i<searchFields.length; i++) 
+			{
+				var enableField = false;
+				for(j=0;j<exceptionList.length;j++)
+				{
+					if (!enableField && searchFields[i]!=null && exceptionList[j]!= null && searchFields[i].name==exceptionList[j].name)
+					{
+						enableField = true		
+					}
+				}
+				if (!enableField)
+				{
+					if (searchFields[i])
+					{
+						disabledField(searchFields[i]);							
+					}					
+				}				
+			}
+		}
+
+		function enableAllSearchFields(searchFields) 
+		{
+			for(i=0; i<searchFields.length; i++) { 
+				if (searchFields[i]!=null)
+				{
+					enableField(searchFields[i]);	
+				}
+			}
+		}	
+		
+		function disabledField(objField){
+		if (objField != null)
+		{
+			$(objField).addClass('disabled_field');
+			objField.disabled=true;
+		}
+		}
+		
+		function enableField(objField){
+		if (objField!=null)
+		{
+			$(objField).removeClass('disabled_field');
+			objField.disabled=false;		
+		}			
+		}
+			
+		// QAS Tree-based search mode functions
+		// ====================================
+		// Tom Marchant
+		
+		// Function used when looking up QAS addresses in 'tree' mode. Used to bind
+		// AJAX lookup requests to all multiple result entries.
+		var bindQASMultipleResultEntryClickEvents = function(moniker) {
+			var eventScope = "";
+
+			if (moniker) {		
+				moniker = escapeNameForJQuery(moniker);
+				eventScope = "#QAS_refinedResults_" + moniker + " ";
+			} else
+				eventScope = "#qas-results ";
+				
+			// Clear search refinement timeout, if applicable
+			if (refineQASSearchTimerId)
+				window.clearTimeout(refineQASSearchTimerId);
+			
+			// Apply toggled (off) style
+			$(eventScope + ".qas-multiple-result-entry")
+			 .addClass("qas-multiple-result-entry-closed");
+			
+			// Bind click events to all multi-result QAS results
+			$(eventScope + ".qas-multiple-result-entry").bind("click", function() {
+				var thisMoniker = $(this).attr("id").substring(14);
+				
+				var closed = false;
+				
+				// Determine open/closed state of entry
+				if ($(this).hasClass("qas-multiple-result-entry-closed"))
+					closed = true;
+				
+				if (closed) {
+					// AJAX request to refine selected search result
+					$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+						{
+							"incName"		: "ccla_cs_qas_refined_lookup",		
+							"moniker" 		: thisMoniker,
+							"hideExisting"	: "<$#local.hideExisting$>",
+							"includeAssociation"	: "<$#local.includeAssociation$>",
+							"refinement" 	: "",
+							"addressChange" : "<$#local.addressChange$>"
+						},
+						function(data) {
+							displayRefinedResults(data, thisMoniker);
+						}
+					);
+				} else {
+					removeRefinedResults(thisMoniker);
+				}
+			});
+		}
+		
+		// Removes periods and other special characters from strings, so they
+		// can be passed into JQuery selector functions correctly.
+		var escapeNameForJQuery = function(str) {
+			return str.replace(/(:|\.)/g,'\\$1');
+		}
+		
+		// Callback function after clicking a QAS mutiple result entry. Displays
+		// the refined results and binds new click events
+		var displayRefinedResults = function(data, thisMoniker) {
+			var escapedMoniker = escapeNameForJQuery(thisMoniker);
+		
+			$("#QAS_refinedResults_" + escapedMoniker).html(data);
+			
+			// Bind click events to newly-loaded multi-result QAS results
+			bindQASMultipleResultEntryClickEvents(thisMoniker);
+			
+			$("#QAS_expandRow_" + escapedMoniker)
+			 .removeClass("qas-multiple-result-entry-closed")
+			 .addClass("qas-multiple-result-entry-open");
+			 
+			// Hide all search refinement regions apart from this one.
+			$("#qas-results .qas-refine-search-text-region")
+			 .not("#refineSearchTextRegion_" + escapedMoniker).css("display","none");
+			
+			/*
+			alert("Setting #refineSearchTextRegion_" + escapedMoniker + 
+			 " to displayable - " + $("#refineSearchTextRegion_" + escapedMoniker).attr("id"));
+			*/
+			
+			$("#refineSearchTextRegion_" + escapedMoniker).css("display","block");
+		}
+		
+		// Clears a refined results container.
+		var removeRefinedResults = function(thisMoniker) {
+			var escapedMoniker = escapeNameForJQuery(thisMoniker);
+		
+			$("#QAS_refinedResults_" + escapedMoniker).html("");
+			
+			$("#QAS_expandRow_" + escapedMoniker)
+			 .removeClass("qas-multiple-result-entry-open")
+			 .addClass("qas-multiple-result-entry-closed");
+		}
+		
+		var refineQASSearchTimerId;
+		
+		// Kicks off a timer for running the search method. The timer
+		// is reset if the method is called before the timer is triggered.
+		function initRefineQASSearch(moniker) {
+			if (refineQASSearchTimerId)
+				window.clearTimeout(refineQASSearchTimerId);
+			
+			refineQASSearchTimerId = window.setTimeout(function() {
+				refineQASSearch(moniker);
+			}, 400);
+		}
+		
+		function refineQASSearch(thisMoniker) {
+			// AJAX request to refine selected search result
+			var refinementText = $("#refineSearchText_" + thisMoniker).val();
+			
+			$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+				{
+					"incName"		: "ccla_cs_qas_refined_lookup",		
+					"moniker" 		: thisMoniker,
+					"hideExisting"	: "<$#local.hideExisting$>",
+					"includeAssociation"	: "<$#local.includeAssociation$>",
+					"refinement" 	: refinementText
+				},
+				function(data) {
+					displayRefinedResults(data, thisMoniker);
+				}
+			);
+		}
+		
+		// Opens the Create New Person/Org form and passes in the given
+		// moniker.
+		function useAddressForNewRecord(moniker) {
+			var frm = document.forms['frmNewRecordUsingAddress'];
+			
+			var searchName = $("#PERSON_NAME").val();
+			
+			frm.elements['searchName'].value 	= searchName;
+			frm.elements['moniker'].value 		= moniker;
+			frm.submit();
+		}
+		
+	</script>
+<@end@>
+
+
+<@dynamichtml ccla_cs_contact_lookup_form@>
+		
+	<form name="contactLookupForm" id="contactLookupForm" method="POST">
+		<input type="hidden" name="IdcService" value="<$serviceName$>" /><$include add_idc_token_to_form$>
+		<input type="hidden" name="searched" value="1" />
+		<input type="hidden" name="searchScope" value="<$searchScope$>">
+		
+		<$include orangeContainer_top$>
+			
+			<$serviceName= "CCLA_CS_CONTACT_LOOKUP"$>	
+			
+			<div class='ccla_cs_panel_header'>
+				<$if searchScope like "all"$>
+					Search <$pageName$>
+				<$elseif searchScope like "organisation"$>
+					Organisation Search <$pageName$>
+				<input type="hidden" name="searchType" value="organisation">	
+				<$elseif searchScope like "address"$>
+					Address Search <$pageName$>
+				<$elseif searchScope like "person"$>
+					Person Search <$pageName$>
+				<$elseif searchScope like "account"$>
+					Account Search <$pageName$>			
+				<$endif$>
+			</div>
+		
+			<div class='ccla_cs_panel_content'>
+				<$include ccla_cs_contact_lookup_fields$>
+			</div>
+		
+		<$include orangeContainer_bottom$>	
+		
+		<!-- Search results container for lookup query. -->
+		<div id="contactSearchResults">
+			
+		</div>				
+	
+	</form>
+<@end@>
+
+<@dynamichtml ccla_cs_contact_lookup_fields@>
+
+	
+		<$searchFieldSize=16$>
+		
+		<table width="100%" cellpadding=0 cellspacing=2>
+			</tr>	
+				<td>
+					<$include ccla_cs_unique_identifier_search_fields$>	
+				</td>
+			</tr>
+			</tr>	
+				<td>
+					<$include ccla_cs_org_identifier_search_fields$>	
+				</td>
+			</tr>	
+
+			<tr>
+				<td>
+					<$include ccla_cs_organisation_account_search_fields$>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td>
+					<$include ccla_cs_person_organisation_search_fields$>
+				</td>
+			</tr>
+
+		</table>	
+<@end@>	
+<!-- 	Displays the search results from a contact lookup query.
+
+		Includes results from existing Person records and a QAS
+		address lookup, if address parameters were supplied in 
+		the search.
+		
+		Designed to be fetched via AJAX request.
+-->
+<@dynamichtml ccla_cs_contact_lookup@>
+	
+	<a id="contact_lookup_ts" title="<$#local.ts$>"></a>
+	
+	<$executeService("CCLA_CS_CONTACT_LOOKUP_SUBMIT")$>
+	
+	<$if searched$>
+		<$include orangeContainer_top$>
+	
+		<div class='ccla_cs_panel_header'>
+			Search Results
+		</div>
+	
+		<$if ccla_cs_search_results_header_include$>
+			<$inc(ccla_cs_search_results_header_include)$>
+		<$endif$>
+
+		<$if openLinksNewWindow$>
+			<$linkTarget=" target='_blank' "$>
+		<$endif$>
+		
+		<$if #active.includeAssociation$>
+			<$searchResultsButtonValue="Select"$>
+		<$endif$>
+		
+		<$if not #active.searchResultsButtonValue$><$searchResultsButtonValue="Open"$><$endif$>
+		
+		<div class='ccla_cs_panel_content'>
+		
+		<$if not hideExisting$>
+		
+		
+			<$if SearchErrorMessage$>
+				<div class="message_panel error_icon">
+					<$SearchErrorMessage$>
+				</div>	
+			<$else$>	
+		
+				<!-- Existing Person record search results -->
+				<$if showResultsPeople$>
+				<table width="100%" cellpadding=2 cellspacing=0>
+				<tr>
+					<td valign="top">
+						<img src="<$HttpImagesRoot$>ccla/clientservices/person.gif"/>
+					</td>
+					<td width="90%">
+						<h3 class="ccla_data_panel_header">Person Results</h3>
+					<$if not rsExisting$>
+						
+						<div class="message_panel error_icon">
+							No matching person records in the database.
+						</div>
+						
+					<$else$>	
+						
+						<$if rsExisting AND rsExisting.#numRows >= #env.CCLA_CS_AutoSearch_PersonNumRows$>
+							<div style="float:right;" class="cs-margin-all-5 red">
+								<strong>NOTE: Only the first <$#env.CCLA_CS_AutoSearch_PersonNumRows$> results are returned. 
+										Refine your search to limit the results</strong>
+							</div>
+						<$endif$>
+						
+						<br/>
+						
+							<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>
+							
+							<tr>
+								<th width="14%" class="first-col">Person Code</th>
+								<th>Name</th>
+								<th width="11%">Postcode</th>
+								<th width="15%">Date of Birth</th>
+								<th width="10%">Action</th>
+							</tr>
+							
+							<$loop rsExisting$>
+								<tr class="account-details-row">
+									<td class="first-col">
+										<$if not #active.includeAssociation$>
+											<a href="?IdcService=CCLA_CS_PERSON_INFO<$include add_idc_token_to_url$>&PERSON_ID=<$#active.PERSON_ID$>">
+										<$endif$>
+										
+										<$#active.PERSON_ACCOUNT_CODE$>
+										
+										<$if not #active.includeAssociation$>
+											</a>
+										<$endif$>
+									</td>
+									<td><$include ccla_cs_person_name_display$></td>
+									<td><$#active.POSTCODE$></td>
+									<td><$if #active.DATE_OF_BIRTH$><$formatDateWithPattern(#active.DATE_OF_BIRTH,"dd/MM/yyyy")$><$else$>N/A<$endif$></td>
+									<td align="center">
+										<input type="button" value="<$searchResultsButtonValue$>" 
+										
+										<$if #active.isParentCallBack$>
+											onClick="parent.doSelectCallback('<$#active.PERSON_ID$>')"
+										<$else$>
+											<$if #active.includeAssociation$>
+												onClick="doSelectCallback('<$#active.PERSON_ID$>')"
+											<$else$>
+												onClick="selectPersonResult('<$#active.PERSON_ID$>','<$#local.pageTitle$>')"
+											<$endif$>
+										<$endif$>
+										>
+									</td>
+								</tr>			
+							<$endloop$>
+						
+						</table>
+					
+					<$endif$>
+					</td></tr>
+					</table>				
+					<br/>
+				
+				<$endif$>
+			
+				<$if showResultsOrgs$>
+			<table width="100%" cellpadding=2 cellspacing=0>
+				<tr>
+					<td valign="top">
+						<img src="<$HttpImagesRoot$>ccla/clientservices/organisation.gif"/>
+					</td>
+					<td width="90%">
+						<h3 class="ccla_data_panel_header">Organisation Results</h3>							
+					
+
+					
+					<$if not rsExistingClient$>
+						<div class="message_panel error_icon">
+							1- No matching organisation records in the database.
+						</div>
+						
+					<$else$>
+						
+						<$if rsExistingClient AND (rsExistingClient.#numRows >= #env.CCLA_CS_AutoSearch_EntityNumRows)$>
+							<div style="float:right;" class="cs-margin-all-5 red"><strong>NOTE: Only the first <$#env.CCLA_CS_AutoSearch_EntityNumRows$> results are returned. Refine your search to limit the results</strong></div>
+						<$endif$>
+						<br/>
+					
+						<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>
+							
+							<tr>
+								<th class="first-col" width="14%">Org Code</th>
+								<th>Name</th>
+								<th width="11%">Postcode</th>
+								<th width="10%">Action</th>
+							</tr>
+							<$loop rsExistingClient$>
+								<tr class="account-details-row">
+								
+									<$if false$>
+										<td class="first-col">
+											<$if #active.CLIENT_NUMBER$>
+												<$if not #active.includeAssociation$>
+													<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$rsExistingClient.ORGANISATION_ID$>"><$endif$><$strLeftFill(rsExistingClient.CLIENT_NUMBER,"0",5)$><$if not #active.includeAssociation$></a>
+												<$endif$>
+											<$endif$>
+										&nbsp;
+										</td>
+									<$endif$>
+									
+									<td class="first-col">
+										<$if not #active.includeAssociation$>
+											<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$rsExistingClient.ORGANISATION_ID$>"><$#active.ORG_ACCOUNT_CODE$></a>
+										<$else$>
+											<$#active.ORG_ACCOUNT_CODE$>
+										<$endif$>
+									</td>
+									
+									<td><$#active.NAME$></td>
+									<td><$#active.POSTCODE$>&nbsp;</td>
+									<td align="center"> <input type="button" value="<$searchResultsButtonValue$>" 
+										<$if #active.isParentCallBack$>
+											onClick="parent.doSelectCallback('<$#active.ORGANISATION_ID$>')"
+										<$else$>
+											<$if #active.includeAssociation$>
+												onClick="doSelectCallback('<$#active.ORGANISATION_ID$>');"
+											<$else$>
+												onClick="selectEntityResult('<$#active.ORGANISATION_ID$>','<$#local.pageTitle$>')"
+											<$endif$>
+										<$endif$>
+										>
+									</td>
+								</tr>			
+							<$endloop$>
+							
+						</table>
+					<$endif$>
+
+				</td>
+				</tr>
+				</table>
+					<br/>
+					
+				<$endif$>
+				
+				<$if showResultsAccounts$>
+				<table width="100%" cellpadding=2 cellspacing=0>
+				<tr>
+					<td valign="top">
+						<img src="<$HttpImagesRoot$>ccla/clientservices/account.gif"/>
+					</td>
+					<td width="90%">				
+						<h3 class="ccla_data_panel_header">Account Results</h3>
+						
+					<$if not rsAccounts$>				
+						<div class="message_panel error_icon">
+							No matching account records in the database.
+						</div>
+					
+					<$else$>
+
+						
+							<$if rsAccounts AND rsAccounts.#numRows >= #env.CCLA_CS_AutoSearch_AccountNumRows$>
+								<div style="float:right;" class="cs-margin-all-5 red">
+									<strong>NOTE: Only the first <$#env.CCLA_CS_AutoSearch_AccountNumRows$> results are returned. 
+									Refine your search to limit the results</strong>
+								</div>
+							<$endif$>
+							
+							<br/>
+							
+									<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>
+									
+									<tr>
+										<th width="14%" class="first-col">Account No.</th>
+										<th width="7%">Fund</th>
+										<th>Subtitle</th>
+										<th width="15%">Date Opened</th>
+										<th width="10%">Action</th>
+									</tr>
+									</tr>
+									<$loop rsAccounts$>
+										<tr class="account-details-row">
+											<td class="first-col">
+												<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>"><$strLeftFill(#active.ACCOUNTNUMBER, "0", 8)$></a>										
+											</td>
+											<td><$#active.FUND_CODE$></td>
+											<td><$#active.SUBTITLE$>&nbsp;</td>
+											<td><$formatDateWithPattern(#active.DATE_OPENED,"dd/MM/yyyy")$></td>
+											<td align="center">
+											<input type="button" value="<$searchResultsButtonValue$>" 
+											<$if #active.isParentCallBackAccount$>
+											onClick="selectAccountResultReturn('<$#active.ACCNUMEXT$>','<$#active.ACCOUNT_ID$>')"
+											<$else$>
+											onClick="selectAccountResult('<$rsAccounts.ACCOUNT_ID$>')"
+											<$endif$>
+											>
+											</td>
+										</tr>			
+									<$endloop$>		
+						</table>	
+					<$endif$>
+					</td></tr></table>
+				<$endif$>
+			<$endif$>
+			<!-- QAS search results -->
+			<$if showQASResults $>
+		
+				<h3 class="ccla_data_panel_header">QAS Records</h3>
+				
+				<table width="100%" cellpadding=2>
+					<tr>
+							<td valign="top">
+								<img src="<$HttpImagesRoot$>ccla/clientservices/experian_qas.gif"/>
+							</td>
+						
+						<td>
+						<$if QASError$>
+								<div class="red"><$QASError$></div>
+						<$else$>
+							<$if not rsAddresses$>
+					
+								<div class="red">No matching records in QAS database. Please check the postcode and house number/name.</div>
+								
+							<$else$>		
+								
+								<$if strEqualsIgnoreCase(searchScope,"address")$>
+									<div class="red">Select an address/person from
+													 the list below:</div>
+								<$else$>
+									<div class="red">Select an address/person from
+													 the list below to create a new record:</div>
+								<$endif$>
+								
+								<br/>
+								
+								<$include ccla_cs_qas_lookup_results$>
+								
+							<$endif$>
+						<$endif$>	
+						</td>
+					</tr>
+				</table>
+			
+			<$endif$>
+			
+			<br/>
+			
+			<div align="right" <$if #active.includeAssociation$>style="padding:0 5px 5px 0"<$endif$>>			
+				<$if searchScope like "all|person" AND NOT hideLinks$>
+					<input type="button" value="Create new person..." 
+						onClick="<$if not #active.openLinksNewWindow$>
+									<$if #active.includeAssociation$>
+										createNewPerson('&isBulkAssociation=<$#active.isBulkAssociation$>');
+									<$else$>
+										openNewPersonRecord('<$#active.includeAssociation$>');
+									<$endif$>
+								 <$else$>
+									openNewPersonRecord('');
+								<$endif$>
+						"/>
+				<$endif$>
+				<$if searchScope like "all|organisation|client" AND NOT hideLinks$>
+					<input type="button" value="Create new organisation..." 
+						onClick="
+							<$if not #active.openLinksNewWindow$>
+								<$if #active.includeAssociation$>
+									createNewEntity('');
+								<$else$>
+									openNewOrgRecord();
+								<$endif$>
+							 <$else$>
+								openNewOrgRecord();
+							<$endif$>
+					"/>
+				<$endif$>
+				<$if NOT hideLinks$>
+					<input type="button" value="Create both..." 
+						onClick="openCombinedRecord('<$#local.interactionTarget$>');"/>
+				<$endif$>				
+			</div>
+		
+		<$endif$>
+		
+		</div>
+		
+		<$if ccla_cs_search_results_footer_include$>
+			<$inc(ccla_cs_search_results_footer_include)$>
+		<$endif$>
+		
+		<$include orangeContainer_bottom$>
+	<$endif$>
+			
+<@end@>	
+
+
+<!-- Displays results from a QAS address lookup. -->
+<@dynamichtml ccla_cs_qas_lookup_results@>
+
+	<$if showResultsOrgs And showResultsPeople$>
+		<$qasButtons = 2$>
+		<$createType = "both"$>
+	<$elseif sshowResultsOrgs AND NOT showResultsPeople$>
+		<$qasButtons = 1$>
+		<$createType = "organisation"$>
+	<$elseif showResultsPeople AND NOT showResultsOrgs$>
+		<$qasButtons = 1$>
+		<$createType = "person"$>
+	<$endif$>
+	
+	<!-- Form used when selecting 'Use' button on a matched QAS address entry
+		 (only used in multiple-result/tree mode) -->
+	<form name="frmNewRecordUsingAddress" method="POST">
+		<$include add_idc_token_to_form$>
+		<$if showResultsOrgs AND NOT showResultsPeople$>
+			<input type="hidden" name="IdcService" 	value="CCLA_CS_ENTITY_NEW" >
+			<input type="hidden" name="useName" 	value="<$#local.ORG_NAME$>" />
+		
+		<$elseif showResultsPeople AND NOT showResultsOrgs$>
+			<input type="hidden" name="IdcService" value="CCLA_CS_PERSON_NEW" >
+		<$else$>
+			<input type="hidden" name="IdcService" value="CCLA_CS_PERSON_NEW" >
+		<$endif$>
+		
+		<input type="hidden" name="moniker" id="moniker" value = "" />
+				
+		<input type="hidden" name="useAddress" value="<$#local.useAddress$>" /> 
+		<input type="hidden" name="searchName" value="" />
+		<input type="hidden" name="createNew" value="Yes">
+	</form>
+	
+	<div id="qas-results">
+	
+		<table class="accounts-table" width="100%" cellpadding=0 cellspacing=0>
+			
+			<tr>
+				<th class="first-col" width="88%">
+					Address/person
+				</th>
+				
+				<$if not #local.QASTreeSearch$>
+					<th>&nbsp;</th>
+				<$endif$>
+			</tr>
+			
+			<$loop rsAddresses$>	
+			
+				<tr class="account-details-row" id="QAS_resultRow_<$#active.Moniker$>">
+					<td class="first-col" valign="centre">
+						
+						<$if #local.QASTreeSearch$>
+							<$include ccla_cs_qas_multiple_results_entry$>
+						<$else$>
+							<$#active.Picklist$>
+						<$endif$>
+					
+					</td>
+					
+					<$if not #local.QASTreeSearch$>
+						<td align="center">
+							
+							<$if not #active.Multiples or (#active.Multiples like "false")$>
+							
+								<form name="frmCreateNewPerson" id="frmCreateNewPerson" method="POST">
+									<input type="hidden" name="IdcService" value="CCLA_CS_PERSON_NEW" /><$include add_idc_token_to_form$>						
+									<input type="hidden" name="moniker" value = "<$rsAddresses.Moniker$>" />
+									<input type="hidden" name="useAddress" value="<$#local.useAddress$>" /> 
+									<input type="hidden" name="searchName" value="<$#local.SEARCH_NAME$>" />
+									<input type="hidden" name="createNew" value="Yes">
+									<$if hideExisting$>
+										<input type="button" value="Use" onclick="getAddress('<$rsAddresses.Moniker$>')"/>
+									<$else$>
+										<$if #local.includeAssociation$>
+											<input type="button" value="Use" onClick="doUseCallback('&moniker=<$rsAddresses.Moniker$>&useAddress=<$#local.useAddress$>&searchName=<$#local.SEARCH_NAME$>&createNew=Yes&isBulkAssociation=<$#active.isBulkAssociation$>');">
+										<$else$>
+											<$if showResultsOrgs AND NOT showResultsPeople$>
+												<input type="hidden" name="IdcService" value="CCLA_CS_ENTITY_NEW" >
+											<$elseif showResultsPeople AND NOT showResultsOrgs$>
+												<input type="hidden" name="IdcService" value="CCLA_CS_PERSON_NEW" >
+											<$else$>
+												<input type="hidden" name="IdcService" value="CCLA_CS_PERSON_NEW" >
+											<$endif$>
+											
+											<input type="hidden" name="useName" value="">
+											<input type="submit" value="Use" onclick="return openNewRecordWithAddress();">
+										<$endif$>
+									<$endif$>
+								</form>
+							<$else$>
+								&nbsp;
+							<$endif$>
+						</td>	
+					<$endif$>
+					
+				</tr>
+			<$endloop$>
+			
+		</table>
+	
+	</div>
+	
+	<script type="text/javascript">
+		
+		$(document).ready( function() {
+			bindQASMultipleResultEntryClickEvents();
+
+		});
+		
+	</script>
+	
+<@end@>	
+
+<@dynamichtml ccla_cs_qas_refined_lookup@>
+	
+	<$executeService("CCLA_CS_EXPERIAN_GET_REFINED_ADDRESS_TREE")$>
+	
+	<$include ccla_cs_qas_refined_lookup_results$>
+	
+<@end@>
+
+<!-- Displays QAS results after selecting a previously-returned result while
+	 in tree search mode. -->
+<@dynamichtml ccla_cs_qas_refined_lookup_results@>
+	
+	<div style="padding: 10px 0px 10px 30px">
+		
+		<$loop rsAddresses$>
+			
+			<div style="padding: 5px 0px; border-bottom: 1px solid #AAA; overflow: auto;">
+				
+				<$include ccla_cs_qas_multiple_results_entry$>
+
+			</div>
+			
+		<$endloop$>
+		
+	</div>
+	
+<@end@>
+
+<!-- Used to display multiple-result QAS Picklist entries.
+	
+	 The PickList caption will have a click event bound to it, which will
+	 collapse/expand the refined results.
+
+	 The 'Search within results' refinement region will only displayed
+	 when the entry is 'active' (i.e. expanded and a leaf node) -->
+<@dynamichtml ccla_cs_qas_multiple_results_entry@>
+	
+	<$if #active.Multiples like "true"$>
+		
+		<div style="overflow-y: auto">
+			<div style="float: left">
+				<span 	class="qas-multiple-result-entry" 
+						id="QAS_expandRow_<$#active.Moniker$>"><$#active.Picklist$></span>
+			</div>
+			
+			<div style="float:right">
+				<$include ccla_cs_qas_multiple_results_action_button$>
+			</div>
+		</div>
+		
+		<div 	id="refineSearchTextRegion_<$#active.Moniker$>" 
+				class="qas-refine-search-text-region" 
+				style="display: none">
+				
+			Search within results: <input 	type="text" 
+											class="qas-refine-search-text" 
+											id="refineSearchText_<$#active.Moniker$>" 
+											value=""
+											onkeypress="initRefineQASSearch('<$#active.Moniker$>')" />
+		</div>
+		
+		<div id="QAS_refinedResults_<$#active.Moniker$>">
+		
+		</div>
+		
+	<$else$>
+		<div style="overflow-y: auto">
+			<div style="float: left">
+				<$#active.Picklist$>
+			</div>
+						
+			<div style="float:right">
+				
+				<$include ccla_cs_qas_multiple_results_action_button$>
+				
+			</div>
+		</div>
+
+	<$endif$>
+	
+<@end@>
+
+<@dynamichtml ccla_cs_qas_multiple_results_action_button@>
+
+	<$if hideExisting OR addressChange$>
+		<input type="button" value="Use" name="getAddressBtn" onclick="getAddress('<$#active.Moniker$>')"/>
+	<$else$>
+		<$if #local.includeAssociation$>
+			<input type="button" value="Use" onClick="doUseCallback('&moniker=<$rsAddresses.Moniker$>&useAddress=<$#local.useAddress$>&searchName=<$#local.SEARCH_NAME$>&createNew=Yes&isBulkAssociation=<$#active.isBulkAssociation$>');">
+		<$else$>
+			<input type="button" value="Use" name="useAddressBtn" onclick="useAddressForNewRecord('<$#active.Moniker$>');" />
+		<$endif$>
+	<$endif$>
+
+<@end@>
+
+</body></html>

@@ -1,0 +1,97 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+	<title>Notes</title>
+
+	<$include ccla_cs_styles$>
+
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+
+		<$if added$>
+			<div class="message_panel info_icon">
+				New note added.	
+			</div>
+		<$endif$>
+		<$dDocName = #active.dDocName$>
+			<$include orangeContainer_top$>
+		
+			
+			<div class='ccla_cs_panel_header'>
+				Notes/Activities
+			</div>	
+			
+			<div class='ccla_cs_panel_content'>
+			<$hideLinks = "true"$>
+			<div style="height:150px;overflow-y:scroll">
+				<$include iris_linked_audit_entries_table$>
+			</div>
+				<$executeService("IRIS_GET_DOC_WF_INFO")$>
+				<$executeService("IRIS_DOC_INFO")$>
+				<$if DOC_WF_INFO.dWfStepName$>
+					<$previousBundleStatus = DOC_WF_INFO.dWfStepName$>
+				<$endif$>
+				<table width="100%">
+				<tr>
+					<th width="15%"></th><th width="10%"></th><th width="75%"></th>
+				</tr>
+					<tr>
+						<td>Current Status:</td><td><$#active.xStatus$></td>
+						<td align="right">
+					
+				<form name="update_bundle_status" id="update_bundle_status">
+					<input type="hidden" name="IdcService" value="CCLA_UPDATE_ITEM_STATUS" />
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="docName" value="<$#active.dDocName$>" />
+					<input type="hidden" name="newStatus" value="Indexed" />
+					<input type="hidden" name="RedirectUrl" 
+							value="?IdcService=CCLA_RPT_SHOW_NOTES<$include add_idc_token_to_url$>&dDocName=<$#active.dDocName$>&bundleRef=<$#active.bundleRef$>" />
+				</form>
+									<$if (xStatus like "Flagged")$>
+										<!-- Bundle status is currently flagged - 
+											 determine what the status was before it was flagged! -->
+										
+										<$previousBundleStatus="Pending"$>
+										
+										<$if DOC_WF_INFO.dWfStepName$>
+											<$previousBundleStatus = DOC_WF_INFO.dWfStepName$>
+										<$endif$>
+										
+										<a  href="javascript:updateBundleStatus('<$previousBundleStatus$>')" 
+											title="Remove flag from bundle">Unflag this item</a>
+									<$endif$>
+										</td>
+				</tr>
+				</table>
+<script type"text/javascript">
+	// Updates the bundle status by submitting a hidden form on the page.
+		var updateBundleStatus = function(status) {
+
+		
+			var frm = document.forms['update_bundle_status'];
+			
+			if (status == "Flagged") {
+				if (!confirm("You are about to flag this bundle. Click OK if you have added " +
+							 "a bundle note explaining your reasons for flagging the bundle."))
+					return;
+			}
+			
+			frm.elements['newStatus'].value = status;
+			frm.submit();
+		};
+		
+</script>		
+					<$include iris_new_note_panel$>
+			</div>
+			
+				<$include orangeContainer_bottom$>	
+	
+	</div>
+</body>
+</html>

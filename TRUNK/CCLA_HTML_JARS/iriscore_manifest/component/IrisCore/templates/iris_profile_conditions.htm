@@ -1,0 +1,633 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include iris_styles$>
+		
+	<title>
+		Profile Conditions - <$pName$>
+	</title>
+
+	<$include iris_ajax_js$>
+	
+<$include iris_jquery_js$>	
+	<script type="text/javascript">
+		
+		var urlPrefix = '<$CgiFileName$>';
+		
+		var conditions = new Array();
+		// currently-selected condition in list
+		var curCondition;
+		// name of condition currently being updated, if any
+		var curUpdate;
+		
+		// loads rsConditions ResultSet into Javascript array
+		function init() {
+			<$condCount = 0$>
+			
+			<$loop rsConditions$>
+				conditions[<$condCount$>] = new Condition('<$rsConditions.name$>','<$rsConditions.field$>','<$rsConditions.operator$>','<$rsConditions.value$>');
+			<$condCount = condCount+1$><$endloop$>
+			
+			syncSelectFields();
+		}
+	
+		// Condition object, stores ResultSet row data
+		function Condition(name, field, operator, value) {
+			this.name = name;
+			this.field = field;
+			this.operator = operator;
+			this.value= value;
+		}
+		
+		// retrieves a condition by name
+		function getCondition(name) {
+			
+			for (var i=0; i<conditions.length; i++) {
+				var cond = conditions[i];
+				
+				if (cond.name == name)
+					return cond;
+			}
+			
+			// no exsting condition with this name
+			return null;
+		}
+		
+		// brings the two condition selector fields up to
+		// date with the contents of the 'conditions' array.
+		function syncSelectFields() {
+		
+			var availConditions = document.getElementById('availConditions');
+			var selCondition = document.getElementById('selCondition');
+			
+			// erase list contents
+			availConditions.options.length = 0;
+			selCondition.options.length = 0;
+			
+			// add 'no-condition' option to condition selector
+			var noCond = document.createElement('option');
+			noCond.value = "";
+			noCond.text = "(no condition)";
+			addOptionToSelect(noCond,selCondition);
+			
+			for (var i=0; i<conditions.length; i++) {
+				
+				var name = conditions[i].name;
+				
+				var thisOpt = document.createElement('option');
+				thisOpt.value = name;
+				thisOpt.text = name;
+				
+				addOptionToSelect(thisOpt,availConditions);
+			
+				var thisOpt2 = document.createElement('option');
+				thisOpt2.value = name;
+				thisOpt2.text = name;
+			
+				addOptionToSelect(thisOpt2,selCondition);
+			}
+		}
+		
+		// Called after the user changes the selected
+		// value in the condition list.
+		function updateSelCondition(sel) {
+			
+			var foundSel = false;
+			
+			// first ensure only 1 condition is selected.
+			for (var i=0; i<sel.options.length; i++) {
+				
+				if (foundSel)
+					sel.options[i].selected = false;
+				else {			
+					if (sel.options[i].selected)
+						foundSel = true;
+						
+					curCondition = sel.options[i].value;
+				}
+			}
+			
+			var editBtn = document.getElementById("editBtn");
+			var delBtn = document.getElementById("delBtn");
+			var copyBtn = document.getElementById("copyBtn");
+			
+			if (!foundSel) {
+				editBtn.disabled = true;
+				delBtn.disabled = true;			
+				copyBtn.disabled = true;
+			} else {
+				editBtn.disabled = false;
+				delBtn.disabled = false;
+				copyBtn.disabled = false;	
+			}
+		}
+		
+		// Cross-browser method for adding options
+		// to select lists.
+		function addOptionToSelect(opt,sel,index) {
+			
+			if (!index)
+				index = sel.options.length;
+			
+			try {
+				var oldOpt = sel.options[index];			
+				sel.add(opt, oldOpt);
+			} catch (ex) {
+				sel.add(opt, index);
+			}
+		}
+	
+	
+		// Condition form-related functions
+		// ================================
+		
+		// sets up form for new condition
+		function newCondition() {
+			
+			clearConditionEditor();
+			var frm = document.forms['conditionForm'];
+			
+			// show the form elements
+			showConditionEditor();
+			
+			frm.elements['isNew'].value = "1";
+			
+			frm.elements['cName'].value="";
+			frm.elements['cName'].readOnly=false;
+			frm.elements['cName'].focus();	
+		}
+		
+		// sets up form for editing existing condition
+		function editCondition() {
+			
+			clearConditionEditor();
+			
+			var frm = document.forms['conditionForm'];
+			
+			var cond = getCondition(curCondition);
+			
+			frm.elements['cName'].value = cond.name;
+			frm.elements['cField'].value = cond.field;
+			frm.elements['cOp'].value = cond.operator;
+			frm.elements['cValue'].value = cond.value;
+			
+			frm.elements['cName'].readOnly=true;
+			curUpdate=cond.name;
+			
+			// show the form elements
+			showConditionEditor();
+		}
+		
+		// displays a form that allows the user to
+		// select another condition, which the current
+		// condition's definition will be copied to
+		function copyCondition() {
+			
+			if (conditions.length < 2) {
+				alert("You need at least 2 conditions defined to perform this action!");
+				return;
+			}
+			
+			clearConditionEditor();
+			
+			// build condition copier list (contains all
+			// conditions except source)
+			var copyList = document.getElementById("destCondition");
+			
+			copyList.options.length = 0;
+			
+			for (var i=0; i<conditions.length; i++) {
+				var cond = conditions[i];
+				
+				if (cond.name != curCondition) {
+					var thisOpt = document.createElement("option");
+					thisOpt.value = cond.name;
+					thisOpt.text = cond.name;
+					
+					addOptionToSelect(thisOpt,copyList);
+				}
+			}
+			
+			// display condition copier elements
+			var copier = document.getElementById("conditionCopier");
+			copier.style.display = "";
+		}
+		
+		// copies source conditions' definition to
+		// the destination condition
+		function copyDefinition(frm) {
+			
+			cSource = curCondition;
+			cDest = frm.elements['destCondition'].value;
+			
+			if (!confirm("You are about the copy the definition for condition '" + cSource + "' to the condition definition '" + cDest + "'. Are you sure?"))
+				return;
+			
+			var requestString = urlPrefix + "?IdcService=IRIS_COPY_CONDITION<$include add_idc_token_to_url$>&IsJava=1&pName=<$pName$>" + "&cSource=" + cSource + "&cDest=" + cDest;
+						
+			// add a parameter with random value to the request - this prevents
+			// some browsers such as IE returning cached responses
+			requestString = requestString + "&rnd=" + Math.random();			
+						
+			// send AJAX request
+			sendAJAXRequest(requestString);
+		}
+		
+		// deletes currently-selected condition
+		function delCondition() {
+			
+			if (!confirm("You are about to delete the condition '" + curCondition + "'. Are you sure?"))
+				return;
+			
+			// build request string. Calls a Java funtion which
+			// removes the given condition from the profile data.
+			var requestString = urlPrefix + "?IdcService=IRIS_DELETE_CONDITION<$include add_idc_token_to_url$>&IsJava=1&pName=" + "<$pName$>" + "&cName=" + curCondition;
+			
+			if (curUpdate != null) {
+				// clear editor if this condition was loaded
+				if (curUpdate == cName)
+					clearConditionEditor();
+			}
+			
+			var index;
+			
+			for (var i=0; i<conditions.length; i++) {
+				if (conditions[i].name == curCondition) {
+					index = i;
+					break;
+				}
+			}
+			
+			// remove this condition from array
+			conditions.splice(index,1);
+			
+			// disable condition edit buttons
+			var editBtn = document.getElementById("editBtn");
+			var delBtn = document.getElementById("delBtn");
+			var copyBtn = document.getElementById("copyBtn");
+			editBtn.disabled = true;
+			delBtn.disabled = true;			
+			copyBtn.disabled = true;
+		
+			curCondition=null;
+			
+			// send AJAX request
+			sendAJAXRequest(requestString);
+		}
+		
+		function clearConditionEditor() {
+			curUpdate=null;
+			
+			var frm = document.forms['conditionForm'];
+			
+			frm.elements['cField'].selectedIndex = 0;
+			frm.elements['cOp'].selectedIndex = 0;
+			frm.elements['cValue'].value = "";
+			
+			frm.elements['isNew'].value = "";
+			
+			// hide the form elements
+			var editor = document.getElementById("conditionEditor");
+			editor.style.display="none";
+			var copier = document.getElementById("conditionCopier");
+			copier.style.display="none";
+		}
+		
+		function showConditionEditor() {
+			// display the form elements
+			var editor = document.getElementById("conditionEditor");
+			editor.style.display="";
+		}
+		
+		// Collects condition data present on the form and
+		// dispatches to server using AJAX request. This is
+		// then saved to the underlying profile.
+		function saveCondition(form) {
+			
+			var frm = form; //document.forms['conditionForm'];
+			
+			var cName = frm.elements['cName'].value;
+			if (cName=='') {
+				alert("You must provide a name for your condition.");
+				return;
+			}
+			
+			var isNew = false;
+			
+			if (frm.elements['isNew'].value != '') {
+				// user is adding new condition. check to ensure duplicate
+				// condition name does not exist
+				 
+				isNew = true; 
+				
+				if (getCondition(cName) != null)
+					alert("You already have a profile with the name '" + cName + "'. Please choose another.");
+				
+			}
+
+			var cField = frm.elements['cField'].options[frm.elements['cField'].selectedIndex].value;
+			var cOp = frm.elements['cOp'].options[frm.elements['cOp'].selectedIndex].value;
+			var cValue = frm.elements['cValue'].value;
+			if (cField=='' || cOp=='') {
+				alert("Condition field and operator must have non-null values.");
+				return;
+			}
+			
+			// update Javascript array to reflect user's changes
+			var cond = new Condition(cName,cField,cOp,cValue);
+			if (isNew)
+				conditions[conditions.length] = cond;
+			else {
+				// replace existing condition in array
+				for (var j=0; j<conditions.length; j++) {
+					var thisCond = conditions[j];
+					if (thisCond.name == cName) {
+						conditions[j] = cond;
+						break;
+					}
+				}
+			}
+			
+			// build request string. Contains all condition parameters entered
+			// by user
+			var requestString = urlPrefix + "?IdcService=IRIS_UPDATE_CONDITION<$include add_idc_token_to_url$>&IsJava=1&pName=" + "<$pName$>" + "&cName=" + cName + "&cField=" + cField + "&cOp=" + cOp + "&cValue=" + cValue;
+			
+			// send AJAX request
+			sendAJAXRequest(requestString);
+		}
+		
+		// Dispatches an AJAX GET request using the given parameter
+		// as the request string. Responses are picked up
+		// by handleReadyResponse() ..see below
+		function sendAJAXRequest(reqString) {
+			
+			request = null;
+			setupRequest();
+			
+			// disable controls to prevent further AJAX requests
+			// before this one completes
+			var btn = document.getElementById("saveCondButton");
+			btn.disabled = true;
+			
+			var copyBtn = document.getElementById("doCopyBtn");
+			copyBtn.disbled = true;
+			
+			request.onreadystatechange=handleResponse;
+			request.open("GET",reqString,true);   
+			request.send(null);	
+		}
+		
+		// AJAX response handler
+		function handleReadyResponse() {
+			
+			// update fields to reflect user's changes
+			syncSelectFields();
+			
+			// re-enable form controls	
+			var btn = document.getElementById("saveCondButton");
+			btn.disabled = false;
+			var copyBtn = document.getElementById("doCopyBtn");
+			copyBtn.disbled = false;
+		
+		}
+	
+	</script>
+
+</head>
+
+<body <$include iris_body_def_internal$> onLoad="init()" height="100%" >
+
+	<$include iris_header$>
+
+	<table border=0 cellpadding=7 cellspacing=0 width="100%">
+		<tr>
+			<td valign=top align=center>
+	
+				<table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#FFFFFF">
+					<tr>
+						<td>
+							
+							<br style="line-height:20px" />
+	
+						</td>
+					</tr>
+				</table>
+	
+			<br/>
+	
+			<div style="padding-left: 40px; width: 875px" align=center>
+	
+			<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+					<td class="xuiPageHeadingCell">
+						<h5 class="xuiPageHeadingText" style="color:#F29303;font-size: 12pt;">Profile Conditions - <span style="color: #000000"><$pName$></span></h5>
+					</td>
+	
+					<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+					</td>
+					
+				</tr>
+			</table>
+			
+			<br style="line-height:20px">
+			
+			<!-- Available conditions panel -->
+			
+			<div id="avail_conditions_div">
+				<$include orangeContainer_top$>
+					
+					<div style="padding: 15px">
+						
+						<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td class="xuiPageHeadingCell">
+									<h4 class="xuiPageHeadingText" style="color:#F29303;">Condition editor</h4></td>
+			
+									<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+							</tr>
+						</table>
+						
+						<br style="line-height:10px">
+						
+						<table width=100%>
+							<tr>
+								<td width=200>
+									<select class="config_optlist" name="availConditions" id="availConditions" onChange="updateSelCondition(this);" multiple="multiple">
+									</select>
+									
+								</td>
+								
+								<td valign=center align=left width=120>
+									
+									<input type=button value="Edit..." class="add_rem_button" onClick="editCondition()" id="editBtn" disabled="disabled" />
+									<br />
+									<input type=button value="Copy..." class="add_rem_button" onClick="copyCondition()" id="copyBtn" disabled="disabled" />
+									<br />
+									<input type=button value="Delete" class="add_rem_button" onClick="delCondition()" id="delBtn" disabled="disabled" />
+									<br />
+									<input type=button value="New..." class="add_rem_button" onClick="newCondition()" id="newBtn" />
+									
+								</td>
+								
+								<td>
+									<div style="border: 1px solid #EFEFEF; height: 130px; padding:5px; background-color: #EFEFEF;">
+										
+										<form name="conditionForm">		
+											<input type="hidden" name="isNew" />
+													
+											<table width=100% style="display: none" id="conditionEditor" >
+												<tr>
+													<td colspan=3>
+														Condition name: <input type="text" name="cName" id="cName" />
+													</td>
+												</tr>
+												<tr>
+													<td colspan=3 style="border-top: 2px solid #FFFFFF">
+														<br style="line-height: 10px" />
+													</td>
+												</tr>
+												<tr>
+													<td width=45%>
+														<span><b>Field</b></span>
+													</td>
+													<td width=10%>
+													</td>
+													<td width=45%>
+														<span><b>Value</b></span>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<select name="cField" id="cField" style="width: 100%" >
+															<option value=""></option>
+															
+															<$executeService("IRIS_GET_FIELD_NAMES")$>
+															<$loop rsFieldNames$>
+																<option value="<$FIELDNAME$>"><$FIELDNAME$></option>
+															<$endloop$>
+														
+														</select>
+													</td>
+													<td align=center>
+														<select name="cOp" id="cOp" >
+															
+															<option value="matches">matches</option>
+															<option value="in">in</option>
+														
+														</select>
+													</td>
+													<td >
+														<input type="text" name="cValue" id="cValue" style="width: 100%" />
+													</td>
+												</tr>
+												<tr>
+													<td colspan=3>
+														<br style="line-height: 10px" />
+													</td>
+												</tr>
+												<tr>
+													<td colspan=3 align=center style="border-top: 2px solid #FFFFFF">
+														<input type=button name="saveCondButton" id="saveCondButton" onClick="saveCondition(this.form);" value=Save class="add_rem_button" />
+													</td>
+												</tr>
+											
+											</table>
+											
+											<table width=100% id="conditionCopier" style="display: none">
+												<tr>
+													<td>
+														<b>Copy condition definition</b> 
+													</td>
+												</tr>
+												<tr>
+													<td>
+														Copy to:
+														
+														<select name="destCondition" id="destCondition">
+														</select>
+														 <input type="button" value="Go" onClick="copyDefinition(this.form)" id="doCopyBtn" />
+													</td>
+												</tr>
+											</table>
+											
+										</form>
+										
+									</div>	
+									
+								</td>
+								
+							</tr>
+							
+						</table>
+						
+						<br style="line-height:20px">
+						
+						<table class="xuiTitleTable" width="100%" cellpadding="0" cellspacing="0">
+							<tr>
+								<td class="xuiPageHeadingCell">
+									<h4 class="xuiPageHeadingText" style="color:#F29303;">Condition selector</h4></td>
+			
+								<td class="xuiPageHeadingCell" style="text-align:right" align="right">
+									</td>
+							</tr>
+						</table>
+						
+						<br style="line-height:10px">
+						
+						<form name="openConfigEditorForm">
+							<input type="hidden" name="IdcService" value="IRIS_PROFILE_EDIT" />
+							<$include add_idc_token_to_form$>
+							<input type="hidden" name="pName" value="<$pName$>" />
+							
+							<table>
+								<tr>
+									<td width=140>
+										Select a condition:
+									</td>
+									
+									<td colspan=2>
+										<select name="cName" id="selCondition" style="width: 200px">
+											<option value='' selected="selected">(no condition)</option>								
+										
+										
+										</select>
+									</td>		
+								</tr>
+								
+								<tr>
+									<td colspan=3><br style="line-height: 5px"/></td>
+								</tr>
+								
+								<tr>
+									<td></td>
+									<td colspan=2>
+										<input type="button" onClick="this.form.submit();" value="Edit configuration" />
+									</td>	
+								</tr>
+								
+								<tr>
+									<td colspan=3><br style="line-height: 5px"/></td>
+								</tr>
+							</table>
+						
+						</form>	
+						
+					</div>
+				
+				<$include orangeContainer_bottom$>
+			</div>
+			
+			</div>
+		
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<$include std_footer$>
+		</td>
+	</tr>
+	</table>
+	
+</body></html>

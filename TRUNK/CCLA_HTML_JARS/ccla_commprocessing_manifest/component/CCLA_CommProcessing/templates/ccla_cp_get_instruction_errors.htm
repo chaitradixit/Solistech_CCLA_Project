@@ -1,0 +1,74 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Instruction Errors
+	</title>
+	
+	<script type="text/javascript">
+		
+		$(document).ready(function() {
+			
+			$(".toggleStackTrace").click(function () {
+				$(this).parent().find(".stackTrace").slideToggle("medium");
+			});
+		});		
+		 
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 1200px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Instruction Errors				
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+										
+					<$if not rsErrorSpool$>
+						No errors. Well done ;) 
+					<$else$>
+						<div class="errorContainer">
+							<div class="cs-float-right">
+								<form name="clearErrorSpoolForm" id="clearErrorSpoolForm" method="POST">
+									<input  type="hidden" name="IdcService" value="CCLA_CP_CLEAR_ERROR_SPOOL"><$include add_idc_token_to_form$>
+									<input 	type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=<$#active.IdcService$><$include add_idc_token_to_url$>"/>							
+									<a class="pointer" onclick="clearErrorSpoolForm.submit()">Clear Errors</a> | <a class="pointer" onclick="window.location.href=window.location.href">Refresh Page</a>
+							</div>
+							<div class="cs-clear-both"></div>
+							
+							<ul class="errorsList">
+								<$loop rsErrorSpool$>
+								<li class="errorLi raisedBorder">
+									<label>Time Stamp: </label><span><$rsErrorSpool.TIME_STAMP$></span></br>
+									<label>Instruction ID: </label><span><a target="_blank" href="?IdcService=CCLA_CP_INSTRUCTION_INFO<$include add_idc_token_to_url$>&INSTRUCTION_ID=<$rsErrorSpool.INSTR_ID$>"><$rsErrorSpool.INSTR_ID$></a></span></br>
+									<label>Module Name: </label><span><$rsErrorSpool.MODULE_NAME$></span></br>
+									<label>Error Message: </label><span><$rsErrorSpool.ERROR_MSG$></span></br></br>
+									<span class="toggleStackTrace">Show/Hide StackTrace</span></br></br>
+									<span class="stackTrace raisedBorder"><$rsErrorSpool.STACK_TRACE$></span>
+								</li>
+								<$endloop$>
+							</ul>
+						</div>
+					<$endif$>
+				</div>
+				
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+				
+</body></html>

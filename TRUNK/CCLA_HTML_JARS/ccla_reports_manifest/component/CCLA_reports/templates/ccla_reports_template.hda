@@ -1,0 +1,78 @@
+﻿<?hda version="10.1.3.3.3 (080807)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet CCLA_reports_templates
+5
+name
+class
+formtype
+filename
+description
+CCLA_REPORTS
+Document
+DocumentInfoPage
+CCLA_reports.htm
+CCLA Reports
+CCLA_ODC_REPORTS
+Document
+DocumentList
+ccla_odc_reports.htm
+Provides a summary and detailed listing of ODC batches
+CCLA_WORKFLOW_REPORTS
+Document
+HomePage
+ccla_workflow_reports.htm
+Displays details about the VerfiyMandates workflow
+CCLA_EXTENDED_REPORT
+Document
+HomePage
+ccla_extended_report.htm
+null
+CCLA_EXTENDED_VIEW_REPORT
+Document
+HomePage
+ccla_extended_view_report.htm
+null
+CCLA_AURORA_WEB_SERVICES
+Administration
+Form
+ccla_aurora_web_services.htm
+Used for testing of Aurora web services
+CCLA_FLAGGED_ITEMS_REPORT
+Document
+DocumentList
+ccla_flagged_items_report.htm
+null
+CCLA_RPT_SHOW_NOTES
+Document
+DocumentList
+ccla_rpt_show_notes.htm
+null
+CCLA_EXTENDED_VIEW_DUP_REPORT
+Document
+HomePage
+ccla_extended_view_dup_report.htm
+null
+CCLA_USER_DOCUMENT_PROCESS_COUNTS
+Document
+HomePage
+ccla_user_document_process_counts.htm
+null
+CCLA_ODC_REC_REPORT
+Document
+DocumentList
+ccla_odc_rec_report.htm
+null
+CCLA_DOCUMENT_VOLUMES_REPORT
+Document
+DocumentList
+ccla_document_volumes_report.htm
+null
+CCLA_CLIENT_DATA_EXPORT
+Document
+DocumentList
+ccla_client_data_export.htm
+null
+@end

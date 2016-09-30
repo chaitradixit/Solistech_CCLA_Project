@@ -1,0 +1,3 @@
+
+-- Apply constraint to ORG_ACCOUNT_CODE field to enforce formatting of values
+ALTER TABLE ORGANISATION ADD CONSTRAINT ORG_ORGACCCODE_CHK CHECK (REGEXP_LIKE(ORG_ACCOUNT_CODE, '^\S{4}\d{8}$'));

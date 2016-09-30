@@ -1,0 +1,390 @@
+﻿<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Extended Content Report
+		</title>
+		
+		<$include std_html_head_declarations$>
+		<$include ecs_javascript_jquery_include$>
+		<$include iris_styles$>
+		<$include ccla_reports_styles$>
+		<$include ccla_date_masking_js$>
+		<script type="text/javascript">
+			function toggleDocClassCheckboxes(checkAll){
+				var objInputs = document.getElementsByTagName('input');
+				for(var i=0; i<objInputs.length; i++){
+					if(objInputs[i].getAttribute('type') == 'checkbox' && objInputs[i].getAttribute('id')!= 'all'){
+						objInputs[i].checked = checkAll;
+					}
+				}
+			}
+
+			function runOnSubmit(){
+				var proceed = popDocClasses();
+
+				if(!proceed) {
+					alert('Please choose at least 1 Document Class');
+					return false;
+				}else{
+					return true;
+				}
+				
+			}
+			
+			function popDocClasses(){
+				document.getElementById('docClasses').value = "";
+			
+				var objInputs = document.getElementsByTagName('input');
+				var proceed = false;
+				for(var i=0; i<objInputs.length; i++){
+					
+					if(objInputs[i].getAttribute('type') == 'checkbox' && objInputs[i].getAttribute('id')!= 'all'){
+						
+						if(objInputs[i].checked){
+							proceed = true;
+							document.getElementById('docClasses').value = document.getElementById('docClasses').value + ',' + objInputs[i].getAttribute('name') + ',';
+						}
+					}
+				}
+				
+				return proceed;
+			}
+			
+			function toggleDocClassVisible(docStatus){
+				
+				
+					var counter = 0;
+					
+					var objTds = document.getElementsByTagName('td');
+					
+					for(var j=0; j<objTds.length; j++){
+						if(objTds[j].className.indexOf('job')!= -1 ){
+							
+							try {
+								<$if MSIE$>
+									objTds[j].parentNode.style.display="block";
+								<$else$>
+									objTds[j].parentNode.style.display="table-row";
+								<$endif$>
+							} catch (e) {
+								alert("Error setting display property on td item: " + objTds[j].innerHTML + ", parent: " + objTds[j].parentNode.innerHTML);
+							}
+							if(docStatus != 'All'){
+								if(objTds[j].className.toString() != docStatus){
+									objTds[j].parentNode.style.display="none";
+								}else{
+									counter++;
+									objTds[j].parentNode.firstChild.innerHTML = counter;
+								}
+							}else{
+									counter++;
+									objTds[j].parentNode.firstChild.innerHTML = counter;
+								}
+						}
+					}
+			}
+			
+		</script>
+	</head>
+	
+<$if not isTrue(isSpecialSubmit)$>
+	<body>
+		<$include iris_header$>
+<$else$>
+<body>
+	<h2>Showing Mandates for:</h2>
+	<h5>Start Date: <$startDate$></h5>
+	<h5>End Date: <$endDate$></h5>	
+<$endif$>
+	
+	<br/>
+<a style="text-decoration: none; font-weight: normal; font-size: 8pt" href="<$HttpCgiPath$>?IdcService=GET_DOC_PAGE<$include add_idc_token_to_url$>&Action=GetTemplatePage&Page=CCLA_EXTENDED_VIEW_REPORT">
+				Click Here</a> to see the new Extended Content Report
+<br>			
+	
+		<form onSubmit="return runOnSubmit()" method="POST">
+			<input type="hidden" name="docClasses" id="docClasses"/>
+			<input type="hidden" name="IdcService" value="ECS_Q_REPORT_1"/>
+			<$include add_idc_token_to_form$>
+			<input type="hidden" name="isSubmit" value="1"/>
+
+			<$if not isTrue(isSpecialSubmit)$>
+			
+				<table width="90%" cellspacing="0" border="1" cellpadding="5" class="search grey_bg white_border">
+					<thead>
+						<tr>
+							<th>
+								Document Class:
+								<div style="width:100%;text-align:center;padding-top:10px;">
+									<input type="checkbox" name="all" id="all" <$if #local.all$>checked="checked"<$endif$> onClick="toggleDocClassCheckboxes(this.checked)"/> All
+								</div>
+							</th>
+							<td>
+								<table class="no-border">
+									<tr>
+									
+									<$counter=0$>
+											
+									<$getViewValuesResultSet("vDOCUMENT_CLASSES","","")$>
+									<$loop SchemaData$>
+										<$if (counter%8) == 0$>
+											</tr><tr>										
+										<$endif$>
+											
+										<td>
+											<$key = getValue("SchemaData", "DOC_CLASS")$>					
+											<input type="checkbox" 	name="<$key$>" 
+																	<$if getValue("#local", #active.key)$>checked<$endif$>
+																	
+																	onclick="if (!this.checked) { this.form.elements['all'].checked = false; }"
+																	/><$key$>
+										</td>
+										<$counter=counter+1$>						
+									<$endloop$>
+									
+									</tr>
+									
+									<tr>
+										<td>
+											<br/>
+											<input type="checkbox" 	name="unclassified" 
+																		<$if #local.unclassified$>checked<$endif$> 
+																		value="unclassified"
+																		onclick="if (!this.checked) { this.form.elements['all'].checked = false; }"
+																		/>Unclassified
+										</td>
+									</tr>
+									
+								</table>
+							</td>
+						</tr>
+							<th>Start Date:</th>
+							<td><input type="text" name="startDate" value="<$if #local.startDate$><$startDate$><$else$><$dateCurrent(-1)$><$endif$>" /></td>
+						</tr>
+						<tr>
+							<th>End Date:</th>
+							<td><input type="text" name="endDate" value="<$if #local.endDate$><$endDate$><$else$><$dateCurrent()$><$endif$>" /></td>
+						</tr>
+						<tr>
+							<th>Source:</th>
+							<td>
+								<select name="source" id="source">
+									<option value=""></option>
+									
+									<$dKey="SourceList"$>
+									<$executeService("GET_VALUES")$>
+	      			
+									<$loop rsValues$>
+										<option value="<$dOption$>" <$if #active.dOption like #local.source$>selected="selected"<$endif$>><$#active.dOption$></option>
+									<$endloop$>
+									
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>Duplicates:</th>
+							<td>
+								<select name="duplicateOption" id="duplicateOption">									
+									<option value="exclude" <$if strEquals(#active.duplicateOption,"exclude")$>selected<$endif$>>Exclude Duplicates</option>
+									<option value="include" <$if strEquals(#active.duplicateOption,"include")$>selected<$endif$>>Include Duplicates</option>
+									<option value="only" <$if strEquals(#active.duplicateOption,"only")$>selected<$endif$>>Show Only Duplicates</option>
+									
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>Document Types:</th>
+							<td>
+								<select name="documentTypes" id="documentTypes">									
+									<option value="all" <$if strEquals(#active.documentTypes,"both")$>selected<$endif$>>All</option>
+									<option value="document" <$if strEquals(#active.documentTypes,"document")$>selected<$endif$>>Document</option>
+									<option value="childdocument" <$if strEquals(#active.documentTypes,"childdocument")$>selected<$endif$>>ChildDocument</option>
+									
+								</select>
+							</td>
+						</tr>
+						<tr style="display:none;">
+							<th>Status:</th>
+							<td>
+								<select id="status" name="status">
+									<option value="All" <$if strEquals(#active.status,"All")$>selected<$endif$>>All</option>
+									<option value="job_jobStarted"  <$if strEquals(#active.status,"job_jobStarted")$>selected<$endif$>>Job Started</option>
+									<option value="job_jobNotStarted"  <$if strEquals(#active.status,"job_jobNotStarted")$>selected<$endif$>>Job Not Started</option>
+									<option value="job_jobNotStartedUpload"  <$if strEquals(#active.status,"job_jobNotStartedUpload")$>selected<$endif$>>Job Not Started (User Uploaded)</option>
+									<option value="job_jobNotStartedError"  <$if strEquals(#active.status,"job_jobNotStartedError")$>selected<$endif$>>Job Not Started (ERROR)</option>
+									<option value="job_jobNotStartedSharepoint"  <$if strEquals(#active.status,"job_jobNotStartedSharepoint")$>selected<$endif$>>Migrated From Sharepoint</option>
+									<option value="job_jobInLot"  <$if strEquals(#active.status,"job_jobInLot")$>selected<$endif$>>In Parking Lot</option>
+									<option value="job_inScanParkingLot"  <$if strEquals(#active.status,"job_inScanParkingLot")$>selected<$endif$>>In 05/03/2009 Parking Lot</option>
+								</select>	
+							</td>
+						</tr>
+						<tr>
+							<th>&nbsp;</th>
+							<td>
+								<input type="submit" value="Search"/>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				
+				<$endif$>
+			</form>
+		
+		
+		<$if #active.rsQueryDocs$>
+
+			<$counterStarted=0$>
+			<$counterNotStarted=0$>
+			<$counterNotStartedUpload=0$>
+			<$counterNotStartedError=0$>
+			<$counterParkingLot=0$>
+			<$counterSharepointMigration=0$>
+			<$counterInScanParkingLot=0$>
+			<$counterPendingInIris=0$>
+			<$counterArchived=0$>
+			<$counterDuplicate=0$>
+			
+
+			<$executeService("ECS_Q_MAND_WF_DOCS_SIMPLE")$>
+			
+			<$rsSort("rsQueryDocs","xDocumentClass","string","asc")$>
+			<$loop rsQueryDocs$>
+				<$include ccla_reports_resolve_item_status$>
+			<$endloop$>
+			
+			<table class="search totals" cellpadding="5" cellspacing="0">
+				<tr <$if counterStarted == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobStarted">Job Started</th>
+					<td><$counterStarted$></td>
+				</tr>
+				<tr <$if counterNotStarted == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobNotStarted">Job Not Started</th>
+					<td><$counterNotStarted$></td>
+				</tr>
+				<tr <$if counterNotStartedUpload == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobNotStartedUpload">Job Not Started (User Uploaded)</th>
+					<td><$counterNotStartedUpload$></td>
+				</tr>
+				<tr <$if counterNotStartedError == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobNotStartedError">Job Not Started (ERROR)</th>
+					<td><$counterNotStartedError$></td>
+				</tr>
+				<tr <$if counterSharepointMigration == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobNotStartedSharepoint">Migrated From Sharepoint</th>
+					<td><$counterSharepointMigration$></td>
+				</tr>
+				<tr <$if counterPendingInIris == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobPendingInIris">Pending In Iris</th>
+					<td><$counterPendingInIris$></td>
+				</tr>
+				<tr <$if counterParkingLot == 0$>style="display:none;"<$endif$>>
+					<th class="job_jobInLot">In Parking Lot</th>
+					<td><$counterParkingLot$></td>
+				</tr>
+				<tr <$if counterInScanParkingLot == 0$>style="display:none;"<$endif$>>
+					<th class="job_inScanParkingLot">In 05/03/2009 Parking Lot</th>
+					<td><$counterInScanParkingLot$></td>
+				</tr>
+				<tr <$if counterArchived == 0$>style="display:none;"<$endif$>>
+					<th class="job_archived">Archived</th>
+					<td><$counterArchived$></td>
+				</tr>
+				<tr <$if counterDuplicate == 0$>style="display:none;"<$endif$>>
+					<th class="job_duplicate">Duplicate</th>
+					<td><$counterDuplicate$></td>
+				</tr>
+				<tr>
+					<th>TOTAL:</th>
+					<td><strong><$rsQueryDocs.#numRows$></strong></td>
+				</tr>
+			</table>
+			
+			<table cellpadding="5" cellspacing="0" class="results" id="resultsTable" name="resultsTable">
+				<thead>
+					<tr>
+						<th class="first-col">&nbsp;</th>
+						<th>Envelope ID</th>
+						<th>Workflow ID</th>
+						<th>Source</th>
+						<th>Doc Class</th>
+						<th>Client</th>
+						<th>Account</th>
+						<th>Fund</th>
+						<th>Amount</th>
+						<th>Units</th>
+						<th>Scan Date</th>
+						<th>Workflow Date</th>
+						<th>
+							Status
+								<select id="statusSel" name="statusSel" onChange="toggleDocClassVisible(this.options[selectedIndex].value);">
+									<option value="All" <$if strEquals(#active.status,"All")$>selected<$endif$>>All</option>
+									<option value="job_jobStarted"  <$if strEquals(#active.status,"job_jobStarted")$>selected<$endif$>>Job Started</option>
+									<option value="job_jobNotStarted"  <$if strEquals(#active.status,"job_jobNotStarted")$>selected<$endif$>>Job Not Started</option>
+									<option value="job_jobNotStartedUpload"  <$if strEquals(#active.status,"job_jobNotStartedUpload")$>selected<$endif$>>Job Not Started (User Uploaded)</option>
+									<option value="job_jobNotStartedError"  <$if strEquals(#active.status,"job_jobNotStartedError")$>selected<$endif$>>Job Not Started (ERROR)</option>
+									<option value="job_jobNotStartedSharepoint"  <$if strEquals(#active.status,"job_jobNotStartedSharepoint")$>selected<$endif$>>Migrated From Sharepoint</option>
+									<option value="job_jobPendingInIris"  <$if strEquals(#active.status,"job_jobPendingInIris")$>selected<$endif$>>Pending In Iris</option>
+									<option value="job_jobInLot"  <$if strEquals(#active.status,"job_jobInLot")$>selected<$endif$>>In Parking Lot</option>
+									<option value="job_inScanParkingLot"  <$if strEquals(#active.status,"job_inScanParkingLot")$>selected<$endif$>>In 05/03/2009 Parking Lot</option>
+									<option value="job_archived"  <$if strEquals(#active.status,"job_archived")$>selected<$endif$>>Archived</option>
+									<option value="job_duplicate"  <$if strEquals(#active.status,"job_duplicate")$>selected<$endif$>>Duplicate</option>
+								</select>	
+						</th>
+						<th>&nbsp;</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<$loop rsQueryDocs$>
+						<tr style="display:table-row;">
+							<td class="first-col"><$(rsQueryDocs.#row)+1$></td>
+							<td>
+								<$if rsQueryDocs.xBundleRef$>
+									<a href="<$HttpCgiPath$>?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$rsQueryDocs.xBundleRef$>" target="_blank"><$rsQueryDocs.xBundleRef$></a>
+								<$else$>
+									&nbsp;
+								<$endif$>
+							</td>
+							<td><$rsQueryDocs.xBatchNumber$>&nbsp;</td>
+							<td><$rsQueryDocs.xSource$>&nbsp;</td>
+							<td><$rsQueryDocs.xDocumentClass$>&nbsp;</td>
+							<td>
+								<$if rsQueryDocs.xClientNumber$>
+									<a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS<$include add_idc_token_to_url$>&clientno=<$rsQueryDocs.xClientNumber$>" target="_blank"><$rsQueryDocs.xClientNumber$></a>
+								<$else$>
+									&nbsp;
+								<$endif$>	
+							</td>
+							<td><$rsQueryDocs.xAccountNumber$>&nbsp;</td>
+							<td><$rsQueryDocs.xFund$>&nbsp;</td>
+							<td><$rsQueryDocs.xAmount$>&nbsp;</td>
+							<td><$rsQueryDocs.xUnits$>&nbsp;</td>
+							<td><$if false$><$rsQueryDocs.xScanDate$><$endif$><$dInDate$>&nbsp;</td>
+							<td><$rsQueryDocs.xWorkflowDate$>&nbsp;</td>
+								
+							<$include ccla_reports_display_item_status$>
+								
+			      	<td>
+						<a target="_blank" href="<$HttpCgiPath$>?IdcService=DOC_INFO<$include add_idc_token_to_url$>&dID=<$dID$>&dDocName=<$dDocName$>" title="Open info for <$dDocName$>">
+							<$if useImageInfoLink$>
+								<img 	src="/ucm/resources/layouts/Top Menus/Oracle/InfoIcon_sm.gif" 
+										alt="<$dDocName$>"
+										title="<$dDocName$>" height="16" width="16" border="0">
+							<$else$>
+								<$dDocName$>
+							<$endif$>
+						</a>
+					</td>
+		  			</tr>
+					<$endloop$>
+					</tbody>
+				</table>
+				
+			<$endif$>
+		
+		<iframe onload="toggleDocClassVisible('<$status$>');" style="display:none"/>
+	</body>
+</html>

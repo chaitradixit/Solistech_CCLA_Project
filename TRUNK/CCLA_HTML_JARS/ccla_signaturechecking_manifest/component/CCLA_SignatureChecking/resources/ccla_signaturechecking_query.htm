@@ -1,0 +1,132 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_SignatureChecking query
+</title>
+</head>
+<body>
+
+<@table CCLA_SignatureChecking_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_DeleteApprovedSigsForDoc</td>
+	<td>DELETE FROM COMM_SIGNATURE WHERE DOC_GUID=?</td>
+	<td>DOC_GUID varchar</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_DeleteApprovedSigForDoc</td>
+	<td>DELETE FROM COMM_SIGNATURE WHERE DOC_GUID=? AND PERSON_ID=?</td>
+	<td>DOC_GUID varchar
+		PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_AddApprovedSigForDoc</td>
+	<td>INSERT INTO COMM_SIGNATURE (COMM_SIGNATURE_ID,DOC_GUID,COMM_ID,PERSON_ID,MATCH_TYPE,USER_ID,DATE_ADDED) 
+		VALUES (SEQ_COMM_SIGNATURE.nextval,?,?,?,?,?,SYSDATE)</td>
+	<td>DOC_GUID varchar
+		COMM_ID int
+	    PERSON_ID int
+		MATCH_TYPE varchar
+	    USER_ID varchar
+	</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetApprovedSigForDoc</td>
+	<td>SELECT * FROM COMM_SIGNATURE WHERE DOC_GUID = ? AND PERSON_ID=?</td>
+	<td>DOC_GUID varchar
+		PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetApprovedSigsForDoc</td>
+	<td>SELECT * FROM COMM_SIGNATURE WHERE DOC_GUID = ?</td>
+	<td>DOC_GUID varchar</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetRecentSigFormsForAcc</td>
+	<td>SELECT * FROM (
+SELECT XDOCUMENTCLASS,XPDFDOCNAME,XPARENTDOCNAME,DINDATE,DDOCNAME,DDOCTYPE,DPROCESSINGSTATE,DREVLABEL,DSECURITYGROUP,DWEBEXTENSION,DDOCACCOUNT FROM REVISIONS R
+INNER JOIN DOCMETA DM ON (R.DID = DM.DID)
+WHERE R.DREVRANK = 0
+AND R.DSTATUS = 'RELEASED'
+AND DM.XDOCUMENTCLASS IN (?)
+AND DM.XCLIENTNUMBER = ?
+AND DM.XACCOUNTNUMBER = ?
+AND R.DDOCNAME <> ?
+ORDER BY DINDATE DESC
+) where rownum <=2
+UNION 
+SELECT * FROM (
+SELECT XDOCUMENTCLASS,XPDFDOCNAME,XPARENTDOCNAME,DINDATE,DDOCNAME,DDOCTYPE,DPROCESSINGSTATE,DREVLABEL,DSECURITYGROUP,DWEBEXTENSION,DDOCACCOUNT FROM REVISIONS R
+  INNER JOIN DOCMETA DM ON (R.DID = DM.DID)
+  WHERE R.DREVRANK = 0
+  AND R.DSTATUS = 'RELEASED'
+  AND DM.XDOCUMENTCLASS IN (?)
+  AND DM.XCLIENTNUMBER = ?
+  AND DM.XACCOUNTNUMBER = ?
+  AND R.DDOCNAME <> ?
+  ORDER BY DINDATE DESC
+) where rownum <=2</td>
+	<td>RECENT_SIG_DOCS_APP_TYPES varchar
+	    CLIENT_NUMBER varchar
+	    ACCOUNT_NUMBER varchar
+	    DOCNAME varchar
+	    RECENT_SIG_DOCS_MAND_TYPES varchar
+	    CLIENT_NUMBER varchar
+	    ACCOUNT_NUMBER varchar
+	    DOCNAME varchar</td>
+</tr>
+
+<!--Person Signature -->
+<tr>
+	<td>qSignatureChecking_AddPersonSignature</td>
+	<td>INSERT INTO PERSON_SIGNATURE 
+		VALUES(?,SYSDATE,SYSDATE,?,?,?)</td>
+	<td>PERSON_ID int
+		USER_ID varchar
+		SOURCE_DOC_GUID varchar
+		SIG_DOC_GUID varchar</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetSigDocNameForPerson</td>
+	<td>SELECT DISTINCT SIG_DOC_GUID, LAST_UPDATED FROM PERSON_SIGNATURE PS
+		WHERE PS.PERSON_ID = ?
+	</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetSigDocNames</td>
+	<td>SELECT DISTINCT SIG_DOC_GUID, PERSON_ID FROM PERSON_SIGNATURE PS
+	WHERE PS.PERSON_ID IN (?)
+</td>
+	<td>signatoryIds int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_UpdatePersonSignature</td>
+	<td>UPDATE PERSON_SIGNATURE 
+		SET USER_ID=?,
+		SOURCE_DOC_GUID=?,
+		LAST_UPDATED=SYSDATE
+		WHERE PERSON_ID=?</td>
+	<td>USER_ID varchar
+		SOURCE_DOC_GUID varchar
+		PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_GetPersonSignature</td>
+	<td>SELECT * FROM PERSON_SIGNATURE 
+		WHERE PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+<tr>
+	<td>qSignatureChecking_RemovePersonSignature</td>
+	<td>DELETE FROM PERSON_SIGNATURE 
+		WHERE PERSON_ID=?</td>
+	<td>PERSON_ID int</td>
+</tr>
+</table>
+<@end@>
+</body></html>

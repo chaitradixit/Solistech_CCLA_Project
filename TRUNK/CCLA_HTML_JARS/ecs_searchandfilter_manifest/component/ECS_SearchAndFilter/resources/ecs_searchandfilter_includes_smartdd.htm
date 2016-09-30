@@ -1,0 +1,539 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_SearchAndFilter htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml smartDropDownJavaScript@>
+
+  <$formName = eval("<$LL_" & linkedList & "_formName$>")$>
+  
+  <$realBox1 = eval("<$LL_" & linkedList & "_box1$>")$>
+  <$box1 = eval("<$realBox1$>_ll")$>
+
+  <$realBox2 = eval("<$LL_" & linkedList & "_box2$>")$>
+  <$box2 = eval("<$realBox2$>_ll")$>
+
+  <$if llTotalFields >= 3$>
+    <$realBox3 = eval("<$LL_" & linkedList & "_box3$>")$>
+    <$box3 = eval("<$realBox3$>_ll")$>
+  <$endif$>
+  
+  <$if llTotalFields >= 4$>
+    <$realBox4 = eval("<$LL_" & linkedList & "_box4$>")$>
+    <$box4 = eval("<$realBox4$>_ll")$>
+  <$endif$>
+
+
+
+
+
+
+
+<SCRIPT lang="JavaScript">
+function submitCheckinSimilar(){
+var checkinForm = document.getElementById("checkinsimilar");
+
+}
+  var <$linkedList$>_child0=<$strField1$>;
+  var <$linkedList$>_child1=<$strField2$>;
+  
+  <$if llTotalFields >= 3$>
+    var <$linkedList$>_child2=<$strField3$>;
+  <$endif$>
+  
+  <$if llTotalFields >= 4$>
+    var <$linkedList$>_child3=<$strField4$>;
+  <$endif$>
+  
+  var findtext = " ";
+
+  function Init_<$linkedList$>() {
+    showAll_<$linkedList$>();
+    
+    setupField_<$realBox1$>();
+    
+    setupField_<$realBox2$>();
+    
+    <$if llTotalFields >= 3$>
+      setupField_<$realBox3$>();
+    <$endif$>
+    
+    <$if llTotalFields >= 4$>
+      setupField_<$realBox4$>();
+    <$endif$>
+    
+    initialFilters_<$linkedList$>();
+  }
+
+  function showAll_<$linkedList$>(){
+  
+    var f=document.<$formName$>;
+    
+    f.<$box1$>.options.length=null;
+    f.<$box2$>.options.length=null;
+    
+    <$if llTotalFields >= 3$>
+      f.<$box3$>.options.length=null;
+    <$endif$>
+    
+    <$if llTotalFields >= 4$>
+      f.<$box4$>.options.length=null;
+    <$endif$>
+
+		//box1 with child0 array
+		for(i=0; i < <$linkedList$>_child0.length; i++) {
+		  f.<$box1$>.options[i+1]=new Option(<$linkedList$>_child0[i][1], <$linkedList$>_child0[i][0]);
+		}
+		
+		//box 2 with child1 array
+		for(i=0; i < <$linkedList$>_child1.length; i++) {
+		  f.<$box2$>.options[i+1]=new Option(<$linkedList$>_child1[i][1], <$linkedList$>_child1[i][0]);
+		}
+
+    <$if llTotalFields >= 3$>
+  		//box 3 with child2 array
+  		for(i=0; i < <$linkedList$>_child2.length; i++) {
+  		  f.<$box3$>.options[i+1]=new Option(<$linkedList$>_child2[i][1], <$linkedList$>_child2[i][0]);
+  		}
+    <$endif$>
+
+    <$if llTotalFields >= 4$>
+  		//box 4 with child 3 array
+  		for(i=0; i < <$linkedList$>_child3.length; i++) {
+  		  f.<$box4$>.options[i+1]=new Option(<$linkedList$>_child3[i][1],<$linkedList$>_child3[i][0] );
+  		}
+		<$endif$>
+		
+}
+
+function SetBoxs_<$linkedList$>(boxIDindex,boxref,arrayname,arraynameY){
+
+	var boxgroup=document.getElementsByTagName("select");
+
+		if (boxref.name == "<$box1$>"){
+		  
+		  filterBox_<$linkedList$>("<$box2$>",boxref.value,<$linkedList$>_child1);
+		  
+		  <$if llTotalFields >= 3$>
+ 		    filterBox_<$linkedList$>("<$box3$>",boxref.value,<$linkedList$>_child2);
+ 		  <$endif$>
+ 		  
+ 		  <$if llTotalFields >= 4$>
+		    filterBox_<$linkedList$>("<$box4$>",boxref.value,<$linkedList$>_child3);
+		  <$endif$>
+
+		}
+
+		if (boxref.name == "<$box2$>"){
+		  
+		  if (boxref.value != ""){
+		    selectBoxValue_<$linkedList$>("<$box1$>",getIDFromValue(boxref.value,0));
+
+  		  <$if llTotalFields >= 3$>
+  		    filterBox_<$linkedList$>("<$box3$>",boxref.value,<$linkedList$>_child2);
+  		  <$endif$>
+  		  
+  		  <$if llTotalFields >= 4$> 
+  		    filterBox_<$linkedList$>("<$box4$>",boxref.value,<$linkedList$>_child3);
+  		  <$endif$>
+      }	else {
+        
+        var filterValue=document.getElementById("<$box1$>").value;
+
+  		  <$if llTotalFields >= 3$>
+  		    filterBox_<$linkedList$>("<$box3$>",filterValue,<$linkedList$>_child2);
+  		  <$endif$>
+  		  
+  		  <$if llTotalFields >= 4$> 
+  		    filterBox_<$linkedList$>("<$box4$>",filterValue,<$linkedList$>_child3);
+  		  <$endif$>
+        
+      }
+			  
+		}
+
+		if (boxref.name == "<$box3$>"){
+	  
+		  if (boxref.value != ""){
+  		  selectBoxValue_<$linkedList$>("<$box1$>",getIDFromValue(boxref.value,0));
+  
+  		  filterBox_<$linkedList$>("<$box2$>",getIDFromValue(boxref.value,0),<$linkedList$>_child1);
+        selectBoxValue_<$linkedList$>("<$box2$>",getIDFromValue(boxref.value,1));
+		  
+		    <$if llTotalFields >= 4$> 
+		      filterBox_<$linkedList$>("<$box4$>",boxref.value,<$linkedList$>_child3);
+		    <$endif$>
+       }else{
+        
+        var filterValue=document.getElementById("<$box2$>").value;
+
+  		  <$if llTotalFields >= 4$> 
+  		    filterBox_<$linkedList$>("<$box4$>",filterValue,<$linkedList$>_child3);
+  		  <$endif$>
+       }
+
+		  
+		}
+
+		if (boxref.name == "<$#active.box4$>"){
+		  
+		  if (boxref.value != ""){
+  		  selectBoxValue_<$linkedList$>("<$box1$>",getIDFromValue(boxref.value,0));
+  
+  		  filterBox_<$linkedList$>("<$box2$>",getIDFromValue(boxref.value,0),<$linkedList$>_child1);
+        selectBoxValue_<$linkedList$>("<$box2$>",getIDFromValue(boxref.value,1));
+  		  
+  		  <$if llTotalFields >= 3$>
+  		    filterBox_<$linkedList$>("<$box3$>",getIDFromValue(boxref.value,1),<$linkedList$>_child2);
+          selectBoxValue_<$linkedList$>("<$box3$>",getIDFromValue(boxref.value,2));
+        <$endif$>
+      }
+		}
+		
+		setHiddenValues("<$realBox1$>","<$box1$>");
+		setHiddenValues("<$realBox2$>","<$box2$>");
+		
+		<$if llTotalFields >= 3$>
+		  setHiddenValues("<$realBox3$>","<$box3$>");
+		<$endif$>
+		
+		<$if llTotalFields >= 4$>
+		  setHiddenValues("<$realBox4$>","<$box4$>");
+		<$endif$>
+
+
+
+}
+
+
+  function setHiddenValues(realBoxName,llBoxName){
+  // alert("realBoxName:"+realBoxName + ", llBoxName: "+llBoxName);
+if(document.getElementById &&  document.getElementById(realBoxName) && document.getElementById(llBoxName)){
+    var realBox=document.getElementById(realBoxName);
+    var llBox=document.getElementById(llBoxName);
+
+
+    if (llBox.selectedIndex >= 0) {
+      realBox.value = llBox.options[llBox.selectedIndex].text;
+    }else{
+     realBox.value = "";
+    }
+}
+    
+  }
+  
+
+  
+  function getIDFromValue(value,position){
+  
+    counter = -1;
+    i = -1;
+    
+    while ((i = value.indexOf("_",i + 1)) >= 0){
+      counter ++;
+      if (counter == position){
+        return value.substring(0,i);
+      }
+    }
+    
+    return "";
+  
+  }
+  
+
+  
+  function selectBoxByText_<$linkedList$>(boxName,value){
+    var boxref=document.getElementById(boxName);
+    
+    for (i=0; i < boxref.options.length; i++) {
+      if (boxref.options[i].text == value){
+        boxref.selectedIndex = i;
+        break;
+      }
+    }
+  }
+  
+
+  function filterBox_<$linkedList$>(boxName,filterValue,valuesArray) {
+    var boxref=document.getElementById(boxName);
+  
+    boxref.options.length = 0;
+    boxref.disabled="false";
+    
+    j = 0;
+    for (i=0; i < valuesArray.length; i++) {
+      
+      if (filterValue==""){
+      	
+      	j ++;
+        boxref.options[j] = new Option(valuesArray[i][1], valuesArray[i][0]);
+      }else{
+        if (valuesArray[i][0].substring(0,filterValue.length+1) == filterValue + "_"){
+          j ++;
+          boxref.options[j] = new Option(valuesArray[i][1], valuesArray[i][0]);
+        }
+      }
+    }
+    
+    if (boxref.options.length > 0){
+      boxref.disabled="";
+    }else{
+      boxref.disabled="true";
+    }
+    
+  }
+  
+
+  function selectBoxValue_<$linkedList$>(boxName,value) {
+   
+    var boxref=document.getElementById(boxName);
+    
+    for (i=0; i < boxref.options.length; i++) {
+      if (boxref.options[i].value == value){
+        boxref.selectedIndex = i;
+        break;
+      }
+    }
+    
+  }
+
+
+  function filterWithValue_<$linkedList$>(boxName,value,valuesArray){
+
+    
+    boxref=document.getElementById(boxName);
+//    var selectedValue = boxref.value;
+    
+    filterBox_<$linkedList$>(boxName,boxref.value,valuesArray);       
+//    selectBoxValue_<$linkedList$>(boxName,selectedValue);
+    
+  }
+  
+
+  function initialFilters_<$linkedList$>(){
+	 <$if llTotalFields >= 2$> 
+     value1=document.getElementById("<$box1$>").value;
+	 <$endif$>
+	 <$if llTotalFields >= 2$> 
+     value2=document.getElementById("<$box2$>").value;
+	 <$endif$>
+     <$if llTotalFields >= 3$>        
+     value3=document.getElementById("<$box3$>").value;
+     <$endif$>
+     <$if llTotalFields >= 4$>        
+    value4=document.getElementById("<$box4$>").value;   
+     <$endif$>
+   
+   
+     boxref=document.getElementById("<$box1$>");
+     
+     if (value1 != ""){
+       filterBox_<$linkedList$>("<$box2$>",value1,<$linkedList$>_child1);
+       <$if llTotalFields >= 3$>        
+         filterBox_<$linkedList$>("<$box3$>",value1,<$linkedList$>_child2);
+       <$endif$>
+       <$if llTotalFields >= 4$>        
+    //     filterBox_<$linkedList$>("<$box4$>",value1,<$linkedList$>_child3);
+       <$endif$>
+     }
+
+     <$if llTotalFields >= 3$>        
+       boxref=document.getElementById("<$box2$>");
+       if (value2 != ""){
+         filterBox_<$linkedList$>("<$box3$>",value2,<$linkedList$>_child2);       
+         <$if llTotalFields >= 4$>        
+     //      filterBox_<$linkedList$>("<$box4$>",value2,<$linkedList$>_child3);
+         <$endif$>
+       }
+     <$endif$>
+     
+     <$if llTotalFields >= 4$>   
+       boxref=document.getElementById("<$box3$>");
+       if (value3 != ""){
+         filterBox_<$linkedList$>("<$box4$>",value3,<$linkedList$>_child3);       
+       }
+     <$endif$>
+
+     document.getElementById("<$box1$>").value = value1;
+     document.getElementById("<$box2$>").value=value2;
+     <$if llTotalFields >= 3$>        
+       document.getElementById("<$box3$>").value=value3;
+     <$endif$>
+     <$if llTotalFields >= 4$>        
+    //   document.getElementById("<$box4$>").value=value4;   
+     <$endif$>
+  }
+
+</script>
+
+
+<@end@>
+
+<@dynamichtml displayOnLoadFunction@>
+  <$if onLoadStr$>
+    <SCRIPT type="text/javascript">
+      
+      if (document.addEventListener) { // DOM Level 2 Event Model
+	      window.addEventListener("load", initSearchAndFilter, true);
+      } else if (document.attachEvent) { // Older event model
+    		window.onload=initSearchAndFilter;
+      }
+      
+	  	function initSearchAndFilter() {
+	  		<$trace("about to make rs, onLoadStr = " & onLoadStr)$>
+	  		<$exec rsMakeFromString("loadFunctions",onLoadStr,"func")$>
+	  		
+	  		<$loop loadFunctions$>
+	  			<$loadFunctions.func$>;
+	  		<$endloop$>
+	  		
+	  	}
+	  
+    </SCRIPT>
+  <$endif$>
+  
+<@end@>
+
+<@dynamichtml calculateSmartLinkedValues@>
+
+  <$strField1= ""$>
+  <$strField2= ""$>
+  <$strField3= ""$>
+  <$strField4= ""$>
+
+  <$field1Service = eval("<$LL_" & linkedList & "_field1Service$>")$>
+  <$field1rsName = eval("<$LL_" & linkedList & "_field1rsName$>")$>
+  
+  <$field2Service = eval("<$LL_" & linkedList & "_field2Service$>")$>
+  <$field2rsName = eval("<$LL_" & linkedList & "_field2rsName$>")$>
+
+  <$if llTotalFields >= 3$>  
+    <$field3Service = eval("<$LL_" & linkedList & "_field3Service$>")$>
+    <$field3rsName = eval("<$LL_" & linkedList & "_field3rsName$>")$>
+  <$endif$>
+  
+  <$if llTotalFields >= 4$>
+    <$field4Service = eval("<$LL_" & linkedList & "_field4Service$>")$>
+    <$field4rsName = eval("<$LL_" & linkedList & "_field4rsName$>")$>      
+  <$endif$>
+
+  <$executeService(field1Service)$>
+  
+  <$counter0=0$>
+  <$counter1=0$>
+  <$counter2=0$>
+  <$counter3=0$>
+
+  <$loopwhile getValue(field1rsName,"#isRowPresent")$>
+  
+    <$if strField1$> <$strField1 = strField1 & ","$><$endif$> 
+		
+    <$strField1 = strField1 & "['" & counter0 & "','" & strReplace(getValue(field1rsName,"value" ),",","&amp;") & "']"$>
+    
+    <$param = getValue(field1rsName,"value")$>
+    <$executeService(field2Service)$>
+    
+    <$temp=rsFirst(field2rsName)$>
+   
+    <$loopwhile getValue(field2rsName,"#isRowPresent")$>
+    
+      <$if strField2$> <$strField2 = strField2 & ","$><$endif$> 
+      
+      <$strField2 = strField2 & "['" & counter0 & "_" & counter1 & "','" & strReplace(getValue(field2rsName,"value" ),",","&amp;") & "']"$>
+
+      <$if llTotalFields >= 3$>
+      
+        <$param = getValue(field2rsName,"value")$>
+        <$executeService(field3Service)$>
+  
+        <$temp=rsFirst(field3rsName)$>
+        <$loopwhile getValue(field3rsName,"#isRowPresent")$>
+        
+          <$if strField3$> <$strField3 = strField3 & ","$> <$endif$> 
+          <$strField3 = strField3 & "['" & counter0 & "_" & counter1 & "_" & counter2 & "','" & strReplace(getValue(field3rsName,"value" ),",","&amp;") & "']"$>
+  
+          <$if llTotalFields >= 4$>
+          
+            <$param = getValue(field3rsName,"value")$>
+            <$executeService(field4Service)$>
+          
+            <$temp=rsFirst(field4rsName)$>
+            <$loopwhile getValue(field4rsName,"#isRowPresent")$>
+    
+              <$if strField4$> <$strField4 = strField4 & ","$> <$endif$> 
+              <$strField4 = strField4 & "['" & counter0 & "_" & counter1 & "_" & counter2 & "_" & counter3 & "','" & strReplace(getValue(field4rsName,"value" ),",","&amp;") & "']"$>
+
+              <$temp=rsNext(field4rsName)$>
+              <$counter3=counter3 + 1$>
+              
+            <$endloop$>
+            
+          <$endif$>
+  
+          <$temp=rsNext(field3rsName)$>
+          <$counter2=counter2 + 1$>
+          
+        <$endloop$>
+        
+      <$endif$>
+
+      <$temp=rsNext(field2rsName)$>
+      <$counter1=counter1 + 1$>
+      
+    <$endloop$>
+
+    <$temp=rsNext(field1rsName)$>  
+    <$counter0=counter0 + 1$>
+    
+  <$endloop$>
+
+  <$strField1 = sortByValue(strField1)$>
+  <$strField1 = strReplace(strField1,"&amp;",",")$>
+  <$strField1 = "[" & strField1 & "]"$>
+  
+  <$strField2 = sortByValue(strField2)$>
+  <$strField2 = strReplace(strField2,"&amp;",",")$>
+  <$strField2 = "[" & strField2 & "]"$>
+  
+  <$if llTotalFields >= 3$>
+    <$strField3 = sortByValue(strField3)$>
+    <$strField3 = strReplace(strField3,"&amp;",",")$>
+    <$strField3 = "[" & strField3 & "]"$>
+  <$endif$>
+  
+  <$if llTotalFields >= 4$>
+    <$strField4 = sortByValue(strField4)$>
+    <$strField4 = strReplace(strField4,"&amp;",",")$>
+    <$strField4 = "[" & strField4 & "]"$>
+  <$endif$>
+  
+<@end@>
+
+<@dynamichtml getLinkedListFieldPosition@>
+
+  <$llFieldList = eval("<$LL_" & linkedList & "_fields$>")$>
+
+  <$rsMakeFromString("rsLinkedListFields",llFieldList,"llFieldName")$>
+
+  <$llTotalFields = -1$>
+  <$llFieldCounter = -1$>
+  <$counter=0$>
+
+  <$loop rsLinkedListFields$> 
+  
+    <$if strEquals(fieldName,rsLinkedListFields.llFieldName)$>
+      <$llFieldCounter = counter$> 
+    <$endif$>
+
+    <$counter = counter + 1$>
+    
+  <$endloop$>
+  
+  <$llTotalFields = counter$>
+
+<@end@>
+</body></html>

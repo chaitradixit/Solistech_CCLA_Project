@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<$pageTitle="Add New Person and Organisation"$>
+			
+
+		<title>
+			<$pageTitle$>
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+		
+		<$include ccla_cs_set_params_js$>
+		<$include ccla_cs_ajax_js$>
+		<$include ccla_cs_address_js$>
+		<$include ccla_cs_contact_details_js$>
+		<$include ccla_cs_element_relations_js$>
+		
+		<$if #active.createAssociation OR #active.PERSON_ID$>
+			<$include create_entity_add_association_js$>
+		<$endif$>
+		<$include ccla_cs_entity_create_error_handling_js$>
+		
+		<style type="text/css">
+			#backgroundDiv {  
+				display:none;  
+				position:fixed;  
+				_position:absolute; /* hack for internet explorer 6*/  
+				height:100%;  
+				width:100%;  
+				top:0;  
+				left:0;  
+				background:#000000;  
+				border:1px solid #cecece;  
+				z-index:100;  
+			}  
+		</style>
+		
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$if not #active.isCompact$>
+			<$include iris_header$>
+		<$else$>
+			<$include ccla_cs_compact_styles$>
+		<$endif$>
+
+		<script language="javascript">
+			//Global Vars Start --------------------------------------
+			//Global Vars End   --------------------------------------
+			function checkValues() {
+				
+				var proceed = false;
+				if ($('#PERSON_ID').val().length!=0) { proceed = true; } 
+				
+				if (!proceed) {
+					alert('A person must be created');
+				} 
+			
+				return proceed;
+			}	
+			
+		</script>
+		
+		
+	<div  id="cs_page_container" class="cs-page-container">
+		
+		
+		
+		<$if not hideActionButtons$>
+			<$buttonContext = "entity"$>
+			<$include ccla_cs_include_tab_parameters$>			
+			<$include ccla_cs_action_buttons$>
+		<$endif$>
+		 
+		<div id="ccla_cs_right_content" class="cs-right-content-container">
+		<div style="text-align: right;padding:10px;" class="ccla_cs_panel_content">
+		
+		<form id="mainForm" name="mainForm" method="post">
+			<span style="display:none;">	
+					<input type="hidden" name="IdcService" value="CCLA_CS_INTERACTION_NEW"/><$include add_idc_token_to_form$>
+					<input type="hidden" id="ORGANISATION_ID" name="ORGANISATION_ID" value="" />
+					<input type="hidden" id="PERSON_ID" name="PERSON_ID" value=""/>
+					<input type="hidden" id="CONFIRM_TYPES" name="CONFIRM_TYPES" value="N/A"/>
+					<input type="hidden" id="CONFIRM_OTHER" name="CONFIRM_OTHER" value=""/>
+			</span>	
+			<$if #local.interactionTarget$>
+			<input tabindex="160"  id="submit" name="submit" type="submit" value="Continue to interaction" onclick="return checkValues()"/>							
+			<$endif$>
+		</form>
+
+
+		</div>	
+		
+		<div id='ccla_cs_content' class="cs-content-container" >
+			<iframe id="iframeOrg" name="iframeOrg" frameborder="0" src="<$HttpCgiPath$>?IdcService=CCLA_CS_ENTITY_NEW<$include add_idc_token_to_url$>&createNew=Yes&isCompact=1&isUltraCompact=1" width="100%" height="290" marginheight="0" marginwidth="0" framespacing="0" border="0" scrolling="no">
+			</iframe>
+			<iframe id="iframePerson" name="iframePerson" frameborder="0" src="<$HttpCgiPath$>?IdcService=CCLA_CS_PERSON_NEW<$include add_idc_token_to_url$>&createNew=Yes&isCompact=1&isUltraCompact=1" width="100%" height="420" marginheight="0" marginwidth="0" scrolling="no">
+			</iframe>
+		</div>	<!-- //end cs-content-container -->	
+
+		</div>  <!-- //end cs-right-content-container -->
+		
+	</div>  <!-- //end cs_page_container -->
+	
+	<div id="backgroundDiv" name="backgroundDiv"></div>
+		
+	</body>
+</html>
+
+
+	

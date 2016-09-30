@@ -1,0 +1,29 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet CCLA_SignatureChecking_Templates
+5
+name
+class
+formtype
+filename
+description
+CCLA_SC_DISPLAY_SIGS_FOR_ACCOUNT
+RootPage
+HomePage
+ccla_sc_display_sigs_for_account.htm
+null
+CCLA_SC_MODIFY_SIGNATURE
+RootPage
+HomePage
+ccla_sc_modify_signature.htm
+null
+CCLA_SC_SIG_POPUP_PREVIEW
+RootPage
+HomePage
+ccla_sc_sig_popup_preview.htm
+null
+@end
+

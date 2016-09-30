@@ -1,0 +1,78 @@
+﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+ECS_SendMail service
+</title>
+</head>
+<body>
+
+<@table ECS_SendMail_Services@>
+<table border=1><caption><strong>Scripts For Custom Services</strong></caption>
+<tr>
+	<td>Name</td><td>Attributes</td><td>Actions</td>
+</tr>
+<tr>
+	<td>EcsMailService</td>
+	<td>com.ecs.stellent.ecsmailservice.EcsMailService
+		49
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:sendMail:::null
+		3:prepareRedirect:::null</td>
+</tr>
+<tr>
+	<td>ECS_SENDMAIL</td>
+	<td>com.ecs.stellent.ecsmailservice.EcsMailService
+		49
+		null
+		null
+		null<br>
+		null</td>
+	<td>3:sendMail:::null</td>
+</tr>
+<tr>
+	<td>ECS_MAIL_TEST_PAGE</td>
+	<td>Service
+		1
+		ECS_MAIL_TEST
+		null
+		null<br>
+		null</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EcsMailService_SUB</td>
+	<td>com.ecs.stellent.ecsmailservice.EcsMailService
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:sendMail:::null</td>
+</tr>
+<tr>
+	<td>ECS_SENDMAIL_SUB</td>
+	<td>com.ecs.stellent.ecsmailservice.EcsMailService
+		0
+		null
+		SubService
+		null<br>
+		null</td>
+	<td>3:sendMail:::null</td>
+</tr>
+<tr>
+	<td>ECS_GETALIASUSERS</td>
+	<td>Service
+		1
+		null
+		null
+		null<br>
+		null</td>
+	<td>5:qECS_GETALIASUSERS:rsUsers::null</td>
+</tr>
+</table>
+<@end@>
+</body></html>

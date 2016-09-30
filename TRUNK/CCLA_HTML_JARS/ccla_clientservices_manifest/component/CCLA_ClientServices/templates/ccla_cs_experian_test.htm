@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$processTarget = rsProcess.TARGET$>
+	
+	<title>
+		Client
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+
+	
+	<script type="text/javascript">
+
+		function checkAuthenticate() {
+		var theForm=document.getElementById("clientDetails");
+		theForm.IdcService.value = "CCLA_CS_EXPERIAN_AUTHENTICATE";
+
+			return true;
+		
+					};
+	</script>
+</head>
+<body <$include iris_body_def_internal$>>
+		
+	<$include ecs_popup_div_header$>
+	
+	<$include iris_header$>
+	
+	<div align=center style="margin: 15px 0px;">	
+		<div id='ccla_cs_content' style='width: 800px'>
+
+			<$include orangeContainer_top$>
+				<$if #active.DECISION$>
+				decision:<$#active.DECISION$>
+				<br>
+				<$#active.DECISION_TEXT$>
+				<$endif$>
+			<$serviceName= "CCLA_CS_EXPERIAN_ADDRESS_LOOKUP"$>			
+			<$include ccla_cs_experian_details$>
+
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+		
+</body>
+</html>

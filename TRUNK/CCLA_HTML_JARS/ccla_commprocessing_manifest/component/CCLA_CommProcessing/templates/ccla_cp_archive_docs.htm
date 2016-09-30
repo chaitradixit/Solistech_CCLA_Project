@@ -1,0 +1,132 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	<$include ccla_cs_ajax_js$>	
+	
+	<!-- Datepicker config -->
+	<$calendarSelectFields = "startDate,endDate"$>
+	
+	<$SF_startDate_type="input"$>
+	<$SF_startDate_shortname="startDate"$>
+	
+	<$SF_endDate_type="input"$>
+	<$SF_endDate_shortname="endDate"$>
+	<$include epoch_calendar_header$>
+	<$include ccla_date_masking_js$>
+	
+	<title>
+		Archive Documents
+	</title>
+	
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$('#process').click(function() {
+			
+				$('#results').html("processing");
+			
+				$.getJSON("?IdcService=CCLA_CP_DO_ARCHIVE_DOCS<$include add_idc_token_to_url$>", 
+				{ 	
+					"startDate": $('#startDate').val(),
+					"endDate": $('#endDate').val(),
+					"docType": $('#docType').val(),
+					"IsJson": 1,
+					"ts": new Date()
+				}, function(jsonData) {handleProcessDateCompleted(jsonData);});
+			});
+		});
+		
+		handleProcessDateCompleted = function(jsonData) 
+		{
+			if (jsonData=="") {
+				alert("Error whilst archiving: no data"); 
+			} else {
+				var jsonErrorMsg  = getJsonErrorMsg(jsonData);
+		
+				if (jsonErrorMsg) {
+					alert("Error whilst archiving: "+jsonErrorMsg);
+				} else {
+					var message = jsonData.LocalData.processMessage;
+					$('#results').html(message);
+				}
+			}
+			return;
+		}		
+	</script>
+</head>
+<body onload="prepareCalendars()">
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 700px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Archive Documents
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Archive Criteria</h3>
+						<p>select the criteria to archive documents.</p>
+						
+						<form id="archiveForm" name="archiveForm" method="post" onsubmit="return false;">
+						<input type="hidden" name="IdcService" 	value="CCLA_CP_DO_ARCHIVE_DOCS" />		<$include add_idc_token_to_form$>													
+						<!--
+						<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_ARCHIVE_DOCS<$include add_idc_token_to_url$>" />
+						-->
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="75%">
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">Document Type</th>
+								<td>
+									<select name="docType" id="docType">
+										<option value="">-</option>
+										<$loop rsDocTypes$>
+											<$if not strEquals(#active.dDocType,"IrisProfile")$>
+												<option value="<$#active.dDocType$>"><$#active.dDocType$></option>
+											<$endif$>	
+										<$endloop$>
+									</select>
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">Start Date (DD/MM/YYYY)</th>
+								<td>
+									<input name="startDate" id="startDate" value="<$#local.startDate$>" />
+									<image alt="date picker" src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="startDate_picker" id="startDate_picker" class="calbutton"/>
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">End Date (DD/MM/YYYY)</th>
+								<td>
+									<input name="endDate" id="endDate" value="<$#local.endDate$>" />
+									<image alt="date picker" src="<$HttpWebRoot$>epoch/images/epoch_calendar.gif" name="endDate_picker" id="endDate_picker" class="calbutton"/>
+								</td>
+							</tr>
+							<tr class="account-details-row">
+								<th class="first-col" width="30%">&nbsp;</th>
+								<td>
+									<input type="submit" id="process" name="process" value="Archive"/>
+								</td>
+							</tr>
+							
+						</table>
+					
+					<br />
+					<div style="padding-top:5px"></div>
+					<br />
+					<div id="results" name="results">
+					</div>
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Instruction Audit
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' class='search_results_cont' style='width: 1080px'>
+			
+				<$include orangeContainer_top$>
+				
+				<div class='ccla_cs_panel_header'>
+					Instruction Audit
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+
+					<$SF_PreventPaging=""$>
+					<$SF_UseDatabaseSearch=1$>
+					<$SF_QueryProvider="CCLA_POOL1"$>
+					<$SF_QueryTable="V_INSTRUCTION_AUDIT"$>
+					
+					
+					<$include iris_sf_sort_images$>
+			
+					<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+					<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+
+					<$calendarSelectFields="AUDIT_DATE"$>
+					<$include epoch_calendar_header$>
+					
+					<$displaySearchButton="N"$>
+					
+					<$SF_DISPLAYADVSEARCHLINK=""$>
+					
+					<$hideLineBreak=1$>
+					<$hideInfoLink="Y"$>
+
+					<$displayPagingOptions="N"$>
+					<$displayPaginator="Y"$>
+
+					
+					<$SF_CustomPaginator="iris_sf_paginator"$>					
+					
+					<$advSearchBackgroundColour="#FFFFFF"$>
+					<$advSearchDisplay_pre='orangeContainer_top'$>
+					<$advSearchDisplay_after='orangeContainer_bottom'$>
+					
+					<$if not sf$>
+						<$sf="AUDIT_DATE"$>
+						<$so="DESC"$>
+					<$endif$>
+
+
+					<$SF_DISPLAYADVSEARCHLINK="Y"$>
+					<$moreAdvSearchFieldList=""$>
+	
+					<$SF_CaseInsensitive=1$>
+
+					<$nodeFilterFieldNames="INSTRUCTION_ID_COL,TYPE_COL,STATUS_COL,MODULE_COL,AUDIT_ACTION_COL,AUDIT_DATE_COL"$>
+					<$advSearchFieldList="INSTRUCTION_ID_COL,TYPE_COL,STATUS_COL,MODULE_COL,AUDIT_ACTION_COL,AUDIT_DATE_COL"$>
+					<$nodeFilterFieldWidth="15,15,15,15,20,20"$>
+					
+					<$QueryFieldList="INSTRUCTION_ID_COL,TYPE_COL,STATUS_COL,MODULE_COL,AUDIT_ACTION_COL,AUDIT_DATE_COL"$>	
+					
+					<!-- Custom filters -->
+					<$TYPE_COL_CustomFilterScript	="ccla_cp_instruction_type_id_filter"$>
+					<$STATUS_COL_CustomFilterScript	="ccla_cp_instruction_status_id_filter"$>
+					<$MODULE_COL_CustomFilterScript	="ccla_cp_instruction_routing_module_id_filter"$>
+					<$AUDIT_ACTION_COL_CustomFilterScript	="ccla_cp_instruction_audit_action_id_filter"$>
+					
+					<!-- Custom display -->
+					<$INSTRUCTION_ID_COL_CustomIncludeScript 	="ccla_cp_instruction_id_display"$>
+					<$TYPE_COL_CustomIncludeScript				="ccla_cp_instruction_type_id_display"$>				
+					<$STATUS_COL_CustomIncludeScript			="ccla_cp_instruction_status_id_display"$>					
+					<$MODULE_COL_CustomIncludeScript			="ccla_cp_instruction_routing_module_id_display"$>
+					<$AUDIT_ACTION_COL_CustomIncludeScript		="ccla_cp_instruction_audit_action_id_display"$>
+					
+					
+					<$SF_INSTRUCTION_ID_COL_caption="Instruction ID"$>					
+					<$SF_INSTRUCTION_ID_COL_type="input"$>
+					<$SF_INSTRUCTION_ID_COL_list="none"$>
+					<$SF_INSTRUCTION_ID_COL_shortname="instructionId"$>
+					<$SF_INSTRUCTION_ID_COL_idcname="INSTRUCTION_ID"$>
+					<$SF_INSTRUCTION_ID_COL_search="substring"$>
+					
+					<$SF_TYPE_COL_caption="Instruction Type"$>					
+					<$SF_TYPE_COL_type="custom"$>
+					<$SF_TYPE_COL_list="none"$>
+					<$SF_TYPE_COL_shortname="instructionTypeId"$>
+					<$SF_TYPE_COL_idcname="INSTRUCTION_TYPE_ID"$>
+					<$SF_TYPE_COL_search="substring"$>
+					
+					<$SF_MODULE_COL_caption="Routing Module"$>					
+					<$SF_MODULE_COL_type="custom"$>
+					<$SF_MODULE_COL_list="none"$>
+					<$SF_MODULE_COL_shortname="moduleId"$>
+					<$SF_MODULE_COL_idcname="MODULE_ID"$>
+					<$SF_MODULE_COL_search="substring"$>
+
+					<$SF_STATUS_COL_caption="Instruction Status"$>					
+					<$SF_STATUS_COL_type="custom"$>
+					<$SF_STATUS_COL_list="none"$>
+					<$SF_STATUS_COL_shortname="instructionStatusId"$>
+					<$SF_STATUS_COL_idcname="INSTRUCTION_STATUS_ID"$>
+					<$SF_STATUS_COL_search="substring"$>
+
+					<$SF_AUDIT_ACTION_COL_caption="Audit Action"$>					
+					<$SF_AUDIT_ACTION_COL_type="custom"$>
+					<$SF_AUDIT_ACTION_COL_list="none"$>
+					<$SF_AUDIT_ACTION_COL_shortname="instrAuditActionId"$>
+					<$SF_AUDIT_ACTION_COL_idcname="INSTR_AUDIT_ACTION_ID"$>
+					<$SF_AUDIT_ACTION_COL_search="substring"$>
+					
+					<$SF_AUDIT_DATE_COL_caption="Audit Date"$>					
+					<$SF_AUDIT_DATE_COL_type="input"$>
+					<$SF_AUDIT_DATE_COL_list="none"$>
+					<$SF_AUDIT_DATE_COL_shortname="auditDate"$>
+					<$SF_AUDIT_DATE_COL_idcname="AUDIT_DATE"$>
+					<$SF_AUDIT_DATE_COL_search="date"$>
+
+					
+					<$include ecsSearchAndFilter$>
+
+				</div>
+								
+				<$include orangeContainer_bottom$>	
+			
+			</div>
+		</div>
+		
+	</body>
+</html>

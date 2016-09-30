@@ -1,0 +1,693 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IRIS_BatchDocuments htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Panel display on doc approval screen. Overriden from core resource
+	   to display notification, doc generation, routing panels -->
+<@dynamichtml iris_doc_panel_display@>
+
+	<$if not thumbnailMode$>
+		<$include super.iris_doc_panel_display$>
+	<$else$>
+
+		<$if batchEditMode like 'parent'$>
+			
+			<!-- Container for replaceable content -->
+			<div id="doc_meta_panel_container">
+				<$include doc_approval_fields$>
+			</div>
+	
+			<$if not isInfo$>
+				<!-- Used to dispatch work notifications -->
+				<$include doc_notification_panel$>
+	
+				<$if dWfStepName like 'Assigned'$>
+					<!-- Used to generate documents -->
+					<$include doc_generation_panel$>
+				<$endif$>
+			<$endif$>
+	
+			<!-- Display routing panel -->
+			<$include doc_approval_routing$>
+
+		<$else$>
+			
+			<!-- Info about the parent bundle item -->
+			<$include bundle_details_panel$>
+			
+			<!-- rename DOC_INFO so the bundle item info isn't displayed. -->
+			<$if batchEditMode like 'document'$>
+				<$exec rsRename("DOC_INFO","BUNDLE_DOC_INFO")$>
+			<$endif$>
+			
+			<!-- Use dynamic content panel to display
+			     batch item data -->
+			<$include bundle_item_details_panel$>
+
+			<!-- restore DOC_INFO bundle item data -->
+			<$if batchEditMode like 'document'$>
+				<$exec rsRename("BUNDLE_DOC_INFO","DOC_INFO")$>
+			<$endif$>
+			
+			<!-- Display workflow info panel -->
+			<$include doc_approval_wf$>
+			
+		<$endif$>
+
+	<$endif$>
+
+<@end@>
+
+<!-- Panel used when in bundle item edit mode, shows read-only data
+     relating to the current bundle --> 
+<@dynamichtml bundle_details_panel@>
+	
+		<$include greyPanel_top$>
+	
+			<div class='panelheader'>
+				
+				<form name="bundle_fields" id="bundle_fields">
+					<input type="hidden" name="dDocName" value="<$dDocName$>" />
+					<input type="hidden" name="bundleId" value="<$#local.bundleRef$>" />
+					<input type="hidden" name="bundleLockUser" value="<$#local.Iris_itemLockUser$>" />
+				</form>
+				
+				<table width='100%' cellspacing=0 cellpadding=0>
+					<tr height=20>
+						<td>
+							<span class='panelheading'>Bundle Details</span>
+						</td>
+						<td width=22>
+							<div onclick="togglePanel(this)" id="toggle_bundle_details_panel" class="toggle_img_collapse"></div>
+						</td>
+					</tr>
+				</table>
+			</div>
+	
+			<!-- This div has an ID so the display setting can be toggled between block/none -->
+			<div id='bundle_details_panel' class='panelbody' style="overflow: hidden;display:block">
+				
+				<table width="100%" cellspacing="2" cellpadding="0">
+					<tbody>
+						<tr>
+							<td class="field_caption" valign="center">Envelope ID:</td>
+							<td class="field_value_info" valign="center"><$bundleRef$></td>
+						</tr>
+						<tr>
+							<td class="field_caption" valign="center">Scan date:</td>
+							<td class="field_value_info" valign="center"><$xScanDate$></td>
+						</tr>
+						
+						<$include iris_batch_lock_display$>
+						
+					</tbody>
+				</table>
+				
+			</div>
+	
+		<$include greyPanel_bottom$>
+	
+	</div>
+
+<@end@>
+
+<!-- Panel used when in bundle item edit mode, shows editable
+     fields for currently-selected bundle item. The panel content
+     is designed to be replaced via AJAX calls --> 
+<@dynamichtml bundle_item_details_panel@>
+
+	<$include bundle_item_paging_controls$>
+
+	<!-- Container for replaceable content -->
+	<div id="doc_meta_panel_container">
+		
+		<!-- TODO: place some text/markup here to indicate no item has been loaded. -->
+		
+		<$include greyPanel_top$>
+
+		<div class='panelheader'>
+			<table width='100%' cellspacing=0 cellpadding=0>
+				<tr height=20>
+					<td>
+						<span class='panelheading'>No item selected</span>
+					</td>
+					<td width=22></td>
+				</tr>
+			</table>
+		</div>
+		
+		<$include greyPanel_bottom$>	
+	</div>
+
+<@end@>
+
+<!-- Provides prev/next controls to batch items -->
+<@dynamichtml bundle_item_paging_controls@>
+
+	<$if #env.Iris_enableBatchItemPagingControls$>
+	
+		<div id="batchItemIndexPanel">
+			<table align="center" style="text-align:center">
+				<tr>
+					<td>
+						<div 	class="pn_icon_inactive pn_small" 
+									style="float: left;" 
+									id="batchItemIndex_prev"
+									onclick="selPrevThumb()">
+							&lt;
+						</div>
+					</td>
+					<td>
+						<span id="batchItemIndexLabel"></span>
+					</td>
+					<td>
+						<div 	class="pn_icon_inactive pn_small" 
+									style="float: right;" 
+									id="batchItemIndex_next"
+									onclick="selNextThumb()">
+							&gt;
+						</div>
+					</td>
+				</tr>		
+			</table>
+			
+		</div>
+	
+	<$endif$>
+	
+<@end@>
+
+<!-- Panel used for dispatching email notifcations -->
+<@dynamichtml doc_notification_panel@>
+
+	<$include greyPanel_top$>
+
+		<div class='panelheader'>
+			<table width='100%' cellspacing=0 cellpadding=0>
+				<tr height=20>
+					<td>
+						<span class='panelheading'>Email Notification</span>
+					</td>
+					<td width=22>
+						<div onclick="togglePanel(this)" id="toggle_notify_panel" class="toggle_img_collapse"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<!-- This div has an ID so the display setting can be toggled between block/none -->
+		<div id='notify_panel' class='panelbody' style="overflow: hidden;display:none">
+
+			<form id="mail_notification_form" action="<$HttpCgiPath$>" method="GET" style="padding:0px; margin:0px">
+				<!-- These form fields have their values inserted through javascript -->
+				<input type=hidden name=IdcService value="IRIS_SENDMAIL" />
+
+				<input type=hidden name=bundleDocName value="<$dDocName$>" />
+				<input type=hidden name=bundleRef value="<$bundleRef$>" />
+				<input type=hidden name=bundleType value="<$xDocumentType$>" />
+				<input type=hidden name=bundleScanDate value="<$xStartDate$>" />
+				<input type=hidden name=bundleDueDate value="<$xPaymentDate$>" />
+
+				<input type=hidden name=isAlias value="" />
+				<input type=hidden name=RedirectUrl value="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=<$dDocName$><$#local.urlparams$>" />
+
+				<!-- ECS_SendMail fields. Subject/Recipient added by sendNotifcation() function -->
+				<input type="hidden" name="template" value="<$#env.Iris_notify_template$>" />
+				<input type="hidden" name="usersAndAliases" value="y" />
+				<input type="hidden" name="subject" value="" />
+				<input type="hidden" name="recipient" value="" />
+
+				<input type="hidden" name="subject_fyi" value="FYI: Bundle <$bundleRef$>" />
+				<input type="hidden" name="subject_rfi" value="Information Request: Bundle <$bundleRef$>" />
+
+				<$c="audit fields used to record email notification"$>
+				<input type=hidden name="doAudit" value="1">
+
+				<input type=hidden name="lApp" value="IRIS" />
+				<input type=hidden name="lAction" value="GEN-EMAIL" />
+				<input type=hidden name="lRef" value="<$dDocName$>" />
+				<input type=hidden name="lTitle" value="<$#active.bundleRef$>" />
+				<input type=hidden name="lUser" value="<$dUser$>" />
+				<!-- Optional user message added via javascript -->
+				<input type=hidden name="lMessage" value="" />
+
+				<!-- Audit parameters are:
+						1. user/alias recipient of mail notification.
+						2. Notification type (fyi/rfi)
+
+						Both values added via javascript
+						-->
+				<input type=hidden name="lParam1" value="">
+				<input type=hidden name="lParam2" value="">
+
+				<!-- This table holds the notification fields -->
+				<table width="100%" cellpadding=0 cellspacing=2>
+					<tr>
+						<td colspan=2>
+							Dispatch mail notifications for the current bundle.
+						</td>
+					</tr>
+
+					<tr><td colspan=2><br></td></tr>
+
+					<tr>
+						<td class="field_caption<$#active.classStr$>">User/alias:</td>
+						<td class="field_value<$#active.classStr$>">
+							
+							<$include iris_batch_notification_recipient_field$>
+
+						</td>
+					</tr>
+
+					<tr>
+						<td class="field_caption<$#active.classStr$>">Action:</td>
+						<td class="field_value<$#active.classStr$>">
+
+							<select name="requiredAction" class="input_option_field" >
+
+								<option value="fyi">Inform</option>
+								<option value="rfi">Request information</option>
+
+							</select>
+
+						</td>
+					</tr>
+
+					<tr><td colspan=2><br></td></tr>
+
+					<tr><td class="field_caption" colspan=2>Extra notes:</td></tr>
+					<tr>
+						<td colspan=2 valign=center>
+							<!-- Text area for extra comments to insert in email -->
+							<textarea id="extraNotes" name="extraNotes" style="width: 100%; height: 3em; border: thin inset" wrap=virtual tabindex=<$tabIndex$>></textarea>
+							<$tabIndex = tabIndex + 1$>
+						</td>
+					</tr>
+
+					<td colspan=2 align="left">
+
+							<div class="sidepanel_button_holder">
+
+								<input 	type=button
+												name="notify_button"
+												value="Send notification"
+												style="margin: 5px;"
+												onClick="sendNotification();"
+												tabindex=<$tabIndex$>>
+
+								<$tabIndex = tabIndex + 1$>
+
+							</div>
+
+						</td>
+
+				</table>
+			</form>
+		</div>
+
+	<$include greyPanel_bottom$>
+	<br/>
+
+<@end@>
+
+<!-- Panel used for generating bundle documents -->
+<@dynamichtml doc_generation_panel@>
+
+	<$include greyPanel_top$>
+
+		<div class='panelheader'>
+			<table width='100%' cellspacing=0 cellpadding=0>
+				<tr height=20>
+					<td>
+						<span class='panelheading'>Document Generation</span>
+					</td>
+					<td width=22>
+						<div onclick="togglePanel(this)" id="toggle_gen_panel" class="toggle_img_collapse"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<script type="text/javascript">
+
+			function generateDoc() {
+
+				var form = document.getElementById("iris_doc_generation_form");
+				var template = form.elements['templateId'].value;
+				var title = form.elements['docTitle'].value;
+				
+				var bundleDocType;
+
+				// Auto-generate doc title if user did not specify one.
+				if (title == '') {
+					if (template.indexOf('_ACK') > -1) {
+						title = "Acknowledgement letter";
+						bundleDocType = "Acknowledgement";
+					} else {
+						title = "Response letter";
+						bundleDocType = "Response";
+					}
+				}
+				
+				if (template.indexOf('_ACK') > -1)
+					bundleDocType = "Acknowledgement";
+				else
+					bundleDocType = "Response";
+				
+				//alert("Title = " + title + ", bundleDocType = " + bundleDocType);
+				//return;
+				
+				// set title/type for doc to be generated.
+				form.elements['dDocTitle'].value = title;
+				form.elements['xBundleDocType'].value = bundleDocType;
+
+				form.submit();
+			}
+
+		</script>
+
+		<!-- This div has an ID so the display setting can be toggled between block/none -->
+		<div id='gen_panel' class='panelbody' style="overflow: hidden;display:none">
+
+			<form id="iris_doc_generation_form" action="<$HttpCgiPath$>" method="GET" style="padding:0px; margin:0px">
+				<!-- These form fields have their values inserted through javascript -->
+				<input type=hidden name=IdcService value="IRIS_GEN_DOC_FROM_TEMPLATE" />
+
+				<input type=hidden name=metadataInContent value="<$#env.Iris_batchIdField$>,xSource,xSenderAddress" />
+				<input type=hidden name="<$#env.Iris_batchIdField$>" value="<$bundleRef$>" />
+				<input type=hidden name=xSource value="<$xSource$>" />
+				<input type=hidden name=xSenderAddress value="<$xSenderAddress$>" />
+
+				<input type=hidden name=metadataFields value="dDocAuthor,dDocAccount,<$#env.Iris_batchIdField$>,xDocumentType,xBundleDocType" />
+				<input type=hidden name=dDocAuthor value="<$dUser$>" />
+				<input type=hidden name=dDocAccount value="<$#active.dDocAccount$>" />
+				<input type=hidden name=dDocType value="MailItem" />
+				<input type=hidden name=dSecurityGroup value="<$dSecurityGroup$>" />
+				<input type=hidden name=dDocTitle value="Generated document for bundle: <$bundleRef$>" />
+				<input type=hidden name=xDocumentType value="<$#active.xDocumentType$>" />
+				<!-- inserted via js -->
+				<input type=hidden name=xBundleDocType value="" />
+
+				<input type=hidden name=RedirectUrl value="<$HttpCgiPath$>?IdcService=DOC_APPROVAL&dDocName=<$dDocName$>&bundleRef=<$bundleRef$>" />
+
+				<$c="audit fields used to record new checkin"$>
+				<input type=hidden name="doAudit" value="1">
+
+				<input type=hidden name="lApp" value="IRIS" />
+				<input type=hidden name="lAction" value="GEN-DOC" />
+				<input type=hidden name="lRef" value="<$dDocName$>" />
+				<input type=hidden name="lTitle" value="<$bundleRef$>" />
+				<input type=hidden name="lUser" value="<$dUser$>" />
+
+				<!-- Audit parameters are:
+						1. generated document type
+						2. dDocName of generated item.
+						-->
+				<input type=hidden name="lParam1" value="" />
+				<input type=hidden name="lParam2" value="" />
+
+				<!-- This table holds the notification fields -->
+				<table width="100%" cellpadding=0 cellspacing=2>
+					<tr>
+						<td colspan=2>
+							Generate a reply letter for the current bundle.
+						</td>
+					</tr>
+
+					<tr><td colspan=2><br></td></tr>
+
+					<tr>
+						<td class="field_caption<$#active.classStr$>">Doc type:</td>
+						<td class="field_value<$#active.classStr$>">
+
+							<select name="templateId" class="input_option_field" >
+								
+								<!-- Create 2 ResultSets, one from the list of template docNames
+								     and the other from the list of template labels. -->
+								<$exec rsMakeFromString("rsTemplates",#active.Iris_DocTemplates,"name")$>
+								<$exec rsMakeFromString("rsTemplateLabels",#active.Iris_DocTemplateLabels,"name")$>
+								
+								<$loop rsTemplates$>
+									<option value="<$rsTemplates.name$>"><$rsTemplateLabels.name$></option>
+									<$exec rsNext("rsTemplateLabels")$>
+								<$endloop$>
+
+							</select>
+
+						</td>
+					</tr>
+
+					<tr>
+						<td class="field_caption">Doc title:</td>
+						<td class="field_value" valign=center>
+							<!-- Generated doc title (optional) -->
+							<input type="text" class="input_text_area" name="docTitle" id="docTitle" tabindex=<$tabIndex$> />
+							<$tabIndex = tabIndex + 1$>
+						</td>
+					</tr>
+
+					<td colspan=2 align="left">
+
+							<div class="sidepanel_button_holder">
+
+								<input 	type=button
+												name="notify_button"
+												value="Generate"
+												style="margin: 5px;"
+												onClick="generateDoc();"
+												tabindex=<$tabIndex$>>
+
+								<$tabIndex = tabIndex + 1$>
+
+							</div>
+
+						</td>
+
+				</table>
+			</form>
+		</div>
+
+	<$include greyPanel_bottom$>
+	<br/>
+
+<@end@>
+
+<!-- 	Displays workflow-related information, plus
+			approve/reject buttons. Nothing is displayed
+			if the document is not within a workflow
+			-->
+<@dynamichtml doc_approval_routing@>
+
+	<$if DOC_WF_INFO$>
+
+		<$include greyPanel_top$>
+
+			<div class='panelheader'>
+				<table width='100%' cellspacing=0 cellpadding=0>
+					<tr height=20>
+						<td>
+							<span class='panelheading'>Bundle Routing</span>
+						</td>
+						<td width=22>
+							<div onclick="togglePanel(this)" id="toggle_wf_panel" class="toggle_img_collapse"></div>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<!-- This div has an ID so the display setting can be toggled between block/none -->
+			<div id='wf_panel' class='panelbody' style="overflow: hidden">
+
+				<$if isInfo$>
+					<$classStr = "_info"$>
+				<$else$>
+					<$classStr = ""$>
+				<$endif$>
+
+				<!-- This form is used to update the approver field only. -->
+				<form id="change_approver_form" action="<$HttpCgiPath$>" method="GET" style="padding:0px; margin:0px">
+
+					<input type=hidden name=IdcService value="UPDATE_DOCINFO" />
+					<input type=hidden name=dDocName value="<$dDocName$>" />
+					<input type=hidden name=dID value="<$dID$>" />
+					<input type=hidden name=dRevLabel value="<$dRevLabel$>" />
+					<input type=hidden name=dSecurityGroup value="<$dSecurityGroup$>" />
+
+					<input type=hidden name=createPrimaryMetaFile value="1" />
+
+					<$if #active.dDocAccount$>
+						<input type=hidden name=dDocAccount value="<$dDocAccount$>" />
+					<$endif$>
+
+					<!-- These 2 fields completed by processBundle js method -->
+					<input type=hidden name=xApprover value="" />
+					<input type=hidden name=xAuditParams value="" />
+
+					<input type=hidden name=RedirectUrl value="<$HttpCgiPath & '?IdcService=DOC_APPROVAL&dDocName=' & dDocName & #local.urlparams & #local.statusInfo$>">
+				</form>
+
+				<!-- This table holds the workflow information -->
+				<table width="100%" cellpadding=0 cellspacing=2>
+					<tr><td colspan=2><br style="line-height:0.5em" /></td></tr>
+
+					<$if not allowWorkflowActions$>
+						<!-- Workflow actions disabled for current user. -->
+
+						<tr>
+							<td colspan=2 align="left" class="nofication">
+								<$if isEditStep$>
+									<$roleName = "contributor"$>
+								<$else$>
+									<$roleName = "reviewer"$>
+								<$endif$>
+
+								You are not a valid assignee for this step.<br/><br/>
+								<a href="javascript:toggleApprovers()"><span id="toggleApproverLink">Show assignees &gt;&gt;</span></a>
+
+								<div id="approverList" style="display: none">
+
+									<$exec rsMakeFromString("rsUserQueue",wfUserQueue,"user")$>
+
+									<ul>
+									<$loop rsUserQueue$>
+										<$userEmail = getValueForSpecifiedUser(rsUserQueue.user,"dEmail")$>
+
+										<$if userEmail$>
+											<li><a href='mailto:<$userEmail$>?subject=Approval of item [<$dDocName$>]'><$rsUserQueue.user$></a></li>
+										<$else$>
+											<li><$rsUserQueue.user$></li>
+										<$endif$>
+
+									<$endloop$>
+									</ul>
+
+								</div>
+
+								<script>
+
+									function toggleApprovers() {
+
+										var approverList = document.getElementById("approverList");
+										var approverLink = document.getElementById("toggleApproverLink");
+
+										if (approverList.style.display == '') {
+											approverList.style.display = 'none';
+											approverLink.innerHTML = 'Show assignees &gt;&gt;';
+										} else {
+											approverList.style.display = '';
+											approverLink.innerHTML = 'Hide assignees &lt;&lt;';
+										}
+									}
+
+								</script>
+
+							</td>
+						</tr>
+
+					<$else$>
+					 <!-- Workflow actions enabled for current user. -->
+
+						<tr>
+							<$if dWfStepName like 'Assigned'$>
+								<td colspan=2 valign=center>
+									<input type="radio" name="bundleAction" value="sendback" onclick="setBundleAction(this);" />Send back
+									<$if not xPrevApprover$>
+										to mail room
+									<$else$>
+										<$if strIndexOf(xPrevApprover,"a:") == 0$>
+											<$prevAssignee = strSubstring(xPrevApprover,2)$>
+											to group: <$prevAssignee$>
+										<$else$>
+											<$prevAssignee = getValueForSpecifiedUser(xPrevApprover,"dFullName")$>
+											to <$prevAssignee$>
+										<$endif$>
+
+									<$endif$>
+								</td>
+							<$endif$>
+						</tr>
+
+						<tr>
+							<td colspan=2 valign=center>
+								<input type="radio" name="bundleAction" value="complete" onclick="setBundleAction(this);" />Mark as complete
+							</td>
+						</tr>
+
+						<tr>
+							<td valign=center>
+								<input type="radio" name="bundleAction" value="assign" onclick="setBundleAction(this);" />Assign to:
+							</td>
+							<td class="field_value" valign=center width="70%" >
+
+								<$include iris_batch_routing_assign_field$>
+
+							</td>
+						</tr>
+
+						<tr><td colspan=2><br></td></tr>
+
+						<tr><td class="field_caption" colspan=2>Extra notes:</td></tr>
+						<tr>
+							<td colspan=2 valign=center>
+								<!-- Text area for routing comments -->
+								<textarea id="actionComments" name="actionComments" style="width: 100%; height: 3em; border: thin inset" wrap=virtual tabindex=<$tabIndex$>></textarea>
+								<$tabIndex = tabIndex + 1$>
+							</td>
+						</tr>
+
+
+							<$if false$>
+								<tr>
+									<td colspan=2 valign=center>
+										<!-- Text area for approve/reject comments -->
+										<textarea id="wfComments" style="width: 100%; height: 3em; border: thin inset" wrap=virtual tabindex=<$tabIndex$>></textarea>
+										<$tabIndex = tabIndex + 1$>
+									</td>
+								</tr>
+
+								<!-- Display approve/reject buttons -->
+								<$if #active.numMissingFields > 0$>
+									<tr>
+										<td colspan=2 style="color: #DC143C">
+											<$numMissingFields$> required field value(s) are missing.
+										</td>
+									</tr>
+								<$endif$>
+							<$endif$>
+
+						<tr>
+							<!-- Display custom approve button -->
+							<td colspan=2 align="left">
+
+								<div class="sidepanel_button_holder">
+									<input 	type=button
+													name="approve_btn"
+													value="Process"
+													style="margin: 5px;"
+													onClick="processBundle();"
+													disabled="disabled"
+													tabindex=<$tabIndex$>>
+
+													<$tabIndex = tabIndex + 1$>
+								</div>
+							</td>
+						</tr>
+
+					<$endif$>
+
+				</table>
+			</div>
+
+		<$include greyPanel_bottom$>
+		<br/>
+	<$endif$>
+
+<@end@>
+
+
+</body></html>

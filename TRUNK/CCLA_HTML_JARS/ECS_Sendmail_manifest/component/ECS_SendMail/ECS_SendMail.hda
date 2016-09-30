@@ -1,0 +1,53 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2008_06_02(build 7)
+classpath=$COMPONENT_DIR/classes;$COMPONENT_DIR/lib/mailapi.jar;$COMPONENT_DIR/lib/activation.jar;$COMPONENT_DIR/lib/smtp.jar;$COMPONENT_DIR/lib/spring.jar
+blFieldTypes=
+libpath=$COMPONENT_DIR/lib
+ComponentName=ECS_SendMail
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+ECS_SendMail_Message_Templates
+IntradocTemplates
+name
+1
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+service
+resources/ECS_SendMail_service.htm
+ECS_SendMail_Services
+1
+template
+templates/ECS_SendMail_template.hda
+null
+1
+query
+resources/ECS_SendMail_query.htm
+ECS_SendMail_Queries
+1
+@end
+@ResultSet ClassAliases
+2
+classname
+location
+@end
+

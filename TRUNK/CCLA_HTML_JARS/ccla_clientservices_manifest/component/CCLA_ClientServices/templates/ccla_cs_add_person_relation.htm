@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Add assocation for person
+	</title>
+	
+	<$searchScope="person"$>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_ajax_js$>
+	
+	<$if #local.ORGANISATION_ID$>
+		<!-- Org/Person relationship -->
+		<$ELEMENT_ID = ORGANISATION_ID$>
+
+	<$elseif #local.ACCOUNT_ID$>
+		<!-- Person/Account relationship -->
+		<$ELEMENT_ID = ACCOUNT_ID$>
+
+	<$endif$>
+	
+	<script type="text/javascript">
+	
+		// Determines whether a new association was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;	
+		
+		// ID of the newly-created relation
+		var newRelationId 	= "<$#local.newRelationId$>";
+		
+		// One of the below will be non-null, this implies which relation is
+		// being created (either Org-Person or Person-Account)
+		var orgId			= "<$#local.ORGANISATION_ID$>";
+		var accountId		= "<$#local.ACCOUNT_ID$>";
+		
+		var elementTypeId1	= "<$#local.ELEMENT_TYPE_ID_1$>";
+		var elementTypeId2	= "<$#local.ELEMENT_TYPE_ID_2$>";
+		
+		$().ready(function() {
+					
+			if ((newRelationId != "") && window.parent) {
+				window.parent.refreshRelations
+				 ('<$#local.ELEMENT_ID$>', newRelationId, elementTypeId1, elementTypeId2);
+			}
+		});
+		
+		/* Open the Add New Person page, with parameters for creating the selected
+		   relation when the new Person is created. */
+		function createNewPerson(extraParams) {
+			if (!extraParams){
+				extraParams='';
+			}
+		
+			var relationParams;
+		
+			if (orgId)
+				relationParams = "&ORGANISATION_ID=" + orgId;
+			else if (accountId)
+				relationParams = "&ACCOUNT_ID=" + accountId;
+				
+			var relationNameId = $("#RELATION_NAME_ID").val();	
+			relationParams += "&RELATION_NAME_ID=" + relationNameId;
+			
+			var w = window.open("?IdcService=CCLA_CS_PERSON_NEW<$include add_idc_token_to_url$>&includeAssociation=yes&hideQuickAssociationAdd=yes" +
+			 relationParams + extraParams, "createNewPerson",
+			 "toolbar=1,location=1,menubar=1,scrollbars=1,height=700,width=840");
+			 
+			w.focus();
+		}
+		
+		function refreshRelations(elementId, newRelationId) {
+			if (window.parent) {
+				window.parent.refreshRelations(elementId, newRelationId, elementTypeId1, elementTypeId2);
+				window.parent.closePopup();
+			}
+		}
+	
+		function alertValues()
+		{
+			if (document.forms['addAssociation'].PARENT_ELEMENT_ID)
+				alert ('yes');
+				
+			alert('parent:' + document.forms['addAssociation'].PARENT_ELEMENT_ID.value);
+			alert('related:' + document.forms['addAssociation'].RELATED_ELEMENT_ID.value);
+			alert('relation type:' + document.forms['addAssociation'].RELATION_TYPE_ID.value);
+			alert('relationship:' + document.forms['addAssociation'].RELATIONSHIP.value);
+		}
+		
+		function doUseCallback(extraParams){
+			createNewPerson(extraParams);
+		}
+		
+		function doSelectCallback(personId){
+			<$if #local.ORGANISATION_ID$>
+				$('#RELATED_ELEMENT_ID').val(personId);
+			<$else$>
+				$('#PARENT_ELEMENT_ID').val(personId);
+			<$endif$>
+			
+			$('#addAssociation').submit();
+		}
+		
+	</script>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_contact_lookup_js$>
+	<$include ccla_cs_contact_lookup_mini_styles$>
+</head>
+
+<body class="popupBody">
+	<$if #active.added$>
+
+		<script type="text/javascript">
+			window.parent.closePopup();
+		</script>
+	<$endif$>
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<form name="addAssociation" id="addAssociation" method="POST">
+							
+			<input  type="hidden" name="IdcService" value="CCLA_CS_ADD_ELEMENT_RELATION" /><$include add_idc_token_to_form$>
+			<input 	type="hidden" name="RedirectUrl" 
+					value="?IdcService=CCLA_CS_ADD_PERSON_RELATION<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#local.ORGANISATION_ID$>&ACCOUNT_ID=<$#local.ACCOUNT_ID$>&ELEMENT_TYPE_ID_1=<$#local.ELEMENT_TYPE_ID_1$>&ELEMENT_TYPE_ID_2=<$#local.ELEMENT_TYPE_ID_2$>&showAllSearchFields=true&added=1&newRelationId=" />
+			
+			<$if #local.ORGANISATION_ID$>
+				<input type="hidden" name="PARENT_ELEMENT_ID" 	id="PARENT_ELEMENT_ID" value="<$#local.ORGANISATION_ID$>" />
+				<input type="hidden" name="RELATED_ELEMENT_ID" 	id="RELATED_ELEMENT_ID" />	
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultOrgPersonRelationNameId$>" />
+				
+			<$elseif #local.ACCOUNT_ID$>
+				<input type="hidden" name="PARENT_ELEMENT_ID"  	id="PARENT_ELEMENT_ID" />
+				<input type="hidden" name="RELATED_ELEMENT_ID" 	id="RELATED_ELEMENT_ID" value="<$#local.ACCOUNT_ID$>" />
+				
+				<input type="hidden" name="RELATION_NAME_ID" 	value="<$#env.CCLA_CS_DefaultPersonAccountRelationNameId$>" />
+			<$endif$>
+			
+		</form>
+			
+						
+		<div class='ccla_cs_panel_content'>			
+			<$include ccla_cs_contact_lookup_form$>
+			
+			<$include orangeContainer_top$>
+			
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+Share Class Discrepancy Report
+</title>
+	<$include ccla_cs_styles$>
+	
+	<$include epoch_calendar_header$>
+	
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+	
+	<$include float_menu_header$>
+	
+	<$include ecs_javascript_jquery_include$>
+	<$include ccla_cs_set_params_js$>
+	<$include ccla_cs_ajax_js$>
+	
+	<script type="text/javascript">
+	
+		$("document").ready( function() {
+			$('#createAll').bind("click", function() { 		
+				var scPendingStr = "";
+				$(".scMovement").each( function() {
+					if ($(this).val().length > 0) {
+						
+						if (scPendingStr.length > 0)
+							scPendingStr += ",";
+						
+						scPendingStr += $(this).val();
+					}
+				});
+				
+				if (scPendingStr.length==0) {
+					alert('There an no pending share class movement to create');
+				} else {
+					var proceed = confirm('Do you want to process and create pending share class movement in aurora today for the following\n'+scPendingStr);
+					if (proceed==true) {
+						document.createAllPendingSCMovementForm.accountShareClassMovement.value = scPendingStr;
+						document.createAllPendingSCMovementForm.submit();
+					} 
+				}
+			});	
+		});
+		
+		function confirmSingle(accountId, shareclass) {
+			var proceed = confirm("Do you want to procced with creating a pending share class movement in Aurora \nfor Account:"
+									+accountId+" with Share Class:"+shareclass);
+			if (proceed == true)
+                return true;
+			else
+                return false;
+		}
+	</script>
+	
+</head>
+	<body <$include iris_body_def_internal$>>
+
+		<$include ecs_popup_div_header$>
+		<$include iris_header$>
+
+	<div  id="cs_page_container" class="cs-page-container" style="width:1100px">
+		<div id="ccla_cs_right_content" class="cs-right-content-container" style="width:1100px">
+			<div id='ccla_cs_content' class="cs-content-container" style="width:1100px" >
+
+				<$include orangeContainer_top$>
+				<div class='ccla_cs_panel_header'>
+					Share Class Discrepancy Report
+				</div>
+				
+				<p>				
+					This report will display all expected share classes for the psic accounts stored in the central DB.<br/>
+					<b>The report will only use transaction for today and assumes the price is £1 = 1 Unit.</b><br/> 
+					These expected share class values are then compared against the share class in Aurora and will highlight any discrepancies.<br/><br/>
+					If the Aurora SC is 'n/a', this mean that the webservice call to aurora has failed, please refer to the error message for more details or try again.
+					<br/>
+				
+				<$if UserIsAdmin or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>				
+				</p>				
+				Click on the button to create pending share class movement in Aurora for all the mismatch today :- <input type="button" name="createAll" id="createAll" value="Create Pending Share Class Movements"/> 
+				
+				<br/>
+				<$endif$>			
+				<table cellpadding="0" cellspacing="0"  class="accounts-table">
+					<tr  class="account-details-row" >
+						<th width="7%">Acc ID</th>
+						<th width="5%">Curr. Share Class</th>
+						<th width="5%">Aurora Share Class</th>
+						<th width="5%">Override Share Class</th>
+						<th width="5%">Expected Share Class</th>
+						<th width="10%">Acc Units (£)</th>
+						<th width="10%">Acc Expected Closing Units Today (£)</th>
+						<th width="7%">Early Investor</th>
+						<th width="7%">Seed Fund</th>
+						<th width="7%">Internal Acc</th>
+						<th width="20%">Error</th>
+						<$if UserIsAdmin or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+							<th width="12%">Option</th>
+						<$endif$>
+					</tr>
+					<$loop rsAccountInfo$>
+					<tr 
+						<$if not strEquals(#active.AURORA_SHARE_CLASS,'n/a') and not strEquals(#active.AURORA_SHARE_CLASS,#active.EXPECTED_SHARE_CLASS)$>
+							class="account-details-row account-row-temp"	
+						<$elseif strEquals(#active.AURORA_SHARE_CLASS,'n/a')$>
+							class="account-details-row account-row-pend"	
+						<$else$>
+							class="account-details-row"
+						<$endif$>
+					>
+						<td><a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>"><$#active.ACCOUNT_ID$></a></td>
+						<td align="center"><$#active.CURRENT_SHARE_CLASS$></td>
+						<td align="center"><$#active.AURORA_SHARE_CLASS$></td>
+						<td align="center"><$#active.OVERRIDE_SHARE_CLASS$></td>
+						<td align="center"><$#active.EXPECTED_SHARE_CLASS$></td>
+						<td><$formatCurrency(#active.CURRENT_UNITS)$></td>		
+						<td><$formatCurrency(#active.CLOSING_UNITS)$></td>	
+						<td align="center">
+							<$if strEquals(#active.EARLY_INVESTOR,'1')$><img src="images/ccla/tick.gif">
+							<$else$><img src="images/ccla/cross.png"><$endif$>
+						</td>
+						<td align="center">
+							<$if strEquals(#active.SEED_FUNDER,'1')$><img src="images/ccla/tick.gif">
+							<$else$><img src="images/ccla/cross.png"><$endif$>
+						</td>
+						<td align="center">
+							<$if strEquals(#active.INTERNAL_ACCOUNT,'1')$><img src="images/ccla/tick.gif">
+							<$else$><img src="images/ccla/cross.png"><$endif$>
+						</td>	
+						<td><div style="width: 300px; word-wrap: break-word"><$#active.ERROR_MSG$></div></td>	
+						
+						<$if UserIsAdmin or userHasRole("WF_Scanning Manager") or userHasRole("WF_COO")$>
+						<td align="center"> 
+							<$if not strEquals(#active.AURORA_SHARE_CLASS,'n/a') and not strEquals(#active.AURORA_SHARE_CLASS,#active.EXPECTED_SHARE_CLASS)$>
+								<form  method="POST" onsubmit="return confirmSingle('<$#active.ACCOUNT_ID$>','<$#active.EXPECTED_SHARE_CLASS$>')">
+								<input type="hidden" name="IdcService" 	value="CCLA_TRANS_CREATE_SC_MOVEMENT" />
+								<input class="scMovement" type="hidden" id="accountShareClassMovement" name="accountShareClassMovement" value="<$#active.ACCOUNT_ID$>:<$#active.EXPECTED_SHARE_CLASS$>"/>
+									<$include add_idc_token_to_form$>
+								<input type="submit" value="CreateMovement"/>
+								</form>
+							<$else$>
+							&nbsp;
+							<$endif$>
+						</td>
+						<$endif$>
+					</tr>
+					<$endloop$>
+				</table>
+				</br> 
+				
+				<form name="createAllPendingSCMovementForm" id="createAllPendingSCMovementForm" method="POST">
+					<input type="hidden" name="IdcService" 	value="CCLA_TRANS_CREATE_SC_MOVEMENT" />
+					<input type="hidden" id="accountShareClassMovement" name="accountShareClassMovement" value=""/>
+					<$include add_idc_token_to_form$>
+				</form>
+				<$include orangeContainer_bottom$>			
+			</div>
+		</div>
+	</div>	
+	
+</body></html>

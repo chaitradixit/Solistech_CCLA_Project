@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>
+ECS_BaseUtils query
+</title>
+</head>
+<body>
+
+<@table ECS_BaseUtils_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+<tr>
+	<td>QitemLastUpdateTime</td>
+	<td>select dReleaseDate from Revisions where dRevRank = 0 and dDocName = ? and dStatus != 'DELETED'</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>QitemDocInfoDocname</td>
+	<td>select * from Revisions r, DocMeta d where r.dID=d.dID and dRevRank = 0 and dDocName = ? and dStatus != 'DELETED'</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>QitemDocInfoDID</td>
+	<td>select * from Revisions r, DocMeta d where r.dID=d.dID and r.dID = ?</td>
+	<td>dID varchar</td>
+</tr>
+<tr>
+	<td>QDocInfoLatest</td>
+	<td>SELECT Revisions.*, Documents.*, DocMeta.*
+FROM Revisions, Documents, DocMeta
+WHERE Revisions.dDocName=? AND Revisions.dRevRank=0 AND Revisions.dID=Documents.dID AND DocMeta.dID = Documents.dID
+AND Revisions.dStatus<>'DELETED' AND Documents.dIsPrimary<>0</td>
+	<td>dDocName varchar</td>
+</tr>
+<tr>
+	<td>QGetDocumentReleaseState</td>
+	<td>SELECT r.dID, r.dReleaseState, r.dRevLabel, r.dIsCheckedOut, r.dCheckoutUser, d.dOriginalName FROM Revisions r
+INNER JOIN Documents d ON d.dID=r.dID
+WHERE r.dRevRank=0 AND d.dIsWebFormat=0
+AND r.dDocName=?</td>
+	<td>dDocName varchar</td>
+</tr>
+</table>
+<@end@>
+</body></html>

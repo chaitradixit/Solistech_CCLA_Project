@@ -1,0 +1,29 @@
+﻿<?hda version="10.1.3.3.186 (090122)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+@end
+@ResultSet BatchFiles
+5
+aBatchFile
+aState
+IDC_Name
+aNumDocuments
+aIsTableBatch
+09-may-09_17.43.11_561_02/TAUDITCONFIG_FIXEDMAP_arTable~1.hda
+NEW
+idcxe
+19
+1
+09-may-09_17.43.11_561_02/TAUDITCONFIG_SERVICEMAP_arTable~1.hda
+NEW
+idcxe
+58
+1
+09-may-09_17.43.11_561_02/TAUDITCONFIG_BINDERMAP_arTable~1.hda
+NEW
+idcxe
+116
+1
+@end
+

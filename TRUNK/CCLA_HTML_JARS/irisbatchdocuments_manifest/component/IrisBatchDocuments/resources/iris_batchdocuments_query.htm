@@ -1,0 +1,209 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+IRIS_BatchDocuments query
+</title>
+</head>
+<body>
+
+<@table IRIS_BatchDocuments_Queries@>
+<table border=1><caption><strong>Query Definition Table</strong></caption>
+<tr>
+	<td>name</td><td>queryStr</td><td>parameters</td>
+</tr>
+
+
+
+<tr>
+	<td>qGetNextDualIndexItemId</td>
+	<td>SELECT SEQ_DUAL_INDEX_ITEM.NEXTVAL FROM DUAL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetNextDualIndexFieldValueId</td>
+	<td>SELECT SEQ_DUAL_INDEX_FIELD_VALUE.NEXTVAL FROM DUAL</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qGetDualIndexItemsByDocName</td>
+	<td>SELECT * FROM DUAL_INDEX_ITEMS
+WHERE DOCNAME = ?
+ORDER BY DUAL_INDEX_ITEM_ID DESC</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetLatestDualIndexItem</td>
+	<td>SELECT * FROM
+		(SELECT * FROM DUAL_INDEX_ITEMS
+		WHERE DOCNAME = ? ORDER BY DATE_ADDED DESC)
+		WHERE ROWNUM <= 1</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetPendingDualIndexItem</td>
+	<td>SELECT * FROM DUAL_INDEX_ITEMS
+WHERE DOCNAME = ? AND OUTCOME IS NULL</td>
+	<td>DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetPendingDualIndexItemsByParentDocName</td>
+	<td>SELECT * FROM DUAL_INDEX_ITEMS
+WHERE PARENT_DOCNAME = ? AND OUTCOME IS NULL</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetLatestDualIndexItemsByParentDocName</td>
+	<td> SELECT * FROM DUAL_INDEX_ITEMS diItems INNER JOIN (
+        SELECT MAX(DUAL_INDEX_ITEM_ID) AS DUAL_INDEX_ITEM_ID, DOCNAME FROM DUAL_INDEX_ITEMS
+        WHERE PARENT_DOCNAME = ?
+        GROUP BY DOCNAME
+      ) latestItems ON (diItems.DUAL_INDEX_ITEM_ID = latestItems.DUAL_INDEX_ITEM_ID)</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetCompletedDualIndexItemsByParentDocName</td>
+	<td>SELECT * FROM DUAL_INDEX_ITEMS di 
+INNER JOIN 
+
+  (SELECT MAX(INDEX_ATTEMPT) AS INDEX_ATTEMPT, DOCNAME FROM DUAL_INDEX_ITEMS
+  WHERE PARENT_DOCNAME = ? AND OUTCOME IS NOT NULL
+  GROUP BY DOCNAME) lastCompleted 
+  
+  ON (di.DOCNAME = lastCompleted.DOCNAME AND di.INDEX_ATTEMPT = lastCompleted.INDEX_ATTEMPT)</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qAddDualIndexParentItem</td>
+	<td>INSERT INTO DUAL_INDEX_PARENT_ITEMS VALUES (?,SYSDATE)</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qRemoveDualIndexParentItem</td>
+	<td>DELETE FROM DUAL_INDEX_PARENT_ITEMS 
+		WHERE PARENT_DOCNAME = ?</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qGetDualIndexParentItem</td>
+	<td>SELECT * FROM DUAL_INDEX_PARENT_ITEMS
+		WHERE PARENT_DOCNAME = ?</td>
+	<td>PARENT_DOCNAME varchar</td>
+</tr>
+<tr>
+	<td>qAddDualIndexItem</td>
+	<td>INSERT INTO DUAL_INDEX_ITEMS VALUES (?,?,?,?,?,?,SYSDATE,NULL,NULL)</td>
+	<td>DUAL_INDEX_ITEM_ID int
+	    DOCNAME varchar
+	    PARENT_DOCNAME varchar
+	    INDEX_ATTEMPT int
+	    OUTCOME int
+	    INDEXER_NAME varchar</td>
+</tr>
+<tr>
+	<td>qUpdateDualIndexItem</td>
+	<td>UPDATE DUAL_INDEX_ITEMS
+		SET 
+		OUTCOME=?,
+		INDEXER_NAME=?,
+		INDEX_DATE=?,
+		COMPARE_DATE=?
+		WHERE DUAL_INDEX_ITEM_ID=?</td>
+	<td>OUTCOME varchar
+	    INDEXER_NAME varchar
+	    INDEX_DATE date
+	    COMPARE_DATE date
+	    DUAL_INDEX_ITEM_ID int</td>
+</tr>
+<tr>
+	<td>qGetDualIndexItemFieldValues</td>
+	<td>SELECT * FROM DUAL_INDEX_FIELD_VALUES
+		WHERE DUAL_INDEX_ITEM_ID = ?</td>
+	<td>DUAL_INDEX_ITEM_ID int</td>
+</tr>
+<tr>
+	<td>qAddDualIndexFieldValue</td>
+	<td>INSERT INTO DUAL_INDEX_FIELD_VALUES VALUES (?,?,?,?,?,?)</td>
+	<td>DUAL_INDEX_FIELD_VALUE_ID int
+		DUAL_INDEX_ITEM_ID int
+	    FIELD_ID int
+	    CHAR_VALUE varchar
+	    DATE_VALUE date
+	    OUTCOME int</td>
+</tr>
+<tr>
+	<td>qUpdateDualIndexFieldValue</td>
+	<td>UPDATE DUAL_INDEX_FIELD_VALUES
+		SET 
+		CHAR_VALUE=?,
+		DATE_VALUE=?,
+		OUTCOME=?
+		WHERE DUAL_INDEX_FIELD_VALUE_ID=?</td>
+	<td>CHAR_VALUE varchar
+	    DATE_VALUE date
+	    OUTCOME int
+		DUAL_INDEX_FIELD_VALUE_ID int</td>
+</tr>
+<tr>
+	<td>qGetDualIndexRuleFieldValues</td>
+	<td>SELECT f.ucm_field_name, fv.CHAR_VALUE, fv.DATE_VALUE
+		FROM DUAL_INDEX_RULES r  
+			INNER JOIN DUAL_INDEX_RULE_FIELDS rf ON (r.IS_ENABLED = 1 AND r.DUAL_INDEX_RULE_ID = rf.dual_index_rule_id) 
+            INNER JOIN REF_DUAL_INDEX_FIELDS f ON (rf.field_id = f.field_id) 
+            LEFT JOIN DUAL_INDEX_FIELD_VALUES fv ON (f.field_id = fv.field_id AND fv.dual_index_item_id = ?)
+
+		WHERE r.dual_index_rule_id = ?</td>
+	<td>DUAL_INDEX_ITEM_ID int
+		DUAL_INDEX_RULE_ID int</td>
+</tr>
+<tr>
+	<td>qIris_GetDualIndexFields</td>
+	<td>SELECT rif.*,dmd.dcaption as CAPTION from REF_DUAL_INDEX_FIELDS rif 
+left join DOCMETADEFINITION dmd on
+(rif.UCM_FIELD_NAME =  dmd.dname)</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIris_GetDualIndexRules</td>
+	<td>SELECT * from DUAL_INDEX_RULES ORDER BY DOCUMENT_CLASS ASC</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIris_GetDualIndexRuleField</td>
+	<td>SELECT * from DUAL_INDEX_RULE_FIELDS 
+	WHERE DUAL_INDEX_RULE_ID = ? AND FIELD_ID=?</td>
+	<td>DUAL_INDEX_RULE_ID int
+	FIELD_ID int</td>
+</tr>
+<tr>
+	<td>qIris_GetAllDualIndexRuleFields</td>
+	<td>SELECT * from DUAL_INDEX_RULE_FIELDS
+		ORDER BY DUAL_INDEX_RULE_ID, FIELD_ID</td>
+	<td></td>
+</tr>
+<tr>
+	<td>qIris_AddDualIndexRuleField</td>
+	<td>insert INTO DUAL_INDEX_RULE_FIELDS
+	values (?,?,SYSDATE)</td>
+	<td>DUAL_INDEX_RULE_ID int
+	FIELD_ID int</td>
+</tr>
+<tr>
+	<td>qIris_RemoveDualIndexRuleField</td>
+	<td>DELETE DUAL_INDEX_RULE_FIELDS
+	WHERE DUAL_INDEX_RULE_ID = ? AND FIELD_ID=?</td>
+	<td>DUAL_INDEX_RULE_ID int
+	FIELD_ID int</td>
+</tr>
+<tr>
+	<td>qIris_UpdateDualIndexRule</td>
+	<td>UPDATE DUAL_INDEX_RULES
+	SET IS_ENABLED=?
+	WHERE DUAL_INDEX_RULE_ID = ? AND DOCUMENT_CLASS=?</td>
+	<td>IS_ENABLED int
+	DUAL_INDEX_RULE_ID int
+	DOCUMENT_CLASS varchar</td>
+</tr>
+</table>
+<@end@>
+</body></html>

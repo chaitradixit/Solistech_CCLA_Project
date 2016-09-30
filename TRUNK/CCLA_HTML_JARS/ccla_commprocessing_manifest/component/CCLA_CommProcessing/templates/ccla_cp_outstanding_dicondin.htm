@@ -1,0 +1,351 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		Outstanding Bank Transactions
+	</title>
+	
+	<script type="text/javascript">
+	
+		$(document).ready(function() {
+			
+			$('#generateRetFunds').click(function() {
+				
+				var retList = "";
+				
+				$(".ref_gen_retfund").each( function() {
+					
+					if ($(this).attr('checked')) {
+						if (retList.length > 0)
+							retList += ",";
+					
+						retList +=$(this).val();
+					}
+				});
+				$("#retfundsList").val(retList);
+				
+				
+				if ($("#retfundsList").val().length==0) {
+					alert("You must check at least one BNKCONDIN.");
+					return false;
+				}
+				
+				if (confirm("This will create RETFUNDS for the selected BNKCONDIN\nDo you want to proceed?")) {
+					$('#genRetfundForm').submit();
+				} else {
+					return false;
+				}
+			});
+		});
+		
+				
+	
+		function checkAndPopulateMatches() {
+		
+			var newList = "";
+			var pendingList = "";
+			var batchList = "";
+			
+			//Individual matches
+			$(".dicondin-ref-select").each( function() {
+				if (newList.length > 0)
+					newList += ",";
+				
+				newList += this.id+'|'+$(this).val();
+			});
+			
+			//Batch Matches
+			$(".batch-dicondin-ref-select").each( function() {
+					
+				var commId = this.id;
+				var matchId = $(this).val();
+				
+				if (matchId) {
+					$(".child_dicondin-ref-select"+this.id).each( function() {
+						if (newList.length > 0)
+							newList += ",";
+					
+						newList += this.id+'|'+matchId;	
+					});
+				} 
+			});
+			
+			$("#instrMatches").val(newList);
+			
+			//Pending condins list
+			$(".pendingDicondin").each( function() {
+				if ($(this).val().length>0) {
+					if (pendingList.length > 0)
+					pendingList += ",";
+				
+					pendingList +=$(this).val();	
+				}
+			});
+			
+			$("#pendingDicondinList").val(pendingList);
+
+			//alert('instrMatches: '+$("#instrMatches").val());
+			//alert('pendingDicondinList: '+$("#pendingDicondinList").val());
+			
+			if (confirm("This will create DEPBANK/BUYBANK for matching PREADVICE, "+ 
+						"any unmatched DICONDIN will be converted to BNKCONDIN. \n\n"+
+						"Do you want to proceed?")) {
+				return true;
+			} else {
+				return false;
+			}
+			
+			return false;
+		}
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 1000px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Outstanding Bank Transactions
+				</div>
+				
+				
+				<div class='ccla_cs_panel_content'>
+				
+				<form name="genRetfundForm" id="genRetfundForm" method="post">
+					<input type="hidden" name="IdcService" 	value="CCLA_CP_DO_GENERATE_RETFUNDS_FROM_LIST" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="retfundsList" id="retfundsList" value="" />
+					<input type="hidden" name="persist" id="persist" value="1" />
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_OUTSTANDING_DICONDIN<$include add_idc_token_to_url$>" />
+				</form>
+				
+				
+					<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">Filter Parameters</h3>
+						<p>Select a fund to view pending DICONDINS, BNKCONDINS and PREADVICES.<br/>
+						If 'Fund Code' is left blank, then all funds are used.
+						</p>
+
+						<form name="dateRange" id="dateRange" method="post"><$include add_idc_token_to_form$>
+						<input type="hidden" name="IdcService" 	value="CCLA_CP_OUTSTANDING_DICONDIN" />
+						<input type="hidden" name="RedirectUrl" value="" />
+					
+							<table class="transbatch-table" cellspacing="0" cellpadding="0" width="20%">
+								<tr>
+									<!--<th width="30%">Date</th>-->
+									<th width="40%">Fund Code</th> 
+									<th width="60%">Action</th>
+								</tr>
+								<tr class="account-details-row">
+									<!--
+									<td align="center">
+										<select id="transactionDate" name="transactionDate">
+											<$loop rsDates$>
+												<option <$if strEquals(formatDateOnly(#local.userTransactionDate),formatDateOnly(#active.TransactionDate))$>selected<$endif$> value="<$formatDateOnly(#active.TransactionDate)$>"><$formatDateOnly(#active.TransactionDate)$></option>
+											<$endloop$>
+										</select>
+									</td>
+									-->
+									<td align="center">
+										<select name="FUND_CODE" id="FUND_CODE">
+											<option value="">-</option>
+											<$loop rsFunds$>
+												<option value="<$#active.FUND_CODE$>"  <$if strEquals(#active.FUND_CODE, #local.currentFund)$>selected<$endif$>><$#active.FUND_CODE$></option>
+											<$endloop$>
+										</select>
+									</td>
+									<td align="center">
+										<input type="submit" name="submitDate" id="submitDate" value="Find"/>
+									</td>
+								</tr>
+							</table>
+						</form>
+					<br/>	
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Unmatched Instructions</h3>
+					<p>Match DICONDINS, BNKCONDINS to PREADVICE. Left over DICONDINS will be converted to BNKCONDINS.</p>
+					
+					<form name="ProcessBatch" id="ProcessBatch" method="POST" onsubmit="return checkAndPopulateMatches()">
+					<input type="hidden" name="IdcService" 	value="CCLA_CP_PROCESS_PENDING_DICONDIN" /><$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="<$HttpCgiPath$>?IdcService=CCLA_CP_OUTSTANDING_DICONDIN<$include add_idc_token_to_url$>" />
+					<input type="hidden" name="instrMatches" id="instrMatches" value="" />
+					<input type="hidden" name="pendingDicondinList" id="pendingDicondinList" value="" />
+
+					
+					<input type="hidden" name="persist" id="persist" value="1" />
+					<table class="transbatch-table" cellspacing="0" cellpadding="0">
+						<tr>
+							<th>DICONDIN, BNKCONDIN Instructions</th>
+							<th>PREADVICE Instructions</th>
+						</tr>	
+						<tr>
+							<td>
+								<!-- start transbatch instr -->
+								<div class="matching_panel">
+
+									<table class="transbatch-table" cellspacing="0" cellpadding="0">
+										<tr>
+											<th width="9%">ID</th>
+											<th width="17%">Type</th>
+											<th width="7%">Fund</th>
+											<th width="15%">Amount</th>
+											<th width="37%">Narrative</th>
+											<th width="15%">Match ID</th>
+										</tr>
+									<$loop rsPendingDiCondins$>
+										<tr>
+											<td>
+												<$#active.INSTRUCTION_ID$>
+												<input type="hidden" class="pendingDicondin" id="<$#active.INSTRUCTION_ID$>" name="<$#active.INSTRUCTION_ID$>" value="<$#active.INSTRUCTION_ID$>">
+											</td>
+											<td><$#active.INSTRUCTION_TYPE_NAME$></td>
+											<td><$#active.FUND_CODE$>&nbsp;</td>
+											<td><$formatNumber(#active.CASH,2)$></td>
+											<td><$newStr = strReplace(#active.NARRATIVE,"||||","<br/>")$>
+														<$newStr = strReplace(newStr,"|||","<br/>")$>
+														<$newStr = strReplace(newStr,"||","<br/>")$>
+														<$strReplace(newStr,"|","<br/>")$>&nbsp;</td>
+											<td>-</td>
+										</tr>
+									<$endloop$>
+									<$loop rsPendingBnkCondins$>
+										<tr>
+											<td><$#active.INSTRUCTION_ID$></td>
+											<td><$#active.INSTRUCTION_TYPE_NAME$>&nbsp;
+												<input class="ref_gen_retfund" type="checkbox" id="retfund<$#active.INSTRUCTION_ID$>" name="retfund<$#active.INSTRUCTION_ID$>" value="<$#active.INSTRUCTION_ID$>"></td>
+											<td><$#active.FUND_CODE$>&nbsp;</td>
+											<td><$formatNumber(#active.CASH,2)$></td>
+											<td><$newStr = strReplace(#active.NARRATIVE,"||||","<br/>")$>
+														<$newStr = strReplace(newStr,"|||","<br/>")$>
+														<$newStr = strReplace(newStr,"||","<br/>")$>
+														<$strReplace(newStr,"|","<br/>")$>&nbsp;</td>
+											<td>-</td>
+										</tr>
+									<$endloop$>
+									</table>
+								</div>
+								<!-- end transbatch instr -->
+							</td>
+							<td>
+								<!-- start pending instrs -->
+								<div class="matching_panel">
+									<table class="transbatch-table" cellspacing="0" cellpadding="0">
+										<tr>
+											<th width="9%">ID</th>
+											<th width="17%">Type</th>
+											<th width="7%">Fund</th>
+											<th width="15%">Amount</th>
+											<th width="37%">Narrative</th>
+											<th width="15%">Match ID</th>												
+										</tr>
+									<$exec rsFirst("rsPendingPreadvice")$>	
+									<$prevComm=""$>
+									<$loop rsPendingPreadvice$>
+										
+										<$if rsFindRowPrimary("rsChildPreadvices", #active.COMM_ID)$>
+											<$isChild="1"$>
+											<$currComm=#active.COMM_ID$>
+										<$else$>
+											<$isChild="0"$>
+											<$currComm=#active.COMM_ID$>												
+										<$endif$>
+										
+										<$if isTrue(isChild)$>
+											<$if not strEquals(prevComm, currComm)$>
+												<tr>
+													<td>&nbsp;</td>
+													<td>MULTIDOC</td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td>
+														<select class="batch-dicondin-ref-select" name="<$#active.COMM_ID$>" id="<$#active.COMM_ID$>">
+															<option value="">-</option>
+															<$exec rsFirst("rsPendingDiCondins")$>
+															<$loop rsPendingDiCondins$>
+																<option value='<$getValue("rsPendingDiCondins","INSTRUCTION_ID")$>'><$getValue("rsPendingDiCondins","INSTRUCTION_ID")$></option>
+															<$endloop$>
+															<$exec rsFirst("rsPendingBnkCondins")$>
+															<$loop rsPendingBnkCondins$>
+																<option value='<$getValue("rsPendingBnkCondins","INSTRUCTION_ID")$>'><$getValue("rsPendingBnkCondins","INSTRUCTION_ID")$></option>
+															<$endloop$>
+														</select>
+													</td>
+												</tr>	
+											<$endif$>
+											<$prevComm=currComm$>
+										<$else$>
+											<$prevComm=currComm$>
+										<$endif$>
+										
+										<$if isTrue(isChild)$>
+										<tr>
+											<td colspan="6">
+												&nbsp;&nbsp;&nbsp;&nbsp;<b>ID:</b><$#active.INSTRUCTION_ID$>,  <b>Type:</b><$#active.INSTRUCTION_TYPE_NAME$>, <b>Fund:</b><$#active.FUND_CODE$>,  <b>Amount:</b><$#active.CASH$> <$#active.NARRATIVE$>
+												<input class="child_dicondin-ref-select<$#active.COMM_ID$>" type="hidden" id="<$#active.INSTRUCTION_ID$>" name="<$#active.INSTRUCTION_ID$>" value=""> 	
+											</td>
+										</tr>
+										<$else$>
+										<$currentValue = #active.CASH$>
+										
+										<tr>
+											<td><$#active.INSTRUCTION_ID$></td>
+											<td><$#active.INSTRUCTION_TYPE_NAME$></td>
+											<td><$#active.FUND_CODE$>&nbsp;</td>
+											<td><$currentValue$></td>
+											<td><$newStr = strReplace(#active.NARRATIVE,"||||","<br/>")$>
+														<$newStr = strReplace(newStr,"|||","<br/>")$>
+														<$newStr = strReplace(newStr,"||","<br/>")$>
+														<$strReplace(newStr,"|","<br/>")$>&nbsp;</td>
+											<td>
+												<select class="dicondin-ref-select" name="<$#active.INSTRUCTION_ID$>" id="<$#active.INSTRUCTION_ID$>">
+													<option value="">-</option>
+													<$exec rsFirst("rsPendingDiCondins")$>
+													<$loop rsPendingDiCondins$>
+														<$pendingAmount = getValue("rsPendingDiCondins","CASH")$>
+														<$if strEquals(pendingAmount, currentValue)$>
+															<option value='<$getValue("rsPendingDiCondins","INSTRUCTION_ID")$>'><$getValue("rsPendingDiCondins","INSTRUCTION_ID")$></option>
+														<$endif$>
+													<$endloop$>
+													<$exec rsFirst("rsPendingBnkCondins")$>
+													<$loop rsPendingBnkCondins$>
+														<$pendingAmount = getValue("rsPendingBnkCondins","CASH")$>
+														<$if strEquals(pendingAmount, currentValue)$>
+															<option value='<$getValue("rsPendingBnkCondins","INSTRUCTION_ID")$>'><$getValue("rsPendingBnkCondins","INSTRUCTION_ID")$></option>
+														<$endif$>
+													<$endloop$>
+												</select>
+											</td>
+										</tr>
+										<$endif$>
+									<$endloop$>
+									</table>
+								</div>
+								<!-- end pending instr -->
+							</td>
+						</tr>
+					</table>
+				<div style="padding-top:5px"></div>
+				
+				<input type="button" name="goBack" id="goBack" value="Back To Listings" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_TRANSBATCH_LISTING<$include add_idc_token_to_url$>'"/>
+				<input type="submit" name="processPendingDicondin" id="processPendingDicondin" value="Process Pending Instructions"/>
+				<input type="button" name="generateRetFunds" id="generateRetFunds" value="Generate RETFUNDS"/>
+
+				</form>
+			<$include orangeContainer_bottom$>
+		
+		</div>
+	</div>
+				
+</body></html>

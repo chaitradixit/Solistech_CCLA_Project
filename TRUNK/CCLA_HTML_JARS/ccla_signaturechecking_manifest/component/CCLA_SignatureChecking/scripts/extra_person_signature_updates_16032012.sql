@@ -1,0 +1,29 @@
+-- ********* PERSON_SIGNATURE table **********
+
+-- if already deployed you will need to change column name
+alter table PERSON_SIGNATURE rename column DOC_GUID to SOURCE_DOC_GUID;
+
+--Add SIG_DOC_GUID column to PERSON_SIGNATURE table
+ALTER TABLE PERSON_SIGNATURE
+ADD SIG_DOC_GUID varchar(20);
+
+-- Now update the person_signature table with the new guids
+UPDATE PERSON_SIGNATURE ps
+SET ps.SIG_DOC_GUID = ps.signature_docname  || ':1';
+
+-- Finally drop the old signature_docname row
+ALTER TABLE PERSON_SIGNATURE
+DROP COLUMN signature_docname;
+
+-- ********* COMM_SIGNATURE table **********
+
+-- drop and re-add constraints
+ALTER TABLE COMM_SIGNATURE DROP CONSTRAINT COMM_SIGNATURE_UQ;
+ALTER TABLE COMM_SIGNATURE ADD CONSTRAINT COMM_SIGNATURE_UQ UNIQUE (PERSON_ID, COMM_SIGNATURE_ID,DOC_GUID);
+ALTER TABLE COMM_SIGNATURE DROP CONSTRAINT COMM_SIGNATURE_SRC_CHK;
+ALTER TABLE COMM_SIGNATURE ADD CONSTRAINT COMM_SIGNATURE_SRC_CHK CHECK (NOT (DOC_GUID IS NULL AND COMM_ID IS NULL));
+
+-- drop the old doc_id row
+ALTER TABLE COMM_SIGNATURE DROP COLUMN DOC_ID;
+
+

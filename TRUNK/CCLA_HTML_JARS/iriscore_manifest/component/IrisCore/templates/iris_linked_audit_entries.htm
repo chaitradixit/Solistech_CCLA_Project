@@ -1,0 +1,33 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+	<$include iris_styles$>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<title>
+	Document notes
+	</title>
+
+<$include float_menu_header$>
+<$include linkeditems_searchandfilter_styles$>
+<$include notes_searchandfilter_js$>
+<$include iris_resolve_user_access$>
+
+<$include iris_linked_audit_entries_extra$>
+
+<$include doc_listing_styles$>
+
+</head>
+
+<body <$include iris_body_def_internal$> <$if MSIE$>style="width:97%"<$endif$> class="iframe_body">
+	  
+  <$linkedDocType="LinkedNote"$>
+  <$customSearchScript = "performLinkedItemSearch"$>
+	
+  <div style="padding: 2px;">
+  	<$include iris_linked_audit_entries_table$>  	
+		<$include linkednote_delete_form$>
+	</div>
+		
+</body>
+</html>

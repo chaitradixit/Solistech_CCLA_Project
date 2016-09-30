@@ -1,0 +1,356 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_CommProcessing htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<@dynamichtml ccla_cp_instruction_id_display@>
+
+	<a href="?IdcService=CCLA_CP_INSTRUCTION_INFO<$include add_idc_token_to_url$>&INSTRUCTION_ID=<$#active.INSTRUCTION_ID$>"><$#active.INSTRUCTION_ID$></a>
+
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_type_id_display@>
+	
+	<$#active.INSTRUCTION_TYPE_NAME$>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_date_added_display@>
+
+	<$formatDateWithPattern(#active.DATE_ADDED, "dd/MM/yy HH:mm")$>
+
+<@end@>
+
+<@dynamichtml ccla_cp_comm_source_id_display@>
+	
+	<$#active.COMM_SOURCE_NAME$>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_status_id_display@>
+	
+	<$#active.INSTRUCTION_STATUS_NAME$>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_accountnumber_display@>
+	
+	<$if #active.ACCOUNT_ID$>
+		<a href="?IdcService=CCLA_CS_ACCOUNT_INFO<$include add_idc_token_to_url$>&ACCOUNT_ID=<$#active.ACCOUNT_ID$>"><$strLeftFill(#active.ACCOUNTNUMBER, "0", 8)$></a>
+	<$endif$>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_suspended_display@>
+	
+	<$if #active.IS_SUSPENDED like "1"$>
+		<span style="font-weight:bold;color:red">Yes</span>
+	<$else$>
+		No
+	<$endif$>
+	
+<@end@>
+
+
+<@dynamichtml ccla_cp_padded_client_number_display@>
+	
+	<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$#active.PADDED_CLIENT_NUMBER$></a>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_org_account_code_display@>
+	
+	<a href="?IdcService=CCLA_CS_ENTITY_INFO<$include add_idc_token_to_url$>&ORGANISATION_ID=<$#active.ORGANISATION_ID$>"><$#active.ORG_ACCOUNT_CODE$></a>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_organisation_name_display@>
+	
+	<span style="font-size:0.8em"><$#active.ORGANISATION_NAME$></span>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_ucm_batch_ref_display@>
+
+	<a href="?IdcService=DOC_APPROVAL<$include add_idc_token_to_url$>&bundleRef=<$#active.UCM_BATCH_REF$>"><$#active.UCM_BATCH_REF$></a>
+
+<@end@>
+
+<@dynamichtml ccla_cp_spp_batch_ref_display@>
+
+	<a href="?IdcService=CCLA_CP_INSTRUCTION_LISTING<$include add_idc_token_to_url$>&sppBatchRef=<$#active.SPP_BATCH_REF$>"><$#active.SPP_BATCH_REF$></a>
+
+<@end@>
+
+
+<@dynamichtml ccla_cp_instruction_type_id_filter@>
+	
+	<select name="instructionTypeId" id="instructionTypeId" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>
+		
+		<$loop rsInstructionTypes$>
+			<option value="<$#active.INSTRUCTION_TYPE_ID$>" 
+					<$if #local.instructionTypeId like #active.INSTRUCTION_TYPE_ID$>selected<$endif$>><$#active.INSTRUCTION_TYPE_NAME$></option>
+		<$endloop$>
+		
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_status_id_filter@>
+	
+	<select name="instructionStatusId" id="instructionStatusId" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>
+		
+		<$loop rsInstructionStatuses$>
+			<option value="<$#active.INSTRUCTION_STATUS_ID$>" 
+					<$if #local.instructionStatusId like #active.INSTRUCTION_STATUS_ID$>selected<$endif$>><$#active.INSTRUCTION_STATUS_NAME$></option>
+		<$endloop$>
+		
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_is_suspended_filter@>
+	
+	<select name="isSuspended" id="isSuspended" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>
+		
+		<option value="0" <$if #local.isSuspended like "0"$>selected<$endif$>>No</option>	
+		<option value="1" <$if #local.isSuspended like "1"$>selected<$endif$>>Yes</option>
+		
+		
+	</select>
+	
+<@end@>
+
+<@dynamichtml ccla_cp_comm_source_filter@>
+	
+	<select name="commSourceId" id="commSourceId" class="sfSelect"onchange="SEARCHFILTER.submit()">
+		<option value=""></option>
+		
+		<$loop rsCommSources$>
+			<option value="<$#active.COMM_SOURCE_ID$>" 
+					<$if #local.commSourceId like #active.COMM_SOURCE_ID$>selected<$endif$>><$#active.COMM_SOURCE_NAME$></option>
+		<$endloop$>
+		
+	</select>
+	
+<@end@>
+<@dynamichtml ccla_cp_instruction_routing_module_id_filter@>	
+	<select name="moduleId" id="moduleId" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>		
+		<$loop rsModules$>
+			<option value="<$#active.MODULE_ID$>" 
+					<$if #local.moduleId like #active.MODULE_ID$>selected<$endif$>><$#active.MODULE_NAME$></option>
+		<$endloop$>		
+	</select>
+<@end@>
+<@dynamichtml ccla_cp_instruction_routing_module_id_display@>
+	<$#active.MODULE_NAME$>
+<@end@>
+<@dynamichtml ccla_cp_instruction_audit_action_id_filter@>	
+	<select name="instrAuditActionId" id="instrAuditActionId" class="sfSelect" onchange="SEARCHFILTER.submit()">
+		<option value=""></option>		
+		<$loop rsInstrAuditActions$>
+			<option value="<$#active.INSTR_AUDIT_ACTION_ID$>" 
+					<$if #local.instrAuditActionId like #active.INSTR_AUDIT_ACTION_ID$>selected<$endif$>><$#active.INSTR_AUDIT_ACTION_NAME$></option>
+		<$endloop$>		
+	</select>
+<@end@>
+<@dynamichtml ccla_cp_instruction_audit_action_id_display@>
+	<$#active.INSTR_AUDIT_ACTION_NAME$>
+<@end@>
+
+
+<@dynamichtml ccla_cp_display_all_modules_info@>
+<$if #active.IsDebug$>ccla_cp_display_all_modules_info<$endif$>
+
+	<div class='ccla_cs_panel_header'>
+		Module Details
+	</div>
+
+	<$if rsAllModulesInfo$>
+		<$loop rsAllModulesInfo$>
+		<div class='ccla_cs_panel_content'>
+						
+			<table class="routingModuleTable" width="100%">
+				<tr>
+					<td width="100%" valign="top">
+				
+						<h3 class="ccla_data_panel_header cs-float-left"><$rsAllModulesInfo.MODULE_NAME$>&nbsp;</h3>
+						<span class="cs-float-right"><img  title="edit" class="pointer" src="images/ccla/edit.png" onclick="openPopup('?IdcService=CCLA_CP_EDIT_ROUTING_MODULE<$include add_idc_token_to_url$>&MODULE_ID=<$rsAllModulesInfo.MODULE_ID$>');"/></span>
+						
+						<table class="ccla-table" width="100%">
+							<tr>
+								<th>Execution order</th><th>Listen status</th><th>Skip status</th><th>Entry Status</th><th>Pass Status</th><th>Fail status</th><th>Enabled</th>
+							</tr>
+							<tr>
+								<td><$rsAllModulesInfo.EXECUTION_ORDER$></td>
+								<td><$#active.LISTEN_STATUS_NAME$>&nbsp;</td>
+								<td><$#active.SKIP_STATUS_NAME$>&nbsp;</td>
+								<td><$#active.ENTRY_STATUS_NAME$>&nbsp;</td>
+								<td><$#active.PASS_STATUS_NAME$>&nbsp;</td>
+								<td><$#active.FAIL_STATUS_NAME$>&nbsp;</td>
+								<td align="center"><$if #active.IS_ENABLED == 1$><img title="Enabled" src="images/ccla/tick.gif" /><$else$><img title="Disabled" src="images/ccla/cross.png" /><$endif$>
+							</tr>
+						</table>
+					
+					</td>
+				</tr>
+			</table>
+		
+		</div>
+		<$endloop$>
+	<$else$>
+		No Modules Found
+	<$endif$>
+
+<@end@>
+
+<!-- Overriden from iriscore_resource.
+		 Adds a select element to the doc listing screen
+		 to control the types of documents being displayed -->
+<@dynamichtml ccla_cp_instruction_listing_inline_header@>
+	
+	  <div style="margin-top: 10px">
+		
+		<table>
+			<tr>
+				<td>
+					<input type=checkbox name="useExtendedDataView" <$if useExtendedDataView$>checked=true<$endif$> onclick="document.forms['SEARCHFILTER'].submit();">Show extended data
+
+				</td>
+				<td valign="top">
+					<input type="submit" class="submitLink" value="Search" style="margin-left: 10px"/>
+				</td>
+			</tr>
+		</table>
+		
+	</div>
+
+<@end@>
+
+<@dynamichtml ccla_cp_instruction_status_select@>
+<$if #active.IsDebug$>ccla_cp_instruction_status_select<$endif$>
+	<div class="moduleValue">
+	<label for="<$optionName$>"><$labelText$>:</label>
+	<select name="<$optionName$>" >
+	<option></option>
+		<$selectedValue = getValue("rsModuleInfo",optionName)$>
+		<$loop rsInstructionStatuses$>
+			<option value="<$rsInstructionStatuses.INSTRUCTION_STATUS_ID$>" <$if #active.selectedValue==rsInstructionStatuses.INSTRUCTION_STATUS_ID$>selected=selected<$endif$> /><$rsInstructionStatuses.INSTRUCTION_STATUS_NAME$></option>
+		<$endloop$>
+	</select>
+	</div>
+	<div class="cs-clear-both"></div>
+<@end@>
+
+<@dynamichtml ccla_cp_applicable_instruction_data@>
+	
+	<$if INSTRUCTION_ID$>
+		[[% Fetch applied data for the given Instruction ID %]]
+		<$executeService("CCLA_CP_INSTRUCTION_INFO")$>
+		
+		<$if not rsInstruction$>
+			<$instructionNotFound=1$>
+		<$endif$>
+		
+	<$endif$>
+
+	<$if instructionNotFound$>
+		<h3 class="ccla_data_panel_header">Error fetching data for Instruction ID <$INSTRUCTION_ID$></h3>
+	<$else$>
+	
+		<$if INSTRUCTION_TYPE_ID$>
+			<$executeService("CCLA_CP_GET_APPLICABLE_INSTR_DATA_BY_TYPE")$>
+			
+			<$if rsApplicableDataExt$>
+				<h3 class="ccla_data_panel_header">Instruction Data</h3>
+				
+				<table class="ccla-table">
+				
+					<$loop rsApplicableDataExt$>
+						<tr>
+							<th><$#active.INSTRUCTION_DATA_NAME$> <$if strEquals(#active.IS_OPTIONAL, "0")$>*<$endif$></th>
+							<td><$#active.INSTRUCTION_DATA_TYPE$></td>
+							<td>
+								[[% Determine current value, if applicable %]]
+								<$thisDataId = #active.INSTRUCTION_DATA_ID$>
+								<$thisDataValue = ""$>
+								
+								<$if rsFirst("rsInstructionDataApplied")$>
+									<$loop rsInstructionDataApplied$>
+										<$if thisDataId == #active.INSTRUCTION_DATA_ID$>		
+											<$thisDataValue = #active.INSTRUCTION_VALUE$>
+											<$break$>
+										<$endif$>
+										
+									<$endloop$>
+								<$endif$>
+							
+								<$if strEquals(#active.INSTRUCTION_DATA_TYPE,"BOOL")$>
+									<select name="<$#active.INSTRUCTION_DATA_NAME$>" id="<$#active.INSTRUCTION_DATA_NAME$>" <$if strEquals(#active.IS_OPTIONAL, "0")$>class="instrDataMand"<$endif$>>
+										<$if strEquals(#active.IS_OPTIONAL, "1")$><option value="">-</option><$endif$>
+										<option value="0" <$if #local.thisDataValue like "0"$>selected<$endif$> >False</option>
+										<option value="1" <$if #local.thisDataValue like "1"$>selected<$endif$> >True</option>
+									</select>	
+								<$else$>
+									<input 	type="text" 
+											name="<$#active.INSTRUCTION_DATA_NAME$>" 
+											id="<$#active.INSTRUCTION_DATA_NAME$>"
+
+											value="<$#local.thisDataValue$>"
+												
+											<$if strEquals(#active.IS_OPTIONAL, "0")$>class="instrDataMand"<$endif$> />
+								<$endif$>
+							</td>
+						</tr>
+					<$endloop$>
+					
+					<tr>
+						<td colspan="3">
+							<$if rsInstruction$>
+								<input type="submit" id="submitInstr" name="submitInstr" value="Update Instruction"/>
+							<$else$>
+								<input type="submit" id="submitInstr" name="submitInstr" value="Create Instruction"/>
+							<$endif$>
+						</td>
+					</tr>
+				</table>
+			<$endif$>
+		<$endif$>
+		
+	<$endif$>
+	
+<@end@>
+<@dynamichtml ccla_cp_transbatch_instruction_error@>
+
+	<$executeService("CCLA_CP_CREATE_TRANSBATCH")$>
+	
+	<$if rsError$>
+		<h3 class="ccla_data_panel_header">Instruction Error(s)</h3>
+		<p>Cannot create instructions from the transaction batch file. Please review the errors and correct the csv.</p>
+		<table class="ccla-table">
+			<tr>
+				<th>Line Number</th>
+				<th>Type</th>
+				<th>Message</th>
+			</tr>
+		<$loop rsError$>
+			<tr>
+				<td><$#active.LINE_NO$></td>
+				<td><$#active.TYPE$></td>
+				<td><$#active.MESSAGE$></td>
+			</tr>
+		<$endloop$>
+		</table>
+	<$endif$>
+<@end@>
+
+
+</body></html>

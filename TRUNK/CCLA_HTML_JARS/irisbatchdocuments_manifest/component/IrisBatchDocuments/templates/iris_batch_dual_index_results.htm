@@ -1,0 +1,125 @@
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Dual Indexing Results - bundle <$bundleRef$>
+	</title>
+	
+	<$include iris_styles$>
+	
+	<script type="text/javascript">
+		
+		function displayBundleDoc(docName) {
+			
+			if (window.opener) {
+				window.opener.location.assign
+				 ("?IdcService=DOC_APPROVAL&bundleRef=<$#local.bundleRef$>#_image," + docName);
+			}
+			
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+		<$include orangeContainer_top$>
+
+		<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+			<b>Dual Indexing Results - bundle <$bundleRef$></b>
+		</div>
+		
+		<div>
+			<$completedItemsOnly=1$>
+			<$executeService("IRIS_DUAL_INDEX_COMPARE_BUNDLE_DATA")$>
+			
+			<$if bundleDualIndexChecksPassed$>
+				All Dual Index checks passed, or havent been performed for this bundle.
+			<$endif$>
+			
+			<$if rsDualIndexMismatchedItems$>
+				
+				<p>
+					The second indexer has added or removed the following 
+					documents during the Validation step:
+				</p>
+				
+				<table border=1 cellpadding=5>
+					<tr>
+						<th>Content ID</th><th>Mismatch type</th>
+					</tr>
+				
+					<$loop rsDualIndexMismatchedItems$>
+						<tr>
+							<td>
+								<a href="javascript:window.opener.displayBundleDoc('<$#active.DOCNAME$>');"><$#active.DOCNAME$></a>
+							</td> 
+							<td><$#active.MISMATCH_TYPE$></td>
+						</tr>
+					<$endloop$>
+					
+				</table>
+				
+			<$endif$>
+			
+			<$if rsDualIndexFailedDocNames$>
+				
+				<p>
+					<$getValue("rsDualIndexFailedDocNames", "#numRows")$> items with mismatched field values:
+				</p>
+				
+				<table border=1 cellpadding=5>
+
+					<$loop rsDualIndexFailedDocNames$>
+						<tr>
+							<td>
+								<$getValue("rsDualIndexFailedDocNames", "#row") + 1$>: 
+								
+								<a href="javascript:window.opener.displayBundleDoc('<$#active.DOCNAME$>');"><$#active.DOCNAME$></a>
+								</td>
+							
+							<td>
+								<ul>
+									<$rsFieldsName = "rsMismatchedFields_" & #active.DOCNAME$>
+								
+									<$numRows = rsNumRows(rsFieldsName)$>
+									<$currentRow = 0$>
+									
+									<$loopwhile currentRow < numRows$>
+										<$exec rsSetRow(rsFieldsName, currentRow)$>
+										
+										<li>
+											<$getValue(rsFieldsName, "FIELD_NAME")$>: 
+											
+											'<$getValue(rsFieldsName, "BASE_VALUE")$>' -> '<$getValue(rsFieldsName, "NEW_VALUE")$>'
+										</li>
+										
+										<$currentRow = currentRow + 1$>
+									<$endloop$>
+								</ul>
+							</td>
+						</tr>
+						
+					<$endloop$>
+					
+				</table>
+				
+			<$endif$>
+		
+		</div>
+		
+		<$include orangeContainer_bottom$>
+		</div>
+		
+	</div>
+
+</body>
+</html>

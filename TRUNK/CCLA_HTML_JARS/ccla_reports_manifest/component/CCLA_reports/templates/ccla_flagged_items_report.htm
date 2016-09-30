@@ -1,0 +1,371 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Flagged Items Report
+	</title>
+
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<$include ccla_reports_styles$>
+	
+	<script type="text/javascript">
+	function doBulkRelease()
+	{
+	// get all checked checkboxes
+	var selAccounts = "";
+	var hasChecked = false;
+		
+		$(".flagged-checkbox").each( function() {
+			if ($(this).is(":checked")) {
+				hasChecked=true;
+				var thisAccountId = $(this).attr("name").substring(4);
+				
+				if (selAccounts.length > 0)
+					selAccounts += ",";
+				
+				selAccounts += thisAccountId;
+			}
+		});
+		
+		if (!hasChecked)
+		{
+			alert('Please select at least one bundle');
+			return false;
+		}
+		else
+		{
+		$("#updateList").val(selAccounts);
+		$("#frmBulkRelease").submit();
+
+		return true;
+		}
+		//return selAccounts;
+	// pass the id into a string
+	// pass string to hidden field
+	// submit form
+	
+	}
+	
+	</script>
+	
+</head>
+	
+<body>	
+			
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div class="flaggedItemsReportContainer grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					Flagged Items Report	
+				</div>
+				
+				<table cellspacing="0" cellpadding="4" class="IssueBlock" style="width: auto">
+					<tr>
+						<td width="200" class="job_jobNotStartedSharepoint sfResultCell">Total bundles currently flagged</td>
+						<td width="30" align="right" class="sfResultCell"><$rsFlaggedBundles.#numRows$></td>
+					</tr>
+				</table>
+				
+				<form name="frmBulkRelease" id="frmBulkRelease" method="POST">
+					<input type="hidden" name="updateList" id="updateList" value="">	
+					<$include add_idc_token_to_form$>
+					<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_FLAGGED_ITEMS_REPORT<$include add_idc_token_to_url$>">
+					<input type="hidden" name="IdcService" value="CCLA_UNFLAG_MULTI_BUNDLE">
+				</form>
+		
+				<$if not startDate$>
+					<$startDate = formatDateOnly(dateCurrent(-6))$>
+				<$endif$>
+				
+				<$if not endDate$>
+					<$endDate = formatDateOnly(dateCurrent(1))$>
+				<$endif$>
+			
+				<$if false$>
+					<$executeService("ECS_Q_FLAGGED_BUNDLES_AUDIT")$>
+
+					<br/>
+					
+					<div class="ccla_cs_panel_content">
+						<form>
+							<input type="hidden" name="IdcService" value="CCLA_FLAGGED_ITEMS_REPORT" />
+							<$include add_idc_token_to_form$>
+							<table>
+								<tr>
+									<td>Start date:</td>
+									<td>
+										<input type="text" name="startDate" value="<$#local.startDate$>" />
+									</td>
+								</tr>
+								<tr>
+									<td>End date:</td>
+									<td>
+										<input type="text" name="endDate" value="<$#local.endDate$>" />
+										<input type="submit" value="Go" />
+									</td>
+								</tr>
+							</table>
+							
+						</form>
+						
+						<br/>
+						
+						<$flagCount = 0, incompleteCount = 0, completedCount = 0$>
+						
+						<$loop rsFlaggedBundlesAudit$>
+							<$if #active.CURRENT_BUNDLE_STATUS like "Flagged"$>
+								<$flagCount = flagCount + 1$>
+							<$elseif #active.CURRENT_BUNDLE_STATUS like "Completed"$>
+								<$incompleteCount = incompleteCount + 1$>
+							<$else$>
+								<$completedCount = completedCount + 1$>
+							<$endif$>
+						<$endloop$>
+						
+						<table cellspacing="0" cellpadding="4" class="IssueBlock" style="width: auto">
+							<tr>
+								<td width="150" class="job_jobNotStartedSharepoint sfResultCell">Currently flagged</td>
+								<td width="30" class="sfResultCell"><$flagCount$></td>
+							</tr>
+							<tr>
+								<td class="job_jobStarted sfResultCell">Flagged, completed</td>
+								<td class="sfResultCell"><$completedCount$></td>
+							</tr>
+							<tr>
+								<td class="job_jobNotStarted sfResultCell">Unflagged, incomplete</td>
+								<td class="sfResultCell"><$incompleteCount$></td>
+							</tr>
+							<tr>
+								<td class="sfResultCell">Total flag actions</td>
+								<td class="sfResultCell"><$rsFlaggedBundlesAudit.#numRows$></td>
+							</tr>
+						</table>
+						
+						<br/>
+						
+						<table class="IssueBlock" cellspacing="0" cellpadding="4">
+							<tr class="sfHeaderRow">
+								<th class="sfHeader_start" width="15%">Flag date</th>
+								<th class="sfHeader_mid" width="12%">Bundle ref</th>
+								<th class="sfHeader_mid" width="15%">Bundle status</th>
+								<th class="sfHeader_mid" width="12%">Document ID</th>
+								<th class="sfHeader_mid" width="10%">Document class</th>
+								<th class="sfHeader_mid" width="16%">Flag user</th>
+								<th class="sfHeader_end">Flag reason</th>
+							</tr>
+							
+							<$loop rsFlaggedBundlesAudit$>
+								<tr>
+									<td class="sfResultCell">
+										<$#active.FLAG_DATE$>
+									</td>
+									
+									<td class="sfResultCell">
+										<a href="<$HttpCgiPath & '?IdcService=DOC_APPROVAL' & inc('add_idc_token_to_url') & '&bundleRef=' & #active.BUNDLE_REF$>#_image,<$#active.FLAG_DOCNAME$>"><$#active.BUNDLE_REF$></a>
+									</td>
+										
+										<$if #active.CURRENT_BUNDLE_STATUS like "Flagged"$>
+											<$cellClass = "job_jobNotStartedSharepoint"$>
+										<$elseif #active.CURRENT_BUNDLE_STATUS like "Completed"$>
+											<$cellClass = "job_jobStarted"$>
+										<$else$>
+											<$cellClass = "job_jobNotStarted"$>
+										<$endif$>
+										
+									<td class="sfResultCell <$cellClass$>">	
+										<$#active.CURRENT_BUNDLE_STATUS$>
+									</td>
+									
+									<td class="sfResultCell">
+										<a 	title="Click to view metadata snapshot from when the item was flagged"
+											href="javascript:openPopup('?IdcService=CCLA_VIEW_METADATA_SNAPSHOT<$include add_idc_token_to_url$>&DOCMETA_AUDIT_ID=<$#active.DOCMETA_AUDIT_ID$>');"><$#active.FLAG_DOCNAME$></a>
+									</td>
+									<td class="sfResultCell"><$#active.FLAG_DOC_CLASS$>&nbsp;</td>
+									<td class="sfResultCell"><$#active.FLAG_USER$></td>
+									<td class="sfResultCell"><$#active.FLAG_REASON$></td>
+								</tr>
+							<$endloop$>
+							
+						</table>
+					
+					</div>
+				
+				<$endif$>
+				
+			<$include orangeContainer_bottom$>
+
+			<$include orangeContainer_top$>
+			
+				<$SF_UseDatabaseSearch=1$>
+				<$SF_PreventPaging=1$>
+				<$SF_QueryTable="V_FLAGGED_BUNDLES"$>
+				
+				<$if not sf$>
+					<$sf="FLAG_DATE"$>
+					<$so="DESC"$>
+				<$endif$>
+				
+				<$if #local.startDate$>
+					<$nodeSearchQuery = "(FLAG_DATE > `" & formatDateWithPattern(startDate,SF_SEARCHDATEFORMAT) & " 00:00:00`) "$>
+				<$endif$>
+				
+				<$if #local.endDate$>
+					<$if nodeSearchQuery$>
+						<$nodeSearchQuery = nodeSearchQuery & " <and> "$>
+					<$endif$>
+					
+					<$nodeSearchQuery = #local.nodeSearchQuery & "(FLAG_DATE < `" & formatDateWithPattern(endDate,SF_SEARCHDATEFORMAT) & " 00:00:00`) "$>
+				<$endif$>
+				
+				<$include iris_sf_sort_images$>
+		
+				<$custTableAttrs="class='IssueBlock' cellpadding='4' cellspacing='0' width='100%' border='0' bgcolor='#F6F6F4'"$>
+				<$custColumnHeaderEval="<$if columnCounter==0$> class='sfHeader_start' <$elseif columnCounter >= (totalColumns-1)$> class='sfHeader_end' <$else$> class='sfHeader_mid' <$endif$> height=40 cellpadding=1"$>
+				
+				<$SF_DISPLAYADVSEARCHLINK=""$>
+				
+				<$hideLineBreak=1$>
+				<$hideInfoLink="Y"$>
+
+				<$displayPagingOptions="N"$>
+				<$displayPaginator="N"$>
+
+				<$advSearchBackgroundColour="#FFFFFF"$>
+				<$advSearchDisplay_pre='orangeContainer_top'$>
+				<$advSearchDisplay_after='orangeContainer_bottom'$>
+				
+				<$customIncludeFieldScript = "ccla_flagged_items_results_header"$>
+
+				<$nodeFilterFieldNames="SELECT_COL,SCAN_DATE_COL,PROC_DATE_COL,FLAG_DATE_COL,FLAG_TIME_COL,BUNDLE_REF_COL,BUNDLE_STATUS_COL,BUNDLE_PRIORITY_COL,FLAG_DOCNAME_COL,FLAG_DOC_CLASS_COL,FLAG_DOC_FUND_COL,FLAG_USER_COL,FLAG_REASON_COL,LAST_USER_COL"$>
+				<$nodeFilterFieldWidth="4,8,6,6,4,7,8,4,10,8,5,10,12,8"$>
+				
+				<$QueryFieldList="SELECT_COL,SCAN_DATE_COL,PROC_DATE_COL,BUNDLE_REF_COL,BUNDLE_STATUS_COL,BUNDLE_PRIORITY_COL,FLAG_DOCNAME_COL,FLAG_DOC_CLASS_COL,FLAG_DOC_FUND_COL,FLAG_USER_COL,FLAG_REASON_COL,LAST_USER_COL"$>	
+				
+				<$suppressSortLinks="FLAG_TIME_COL,SELECT_COL"$>
+				
+				<$PARAMETERSLIST=#env.PARAMETERSLIST & ",startDate,endDate"$>
+				
+				<$BUNDLE_STATUS_COL_CustomFilterScript="ccla_cs_flag_bundle_status_filter"$>
+				
+				<$SCAN_DATE_COL_CustomIncludeScript="ccla_cs_flag_scan_date_display"$>
+				<$SELECT_COL_CustomIncludeScript="ccla_cs_flag_select_col_display"$>				
+				<$FLAG_DATE_COL_CustomIncludeScript="ccla_cs_flag_date_display"$>
+				<$FLAG_TIME_COL_CustomIncludeScript="ccla_cs_flag_time_display"$>
+				<$PROC_DATE_COL_CustomIncludeScript="ccla_cs_flag_proc_date_display"$>
+				<$FLAG_DOCNAME_COL_CustomIncludeScript="ccla_cs_flag_docname_display"$>
+				<$BUNDLE_REF_COL_CustomIncludeScript="ccla_cs_flag_bundleref_display"$>
+				<$BUNDLE_STATUS_COL_CustomIncludeScript="ccla_cs_flag_bundle_status_display"$>
+				<$FLAG_USER_COL_CustomIncludeScript="ccla_cs_display_flag_user"$>
+				
+				<$SF_SELECT_COL_caption="<input type='checkbox' name='chk_all' onclick='checkAll();'>"$>
+				
+				<$SF_SCAN_DATE_COL_caption="Scan date"$>
+				<$SF_SCAN_DATE_COL_type="none"$>
+				<$SF_SCAN_DATE_COL_shortname="scanDate"$>
+				<$SF_SCAN_DATE_COL_list="none"$>
+				<$SF_SCAN_DATE_COL_idcname="SCAN_DATE"$>
+				<$SF_SCAN_DATE_COL_search="date"$>
+				
+				<$SF_PROC_DATE_COL_caption="Process date"$>
+				<$SF_PROC_DATE_COL_type="none"$>
+				<$SF_PROC_DATE_COL_shortname="procDate"$>
+				<$SF_PROC_DATE_COL_list="none"$>
+				<$SF_PROC_DATE_COL_idcname="FLAG_DOC_PROC_DATE"$>
+				<$SF_PROC_DATE_COL_search="date"$>
+				
+				<$SF_FLAG_DATE_COL_caption="Flag date"$>
+				<$SF_FLAG_DATE_COL_type="none"$>
+				<$SF_FLAG_DATE_COL_shortname="flagDate"$>
+				<$SF_FLAG_DATE_COL_list="none"$>
+				<$SF_FLAG_DATE_COL_idcname="FLAG_DATE"$>
+				<$SF_FLAG_DATE_COL_search="date"$>
+				
+				<$SF_FLAG_TIME_COL_caption="Flag time"$>
+				<$SF_FLAG_TIME_COL_type="none"$>
+				<$SF_FLAG_TIME_COL_shortname="flagDate"$>
+				<$SF_FLAG_TIME_COL_list="none"$>
+				<$SF_FLAG_TIME_COL_idcname="FLAG_TIME"$>
+				<$SF_FLAG_TIME_COL_search="date"$>
+				
+				<$SF_BUNDLE_REF_COL_caption="Bundle Ref"$>
+				<$SF_BUNDLE_REF_COL_type="input"$>
+				<$SF_BUNDLE_REF_COL_shortname="bundleRef"$>
+				<$SF_BUNDLE_REF_COL_list="none"$>
+				<$SF_BUNDLE_REF_COL_idcname="BUNDLE_REF"$>
+				<$SF_BUNDLE_REF_COL_search="matches"$>
+				
+				<$SF_BUNDLE_STATUS_COL_caption="Bundle status"$>
+				<$SF_BUNDLE_STATUS_COL_type="custom"$>
+				<$SF_BUNDLE_STATUS_COL_shortname="bundleStatus"$>
+				<$SF_BUNDLE_STATUS_COL_list="none"$>
+				<$SF_BUNDLE_STATUS_COL_idcname="CURRENT_BUNDLE_STATUS"$>
+				<$SF_BUNDLE_STATUS_COL_search="matches"$>
+				
+				<$SF_BUNDLE_PRIORITY_COL_caption="Priority"$>
+				<$SF_BUNDLE_PRIORITY_COL_type="input"$>
+				<$SF_BUNDLE_PRIORITY_COL_shortname="priority"$>
+				<$SF_BUNDLE_PRIORITY_COL_list="none"$>
+				<$SF_BUNDLE_PRIORITY_COL_idcname="BUNDLE_PRIORITY"$>
+				<$SF_BUNDLE_PRIORITY_COL_search="int"$>
+				
+				<$SF_FLAG_DOCNAME_COL_caption="Doc ID"$>
+				<$SF_FLAG_DOCNAME_COL_type="input"$>
+				<$SF_FLAG_DOCNAME_COL_shortname="flagDocName"$>
+				<$SF_FLAG_DOCNAME_COL_list="none"$>
+				<$SF_FLAG_DOCNAME_COL_idcname="FLAG_DOCNAME"$>
+				<$SF_FLAG_DOCNAME_COL_search="matches"$>
+				
+				<$SF_FLAG_DOC_CLASS_COL_caption="Doc Class"$>
+				<$SF_FLAG_DOC_CLASS_COL_type="input"$>
+				<$SF_FLAG_DOC_CLASS_COL_shortname="flagDocClass"$>
+				<$SF_FLAG_DOC_CLASS_COL_list="none"$>
+				<$SF_FLAG_DOC_CLASS_COL_idcname="FLAG_DOC_CLASS"$>
+				<$SF_FLAG_DOC_CLASS_COL_search="matches"$>
+				
+				<$SF_FLAG_DOC_FUND_COL_caption="Doc Fund"$>
+				<$SF_FLAG_DOC_FUND_COL_type="input"$>
+				<$SF_FLAG_DOC_FUND_COL_shortname="flagDocFund"$>
+				<$SF_FLAG_DOC_FUND_COL_list="none"$>
+				<$SF_FLAG_DOC_FUND_COL_idcname="FLAG_DOC_FUND"$>
+				<$SF_FLAG_DOC_FUND_COL_search="matches"$>
+				
+				<$SF_FLAG_USER_COL_caption="User"$>
+				<$SF_FLAG_USER_COL_type="input"$>
+				<$SF_FLAG_USER_COL_shortname="flagUser"$>
+				<$SF_FLAG_USER_COL_list="none"$>
+				<$SF_FLAG_USER_COL_idcname="FLAG_USER"$>
+				<$SF_FLAG_USER_COL_search="matches"$>
+				
+				<$SF_FLAG_REASON_COL_caption="Flag reason"$>
+				<$SF_FLAG_REASON_COL_type="input"$>
+				<$SF_FLAG_REASON_COL_shortname="flagReason"$>
+				<$SF_FLAG_REASON_COL_list="none"$>
+				<$SF_FLAG_REASON_COL_idcname="FLAG_REASON"$>
+				<$SF_FLAG_REASON_COL_search="matches"$>
+				
+				<$SF_LAST_USER_COL_caption="Review User"$>
+				<$SF_LAST_USER_COL_type="input"$>
+				<$SF_LAST_USER_COL_shortname="reviewUser"$>
+				<$SF_LAST_USER_COL_list="none"$>
+				<$SF_LAST_USER_COL_idcname="LAST_USER"$>
+				<$SF_LAST_USER_COL_search="substring"$>				
+				
+				<$include ecsSearchAndFilter$>
+			
+			<$include orangeContainer_bottom$>
+			
+		</div>
+		
+	</div>
+	
+	
+</body>
+</html>

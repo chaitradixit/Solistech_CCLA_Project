@@ -1,0 +1,19 @@
+<?hda version="7.5.1 (050317)" jcharset=Cp1252 encoding=iso-8859-1?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm:ss [zzz]}!tEurope/London
+@end
+@ResultSet ECS_PopupMenus_
+5
+name
+class
+formtype
+filename
+description
+ECS_POPUP_DIV_EXAMPLE
+Pages
+Form
+ecs_popup_div_example.htm
+Example template for testing pop-up divs
+@end
+

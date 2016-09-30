@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			Campaign Enrolment Administration
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 800px'>
+			
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Campaign Enrolment Administration
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					
+					<h3 class="ccla_data_panel_header">
+						Bulk enrol organisations to campaign
+					</h3>
+				
+					<form method="post">
+						<input type="hidden" name="IdcService" value="CCLA_CS_ADD_ORGS_TO_CAMPAIGN" /><$include add_idc_token_to_form$>
+						
+						SQL Query (requires ORGANISATION_ID column values in response)
+						<br/>
+						<textarea name="queryText" style="width: 400px; height: 200px;"><$#local.queryText$></textarea>
+						<br/>
+						Campaign ID:
+						<br/>
+						<input type="text" name="CAMPAIGN_ID" value="<$#local.CAMPAIGN_ID$>" />
+						<br/>
+						<input type="submit" value="Enrol" />
+						
+						<$if #local.itemCount$>
+							<br>
+							<b><$itemCount$> items were added to the action queue.</b>
+						<$endif$>
+						
+						<br/>
+					</form>
+					
+					<br/>
+					
+					<h3 class="ccla_data_panel_header">
+						Bulk apply enrolment action
+					</h3>
+				
+					<form method="post">
+						<input type="hidden" name="IdcService" value="CCLA_CS_APPLY_BULK_ENROLMENT_ACTION" /><$include add_idc_token_to_form$>
+						
+						SQL Query (requires CAMPAIGN_ENROLMENT_ID column values in response):
+						<br/>
+						<textarea name="queryText" style="width: 400px; height: 200px;"><$#local.queryText$></textarea>
+						<br/>
+						Enrolment Action ID:
+						<br/>
+						<input type="text" name="ENROLMENT_ACTION_ID" value="<$#local.ENROLMENT_ACTION_ID$>" />
+						<br/>
+						<input type="submit" value="Apply action" />
+						
+						<$if #local.itemCount$>
+							<br>
+							<b><$itemCount$> items were added to the action queue.</b>
+						<$endif$>
+						
+						<br/>
+					</form>
+					
+				</div>
+				
+				<br/>
+				
+				<h3 class="ccla_data_panel_header">
+					Bulk generate forms
+				</h3>
+			
+				<form method="post">
+					<input type="hidden" name="IdcService" value="CCLA_CS_BULK_GENERATE_AND_PRINT_FORMS" /><$include add_idc_token_to_form$>
+					
+					SQL Query (requires ELEMENT_ID column values in response):
+					<br/>
+					<textarea name="queryText" style="width: 400px; height: 200px;"><$#local.queryText$></textarea>
+					<br/>
+					Form Type ID:
+					<br/>
+					<input type="text" name="FORM_TYPE_ID" value="<$#local.FORM_TYPE_ID$>" />
+					<br/>
+					<input type="submit" value="Generate forms" />
+					
+					<$if #local.itemCount$>
+						<br>
+						<b><$itemCount$> items were added to the action queue.</b>
+					<$endif$>
+					
+					<br/>
+				</form>
+				
+				<$include orangeContainer_bottom$>
+				
+			</div>
+		</div>
+	
+	</body>
+</html>

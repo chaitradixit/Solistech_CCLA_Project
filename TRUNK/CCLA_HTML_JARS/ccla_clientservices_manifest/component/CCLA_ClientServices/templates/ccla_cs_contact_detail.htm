@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<$if CONTACT_ID$>
+		<$executeService("CCLA_CS_GET_CONTACT_DETAIL")$>
+	<$endif$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$if CONTACT_ID$>
+			Update Contact Detail
+		<$else$>
+			Add new Contact Detail
+		<$endif$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+	<script type="text/javascript">
+		
+		var contactSubTypes = new Array();
+		
+		// Determines whether a new contact detail was just added.
+		var added = <$if added$>true<$else$>false<$endif$>;
+		
+		// Determines whether a new contact detail was just updated.
+		var updated = <$if updated$>true<$else$>false<$endif$>;
+		
+		var firstLoad = true;
+		
+		$(document).ready( function () {
+			// Load contact type - name mapping in js
+			
+			<$loop rsContactSubTypes$>
+				contactSubTypes.push(new ContactSubType("<$#active.METHOD_ID$>","<$#active.SUBMETHOD_ID$>","<$#active.SUBMETHOD_NAME$>"));
+			<$endloop$>
+			
+			$("#contactTypeSel").bind("change", function() { 
+				contactTypeUpdated(); 
+			});
+			
+			contactTypeUpdated();
+			contactSubTypeUpdated();
+			firstLoad = false;
+			
+			if (added || updated){
+				window.parent.refreshContactDetails();
+				window.parent.closePopup();
+			}
+		});
+		
+		function ContactSubType(typeId, subTypeId, label) {
+			this.typeId = typeId;
+			this.subTypeId  = subTypeId;
+			this.label  = label;
+		}
+		
+		// Triggered when the user changes the selected content type. Reloads
+		// the option list used for contact detail names.
+		function contactTypeUpdated() {
+			var selTypeId = $("#contactTypeSel").val();
+			
+			if (!firstLoad) {
+				// Don't remove the exsting contact name on the first page load!
+				$("#contactName").val("");
+			}
+			
+			var subTypeSel = document.getElementById("contactSubTypeSel");
+			
+			// remove all existing options
+			$("#contactSubTypeSel option").remove();
+			
+			// add emtpy option
+			var opt = document.createElement("option");
+			subTypeSel.options.add(opt);
+			
+			for (var i=0; i<contactSubTypes.length; i++) {
+		
+				// add all corresponding type name suggestions
+				if (contactSubTypes[i].typeId == selTypeId) {
+					var opt = document.createElement("option");
+				
+					var thisName = contactSubTypes[i].label;
+					opt.text = thisName;
+					opt.value = contactSubTypes[i].subTypeId;
+				
+					subTypeSel.options.add(opt);
+				}
+			}
+		}
+		
+		// DEPRECTATED
+		// When a new option is selected from the sub-type list,
+		// the value is copied into the contact name field.
+		function contactSubTypeUpdated() {
+			$("#contactSubTypeSel").val('<$#active.SUBMETHOD_ID$>');
+		}
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+			<div class='ccla_cs_panel_header'>
+				<$if CONTACT_ID$>
+					Update Contact Detail
+				<$else$>
+					Add new Contact Detail
+				<$endif$>
+			</div>
+			
+			<div class='ccla_cs_panel_content'>
+				
+				<$if added$>
+					<div class="message_panel info_icon">
+						New contact detail added.	
+					</div>
+				<$elseif updated$>	
+					<div class="message_panel info_icon">
+						Contact detail updated.	
+					</div>
+				<$endif$>
+				
+				<form method="POST">
+					<input type="hidden" name="RELATION_ID" value=""/>
+					<input type="hidden" name="ELEMENT_ID" 	value="<$#local.ELEMENT_ID$>" />
+				
+					<$if not CONTACT_ID$>
+						<!-- New contact. -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_ADD_CONTACT_DETAIL" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_CONTACT_DETAIL<$include add_idc_token_to_url$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&added=1" />
+						
+						<$include ccla_cs_contact_detail_display$>
+						
+					<$else$>
+						<!-- Existing contact. -->
+						<input type="hidden" name="IdcService" 	value="CCLA_CS_UPDATE_CONTACT_DETAIL" /><$include add_idc_token_to_form$>
+						<input type="hidden" name="CONTACT_ID"	value="<$#local.CONTACT_ID$>" />
+						
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_CONTACT_DETAIL<$include add_idc_token_to_url$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&CONTACT_ID=<$#local.CONTACT_ID$>&updated=1" />
+						
+						<$loop rsContactDetail$>
+							<$include ccla_cs_contact_detail_display$>
+						<$endloop$>
+						
+					<$endif$>
+
+				</form>
+				
+			</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

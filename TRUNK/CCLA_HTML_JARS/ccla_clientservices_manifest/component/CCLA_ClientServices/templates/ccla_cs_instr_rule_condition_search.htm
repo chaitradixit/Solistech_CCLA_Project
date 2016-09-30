@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Instruction Condition Search Results
+	</title>
+	
+	<$include ccla_cs_styles$>
+	<$include ecs_javascript_jquery_include$>	
+	<script type="text/javascript">
+	
+	function populateAndCheckForm(actionValue) {
+		
+		var formToUse = document.addConditions;
+		if (formToUse && document.getElementById('INSTRUCTION_CONDITIONS')) {
+			
+			var objInputs = document.getElementsByTagName('input');
+			for (var i=0; i<objInputs.length; i++){
+				if (objInputs[i].getAttribute('type')=='checkbox' 
+					&& objInputs[i].getAttribute('id').indexOf('cond')!=-1 
+					&& objInputs[i].checked)
+				{
+					if (document.getElementById('INSTRUCTION_CONDITIONS').value==null || document.getElementById('INSTRUCTION_CONDITIONS').value.length==0) {
+						document.getElementById('INSTRUCTION_CONDITIONS').value = objInputs[i].value;
+					} else {
+						document.getElementById('INSTRUCTION_CONDITIONS').value = document.getElementById('INSTRUCTION_CONDITIONS').value + ',' + objInputs[i].value;
+					}
+				} 
+			}	
+			
+			if (document.getElementById('INSTRUCTION_CONDITIONS').value) {
+				if (actionValue && actionValue=='Add as Rule Priority Conditions') {
+					window.parent.doAddMultiplePrioritiesCallBack(document.getElementById('INSTRUCTION_CONDITIONS').value);
+					window.parent.closePopup();				
+				} else {
+					window.parent.doAddMultipleConditionsCallBack(document.getElementById('INSTRUCTION_CONDITIONS').value);
+					window.parent.closePopup();
+				}
+				return true;
+			} else {
+				alert('You must select at least 1 condition');
+				return false;
+			}
+		} 
+		
+		alert('cannot find form object!');
+		return false;
+	}
+	</script>
+</head>
+
+<body class="popupBody">
+	<div id="popUpContainingDiv">
+			
+		<!--<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 900px'>
+		-->		
+				<$include orangeContainer_top$>
+				<div class='ccla_cs_panel_header'>
+					CCLA Instruction Condition Search Results
+				</div>
+				
+
+				<div class='ccla_cs_panel_content'>
+					
+					<$if rsConditions$>
+						<p>select the conditions to add to the rule</p>
+						<form id="addConditions" name="addConditions" method="POST" onsubmit="return populateAndCheckForm()" />
+						<input type="hidden" id="INSTRUCTION_CONDITIONS" name="INSTRUCTION_CONDITIONS" value="" />
+
+						<table border="1" cellpadding="3" cellspacing="0">
+						<tr>
+							<th width="25%">Description</th>
+							<th width="20%">Data Field</th>
+							<th width="10%">Operator</th>
+							<th width="15%">Check Value</th>
+							<th width="20%">Check Data Field</th>
+							<th width="10%">Select</th>
+						</tr>
+						<$loop rsConditions$>
+						<$datafieldId = #active.INSTRUCTION_DATA_ID$>
+						<$checkdatafieldId = #active.CHECK_INSTRUCTION_DATA_ID$>
+						<$operatorId = #active.OPERATOR_ID$>
+			
+						<tr>
+							<td align="center"><$#active.DESCRIPTION$></td>
+							<td align="center">
+								<$exec rsFirst(rsInstrData)$>
+								<$loop rsInstrData$>
+									<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), datafieldId)$>
+											<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+									<$endif$>
+								<$endloop$>
+							</td>
+							<td align="center">
+								<$exec rsFirst(rsOperator)$>
+								<$loop rsOperator$>
+									<$if strEquals(getValue("rsOperator", "OPERATOR_ID"), operatorId)$>
+										<$getValue("rsOperator", "OPERATOR_NAME")$>
+									<$endif$>
+								<$endloop$>
+							</td>
+							<td align="center"><$#active.CHECK_VALUE$>&nbsp;</td>
+							<td align="center">
+								<$exec rsFirst(rsInstrData)$>
+								<$loop rsInstrData$>
+									<$if strEquals(getValue("rsInstrData", "INSTRUCTION_DATA_ID"), checkdatafieldId)$>
+										<$getValue("rsInstrData", "INSTRUCTION_DATA_LABEL")$>
+									<$endif$>
+								<$endloop$>
+								&nbsp;
+							</td>
+							<td align="center">
+								<input type="checkbox" id="cond<$#active.INSTRUCTION_CONDITION_ID$>" name="cond<$#active.INSTRUCTION_CONDITION_ID$>" value="<$#active.INSTRUCTION_CONDITION_ID$>" />
+							</td>
+						</tr>							
+						<$endloop$>
+						<tr><td colspan="6" align="right">
+							<input type="button" value="Add as Rule Conditions" onclick="populateAndCheckForm(this.value)">
+							
+							<$if #local.IS_PRIORITY$>
+								<input type="button" value="Add as Rule Priority Conditions" onclick="populateAndCheckForm(this.value)">
+							<$endif$>
+						</td></tr>
+						</table>
+						</form>
+					<$else$>
+						No results found.
+					<$endif$>
+				</div>
+				<$include orangeContainer_bottom$>
+								
+			</div>
+	<!--		
+		</div>
+	</div>
+	-->
+</body>
+</html>
+	

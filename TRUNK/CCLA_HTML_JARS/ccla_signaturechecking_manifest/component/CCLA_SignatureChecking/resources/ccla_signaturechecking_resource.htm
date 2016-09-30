@@ -1,0 +1,760 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+CCLA_SignatureChecking htmlIncludeOrString
+</title>
+</head>
+<body>
+
+<!-- Start Signature Resources -->
+
+<@dynamichtml ccla_sc_sig_get_action_title@>
+	<$if #active.sigAction$>
+		<$if strEquals(#active.sigAction,"update") or strEquals(#active.sigAction,"updated")$>
+			Update Signature
+		<$elseif strEquals(#active.sigAction,"delete") or strEquals(#active.sigAction,"deleted")$>
+			Delete Signature
+		<$elseif strEquals(#active.sigAction,"add") or strEquals(#active.sigAction,"added")$>
+			Add Signature
+		<$endif$>
+	<$else$>
+		No Action Defined
+	<$endif$>
+<@end@>
+
+
+<@dynamichtml ccla_sc_sig_get_hidden_inputs@>
+
+	<$c="COMMON HIDDEN INPUTS"$>
+		<input type="hidden" name="dDocAuthor" 		value="<$dUser$>"/>	
+		<input type="hidden" name="dSecurityGroup"	value="public"/>	
+		<input type="hidden" name="dDocType" 		value="Signature"/>
+		<input type="hidden" name="dDocTitle" 		value="Signature for: <$#active.PERSON_ID$>"/>
+			<$include add_idc_token_to_form$>
+
+		<!-- Set by JavaScript. -->
+		<input type="hidden" name="sourceDocId"		value=""/>
+	
+	<$if strEquals(#active.sigAction,"update")$>
+		<input type="hidden" name="IdcService" 		value="CCLA_SC_SIG_MODIFY_SERVICE"/>
+		<input type="hidden" name="RedirectUrl" 	value="?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$><$include add_idc_token_to_url$>" />
+		
+		<$include ccla_sc_sig_get_sig_doc$>
+		<input type="hidden" name="sigDocGuid" 	value="<$rsSigDoc.SIG_DOC_GUID$>"/>
+		<input type="hidden" name="dID" 		value="<$rsSigDoc.dID$>"/>
+			
+	<$elseif strEquals(#active.sigAction,"delete")$>
+		<$include ccla_sc_sig_get_sig_doc$>
+		<input type="hidden" name="sigDocGuid" 	value="<$rsSigDoc.SIG_DOC_GUID$>"/>
+		
+		<input type="hidden" name="dID" 		value="<$rsSigDoc.dID$>"/>
+		<input type="hidden" name="IdcService" 		value="CCLA_SC_SIG_DELETE_SERVICE"/>
+		<input type="hidden" name="RedirectUrl" 	value="?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$>&amp;sigAction=deleted<$include add_idc_token_to_url$>" />
+	
+	<$elseif strEquals(#active.sigAction,"add")$>
+		<input type="hidden" name="xPersonId" 		value="<$#active.PERSON_ID$>"/>
+		<input type="hidden" name="IdcService" 		value="CCLA_SC_SIG_MODIFY_SERVICE"/>
+		<input type="hidden" name="RedirectUrl" 	value="?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$><$include add_idc_token_to_url$>" />
+	<$endif$>
+<@end@>
+
+
+<@dynamichtml ccla_sc_sig_get_sig_doc@>
+	<$executeService("CCLA_SC_GET_SIG_FOR_PERSON")$>
+<@end@>
+
+<@dynamichtml ccla_sc_sig_info_icon_styling_override@>
+<style>
+.info_icon{
+	background-position:4px 4px !important;
+}
+</style>
+<@end@>
+
+<@dynamichtml ccla_sc_sig_person_panel@>
+<$include ccla_sc_sig_info_icon_styling_override$>
+
+
+<script type="text/javascript">
+		
+		var postImage = function (personID,action) {
+			$("#uploadingMsg").show();
+			var obj = document.getElementById('paste-image');
+			var image =obj.getClipboardImageURL(personID,sourceDocId,action);
+				$("#uploadingMsg").hide();
+			if (image && image.indexOf("ERROR")<0) {
+				refreshSigPanel();
+			} else {
+				alert(image);
+			}
+		}
+
+</script>
+
+<div id="sigPanelDiv">	
+
+	<div class='ccla_cs_panel_header'>
+		Signature
+	</div>
+
+	<div class='ccla_cs_panel_content' id='ccla_cs_sig_panel_content'>
+		
+		<$include ccla_sc_sig_get_sig_doc$>
+		<$include ecs_javascript_popupCenter_include$>
+
+		<$if sigEdit == 1$> 
+			<div id="applet"></div>
+			<$include ccla_sc_sig_init_applet$>
+			<$if rsSigDoc$>
+				<$include ccla_sc_sig_get_sig_img$>
+				<div align="right"> 
+					<$c="Can not expire an image with the same date, CS not using seconds..."$>
+					<$if parseDate(rsSigDoc.LAST_UPDATED) != parseDate(CURRENT_DATE)$>
+					
+						<$if not #env.CCLA_SC_RequireSourceDocId$>
+							<$c="Allow signature image editing here, if source doc IDs aren't required"$>
+							<input type="button" value="Paste" onclick="postImage('<$rsSigDoc.SIG_DOC_GUID$>','update')" />
+							<input type="button" value="Update" onclick="popupCenter('?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$>&amp;sigAction=update&amp;dDocName=<$rsSigDoc.SIG_DOC_GUID$><$include add_idc_token_to_url$>','Update',620,200, false)"/>
+						<$endif$>
+						<input type="button" value="Delete" onclick="popupCenter('?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$>&amp;sigAction=delete<$include add_idc_token_to_url$>','Delete',620,200, false)"/>
+					<$else$> 
+						<div class="message_panel info_icon">
+							Please wait a few moments before deleting this signature. <a href="javascript:refreshSigPanel()">Click here</a> to refresh
+						</div>
+						
+						<$if not #env.CCLA_SC_RequireSourceDocId$>
+							<$c="Allow signature image editing here, if source doc IDs aren't required"$>
+							<input type="button" value="Paste" onclick="postImage('<$rsSigDoc.SIG_DOC_GUID$>','update')" />
+							<input type="button" value="Update" onclick="popupCenter('?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$>&amp;sigAction=update&amp;dDocName=<$rsSigDoc.SIG_DOC_GUID$><$include add_idc_token_to_url$>','Update',620,200, false)"/>
+						<$endif$>
+						
+					<$endif$>
+				</div>
+			<$else$>
+				<br/>
+				
+				<p class="no-info">No signatures for this person</p>
+				<div align="right">
+					<$if not #env.CCLA_SC_RequireSourceDocId$>
+						<$c="Allow signature image editing here, if source doc IDs aren't required"$>
+						<input type="button" value="Paste" onclick="postImage('<$#active.PERSON_ID$>','add')" />
+						<input type="button" value="Add" onclick="popupCenter('?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_MODIFY_SIGNATURE&amp;PERSON_ID=<$#active.PERSON_ID$>&amp;sigAction=add<$include add_idc_token_to_url$>','Add',620,200, false)"/>					
+					<$endif$>
+				</div>
+			<$endif$>
+		<$else$>
+			<$if rsSigDoc$>
+				<$include ccla_sc_sig_get_sig_img$>
+			<$else$>
+				<br/>
+				<p class="no-info">No signatures for this person</p>
+			<$endif$>
+		<$endif$>
+			<div id="uploadingMsg" style="display:none" class="message_panel info_icon">
+				Uploading Signature ... <img src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/ccla-ajax-spinner.gif" />
+			</div>
+	</div>
+</div>
+<@end@>
+
+<@dynamichtml ccla_sc_sig_close_text@>
+	<a href="javascript:window.close();">(close window)</a>
+<@end@>
+
+<@dynamichtml ccla_sc_sig_get_sig_img@>
+		<$docGuid = rsSigDoc.SIG_DOC_GUID$>
+		<$include ccla_cs_get_docname_from_docguid$>
+		<div style="width:770px;overflow-y:auto;overflow-x:auto"><img src="?IdcService=GET_FILE&dDocName=<$docName$>&RevisionSelectionMethod=Latest&rand=<$strGenerateRandom(5)$><$include add_idc_token_to_url$>"/></div>
+		</br>
+		<b>Uploaded on: </b><$rsSigDoc.LAST_UPDATED$>
+<@end@>
+
+
+<@dynamichtml ccla_sc_sig_person_update_panel@>
+<script type="text/javascript">
+
+	// Reloads the signature panel content on the info page
+	
+	function refreshSigPanel() {
+		
+		<$ if (#active.PERSON_ID) $>
+			
+		$.get("?IdcService=CCLA_CS_GET_INCLUDE&incName=ccla_sc_sig_person_panel&sigEdit=1&PERSON_ID=<$#active.PERSON_ID$><$include add_idc_token_to_url$>&ts=" + new Date().getTime(),
+			function(data) {
+				$("#sigPanelDiv").html(data);
+				evalScriptTags("sigPanelDiv");
+			}
+		);
+		<$endif$>
+}
+</script>
+
+<@end@>
+
+
+<@dynamichtml ccla_sc_sig_init_applet@>
+
+	<script type="text/javascript">
+		//Specifies where the upload page is
+					
+		$(document).ready(function() { 
+				var appletCode = '<applet id="paste-image" code="com.ecs.applet.ClipboardImageUploadApplet.class" archive="<$HttpWebRoot$>common/CCLA_SignatureChecking/CCLA_SignatureCheckingApplet.jar"  width="0" height="0">';
+				appletCode += '<param name="userName" value="<$js(UserName)$>" />';
+				appletCode += '<param name="maxImageHeight" value="<$#env.CCLA_SC_MaxSigHeight$>" />';
+				appletCode += '<param name="maxImageWidth" value="<$#env.CCLA_SC_MaxSigWidth$>" />';
+				appletCode += '<param name="targetUrl" value="http://<$if #active.idcToken$><$HttpServerAddress$><$else$><$SERVER_NAME$><$endif$><$HttpWebRoot$>idcplg?IdcService=CCLA_SC_SIGNATURE_SAVER"/>';
+				<$if HTTP_COOKIE$>
+					appletCode += '<param name="mycookie" value="<$HTTP_COOKIE$>"/>';
+				<$else$>	
+					appletCode += '<param name="mycookie" value="'+document.cookie+'"/>';
+				<$endif$>				
+				appletCode += '</applet>';
+								
+				$("#applet").html(appletCode);
+		});	
+	</script>
+
+<@end@>
+
+
+<!--Used to show the signatures for an given account on the mailhandling page-->
+<@dynamichtml ccla_sc_sig_approval_panel@>
+
+	<$include greyPanel_top$>
+	<script type="text/javascript">
+	
+		/*
+			Signature Panel on the BUNDLE PAGE
+			This function will first perform logic to decide which panel to display and if the sigpanel is visible it fetchs the content.
+			After the visibility has been determined, it will peform an get request to obtain the account_id. Once this has been returned another request
+			is performed to get the signature details content. 	
+			
+			overide - used when the refresh button is pressed. If true it will not hide other panels, and will get the content regardless of panel visibility
+		*/
+		function loadSigPanelContent(overide){
+			// Display loading message
+
+			$('#sig_approval_panel').html("<div style='padding:5px;font-weight:bold'>Loading Signatures ...</div>");
+			
+			//first check if the panel is open. If it is then the user is closing it, no need to refetch the content.
+			if ( $("#sig_approval_panel").css("display") == "none" || overide ) {
+				$("#spinner").show();
+
+				if (!overide) {
+					$("#bundle_details_panel, #wf_panel, #metadata_panel").hide();
+					$("#toggle_metadata_panel, #toggle_wf_panel, #toggle_bundle_details_panel")
+					 .removeClass("toggle_img_collapse")
+					 .addClass("toggle_img_expand");
+				}
+				
+				// Check there is a Document Class set.
+				var docClassName = $("#doc_fields select[name='xDocumentClass']").val();
+				
+				if (docClassName == "") {
+					displaySigPanelErrorMsg("Please enter the <b>Document Class</b> " +
+					 "in the Item Details panel above.");
+					return;
+				}
+				
+				if($("#xClientNumber").val() && $("#xAccountNumber").val()) {
+					
+					var clientNum 	= $("#xClientNumber").val();
+					var accNum 		= $("#xAccountNumber").val();
+
+					$.getJSON("?IdcService=CCLA_CS_GET_ACCOUNT_ID_FROM_INDEXING_DATA<$include add_idc_token_to_url$>",
+						{
+							"CLIENT_NUMBER": 	clientNum,
+							"ACCOUNT_NUMBER":	accNum,
+							"IsJson":			1
+						},
+						function(jsonData) {
+							var jsonErrorMsg = getJsonErrorMsg(jsonData);
+							if (jsonErrorMsg) {
+								displaySigPanelErrorMsg(jsonErrorMsg);
+							} else { 
+								var docName = window.frames.thumbsFrame.getSelThumbDocName();
+								var docId;
+								
+								if (document.forms["doc_fields"] && document.forms["doc_fields"].dID) {
+									docId	= document.forms["doc_fields"].dID.value;
+								} else {
+									alert("Please ensure a document is selected before attempting to check signatures.");
+									return;
+								}
+								
+								// Fetch the HTML content which displays the list of signatures
+								// for this account/document.								
+								$.get("?IdcService=CCLA_CS_GET_INCLUDE<$include add_idc_token_to_url$>",
+										{
+											"incName":			"ccla_sc_account_signature_checking_panel",
+											"ACCOUNT_ID":		jsonData.LocalData.ACCOUNT_ID,
+											"REQ_SIGS":			jsonData.LocalData.REQ_SIGS,
+											"DOC_ID":			docId,
+											"DOCNAME":			docName,
+											"DOC_CLASS":		docClassName,
+											"CLIENT_NUMBER":	clientNum,
+											"ACCOUNT_NUMBER":	accNum,
+											"ts":			 	new Date().getTime()
+										},
+										function(data) {
+											var jsonErrorMsg = getJsonErrorMsg(jsonData);
+											
+											if (jsonErrorMsg)
+												displaySigPanelErrorMsg(jsonErrorMsg);
+											else {
+												$('#sig_approval_panel').html(data);
+												evalScriptTags("sig_approval_panel");
+											}
+										}
+								);
+							}
+						}
+					);
+					
+
+				}else {
+					displaySigPanelErrorMsg("Please enter the <b>Client Number</b> and <b>Client Account Number</b> " +
+					 "in the Item Details panel above."); 
+				}
+			}
+			
+			$("#spinner").hide();
+		}
+		
+		// Replaces the Signature Panel content with a error message panel, displaying the passed message.
+		function displaySigPanelErrorMsg(errorMsg) {
+			$('#sig_approval_panel').html("<div id='sigErrorMsg' class='message_panel error_icon'>" 
+											+ errorMsg 
+											+ "<br/><br/><a href='javascript:loadSigPanelContent(true)'>Click to refresh</a></div>");							
+		}
+	
+	</script>
+	<style>
+		#sig_approval_panel{
+			height: 400px; 
+			overflow-y: scroll; 
+			scrollbar-arrow-color:blue; 
+			scrollbar-face-color: #e7e7e7; 
+			scrollbar-3dlight-color: #a0a0a0; 
+			scrollbar-darkshadow-color:#888888;
+		}
+	</style>
+	
+	<div class='panelheader'>			
+		<table width='100%' cellspacing=0 cellpadding=0>
+			<tr height=20>
+				<td>
+					<a name="sigapproval" id="sigapproval"></a>
+					<span class='panelheading'>Signature Approval</span>
+					<img src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/refresh.png" onclick="loadSigPanelContent(true)" title="Reload" alt="Reload" style="cursor:pointer">
+				</td>
+				<td width=22>
+					<div onclick="loadSigPanelContent(); togglePanelGoToLink(this, 'sigapproval'); " id="toggle_sig_approval_panel" class="toggle_img_expand"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+		<!-- This div has an ID so the display setting can be toggled between block/none -->
+		<!-- DISPLAY:NONE must be inline, otherwise js function does not work properly-->
+		<div id='sig_approval_panel' class='panelbody' style="display:none">
+			<div id="spinner" style="display:none"><img src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/ccla-ajax-spinner.gif" /></div>
+		</div>
+
+	<$include greyPanel_bottom$>
+
+<@end@>
+
+
+<@dynamichtml ccla_sc_sig_js_account_page@>
+	<$if #env.CCLA_SC_ShowSignaturePanels==1$>
+		<div id="applet"> </div>
+		<$include ccla_sc_sig_init_applet$>
+		
+		<script type="text/javascript">
+		
+		function postImage(element) {
+			var personID = $(element).attr("personID");
+			var action = $(element).attr("action");
+			
+			var imgElement = $(element).find(".sigActionIcons");
+			var origSrc = imgElement.attr("src");
+			var origTitle = imgElement.attr("title");
+			imgElement.attr("src","<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/ccla-ajax-spinner.gif");
+
+			var obj = document.getElementById('paste-image');
+			var image = obj.getClipboardImageURL(personID,sourceDocId,action);
+			
+			if (image && image.indexOf("ERROR")<0) {
+				image=$.trim(image);
+				imgElement.attr("src",origSrc);
+				if(action=="add"){
+					$("#img_"+personID).show();
+					$(element).attr("action","update").attr("title","Update Signature").attr("personID",image);
+				}
+			} else {
+				alert(image);
+				imgElement.attr("src",origSrc);
+			}
+			
+		}
+
+</script>
+		
+		
+	<$endif$>
+<@end@>
+
+<@dynamichtml ccla_sc_sig_html_account_page@>
+<$if #active.isDebug$>ccla_sc_sig_html_account_page<$endif$>
+
+	<$if #env.CCLA_SC_ShowSignaturePanels==1$>
+	
+		<$if #active.SIG_DOC_GUID$>
+			<$if not #env.CCLA_SC_RequireSourceDocId$>
+				<a title="Update Signature" style="float:right; padding-left:4px; cursor:pointer;" id="link_<$#active.SIG_DOC_GUID$>" action="update" personID="<$#active.SIG_DOC_GUID$>" onclick="postImage(this)" ><img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/></a>
+			<$endif$>
+			<img title="<$#active.FULL_NAME$> has a signature on file" style="float:right" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/sigPresent.png"/>			
+		<$else$>
+			<$if not #env.CCLA_SC_RequireSourceDocId$>
+				<a title="Add Signature" style="float:right; padding-left:4px; cursor:pointer;" id="link_<$#active.PERSON_ID$>" action="add" personID="<$#active.PERSON_ID$>" onclick="postImage(this)" ><img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/></a>
+			<$endif$>
+			<img id="img_<$#active.PERSON_ID$>" title="<$#active.FULL_NAME$> has a signature on file" style="float:right;display:none" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/sigPresent.png"/>
+		<$endif$>
+			
+	<$endif$>
+
+<@end@>
+
+<!-- Dynamically-loaded include, used in Iris Signature Checking panel. -->
+<@dynamichtml ccla_sc_account_signature_checking_panel@>
+	
+	<$executeService("CCLA_SC_GET_SIGS_FOR_ACCOUNT")$>
+	
+	<style>
+		#sigApprovedMsg{
+			margin-bottom:5px;
+			display:none;
+			float:left;
+		}
+		.sigImage{
+			width:238px;
+			cursor:pointer;
+		}
+		.sigForPerson{
+			margin-bottom:8px;
+			background-color:#FFF0DB;
+			border:1px solid #AAAAAA;
+			margin-bottom:3px;
+			padding:3px;
+		}
+		.personName{
+			margin-bottom:2px;
+			padding-bottom:3px;
+		}
+		#sigSaveButton{
+			float:right;
+		}
+		.buttonOveride{
+			float:right;
+			background-color:#D0CDCE;
+			border:medium none;
+			color:#EE2C74;
+			font-family:Arial;
+			font-size:9pt;
+			padding:2px 5px;
+		}
+		.recentDocDetailsDiv{
+			float:left;
+			margin:3px;
+		}
+		.recentDocsOpenLinkDiv{
+			float:right;
+		}
+		.recentDocDetailsSpan{
+			float:left;
+		}
+		.recentDocEntry{
+			background-color:#FFF0DB;
+			float:left;
+			margin-top:3px;
+			padding:3px;
+			width:97%;
+			border:1px solid #AAAAAA;
+		}
+		.subTitle{
+			font-size:13px;
+			font-weight:bold;
+			margin-bottom:3px;
+		}
+		.clearAll{
+			clear:both;
+		}
+		.right{
+			float:right;
+		}
+		.error_icon{
+			background-position:2px 2px !important;
+		}
+		.reqSigsDiv{
+			padding:0 8px 4px;
+		}
+		.red{background-color:red}
+		.orange{background-color:#FFC85C !important}
+		.green{background-color:#88F9B0 !important}
+		.sigActionIcons{
+			margin-bottom:-3px;
+		}
+		.moreDiv{
+			margin-top:2px;
+			padding-bottom:2px;
+		}
+		.links{
+			cursor:pointer;
+		}
+	</style>
+	
+	<$include ccla_sc_sig_info_icon_styling_override$>
+
+	<script type="text/javascript">
+		
+		var selectedDocId = "<$#local.DOC_ID$>";
+		
+		var saveCheckedSignatures = function(){
+		
+			$('#sigApprovedMsg').hide();
+			var sigsApproved="";
+			$('.personChkBoxes:checked').each(function () {
+			
+			   if(sigsApproved.length!=0)
+					sigsApproved = sigsApproved+",";
+				  sigsApproved=sigsApproved + this.id;
+			});
+
+			$.getJSON('?IdcService=CCLA_SC_UPDATE_APPROVED_SIGS<$include add_idc_token_to_url$>',
+				{
+					"sigsApproved": sigsApproved,
+					"DOC_ID":		"<$#local.DOC_ID$>",
+					"ACCOUNT_ID":	"<$#local.ACCOUNT_ID$>",
+					"DOC_GUID":     "<$#local.DOC_GUID$>",
+					"IsJson":		1,
+					"ts":			new Date().getTime()
+				},
+				function(jsonData) {
+					var jsonErrorMsg = getJsonErrorMsg(jsonData);
+					if(jsonErrorMsg){
+						alert("Unable to update checked signatures: " + jsonErrorMsg);
+					} else {
+						$('#sigApprovedMsg').show();
+						
+						if (eval("typeof checkSignatureApproved== 'function'")) {
+							checkSignatureApproved();
+						}
+					}
+				}
+			);
+		};	
+
+		var openSigInPopUp = function(element){
+			popupCenter("?IdcService=GET_DOC_PAGE&Action=GetTemplatePage&Page=CCLA_SC_SIG_POPUP_PREVIEW<$include add_idc_token_to_url$>&dDocName="
+			 +element.id, "",650,300, false) 
+		};
+	
+	
+		var className = "";
+		// This will return the css class name needed to color the signatures
+		// Assumption made that there will never be more than 2 Required signatures
+		var resolveSigColor = function(){
+			var reqSigs = <$if #active.REQ_SIGS$><$#active.REQ_SIGS$><$else$>0<$endif$>;
+			var numSigsChecked = $('.personChkBoxes:checked').size();
+			
+			if (numSigsChecked >= reqSigs){
+				className = "green";
+			} else if (numSigsChecked <= reqSigs-1){
+				className = "orange";
+			} 
+		};
+		
+		var removeAllColorClasses = function(){
+			$('.personChkBoxes').each(function () {
+				$(this).parent().parent().removeClass("red orange green");
+			});
+		};
+	
+		var reDrawSigColors = function(){
+			resolveSigColor();
+			$('.personChkBoxes:checked').each(function () {
+				$(this).parent().parent().addClass(className);
+			})
+		};
+		
+		var updateCheckboxes = function(){
+			reDrawSigColors(className);
+			removeAllColorClasses();
+			reDrawSigColors()
+		};
+		
+			
+		var tickCheckbox = function(element){
+			if ($(element).attr("class") == "sigImage"){
+				alert("clicking an image");
+			} else {
+				alert($(element).find(".right").find("input").attr("id"));
+			}
+		}
+			
+		var postImage =  function(personID,action,element){
+			var origHTML = $("#"+element.id).html();
+			$("#"+element.id).html("uploading...");
+			var obj = document.getElementById('paste-image');
+			var image =obj.getClipboardImageURL(personID,selectedDocId,action);
+
+			if (image && image.indexOf("ERROR")<0) {
+				loadSigPanelContent(true)
+			} else {
+				alert(image);
+				$("#"+element.id).html(origHTML);
+			}
+		};
+		
+				
+		$(document).ready( function() {
+			updateCheckboxes();
+		});
+		
+	</script>
+			
+		<div class='ccla_cs_panel_content'>
+			<$if not hideSigCheckingTitle$>
+				<div class="subTitle">Signatories for account: <a target="_blank" 
+																  href="?IdcService=CCLA_CS_ACCOUNT_INFO&CLIENT_NUMBER=<$#active.CLIENT_NUMBER$>&ACCOUNT_NUMBER=<$#active.ACCOUNT_NUMBER$><$include add_idc_token_to_url$>"><$#active.ACCOUNT_NUMBER$></a></div>
+			<$endif$>
+
+			
+			<div id="noSigsFoundMsg" class="message_panel info_icon" style="margin: 0px 0px 5px 0px">
+				<$if signatureCheckRequired$>
+					Required Signatures: <$#active.REQ_SIGS$>
+				<$else$>
+					Signature checking isn't required for this instruction type.
+				<$endif$>
+			</div>
+			
+			<$if not signatureCaptureAllowed$>
+				<div id="noSigsFoundMsg" class="message_panel error_icon" style="margin: 0px 0px 5px 0px">
+					You can't capture signatures against this instruction type.
+				</div>
+			<$endif$>
+			
+			<$rsMakeFromString("rsSignatoryIds",signatoryIds)$>
+			<$if rsSignatoryIds$>
+				<$loop rsSignatoryIds$>
+					<$sigDocFound=0$>
+					
+					<div class="sigForPerson" >
+						<$loop rsPersonsInAccount$>
+							<$if rsPersonsInAccount.PERSON_ID == rsSignatoryIds.row$>
+								<$personFullName = rsPersonsInAccount.FULL_NAME$>
+							<$endif$>
+						<$endloop$>
+							<$loop sigDocNames$>	
+								<$docGuid = sigDocNames.SIG_DOC_GUID$>
+								<$include ccla_cs_get_docname_from_docguid$>
+								
+								<$if sigDocNames.PERSON_ID == rsSignatoryIds.row$>
+									<div class="personName">
+										<b><$personFullName$></b> - <a target="_blank" title="click to edit <$personFullName$>" href="?IdcService=CCLA_CS_PERSON_EDIT&PERSON_ID=<$rsSignatoryIds.row$><$include add_idc_token_to_url$>#sigPanelDiv">edit</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/edit.png"/> 
+										<$if signatureCaptureAllowed$>
+											| 
+											<a id="link_<$docName$>" class="links" onclick="postImage('<$docName$>','update',this);">update</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/>
+										<$endif$>
+									</div>
+									
+									<span class="sigImageDiv"><img class="sigImage" title="Click to see a larger signature image for: <$personFullName$>" onclick="openSigInPopUp(this)" id="<$docName$>" src="?IdcService=GET_FILE&dDocName=<$docName$>&RevisionSelectionMethod=Latest&rand=<$strGenerateRandom(5)$><$include add_idc_token_to_url$>"/></span>
+									<$sigDocFound=1$>
+									
+									<$if signatureCheckRequired$>
+									
+										<$ApprovedSig=0$>
+										<$loop rsApprovedSigs$>
+											<$if sigDocNames.PERSON_ID == rsApprovedSigs.PERSON_ID$>
+												<$ApprovedSig=1$>
+											<$endif$>	
+										<$endloop$>
+										
+										<div class="right">
+											<label for="<$sigDocNames.PERSON_ID$>">Signature matches document</label>
+											<input type="checkbox" class="personChkBoxes" onclick="updateCheckboxes()" id="<$sigDocNames.PERSON_ID$>"  <$if ApprovedSig==1$>checked<$endif$>/>
+										</div>
+									
+									<$endif$>
+									
+									<div class="clearAll"></div>
+								<$endif$>	
+							<$endloop$>
+						<$if sigDocFound == 0$>
+						<div class="personName">
+							<b><$personFullName$></b> - <a target="_blank" title="click to edit <$personFullName$>" href="?IdcService=CCLA_CS_PERSON_EDIT&PERSON_ID=<$rsSignatoryIds.row$><$include add_idc_token_to_url$>#sigPanelDiv">edit</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/edit.png"/> 
+						
+							<$if signatureCaptureAllowed$>
+								| 
+								<a class="links" id="link_<$rsSignatoryIds.row$>" onclick="postImage('<$rsSignatoryIds.row$>','add',this);">add</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/paste.png"/>
+							<$endif$>
+						</div>
+						
+						<div id="noSigsFoundMsg" class="message_panel error_icon" >
+							No signature on record. 
+						</div>
+						<$endif$>
+					
+					</div>	
+			
+				<$endloop$>
+				</br>
+				<div id="sigApprovedMsg" class="message_panel info_icon" >
+					Approved signatures updated	
+				</div>
+				
+				<$if signatureCheckRequired$>
+					<input id="sigSaveButton" class="buttonOveride" type="button" value="Save" onclick="saveCheckedSignatures()" />
+				<$endif$>
+				
+				<div class="clearAll"></div>
+			<$else$>
+				<div id="noSigsFoundMsg" class="message_panel error_icon" >
+					There are no signatories for this account. <a target="_blank" href="?IdcService=CCLA_CS_ACCOUNT_EDIT&ACCOUNT_ID=<$#active.ACCOUNT_ID$><$include add_idc_token_to_url$>">Click here</a> to add them. 
+				</div>
+			<$endif$>
+			</br></br>
+		
+		
+		<$if not hideRecentSigDocs$>
+			<div id="recentSigDocs">
+				<span class="subTitle">Recent Documents</span>
+				<$if rsRecentSigForms$>
+					<$loop rsRecentSigForms$>
+						
+						<div class="recentDocEntry">
+							<div class="recentDocDetailsSpan"><b>Doc Type: </b><$rsRecentSigForms.xDocumentClass$>. </br><b>Index Date: </b><$rsRecentSigForms.dInDate$> </div>
+							<div class="recentDocsOpenLinkDiv"><a target="_blank" href="?IdcService=DOC_APPROVAL&dDocName=<$#active.dDocName$><$include add_idc_token_to_url$>">Open</a></div>
+						</div>
+						<div class="clearAll"> </div>
+					<$endloop$>
+					<$if rsRecentSigForms.#numRows == 6$>
+						<div class="moreDiv right"><a target="_blank" href="?IdcService=IRIS_CLASSIFIED_ITEMS&sf=dInDate&so=DESC&clientnoadv=<$#active.CLIENT_NUMBER$>">more</a> <img class="sigActionIcons" src="<$HttpWebRoot$>resources/CCLA_SignatureChecking/images/newWindow.png"/> </div>
+					<$endif$>
+				<$else$>
+					<div id="noSigsFoundMsg" class="message_panel info_icon" >
+						There are no recent documents
+					</div>
+				<$endif$>
+			</div>
+		<$endif$>
+	</div>
+	
+<@end@>
+
+
+<!-- End Signature Resources -->
+
+</body></html>

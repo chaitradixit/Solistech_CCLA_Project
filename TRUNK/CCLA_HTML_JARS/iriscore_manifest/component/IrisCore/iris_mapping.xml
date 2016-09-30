@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN" "http://castor.exolab.org/mapping.dtd">
+
+<mapping>
+
+	<class name="com.ecs.stellent.iris.definition.IrisProfile">
+		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+		
+		<field name="condition" type="com.ecs.stellent.iris.definition.Condition" collection="collection" >
+  			<bind-xml location="condition-list" />
+  		</field>
+		
+		<field name="irisDefinition" type="com.ecs.stellent.iris.definition.IrisDefinition" collection="collection" >
+  			<bind-xml location="definition-list" />
+  		</field>
+
+	</class>
+
+	<class name="com.ecs.stellent.iris.definition.IrisDefinition">
+		<map-to xml="iris-definition"/>
+
+  		<field name="condition" type="string">
+  			<bind-xml name="condition" node="attribute" />
+  		</field>
+
+  		<field name="workflow" type="com.ecs.stellent.iris.definition.Workflow" collection="collection" >
+  			<bind-xml location="workflow-list" />
+  		</field>
+		<field name="contentType" type="com.ecs.stellent.iris.definition.ContentType" collection="collection" >
+			<bind-xml name="content-type" location="content-type-list" />
+		</field>
+
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.Condition">
+		<map-to xml="condition"/>
+		
+  		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+  		
+		<field name="field" type="string">
+  			<bind-xml name="field" node="attribute" />
+  		</field>
+  		
+  		<field name="operator" type="string">
+  			<bind-xml name="operator" node="attribute" />
+  		</field>
+
+  		<field name="value" type="string">
+  			<bind-xml name="value" node="attribute" />
+  		</field>
+	</class>
+	
+	
+	<class name="com.ecs.stellent.iris.definition.Workflow">
+		<map-to xml="workflow"/>
+  		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+
+  		<field name="properties" type="com.ecs.stellent.iris.definition.Properties" />
+  		<field name="fieldSpec" type="com.ecs.stellent.iris.definition.FieldSpec" >
+  			<bind-xml name="field-spec" />
+  		</field>
+
+  		<field name="step" type="com.ecs.stellent.iris.definition.Step" collection="collection">
+  			<bind-xml name="step" location="step-list" />
+  		</field>
+		
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.Step">
+		<map-to xml="step"/>
+  		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+  		
+  		<field name="properties" type="com.ecs.stellent.iris.definition.Properties" />
+  		<field name="fieldSpec" type="com.ecs.stellent.iris.definition.FieldSpec" >
+  			<bind-xml name="field-spec" />
+  		</field>
+  	
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.ContentType">
+		<map-to xml="content-type"/>
+  		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+  		
+  		<field name="fieldSpec" type="com.ecs.stellent.iris.definition.FieldSpec">
+  			<bind-xml name="field-spec" />
+  		</field>
+		
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.Properties">
+		<map-to xml="properties"/>
+		
+		<field name="hideReject" type="boolean">
+			<bind-xml name="hide-reject" node="attribute" />
+		</field>
+		<field name="approveText" type="string">
+			<bind-xml name="approve-text" node="attribute" />
+		</field>
+		<field name="rejectText" type="string">
+			<bind-xml name="reject-text" node="attribute" />
+		</field>
+		<field name="validationClass" type="string">
+			<bind-xml name="validation-class" node="attribute" />
+		</field>
+  
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.FieldSpec">
+		<map-to xml="field-spec"/>
+  		
+  		<field name="visible" type="string" />
+  		<field name="required" type="string" />
+  		<field name="label" type="string" />
+  		
+  		<field name="customDisplayField" type="com.ecs.stellent.iris.definition.CustomDisplayField" collection="collection">
+  			<bind-xml name="custom-display-field" location="custom-display-field-list" />
+  		</field>
+		
+	</class>
+	
+	<class name="com.ecs.stellent.iris.definition.CustomDisplayField">
+		<map-to xml="custom-display-field"/>
+  		
+  		<field name="name" type="string">
+  			<bind-xml name="name" node="attribute" />
+  		</field>
+  		
+  		<field name="custCaption" type="string">
+  			<bind-xml name="custCaption" node="attribute" />
+  		</field>
+  		
+  		<field name="include" type="string">
+  			<bind-xml name="include" node="attribute" />
+  		</field>
+		
+	</class>
+	
+</mapping>
+	
+	

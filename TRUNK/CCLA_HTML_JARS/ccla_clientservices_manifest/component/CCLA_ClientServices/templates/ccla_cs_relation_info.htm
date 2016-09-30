@@ -1,0 +1,493 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+	
+	<$if #local.isEdit$>
+		<$pageTitle = "Edit Relation Properties"$>
+	<$else$>
+		<$pageTitle = "Relation Info"$>
+	<$endif$>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		<$pageTitle$>
+	</title>
+	
+	<$include ccla_cs_styles$>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+	
+		<$include orangeContainer_top$>
+			
+		<div class='ccla_cs_panel_header'>
+			<$pageTitle$>
+		</div>
+		
+		<div class="ccla_cs_panel_content">
+				
+			<$if updated$>
+				<div class="message_panel info_icon">
+					Relation Properties updated.
+				</div>
+				
+				<script type="text/javascript">
+
+					<$loop rsRelation$>
+					
+						$().ready(function() {
+							if (window.parent) {
+								// Refresh background page to display newly-added relation.
+								window.parent.refreshRelations('<$#local.ELEMENT_ID$>', '', <$#active.ELEMENT_TYPE_ID_1$>, <$#active.ELEMENT_TYPE_ID_2$>);
+	
+								// Now close the pop-up.
+								window.parent.closePopup();
+							}
+						});
+					
+					<$endloop$>
+					
+				</script>
+			<$endif$>
+				
+			<form name="updateAppliedPropertiesForm" id="updateAppliedPropertiesForm">
+				
+				<input type="hidden" name="IdcService" value="CCLA_CS_UPDATE_APPLIED_RELATION_PROPERTIES" />
+				<input type="hidden" name="RELATION_ID" value="<$#local.RELATION_ID$>" />
+				<$include add_idc_token_to_form$>
+				<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_RELATION_INFO<$include add_idc_token_to_url$>&RELATION_ID=<$#local.RELATION_ID$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&isEdit=1&updated=1" />
+				
+				<table width="100%" class="cs-info-table">
+					
+					<$loop rsRelation$>
+				
+						<tr>
+							<th width="25%">Relation Type:</th>
+							
+							<td width="25%">
+								<$#active.RELATION_LABEL$>
+							</td>
+							
+							<th width="25%">Relation Name:</th>
+							
+							<td width="25%">
+								<$#active.RELATION$>
+							</td>
+						</tr>
+						
+						<tr>
+							<th>Date Created:</th>
+							
+							<td>
+								<$#active.RELATION_DATE$>
+							</td>
+							
+							<th>Created By:</th>
+							
+							<td>
+								<$#active.LAST_UPDATED_BY$>
+							</td>
+							
+						</tr>
+					
+					<$endloop$>
+					
+				</table>
+				
+				<br/>
+
+				<h3 class="ccla_data_panel_header">Verification Sources</h3>
+				
+				<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+					<tbody>
+						<tr>
+							<th class="first-col" align=left>
+								Source Name
+							</th>
+							<th align=left width="150">Added By</td>
+							<th align=left width="120">Date Added</td>
+							
+							<th width="60">Searched</th>
+							<th width="60">Found</th>
+							
+						</tr>
+						
+						<$if not isEdit$>
+							<!-- Display applied properties only, in read-only format -->
+							<$loop rsRelationPropertiesApplied$>
+								
+								<$if #active.VERIFICATION_SOURCE_ID$>
+									<$verificationPropertyFound=1$>
+									
+									<tr class="account-details-row">
+										<td class="first-col">
+											<$#active.VER_SOURCE_NAME$>
+										</td>
+										
+										<td>
+											<$#active.LAST_UPDATED_BY$>&nbsp;
+										</td>
+										
+										<td>
+											<$#active.LAST_UPDATED$>&nbsp;
+										</td>
+										
+										<td align="center">
+											<$if #active.PROPERTY_STATUS == 0$>
+												<img src="images/ccla/tick.gif">
+											<$else$>
+												&nbsp;
+											<$endif$>
+										</td>
+										
+										<td align="center">
+											<$if #active.PROPERTY_STATUS == 1$>
+												<img src="images/ccla/tick.gif">
+											<$else$>
+												<img src="images/ccla/cross.png">
+											<$endif$>
+										</td>
+									</tr>
+										
+								
+								<$endif$>
+								
+							<$endloop$>
+						
+						<$else$>
+							<!-- Display all available verification properties -->
+							<$loop rsAvailableRelationProperties$>
+								
+								<$if #active.VERIFICATION_SOURCE_ID$>
+									<$verificationPropertyFound=1$>
+									
+									<$exec rsFirst("rsRelationPropertiesApplied")$>
+									<$hasProperty = "", propertyStatus = "", checkedBy = "", checkDate = "", propertyValue  = ""$>
+									
+									<$loop rsRelationPropertiesApplied$>
+										<$if #active.PROPERTY_ID like rsAvailableRelationProperties.PROPERTY_ID$>
+											
+											<$hasProperty = 1$>
+											
+											<$checkedBy = #active.LAST_UPDATED_BY$>
+											<$checkDate = #active.LAST_UPDATED$>
+											<$propertyStatus = #active.PROPERTY_STATUS$>
+											<$propertyValue = #active.PROPERTY_VALUE$>
+										
+											<$break$>
+											
+										<$endif$>
+									<$endloop$>
+											
+									
+									<tr class="account-details-row">
+										<td class="first-col">
+											<$#active.VER_SOURCE_NAME$>
+										</td>
+										
+										<td>
+											<$#local.checkedBy$>&nbsp;
+										</td>
+										
+										<td>
+											<$#local.checkDate$>&nbsp;
+										</td>
+										
+										<td align="center">
+											<$if #active.SET_BY_USER == 1$>
+												<input type="checkbox" name="relationPropertyFalse_<$PROPERTY_ID$>" <$if #local.propertyStatus like "0|1"$>checked<$endif$> />
+											<$elseif hasProperty$>
+												<img src="images/ccla/tick.gif">
+											<$else$>
+												&nbsp;
+											<$endif$>
+											
+										</td>
+										
+										<td align="center">
+											<$if #active.SET_BY_USER == 1$>
+												<input type="checkbox" name="relationPropertyTrue_<$PROPERTY_ID$>" <$if #local.propertyStatus like "1"$>checked<$endif$> />
+											<$elseif hasProperty$>
+												<$if #local.propertyStatus like "1"$>
+													<img src="images/ccla/tick.gif" />
+												<$else$>
+													<img src="images/ccla/cross.png" />
+												<$endif$>
+											<$else$>
+												<img src="images/ccla/cross.png" />
+											<$endif$>
+											
+										</td>
+									</tr>
+										
+								
+								<$endif$>
+								
+							<$endloop$>
+
+						<$endif$>
+					
+						<$if not verificationPropertyFound$>
+							<tr class="account-details-row">
+								<td class="first-col" colspan=5>
+									<span class="no-info">None</span>
+								</td>
+							</tr>
+						<$endif$>
+	
+					</tbody>
+				</table>
+				
+				<$if false$>
+					<p>
+						<img src="images/ccla/tick.gif"> Organisation has been verified against this source
+					</p>
+				<$endif$>
+				
+				<br/>
+				
+				<h3 class="ccla_data_panel_header">Other Relation Properties</h3>
+				
+				<$exec rsFirst("rsRelationPropertiesApplied")$>
+				
+				<table width="100%" cellspacing="0" cellpadding="0" class="accounts-table">			
+					<tbody>
+						<tr>
+							<th align=left class="first-col">
+								Attribute Name
+							</th>
+							
+							<th align=left width="150">Added By</td>
+							<th align=left width="120">Date Added</td>
+							
+							<th width="150">Value/Status</th>
+						</tr>
+						
+						<$if not isEdit$>
+						
+							<$loop rsRelationPropertiesApplied$>
+								
+								<$if not #active.VERIFICATION_SOURCE_ID$>
+									<$propertyFound=1$>
+									
+									<$checkedBy = "", checkDate = "", propertyValue  = ""$>
+									<$attribDisabled = ""$>
+
+									<$checkedBy = #active.LAST_UPDATED_BY$>
+									<$checkDate = #active.LAST_UPDATED$>
+									<$propertyValue = #active.PROPERTY_VALUE$>
+									<$propertyStatus = #active.PROPERTY_STATUS$>
+									
+									<tr class="account-details-row">
+										<td align=left class="first-col">
+											<$#active.PROPERTY_NAME$>
+										</td>
+										
+										<td>
+											<$#local.checkedBy$>&nbsp;
+										</td>
+										
+										<td>
+											<$#local.checkDate$>&nbsp;
+										</td>
+										
+										<td>
+											<$if #active.PROPERTY_TYPE like 'FLAG'$>
+												True
+											<$elseif #active.PROPERTY_TYPE like 'BOOL'$>
+											
+												<$if #local.propertyStatus like "0"$>
+													False
+												<$else$>
+													True
+												<$endif$>
+												
+											<$elseif #active.PROPERTY_TYPE like 'STRING'$>
+												<$#local.propertyValue$>&nbsp;
+											<$endif$>
+											
+										</td>	
+									</tr>
+									
+								<$endif$>
+								
+							<$endloop$>
+						
+						<$else$>
+						
+							<$loop rsAvailableRelationProperties$>
+								
+								<$if not #active.VERIFICATION_SOURCE_ID$>
+									<$propertyFound=1$>
+									
+									<$checkedBy = "", checkDate = "", propertyValue  = ""$>
+									<$attribDisabled = ""$>
+									
+									<$exec rsFirst("rsRelationPropertiesApplied")$>
+									
+									<$loop rsRelationPropertiesApplied$>
+									
+										<$if #active.RELATION_PROPERTY_ID like rsAvailableRelationProperties.RELATION_PROPERTY_ID$>
+											<$checkedBy = #active.LAST_UPDATED_BY$>
+											<$checkDate = #active.LAST_UPDATED$>
+											<$propertyValue = #active.PROPERTY_VALUE$>
+											<$propertyStatus = #active.PROPERTY_STATUS$>
+										<$endif$>
+										
+									<$endloop$>
+									
+									<tr class="account-details-row">
+										<td align=left class="first-col">
+											<$#active.PROPERTY_NAME$>
+										</td>
+										
+										<td>
+											<$#local.checkedBy$>&nbsp;
+										</td>
+										
+										<td>
+											<$#local.checkDate$>&nbsp;
+										</td>
+										
+										<td>
+											<$if #active.PROPERTY_TYPE like 'FLAG'$>
+												<input 	type="checkbox" name="relationPropertyTrue_<$#active.PROPERTY_ID$>" 
+														<$if propertyStatus$>checked<$endif$> />
+														
+											<$elseif #active.PROPERTY_TYPE like 'BOOL'$>
+												
+												<input type="radio" name="relationPropertyStatus_<$#active.PROPERTY_ID$>"
+																	value="" <$if not #local.propertyStatus$>selected<$endif$> /> N/A
+																	
+												<input type="radio" name="relationPropertyStatus_<$#active.PROPERTY_ID$>"
+																	value="0" <$if #local.propertyStatus like "0"$>selected<$endif$> /> False
+																	
+												<input type="radio" name="relationPropertyStatus_<$#active.PROPERTY_ID$>"
+																	value="1" <$if #local.propertyStatus like "1"$>selected<$endif$> /> True
+												
+											<$elseif #active.PROPERTY_TYPE like 'STRING'$>
+												<input type="text" name="relationPropertyValue_<$#active.PROPERTY_ID$>" value="<$#local.propertyValue$>" />
+											<$endif$>
+										
+										</td>	
+									</tr>
+									
+								<$endif$>
+								
+							<$endloop$>
+						
+						
+						<$endif$>
+						
+						<$if not propertyFound$>
+							<tr class="account-details-row">
+								<td class="first-col" colspan=4>
+									<span class="no-info">None</span>
+								</td>
+							</tr>
+						<$endif$>
+					
+					</tbody>
+				</table>
+				
+				<br/>
+				
+				<div align="right">
+					<$if isEdit$>
+						<input type="submit" value="Save changes" />
+					<$endif$>
+					
+					<input type="button" value="Close" onclick="window.parent.closePopup()" />			
+				</div>
+			
+			</form>
+			
+			<$if #env.CCLA_CS_EnableRelationContacts$>
+			
+				<$exec rsFirst("rsRelation")$>
+				
+				<$if rsRelation.RELATION_LABEL like "Organisation-Person"$>
+				
+					<h3 class="ccla_data_panel_header">Custom Contact Preferences</h3>
+					
+					<$exec rsRename("rsRelationContacts","rsContactDetails")$>
+					
+					<$if not rsContactDetails$>
+						<span class="no-info">None</span>
+						
+					<$else$>	
+						
+						<$if #local.ELEMENT_ID$>
+							<!-- Display selectable list of addresses for existing records. -->
+							<$include ccla_cs_address_selector$>
+							<br/>
+						<$endif$>
+						
+						<!-- Switchable address data region -->
+						<div id="selAddressDisplay">
+							<$include ccla_cs_address_fields$>
+						</div>
+
+					<$endif$>
+					
+					<form>
+						<input type="hidden" name="IdcService" value="CCLA_CS_COPY_CONTACT" />
+						<input type="hidden" name="RELATION_ID" value="<$#local.RELATION_ID$>" />
+						<$include add_idc_token_to_form$>
+						<input type="hidden" name="RedirectUrl" value="?IdcService=CCLA_CS_RELATION_INFO<$include add_idc_token_to_url$>&RELATION_ID=<$#local.RELATION_ID$>&ELEMENT_ID=<$#local.ELEMENT_ID$>&isEdit=1&contactAdded=1" />
+
+						Add a contact address for this relationship:
+
+						<select name="CONTACT_ID" id="CONTACT_ID" style="width:300px" >
+							<option value=""></option>
+
+							<optgroup label="<$ELEMENT_TYPE_ID_1_NAME$> Addresses">
+								<$loop rsElementId1Contacts$>
+									<$if #active.ADDRESS_ID$>
+										<$hasElementId1Address = 1$>
+										<option value="<$#active.CONTACT_ID$>"><$include ccla_cs_format_address$></option>
+									<$endif$>
+								<$endloop$>	
+								<$if not hasElementId1Address$>
+									<option value="">** No <$ELEMENT_TYPE_ID_1_NAME$> addresses present **</option>
+								<$endif$>
+							</optgroup>
+							<optgroup label="<$ELEMENT_TYPE_ID_2_NAME$>  Addresses">
+								<$loop rsElementId2Contacts$>
+									<$if #active.ADDRESS_ID$>
+										<$hasElementId2Address = 1$>
+										<option value="<$#active.CONTACT_ID$>"><$include ccla_cs_format_address$></option>
+									<$endif$>
+								<$endloop$>
+								<$if not hasElementId2Address$>
+									<option value="">** No <$ELEMENT_TYPE_ID_2_NAME$> addresses present **</option>
+								<$endif$>
+							</optgroup>
+						</select>
+						
+						<div align="right">
+							<input type="submit" value="Add contact" />	
+						</div>
+						
+					</form>
+				
+				<$endif$>
+			
+			<$endif$>
+			
+		</div>
+				
+		<$include orangeContainer_bottom$>
+		
+	</div>
+
+</body>
+</html>

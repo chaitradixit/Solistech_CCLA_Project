@@ -1,0 +1,40 @@
+﻿<?hda version="10.1.3.3.3 (080807)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2010_03_18(build 1)
+blFieldTypes=
+ComponentName=CCLA_UAT_Config
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+environment
+ccla_uat_config_environment.cfg
+null
+1
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end
+

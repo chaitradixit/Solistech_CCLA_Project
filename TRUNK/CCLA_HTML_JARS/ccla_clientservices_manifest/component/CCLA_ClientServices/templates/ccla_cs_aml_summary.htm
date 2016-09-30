@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>
+			AML Summary Report
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<$include epoch_calendar_header$>
+		
+		<$include doc_listing_styles$>
+		<$include iris_paginator_header$>
+		
+		<$include float_menu_header$>
+
+	</head>
+	<body <$include iris_body_def_internal$>>
+		
+		<$include ecs_popup_div_header$>
+		
+		<$include iris_header$>
+		
+		<$executeService("CCLA_CS_LEGACY_AML_SUMMARY")$>
+		
+		<div align=center style="margin: 15px 0px;">	
+			<div id='ccla_cs_content' style='width: 600px'>
+				
+				<$include orangeContainer_top$>
+
+				<$campaignId=2$>
+				<$executeService("CCLA_CS_CAMPAIGN_SUMMARY")$>
+				
+				<div class='ccla_cs_panel_header'>
+					AML Campaign Clients - Summary
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+				<table width="100%">
+					<tr>
+						<td width="50%" valign="top">
+					
+							<h3 class="ccla_data_panel_header">All campaign processes</h3>
+							
+							<table class="ccla-table" width="100%">
+								<tr>
+									<th>Process status</th><th>Count</th>
+								</tr>
+								
+								<$total = 0$>
+								
+								<$loop rsProcessTotals$>
+									<tr>
+										<td>
+											<a href="?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&processStatus=<$#active.PROCESS_STATUS$>&showExcluded=1&adv=true"><$#active.PROCESS_STATUS$></a>
+										</td>
+										<td align="right">
+											<$#active.COUNT$>
+											<$total = total + #active.COUNT$>
+										</td>
+									</tr>
+								<$endloop$>
+								
+								<tr>
+									<td align="right">Total</td><td align="right"><$total$></td>
+								</tr>
+							</table>
+						
+						</td>
+						<td>
+					
+							<h3 class="ccla_data_panel_header">Campaign processes by company</h3>
+							
+							<table class="ccla-table" width="100%">
+								<tr>
+									<th>Process status</th><th>Count</th>
+								</tr>
+								
+								<$prevCompany = ""$>
+								<$total = 0$>
+								
+								<$loop rsProcessTotalsByCompany$>
+									<$if not (#active.COMPANY like #local.prevCompany)$>
+										<$if prevCompany$>
+											<tr>
+												<td align="right">Total</td><td align="right"><$total$></td>
+											</tr>
+											
+											<$total = 0$>
+										<$endif$>
+									
+										<tr>
+											<th colspan=2>
+												<$#active.COMPANY$>
+												<$prevCompany = #active.COMPANY$>
+											</td>
+										</tr>
+									<$endif$>
+									
+									<tr>
+										<td>
+											<a href="?IdcService=CCLA_CS_PROCESS_LISTING<$include add_idc_token_to_url$>&processStatus=<$#active.PROCESS_STATUS$>&company=<$#active.COMPANY$>&showExcluded=1&adv=true"><$#active.PROCESS_STATUS$></a>
+										</td>
+										<td align="right">
+											<$#active.COUNT$>
+											<$total = total + #active.COUNT$>
+										</td>
+									</tr>
+								<$endloop$>
+								
+								<tr>
+									<td align="right">Total</td><td align="right"><$total$></td>
+								</tr>
+							</table>
+						
+						</td>
+					</tr>
+				
+				</table>
+				
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+				<$showLegacyData=1$>
+					
+				<$include orangeContainer_top$>
+
+				<div class='ccla_cs_panel_header'>
+					Legacy AML Clients - Summary
+				</div>
+			
+				<div class='ccla_cs_panel_content'>
+					
+					<p>
+						All figures below correspond to the legacy AML tracker.
+					</p>
+					
+					<table width="100%">
+						<tr>
+							<td width="50%">
+								
+								<h3 class="ccla_data_panel_header">Full client list</h3>
+								
+								<table class="ccla-table">
+									<tr>
+										<th>AML flag</th><th>Count</th>
+									</tr>
+
+									<$loop rsAMLTotals$>
+										<$if not (#active.LABEL like "AML accounts closed")$>
+											<tr>
+												<td><$#active.LABEL$></td>
+												<td align="right"><$#active.COUNT$></td>
+											</tr>
+										<$endif$>
+									<$endloop$>
+								</table>
+								
+							</td>
+							<td>
+							
+							</td>
+						</tr>
+						
+						<tr>
+							<td colspan=2>
+								<h3 class="ccla_data_panel_header">Remaining client AML flags (not part of new tracker)</h3>
+								
+								<p>
+									This is a list of all clients who were part of the old tracker, but not
+									included in the new one.
+								</p>
+							</td>
+						</tr>
+						
+						<tr>
+							<td valign="top">
+
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th>AML flag</th><th>Count</th>
+									</tr>
+
+									<$loop rsLegacyAMLTotals$>
+										
+										<$if #active.LABEL like "Total AML Clients"$>
+											<tr>
+												<td align="right">Total</td>
+												<td align="right"><$#active.COUNT$></td>
+											</tr>
+										<$else$>
+											<tr>
+												<td><$#active.LABEL$></td>
+												<td align="right"><$#active.COUNT$></td>
+											</tr>
+										<$endif$>
+										
+									<$endloop$>
+
+								</table>
+								
+							</td>
+							<td valign="top">	
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th>AML status</th><th align="right">Count</th><th align="right">%</th>
+									</tr>
+									
+									<$loop rsLegacyAMLStatusTotals$>
+										
+										<tr>
+											<td <$if #active.LABEL like "Total"$>align="right"<$endif$>><$#active.LABEL$></td>
+											<td align="right"><$#active.COUNT$></td>
+											<td align="right"><$#active.PERCENTAGE$></td>
+										</tr>
+										
+									<$endloop$>
+
+								</table>
+								
+							</td>
+						</tr>
+					</table>
+					
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+					
+				<$include orangeContainer_top$>
+
+					<div class='ccla_cs_panel_header'>
+						Barcoded Mandate Forms - Summary
+					</div>
+					
+					<div class='ccla_cs_panel_content'>
+					
+					<table width="100%">
+						
+						<tr>
+							<td valign="top" width="50%">
+						
+								<h3 class="ccla_data_panel_header">All campaign forms</h3>
+								
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th>Form status</th><th>Count</th>
+									</tr>
+									
+									<$total = 0$>
+									
+									<$loop rsFormTotals$>
+										<tr>
+											<td><$#active.FORM_STATUS$></td>
+											<td align="right">
+												<$#active.COUNT$>
+												<$total = total + #active.COUNT$>
+											</td>
+										</tr>
+									<$endloop$>
+									
+									<tr>
+										<td align="right">Total</td><td align="right"><$total$></td>
+									</tr>
+								</table>
+							
+							</td>
+							<td>
+							
+								<h3 class="ccla_data_panel_header">Campaign forms by company</h3>
+								
+								<table class="ccla-table" width="100%">
+									<tr>
+										<th>Form status</th><th>Count</th>
+									</tr>
+
+									<$prevCompany = ""$>
+									<$total = 0$>
+									
+									<$loop rsFormTotalsByCompany$>
+										<$if not (#active.COMPANY like #local.prevCompany)$>
+											
+											<$if prevCompany$>
+												<tr>
+													<td align="right">Total</td><td align="right"><$total$></td>
+												</tr>
+												
+												<$total = 0$>
+											<$endif$>
+										
+											<tr>
+												<th colspan=2>
+													<$#active.COMPANY$>
+													<$prevCompany = #active.COMPANY$>
+												</td>
+											</tr>
+										<$endif$>
+									
+										<tr>
+											<td><$#active.FORM_STATUS$></td>
+											<td align="right">
+												<$#active.COUNT$>
+												<$total = total + #active.COUNT$>
+											</td>
+										</tr>
+									<$endloop$>
+									
+									<tr>
+										<td align="right">Total</td><td align="right"><$total$></td>
+									</tr>
+									
+								</table>
+							
+							
+						</td>
+					</tr>
+				</table>
+						
+				</div>
+				
+				<$include orangeContainer_bottom$>
+				
+				<br/>
+				
+			</div>
+		</div>
+		
+	</body>
+</html>

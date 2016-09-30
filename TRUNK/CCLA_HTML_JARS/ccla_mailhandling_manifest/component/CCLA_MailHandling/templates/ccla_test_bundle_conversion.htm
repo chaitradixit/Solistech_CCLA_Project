@@ -1,0 +1,119 @@
+<html>
+<head>
+
+	<$include iris_jquery_js$>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>
+		Instruction Register Conversion: <$bundleRef$>
+	</title>
+	
+	<$include iris_styles$>
+	
+	<$include iris_common_js$>
+	
+	<script type="text/javascript">
+		
+		
+	</script>
+	
+</head>
+
+<body class="popupBody">
+	
+	<!-- special container used by ECS_PopupMenus code -->
+	<div id="popUpContainingDiv">
+		
+		<div class="grey_bg">
+			
+			<$include orangeContainer_top$>
+	
+				<div class='panelheader' style="padding: 3px; border-bottom: 1px solid; margin-right: 3px">
+					<b>Instruction Register Conversion: <span class='docname'><$bundleRef$></span></b>
+				</div>
+				
+				<div style="margin: 5px">
+					
+					<$if not #local.BundleTranslateException$>
+						
+						<p class="load_section completed" id="">				
+							<span style="color:black">
+								There doesn't appear to be any issue converting this document bundle
+								into an Instruction set.
+							</span>
+						</p>
+						
+						<br/>
+						<br/>
+						
+					<$else$>
+					
+						<p class="load_section failed" id="">				
+							There was a problem converting this document bundle
+							into an Instruction set.
+						</p>
+					
+						<style>
+							
+							#failReport th {
+								text-align: left;
+							}
+							
+							#failReport td {
+								text-align: left;
+							}
+							
+						</style>
+					
+						<table cellpadding=2 border=1 id="failReport">
+							<tr>
+								<th>
+									Fail Reason
+								</th>
+								
+								<td>
+									<$#local.FailReason$>
+								</td>
+							</tr>
+							
+							<tr>
+								<th>
+									Fail Message
+								</th>
+								
+								<td>
+									<$#local.FailMessage$>
+								</td>
+							</tr>
+							
+							<tr>
+								<th>
+									Failed Document
+								</th>
+								
+								<td>
+									<$if #local.FailedDocName$>
+										<a 	href="#" 
+											onclick="window.parent.closePopup();window.parent.selThumbByDocName('<$#local.FailedDocName$>');" ><$#local.FailedDocName$></a>
+									<$endif$>
+									
+									&nbsp;
+								</td>
+							</tr>
+						</table>
+					
+					<$endif$>
+					
+					<div align="right">
+						<input type="button" onclick="window.parent.closePopup()" value="OK" />
+					</div>
+					
+				</div>
+				
+			<$include orangeContainer_bottom$>	
+			
+		
+		</div>
+		
+</body>
+</html>

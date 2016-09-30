@@ -1,0 +1,102 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<$include ccla_cs_styles$>
+	<$include iris_jquery_js$>
+	
+	<title>
+		IAT Sweep Info
+	</title>
+	
+	<script type="text/javascript">
+
+	</script>
+	
+</head>
+<body>
+		
+	<$include ecs_popup_div_header$>
+	<$include iris_header$>
+	
+	<div style="text-align: center">
+		
+		<div style="width: 700px; margin: 15px auto;" class="grey_bg">
+			
+			<$include orangeContainer_top$>
+				
+				<div class="ccla_cs_panel_header">
+					IAT Sweep Information
+				</div>
+				
+				<div class='ccla_cs_panel_content'>
+					<div style="padding-top:5px"></div>
+						<h3 class="ccla_data_panel_header">IAT Sweep</h3>
+						<$if rsIATInstruction$>				
+						<table class="accounts-table" cellspacing="0" cellpadding="0">
+							<tr>
+								<th class="first-col" width="15%">IAT ID</th>
+								<th width="15%">Fund Code</th>
+								<th width="25%">Total Amount</th>
+								<th width="25%">Run Date</th>
+								<th width="20%">User</th>
+							</tr>
+							<$loop rsIATInstruction$>
+							<tr class="account-details-row">
+								<td><$#active.INSTRUCTION_ID$></td>
+								<td><$#active.FUND_CODE$></td>
+								<td><$#active.CASH_AMOUNT$></td>
+								<td><$#active.DATE_ADDED$></td>
+								<td><$#active.LAST_UPDATED_BY$></td>
+							</tr>
+							<$endloop$>
+						</table>
+						<$else$>
+						N/A
+						<$endif$>
+					<br />
+					<div style="padding-top:5px"></div>
+					
+					<h3 class="ccla_data_panel_header">Instructions</h3>
+					<p>List of instructions for this IAT sweep. Select "View" for more info about the Instruction</p>
+					<$if rsInstructions$>
+						<table class="accounts-table" cellspacing="0" cellpadding="0" width="65%">
+							<tr>
+								<th class="first-col" width="20%">Instruction ID</th>
+								<th>Type</th>
+								<th>Fund Code</th>
+								<th>Amount</th>
+								<th>&nbsp;</th>
+							</tr>
+							
+						<$loop rsInstructions$>
+							<tr class="account-details-row">
+								<td><$#active.INSTRUCTION_ID$></td>
+								<td><$#active.INSTRUCTION_TYPE_NAME$></td>
+								<td><$#active.FUND_CODE$></td>
+								<td><$#active.CASH$></td>
+								<td>
+									<form name="<$#active.INSTRUCTION_ID$>" id="<$#active.INSTRUCTION_ID$>" method="POST">
+										<input type="hidden" name="IdcService" 	value="CCLA_CP_INSTRUCTION_INFO" /> <$include add_idc_token_to_form$>
+										<input type="hidden" name="RedirectUrl" value="" />
+										<input type="hidden" name="INSTRUCTION_ID" id="INSTRUCTION_ID" value="<$#active.INSTRUCTION_ID$>"/>
+										<input type="submit" name="submit" id="submit" value="View Info"/>
+									</form>
+								</td>
+								
+						<$endloop$>		
+						</table>
+					<$else$>
+						N/A
+					<$endif$>
+					
+					<div style="padding-top:5px"></div>
+					<br/>
+					<input type="button" name="goBack" id="goBack" value="Back To IAT Listings" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_IAT_SWEEP<$include add_idc_token_to_url$>'"/>
+					<input type="button" name="goTransBatch" id="goTransBatch" value="Back To Transaction Batch Listings" onclick="location.href='<$HttpCgiPath$>?IdcService=CCLA_CP_TRANSBATCH_LISTING<$include add_idc_token_to_url$>'"/>
+				
+			<$include orangeContainer_bottom$>
+		</div>
+	</div>
+				
+</body></html>

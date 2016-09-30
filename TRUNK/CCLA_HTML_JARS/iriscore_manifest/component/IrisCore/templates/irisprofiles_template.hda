@@ -1,0 +1,29 @@
+﻿<?hda version="7.5.2 (061212)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet IrisProfiles_
+5
+name
+class
+formtype
+filename
+description
+IRIS_PROFILE_LISTING
+DocManagement
+DocumentList
+iris_profile_listing.htm
+List of available XML configuration files for Iris
+IRIS_PROFILE_EDIT
+DocManagement
+DocumentList
+iris_profile.edit.htm
+Allows editing of XML profiles
+IRIS_PROFILE_CONDITIONS
+RootPage
+Form
+iris_profile_conditions.htm
+Lists all conditions held in XML profile
+@end
+

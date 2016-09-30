@@ -1,0 +1,61 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2012_05_03 (Version 1.4.7)
+classpath=$COMPONENT_DIR/classes/CCLA_reports.jar
+blFieldTypes=
+ComponentName=CCLA_reports
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+query
+resources/ccla_reports_query.htm
+CCLA_reports_queries
+10
+service
+resources/ccla_reports_service.htm
+CCLA_reports_services
+10
+template
+templates/ccla_reports_template.hda
+null
+10
+resource
+resources/ccla_reports_resource.htm
+null
+10
+environment
+ccla_reports_environment.cfg
+null
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+CCLA_reports_templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end
+

@@ -1,0 +1,29 @@
+<?hda version="7.5.1 (050317)" jcharset=Cp1252 encoding=iso-8859-1?>
+@Properties LocalData
+blFieldTypes=
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ECS_AuditLog_DisplayLog
+5
+name
+class
+formtype
+filename
+description
+LOG_DISPLAYENTRIES
+Document
+DocumentInfoPage
+ECS_AuditLog_LogDisplay.htm
+Display Log Entries
+ECS_AUDIT_TEST
+Document
+DocumentList
+ecs_audit_test.htm
+null
+ECS_AUDIT_DISPLAY
+Administration
+Form
+ecs_audit_display.htm
+Displays audit entries
+@end
+

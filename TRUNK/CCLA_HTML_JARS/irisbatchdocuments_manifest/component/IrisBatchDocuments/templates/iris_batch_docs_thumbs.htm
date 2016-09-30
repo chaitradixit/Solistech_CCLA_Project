@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<$include iris_jquery_js$>
+
+<$verticalThumbs 	= isTrue(#env.Iris_enableVerticalThumbnails)$>
+<$enableThumbScroll	= #env.Iris_enableThumbnailScroll$>
+
+<$include iris_styles$>
+
+<style type="text/css">
+
+		* {
+			margin: 0px;
+			padding: 0px;
+			font-family: Verdana, Arial;
+		}
+		
+		<$if verticalThumbs$>
+			.scroll_left {
+				background-image: url("images/iris_batchdocuments/images/up.gif");
+			}
+			
+			.scroll_left_inactive {
+				background-image: url("images/iris_batchdocuments/images/up_inactive.gif");
+			}
+			
+			.scroll_right {
+				background-image: url("images/iris_batchdocuments/images/down.gif");
+			}
+			
+			.scroll_right_inactive {
+				background-image: url("images/iris_batchdocuments/images/down_inactive.gif");
+			}
+		<$else$>
+			.scroll_left {
+				background-image: url("images/iris_batchdocuments/images/prev.gif");
+			}
+			
+			.scroll_left_inactive {
+				background-image: url("images/iris_batchdocuments/images/prev_inactive.gif");
+			}
+			
+			.scroll_right {
+				background-image: url("images/iris_batchdocuments/images/next.gif");
+			}
+			
+			.scroll_right_inactive {
+				background-image: url("images/iris_batchdocuments/images/next_inactive.gif");
+			}
+		<$endif$>
+
+	</style>
+	
+	<$if #active.isiPad$>
+	<$c="Could not get this to work in an external style sheet "$>
+		<style type="text/css">
+			.openDocInNewTab_forIpad{
+				display:block;
+			}
+		.iris_thumb_container{
+			height:100px !important;
+		  }
+		</style>
+	<$endif$>
+	
+</head>
+
+<body 	style="overflow:hidden;" class="iframe_body"
+		onload="<$if enableThumbScroll$>setScrollSize();<$endif$>initScrollButtons();" 
+		onresize="<$if enableThumbScroll$>setScrollSize();<$endif$>">
+		
+	<$c="For displaying bundle ref on Item Listing page."$>
+	<$useBundleRef = "Y"$>
+
+	<$include iris_resolve_user_access$>
+	<$include iris_batch_docs_js$>
+	
+	<$if #env.Iris_enableSelectedBatchItemPanel$>
+		<$include batch_delete_form$>
+		<$include float_menu_header$>
+		<$include iris_ajax_update_docinfo_js$>
+		
+	<$endif$>
+	
+	<$if verticalThumbs$>
+		<table border="0" width="100%" height="100%" summary="Contains the thumbnail strip">
+			<tr>
+				<td style="width:100px;vertical-align:top;" valign="top">
+	<$endif$>
+
+	<$include iris_batchdocuments_thumbcontainer$>
+	
+	<$include iris_thumbnail_scroll_js$>
+	<$if verticalThumbs$>
+				</td>
+			</tr>
+		</table>
+	<$endif$>
+
+</body>
+</html>
+

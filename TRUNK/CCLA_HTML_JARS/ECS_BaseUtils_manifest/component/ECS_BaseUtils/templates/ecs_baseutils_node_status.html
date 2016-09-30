@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<$if strEquals(#local.shortForm,"1")$>
+	Status=<$NODE_STATUS$> [<$responseCode$>]
+<$else$>
+
+<html>
+<head>
+	<$defaultPageTitle="Server "  & srvrHost  & " in " & NODE_STATUS$>
+	<title><$defaultPageTitle$></title>
+</head>
+
+<body>
+
+
+	<h1>UCM Content Server <$srvrHost$> in <$NODE_STATUS$> mode</h1>
+	Status=<$NODE_STATUS$><br/><br/>
+
+	HTTP Response: <$responseCode$>
+	<small>[Use HTTP Response coding is
+	<$if strEquals(#local.useHTTPResponseCode,"1")$>
+		ON]
+	<$else$>
+		OFF]
+	<$endif$>
+	</small><br/><br/>
+
+	Server Address: <$srvrHost$> [<$srvrIP$>]<br/>
+	Server Instance: <$IDC_Name$><br/>
+	Server Web Address: <$HttpServerAddress$><br/>
+	UCM Cluster Node?:
+
+	<$if ClusterNodeName$>
+		Yes
+	<$else$>
+		No
+	<$endif$>
+	<br/><br/>
+
+	Status Description:  <em><$NODE_STATUS_DESCRIPTION$></em><br/><br/>
+	<small>[To modify the node status of <$srvrHost$> update NODE_STATUS.txt in the UCM server bin directory.<br/>
+	       To return this service status in short form append <em>&shortForm=1</em> to the GET_NODE_STATUS service call.<br/>
+	       This page will return a HTTP 200 OK response on all requests regardless of node status, to return a HTTP 503,<br/>
+	       Service Unavailable response when the node status is not ACTIVE append <em>&useHTTPResponseCode=1</em> to the call]</small>
+
+
+</body>
+</html>
+<$endif$>

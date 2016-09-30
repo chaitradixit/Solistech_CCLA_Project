@@ -1,0 +1,493 @@
+﻿<!DOCTYPE html PUBLIC 	"-//W3C/DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>
+			Step 1: Client number lookup
+		</title>
+		
+		<$include ccla_cs_styles$>
+		<$include iris_jquery_js$>
+		
+		<script type="text/javascript">
+			
+			var manualDataEntry = <$if #env.CCLA_CS_ManualDataEntry$>true<$else$>false<$endif$>;
+			
+			// Validates the lookup form before submission.
+			function submitLookupForm() {
+				
+				if (!manualDataEntry) {
+					// Check radio buttons to ensure a correspondent was selected.
+					var selCorrespondent = getSelectedCorrespondent();
+					
+					if (selCorrespondent == "") {
+						alert("Please select a correspondent before continuing.");
+						return;
+					}
+					
+					if (selCorrespondent == "custom") {
+						var customCorrId = 
+						 document.forms['correspondentForm'].elements['customCorrespondentId'].value;
+						 
+						if (customCorrId == "") {
+							alert("You have chosen to enter your own correspondent ID, but not specified the ID." +
+							 "\n\nPlease enter one before continuing.");
+							return;
+						} else {
+							selCorrespondent = customCorrId;
+						}
+					}
+					
+					document.forms['correspondentForm'].elements['personId'].value = selCorrespondent;
+				}
+				
+				var errors = false;
+				
+				// Ensure activity type option list has a value.
+				var activityType = $("#activityType").val();
+				
+				if (activityType == "") {
+					errors = true;
+					alert("Please select an activity type before continuing.");
+					return;
+				}
+				
+				if (!activityTypeRequiresConfirm(activityType)) {
+					document.forms['correspondentForm'].elements['confirmTypes'].value = "N/A";
+					
+				} else {
+					// Ensure at least 2 confirmation checkboxes are ticked, if the chosen
+					// activity type requires confirmation.
+					var numChecks = 0;
+					
+					var confirmTypes = "";
+					
+					$("#confirmChecks").find("input[type='checkbox']").each( function() {
+						if ($(this).attr("checked")) {
+							if (confirmTypes != "")
+								confirmTypes += ",";
+								
+							confirmTypes += $(this).attr("name");
+							
+							if ($(this).attr("name") == "otherChecked") {
+								if ($("#confirmOther").val() == "") {
+									alert("You have selected 'Other' confirmation.\n\n" +
+									 "Please specify the type of confirmation check you used.");
+									 
+									$("#confirmOther")[0].focus();
+									errors = true;
+								}
+							}
+							
+							numChecks++;
+						}
+					});
+					
+					if (errors)
+						return;
+					
+					if (numChecks < 2) {
+						errors = true;
+						alert("Please confirm that you verified the correspondent identity " +
+						 "by ticking at least 2 of the checkboxes.");
+						return;
+					}
+					
+					document.forms['correspondentForm'].elements['confirmTypes'].value = confirmTypes;
+				}
+				
+				if (!errors)
+					document.forms['correspondentForm'].submit();
+			}
+			
+			// Used in non-manual data entry mode. The user will be presented with a list
+			// of correspondents relating to the client ID they entered.
+			//
+			// They must select a correspondent from the list before continuing. There
+			// will always be a special 'custom' option, where the user can enter any
+			// correspondent ID.
+			//
+			// This method determines which option has been chosen and returns its value
+			// (will be either blank, a valid correspondent ID, or 'custom')
+			function getSelectedCorrespondent() {
+			
+				var radios = 
+				 document.forms['correspondentForm'].elements["sel_correspondentId"];
+				
+				var selCorrespondent = "";
+				
+				if (typeof(radios.length) == "undefined") {
+					if (radios.checked)
+						selCorrespondent = radios.value;
+					
+				} else {
+				
+					for (var i=0; i<radios.length; i++) {
+						var thisRadio = radios[i];
+						
+						if (thisRadio.checked)
+							selCorrespondent = thisRadio.value;
+					}
+				}
+				
+				return selCorrespondent;
+			}
+			
+			// List of activity types which don't require confirmation
+			var activityTypesNoConfirm = "Outgoing call,Amendment";
+			
+			function activityTypeRequiresConfirm(activityType) {
+				return (activityTypesNoConfirm.indexOf(activityType) == -1);
+			}
+			
+			function activityTypeUpdated() {
+				var activityType = $("#activityType").val();
+				
+				if (activityTypeRequiresConfirm(activityType)) {
+					// Selected activity type requires confirmation. Enable checkboxes
+					$("#confirmChecks").find("input[type='checkbox']").each( function() {
+						$(this).removeAttr("disabled");
+					});
+					
+				} else {
+					// Selected activity type doesn't require confirmation. Disable checkboxes
+					$("#confirmChecks").find("input[type='checkbox']").each( function() {
+						$(this).removeAttr("checked");
+						$(this).attr("disabled","disabled");
+					});
+				}
+			}
+			
+			function otherCheckedClicked(chk) {
+				if (chk.checked) {
+					$("#confirmOther").removeAttr("disabled");
+					$("#confirmOther")[0].focus();
+				} else {
+					$("#confirmOther").val("").attr("disabled","disabled");
+				}
+			}
+			
+		</script>
+		
+	</head>
+	<body <$include iris_body_def_internal$>>
+	
+		<$include iris_header$>
+		
+		<div align=center style="margin-top: 20px;">	
+			<div id="ccla_cs_content" style='width: 800px'>
+		
+				<$if #local.completed$>
+					
+					<$include orangeContainer_top$>
+				
+					<!-- Title for the user profile: displays the dDocName for this item -->
+					<div style="padding: 5px">
+						The client activity is finished.
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					<br/>
+				
+				<$endif$>
+				
+				<$if #local.activityId$>
+					
+					<$include ccla_cs_activity_details$>
+					
+					<$if clientId$>
+						<$company = #local.company$>
+						<$clientNumber = clientId$>
+						
+						<$executeService("CCLA_CS_GET_EXTENDED_CLIENT_DATA")$>
+					<$endif$>
+					
+				<$else$>
+				
+					<$include orangeContainer_top$>
+					
+					<!-- Title for the user profile: displays the dDocName for this item -->
+					<div class='ccla_cs_panel_header'>
+						Step 1: Client number lookup
+					</div>
+				
+					<div class='ccla_cs_panel_content'>
+						
+						<form method="post" action="<$HttpCgiPath$>?IdcService=CCLA_CS_CLIENT_LOOKUP<$include add_idc_token_to_url$>">
+							<input type="hidden" name="IdcService" value="CCLA_CS_CLIENT_LOOKUP" /><$include add_idc_token_to_form$>
+							
+							<$if not company$>
+								<$company = "COIF"$>
+							<$endif$>
+							
+							<input type="hidden" name="company" value="<$#local.company$>" />
+							
+							<table cellpadding=0 cellspacing=2>
+								<tr>
+									<td width="120">Client number:</td>
+									<td>
+										<input type="text" name="clientId" value="<$#local.clientId$>" /> <input type="submit" value="Go" />
+									</td>
+								</tr>
+								
+								<$if clientId$>
+									<$clientNumber = clientId$>
+									<$executeService("CCLA_CS_GET_EXTENDED_CLIENT_DATA")$>
+								<$endif$>
+								
+								<$if clientId and not rsClient$>
+									<tr>
+										<td></td>
+										<td>
+											<div class="validation_error error_icon">
+												<div class="validation_error_title">Error</div>
+												
+												<p>No matching client found.</p>
+										
+											</div>
+										</td>
+									</tr>
+								<$endif$>
+							
+							</table>
+							
+							<$if false$><$include ccla_cs_add_question_link$><$endif$>
+						</form>
+							
+						<br/>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+					
+					<br/>
+					
+					<$if not rsClient$>
+						
+						<$include ccla_cs_recent_activities$>
+						
+					<$endif$>
+				
+				<$endif$>
+				
+				<$if #local.clientId and rsClient$>
+				
+					<$include orangeContainer_top$>
+					
+					<!-- Title for the user profile: displays the dDocName for this item -->
+					<div class='ccla_cs_panel_header'>
+						Step 2: Confirm client &amp; correspondent
+					</div>
+										
+					<div class='ccla_cs_panel_content'>
+						
+						<h3 class="ccla_data_panel_header">Client data</h3>
+						
+						<$executeService("CCLA_CS_GET_CLIENT_AML_STATUS")$>
+						
+						<$loop rsClient$>
+						
+							<table width="100%" cellpadding=0 cellspacing=2>
+								<tr>
+									<td width="25%" valign="top"><b>Name</b></td>
+									<td>
+										<$#active.name$>
+									</td>
+								</tr>
+								<tr>
+									<td valign="top"><b>Address</b></td>
+									<td>
+										<$include ccla_cs_display_aurora_address$>
+									</td>
+								</tr>
+								<tr>
+									<td><br/></td>
+								<tr>
+									<td valign="top"><b>AML status</b></td>
+									<td>
+										
+									
+										<$if rsAMLStatus$>											
+											<$if isTrue(#active.Responded)$>
+												Responded
+											<$else$>
+												Response pending
+											<$endif$>
+										<$else$>
+											Unknown
+										<$endif$>
+									</td>
+								</tr>
+							</table>
+						
+						<$endloop$>
+						
+						<br/>
+						
+						<form 	method="post" name="correspondentForm" id="correspondentForm" 
+								action="<$HttpCgiPath$>?IdcService=CCLA_CS_SET_FUND_TRANSFERS<$include add_idc_token_to_url$>">
+							<input type="hidden" name="IdcService" value="CCLA_CS_SET_FUND_TRANSFERS" /><$include add_idc_token_to_form$>
+						
+							<!-- Camapign ID -->
+							<input type="hidden" name="campaignId"	value="1" />
+							
+							<$if #local.activityId$>
+								<!-- 	User has navigated back to this starting page from a later one. The activity/process
+										information may require an update. -->
+								<input type="hidden" name="activityId" 		value="<$#local.activityId$>" />
+								<input type="hidden" name="updateActivity"	value="1" />
+							<$endif$>
+							
+							<$if #env.CCLA_CS_ManualDataEntry$>
+								
+								<p>Look up the client code in the Aurora system and enter the correspondent's ID below.</p>
+								
+								<br/>
+								Correspondent code:
+								<input type="text" name="personId" value="<$#local.personId$>" />
+								<br/>
+							
+							<$else$>
+								
+								<!-- 	Hidden field completed by Javascript on form submission, based on selected
+										correspondent. -->
+								<input type="hidden" name="personId" value="" />
+								
+								<h3 class="ccla_data_panel_header">Select correspondent</h3>
+								
+								<table class="accounts-table" width="100%" cellpadding="0" cellspacing="0">
+	
+									<$loop rsClientCorrespondents$>
+										<tr class="account-details-row<$if (getValue('rsClientCorrespondents','#row') == 0)$> first-row<$endif$>">
+											<td class="first-col" width="40" align="center"> 
+												<input type="radio" name="sel_correspondentId" value="<$#active.code$>" <$if #local.correspondentId like #active.code$>checked="checked"<$endif$> />
+											</td>
+											<td class="first-row">
+												<$include ccla_cs_display_listed_correspondent_details$>
+											</td>
+										</tr>
+									<$endloop$>
+									
+									<!-- Display 'other' row, allowing custom correspondent ID entry. -->
+									<$if false$>
+									<tr class="account-details-row <$if not rsClientCorrespondents$> first-row<$endif$>"">
+										<td class="first-col" width="40" align="center"> 
+											<input type="radio" name="sel_correspondentId" value="custom" />
+										</td>
+										<td class="first-row">
+											Other correspondent (enter ID below)
+											<br/>
+											<br/>
+											<input type="text" name="customCorrespondentId" value="" />
+										</td>
+									</tr>
+									<$endif$>
+									
+									<$if false$>
+										<tr class="account-details-row first-row">
+											<td class="first-col" width="50" align="center"> 
+												<input type="radio" name="correspondentId" value="<$#active.correspondentId$>" checked="checked" />
+											</td>
+											<td>
+												<$include ccla_cs_display_listed_correspondent_details$>
+											</td>
+										</tr>
+									<$endif$>
+									
+								</table>
+								
+							<$endif$>
+							
+							<br/>
+							
+							<input type="hidden" name="clientId" value="<$#local.clientId$>" />
+							<input type="hidden" name="company" value="<$#local.company$>" />
+							
+							<h3 class="ccla_data_panel_header">Activity type</h3>
+							
+							<div class="ccla_data_panel">
+								
+								<table width="100%" cellpadding=0 cellspacing=2>
+									<tr>
+										<td>
+											<$if rsActivity$>
+												<$exec rsFirst("rsActivity")$>
+											<$endif$>
+											
+											<select name="activityType" id="activityType" onchange="activityTypeUpdated()">
+												<option value=""></option>
+												
+												<$exec rsMakeFromString("rsActivityTypes",#env.CCLA_CS_CommActivityTypes,"type")$>
+												
+												<$loop rsActivityTypes$>
+													<option value="<$#active.type$>" <$if getValue("rsActivity","ACTIVITY_TYPE") like #active.type$>selected="selected"<$endif$> ><$#active.type$></option>
+												<$endloop$>
+											</select>
+										</td>
+								</table>
+								
+							</div>
+							
+							<h3 class="ccla_data_panel_header">I have checked the following (select 2)</h3>
+							
+							<div class="ccla_data_panel" id="confirmChecks">
+								
+								<table width="100%" cellpadding=0 cellspacing=2>
+									<tr>
+										<td width=20><input type="checkbox" name="addressChecked" 
+															<$if strIndexOf(#local.confirmTypes,"addressChecked") > -1$>checked="checked"<$endif$> /></td>
+										<td width=140>
+											Telephone number
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="postCodeChecked" 
+													<$if strIndexOf(#local.confirmTypes,"postCodeChecked") > -1$>checked="checked"<$endif$> /></td>
+										<td>
+											Postcode
+										</td>
+									</tr>
+									<tr>
+										<td><input  type="checkbox" name="otherChecked" onclick="otherCheckedClicked(this)" 
+													<$if strIndexOf(#local.confirmTypes,"otherChecked") > -1$>checked="checked"<$endif$> /></td>
+										<td>
+											Other
+										</td>
+										<td>
+											<!-- Completed via JavaScript -->
+											<input type="hidden" name="confirmTypes" id="confirmTypes" value="<$#local.confirmTypes$>" />
+											<input type="text" name="confirmOther" id="confirmOther" value="<$#local.confirmOther$>" 
+													<$if strIndexOf(#local.confirmTypes,"otherChecked") > -1$><$else$>disabled="disabled"<$endif$> />
+										</td>
+									</tr>
+								</table>
+								
+							</div>
+							
+							<br/>
+							
+							<$include ccla_cs_add_question_link$>
+							<br/>
+							
+							<div style="text-align: right">
+								<input type="button" name="submitType" value="Next" onclick="submitLookupForm()" />
+							</div>
+							
+							<br/>
+						</form>
+						
+					</div>
+					
+					<$include orangeContainer_bottom$>
+				
+				<$endif$>
+				
+			</div>
+		</div>
+		
+		<br/>
+		
+	</body>
+</html>

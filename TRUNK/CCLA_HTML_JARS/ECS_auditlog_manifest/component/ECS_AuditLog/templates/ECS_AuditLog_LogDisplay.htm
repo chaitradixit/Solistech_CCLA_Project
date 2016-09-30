@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+  <title>Audit Log</title>
+	<$include std_info_html_head_declarations$>
+	
+</head>
+<$include planning_stylesheet_standard$>
+<$include planning_mini_top_banner$>
+
+
+<h3>&nbsp;&nbsp;Audit Log for <$#active.r$></h3>
+
+<$lService=#active.s$>
+<$lRef=#active.r$>
+<$IsJava=1$>
+
+<$executeService("LOG_GETENTRIES")$>
+
+<$if rsAuditLog$>
+<center>
+	<table width="95%" border="1" cellpadding="2">
+	
+	  <th bgcolor="#F3F3F3">Date</th>
+	  <th bgcolor="#F3F3F3">User</th>
+	  <th bgcolor="#F3F3F3">Description</th>
+	
+		<$loop rsAuditLog$>
+		  <tr>
+		    <td width="20%"><$formatDateWithPattern(ALLOGDATE,"dd/MM/yyyy HH:mm")$></td>
+		    <td width="10%"><$rsAuditLog.ALUSERNAME$></td>
+		    <td width="50%"><$ALMESSAGE$></td>
+		  </tr>
+		<$endloop$>
+		
+	</table>
+</center>
+
+<$else$>
+ <p>&nbsp;&nbsp;&nbsp;No entries found.</p>
+<$endif$>
+
+<br/>
+
+</body>
+</html>

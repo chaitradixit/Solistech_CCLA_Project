@@ -1,0 +1,63 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<$include iris_styles$>
+
+	<title>
+		Filing Cabinet
+	</title>
+
+	<$include iris_jquery_js$>
+
+	<$include doc_listing_styles$>
+	<$include iris_paginator_header$>
+		
+	<$include group_actions_js$>
+	<$include doc_listing_js$>
+		
+	<$include float_menu_header$>
+
+	<$include iris_filing_cabinet_listing_pre$>
+
+</head>
+
+<body <$include iris_body_def_internal$>>
+	
+	<!-- Form used for operations on groups of documents -->
+	<form action="<$HttpCgiPath$>" name="group_actions_form" method="GET" style="display: none">
+
+		<input type=hidden name="IdcService" value="DOC_APPROVAL">
+		<!-- These two form fields are filled using javascript calls -->
+		<input type=hidden id="selected" name="sel">
+		<input type=hidden name="action">
+		
+	</form>
+
+  <!-- Viewable layout -->
+  <$include iris_header$>
+  
+  <div class="doc_listing_sf_container">
+	  <div style="margin:5px; width=100%; height=100%" class="doc_listing_sf">
+	  
+		<$if selDocs$>
+			<div class="error">
+					<p>Filtered view</p>
+					The document listing has been filtered to show the following documents only: <$selDocs$>
+					[<a href="<$HttpCgiPath$>?IdcService=IRIS_CLASSIFIED_ITEMS">Clear filter</a>]
+				</div>	
+		<$endif$>
+	  
+			<$include ecsSearchAndFilter$>
+			<$include doc_listing_footer$>
+		</div>
+	</div>
+	
+	</div>
+		
+	<$include std_page_end$>
+		
+</body>
+
+
+</html>

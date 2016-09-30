@@ -1,0 +1,64 @@
+﻿<?hda version="10.1.3.5.1 (091125)" jcharset=UTF8 encoding=utf-8?>
+@Properties LocalData
+version=2014_02_05 v1.1.5 (Build 20831)
+classpath=$COMPONENT_DIR/classes/CCLA_Transactions.jar;
+blFieldTypes=
+ComponentName=CCLA_Transactions
+hasPreferenceData=false
+blDateFormat=dd/MM/yyyy {H:mm[:ss] [zzz]}!tEurope/London
+@end
+@ResultSet ResourceDefinition
+4
+type
+filename
+tables
+loadOrder
+resource
+resources/ccla_transactions_resources.htm
+null
+10
+query
+resources/ccla_transactions_query.htm
+CCLA_Transactions_Queries
+10
+template
+templates/ccla_transactions_template.hda
+null
+10
+service
+resources/ccla_transactions_service.htm
+CCLA_Transactions_Services
+10
+environment
+ccla_transactions_environment.cfg
+null
+10
+@end
+@ResultSet Filters
+4
+type
+location
+parameter
+loadOrder
+@end
+@ResultSet MergeRules
+4
+fromTable
+toTable
+column
+loadOrder
+TransactionIdocScriptFunctions
+IdocScriptExtensions
+name
+1
+CCLA_Transactions_Templates
+IntradocTemplates
+name
+10
+@end
+@ResultSet ClassAliases
+3
+classname
+location
+loadOrder
+@end
